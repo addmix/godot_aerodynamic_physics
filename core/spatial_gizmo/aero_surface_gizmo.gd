@@ -12,6 +12,7 @@ func _init():
 	wing_material.set_cull_mode(SpatialMaterial.CULL_DISABLED)
 #	wing_material.albedo_color = Color(1.0, 1.0, 1.0, 0.3)
 	wing_material.vertex_color_use_as_albedo = true
+	wing_material.flags_no_depth_test = true
 	
 #	create_material("main", Color(1, 0, 0))
 	
@@ -35,8 +36,8 @@ func redraw(gizmo : EditorSpatialGizmo) -> void:
 	
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	#flap section
-	var tl := Vector3(-half_span, 0, half_chord - axis_z).rotated(Vector3(1, 0, 0), flap_angle)
-	var tr := Vector3(half_span, 0, half_chord - axis_z).rotated(Vector3(1, 0, 0), flap_angle)
+	var tl := Vector3(-half_span, 0, half_chord - axis_z).rotated(Vector3(-1, 0, 0), flap_angle)
+	var tr := Vector3(half_span, 0, half_chord - axis_z).rotated(Vector3(-1, 0, 0), flap_angle)
 	tl.z += axis_z
 	tr.z += axis_z
 	var bl := Vector3(-half_span, 0, axis_z)

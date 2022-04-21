@@ -1,4 +1,6 @@
 extends RigidBody
+class_name AeroBody
+
 # ~constant
 var SUBSTEPS = ProjectSettings.get_setting("physics/3d/aerodynamics/substeps")
 var PREDICTION_TIMESTEP_FRACTION = 1.0 / (1 + SUBSTEPS)
@@ -70,3 +72,12 @@ func predict_angular_velocity(torque : Vector3) -> Vector3:
 	angular_velocity_change_in_diagonal_space.z = torque_in_diagonal_space.z / get_inverse_inertia_tensor().z.length()
 	
 	return angular_velocity + get_physics_process_delta_time() * PREDICTION_TIMESTEP_FRACTION * (get_inverse_inertia_tensor() * angular_velocity_change_in_diagonal_space)
+
+#pitch authority
+#control surface local transform cross local Y axis, X value of vector is relevant
+#roll authority
+#control surface local transform cross local Z axis, Z value of vector is relevant
+#yaw authority
+#control surface local transform cross local Y axis, X value of vector is relevant
+func control(input : Vector3) -> void:
+	pass

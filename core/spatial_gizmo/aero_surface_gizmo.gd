@@ -34,7 +34,7 @@ func redraw(gizmo : EditorSpatialGizmo) -> void:
 	var axis_z : float = half_chord * (1.0 - flap_fraction * 2.0)
 	
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	#wing section
+	#flap section
 	var tl := Vector3(-half_span, 0, half_chord - axis_z).rotated(Vector3(1, 0, 0), flap_angle)
 	var tr := Vector3(half_span, 0, half_chord - axis_z).rotated(Vector3(1, 0, 0), flap_angle)
 	tl.z += axis_z
@@ -57,11 +57,11 @@ func redraw(gizmo : EditorSpatialGizmo) -> void:
 	st.add_color(flap_color)
 	st.add_vertex(br)
 	
-	#flap section
+	#wing section
 	tl = Vector3(-half_span, 0, axis_z)
 	tr = Vector3(half_span, 0, axis_z)
-	bl = Vector3(-half_span, 0, -half_chord - axis_z)
-	br = Vector3(half_span, 0, -half_chord - axis_z)
+	bl = Vector3(-half_span, 0, -half_chord)
+	br = Vector3(half_span, 0, -half_chord)
 	
 	#first triangle
 	st.add_color(wing_color)

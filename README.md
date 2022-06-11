@@ -1,5 +1,8 @@
 # Godot Aerodynamic Physics
 
+## Demo Project
+[Godot Aerodynamic Physics Demo](https://github.com/addmix/godot-aerodynamic-physics-demo)
+
 ## Installation
 1. Download and un-zip files.
 2. Place the `godot_aerodynamic_physics` folder inside your project's `addons` folder.

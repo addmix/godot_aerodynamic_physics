@@ -1,5 +1,14 @@
 # Godot Aerodynamic Physics
 
+## Installation
+1. Download addon.
+2. Un-zip files.
+3. Place the "godot_aerodynamic_physics" folder inside your projects "addons" folder.
+4. Download, install, and enable the dependencies.
+
+## Dependencies
+[Godot Utils](https://github.com/addmix/godot_utils)
+
 ## Usage
 1. Enable plugin in project settings `project settings > plugins tab > enable`
 2. Add an `AeroBody` to your scene, and add one or more `AeroSurface`s as children, adjust settings to change the characteristics.

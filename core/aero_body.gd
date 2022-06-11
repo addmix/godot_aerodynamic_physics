@@ -1,9 +1,9 @@
-extends RigidBody
+extends VehicleBody
 class_name AeroBody
 
 # ~constant
 var SUBSTEPS = ProjectSettings.get_setting("physics/3d/aerodynamics/substeps")
-var PREDICTION_TIMESTEP_FRACTION = 1.0 / (1 + SUBSTEPS)
+var PREDICTION_TIMESTEP_FRACTION = 1.0 / float(SUBSTEPS + 1)
 
 var aero_surfaces = []
 
@@ -19,25 +19,28 @@ func _enter_tree() -> void:
 			aero_surfaces.append(i)
 
 func _integrate_forces(state : PhysicsDirectBodyState) -> void:
-	var force_and_torque_this_frame : PoolVector3Array = calculate_aerodynamic_forces(linear_velocity, angular_velocity, Vector3.ZERO, 1.2, global_transform.origin)
-	#clamp forces to avoid explosions
-	force_and_torque_this_frame[0] = v3_clamp_length(force_and_torque_this_frame[0], max_force)
-	force_and_torque_this_frame[1] = v3_clamp_length(force_and_torque_this_frame[1], max_torque)
+	var total_force_and_torque := calculate_forces(state)
+	#clamp force
+#	total_force_and_torque[0] = v3_clamp_length(total_force_and_torque[0], max_force)
+#	total_force_and_torque[1] = v3_clamp_length(total_force_and_torque[1], max_torque)
+	apply_central_impulse(total_force_and_torque[0] * get_physics_process_delta_time())
+	apply_torque_impulse(total_force_and_torque[1] * get_physics_process_delta_time())
+
+func calculate_forces(state : PhysicsDirectBodyState) -> PoolVector3Array:
+	var last_force_and_torque := calculate_aerodynamic_forces(linear_velocity, angular_velocity, Vector3.ZERO, 1.2, global_transform.origin)
+	var total_force_and_torque := last_force_and_torque
 	
-	var velocity_prediction : Vector3 = predict_velocity(force_and_torque_this_frame[0] + state.total_gravity * mass)
-	var angular_velocity_prediction : Vector3 = predict_angular_velocity(force_and_torque_this_frame[1])
+	for i in SUBSTEPS:
+		var velocity_prediction : Vector3 = predict_velocity(last_force_and_torque[0] + state.total_gravity * mass)
+		var angular_velocity_prediction : Vector3 = predict_angular_velocity(last_force_and_torque[1])
+		var force_and_torque_prediction : PoolVector3Array = calculate_aerodynamic_forces(velocity_prediction, angular_velocity_prediction, Vector3.ZERO, 1.2, global_transform.origin)
+		#add to total forces
+		total_force_and_torque[0] += force_and_torque_prediction[0]
+		total_force_and_torque[1] += force_and_torque_prediction[1]
 	
-	
-	### TODO: allow custom substeps
-	
-#	for i in SUBSTEPS:
-	var force_and_torque_prediction : PoolVector3Array = calculate_aerodynamic_forces(velocity_prediction, angular_velocity_prediction, Vector3.ZERO, 1.2, global_transform.origin)
-	
-	current_force = (force_and_torque_this_frame[0] + force_and_torque_prediction[0]) * 0.5
-	current_torque = (force_and_torque_this_frame[1] + force_and_torque_prediction[1]) * 0.5
-	
-	apply_central_impulse(current_force * get_physics_process_delta_time())
-	apply_torque_impulse(current_torque * get_physics_process_delta_time())
+	total_force_and_torque[0] = total_force_and_torque[0] / (SUBSTEPS + 1)
+	total_force_and_torque[1] = total_force_and_torque[1] / (SUBSTEPS + 1)
+	return total_force_and_torque
 
 static func v3_clamp_length(v : Vector3, length : float) -> Vector3:
 	if v.length_squared() == 0:
@@ -62,7 +65,6 @@ func calculate_aerodynamic_forces(vel : Vector3, ang_vel : Vector3, wind : Vecto
 func predict_velocity(force : Vector3) -> Vector3:
 	return linear_velocity + get_physics_process_delta_time() * PREDICTION_TIMESTEP_FRACTION * force / mass
 
-#error somewhere here, causing exploding
 func predict_angular_velocity(torque : Vector3) -> Vector3:
 	var torque_in_diagonal_space : Vector3 = get_inverse_inertia_tensor().xform(torque)
 	

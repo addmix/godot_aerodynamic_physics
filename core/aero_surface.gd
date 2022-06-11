@@ -22,7 +22,6 @@ export var stall_angle_high : float = 15.0 setget set_stall_angle_high
 export var stall_angle_low : float = -15.0 setget set_stall_angle_low
 export var zero_lift_aoa : float = 0.0 setget set_zero_lift_aoa
 
-
 func set_auto_aspect_ratio(value : bool) -> void:
 	auto_aspect_ratio = value
 	update_config()
@@ -62,10 +61,6 @@ var _current_drag : Vector3
 var _current_torque : Vector3
 
 func calculate_forces(world_air_velocity : Vector3, air_density : float, relative_position : Vector3) -> PoolVector3Array:
-	#gonna draw stuff here
-	if(OS.has_feature("editor")):
-		pass
-	
 	var force := Vector3.ZERO
 	var torque := Vector3.ZERO
 	
@@ -83,13 +78,7 @@ func calculate_forces(world_air_velocity : Vector3, air_density : float, relativ
 	var stall_angle_low = zero_lift_aoa + cl_max_low / corrected_lift_slope
 	
 	#Calculating air velocity relative to the surface's coordinate system.
-	#Z component of the velocity is discarded.
-	
-#	print(global_transform.basis)
-#	print(global_transform.basis.xform_inv(world_air_velocity))
 	var air_velocity : Vector3 = global_transform.basis.xform_inv(world_air_velocity)
-#	print(air_velocity)
-	#Z is discarded because this does not allow for AOA in any orientation
 	
 	air_velocity = Vector3(0.0, air_velocity.y, air_velocity.z)
 	var drag_direction : Vector3 = global_transform.basis.xform(air_velocity.normalized())
@@ -98,8 +87,6 @@ func calculate_forces(world_air_velocity : Vector3, air_density : float, relativ
 	var area : float = config.chord * config.span
 	var dynamic_pressure : float = 0.5 * air_density * air_velocity.length_squared()
 	
-#	print(air_velocity.x)
-	#this can be improved to work in any orientation, call back to why the Z is discarded
 	var angle_of_attack : float = atan2(air_velocity.y, -air_velocity.z)
 	
 	var aerodynamic_coefficients : Vector3 = calculate_coefficients(angle_of_attack, corrected_lift_slope, zero_lift_aoa, stall_angle_high, stall_angle_low)

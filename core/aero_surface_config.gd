@@ -14,7 +14,7 @@ class_name AeroSurfaceConfig
 		validate()
 @export var flap_angle : float = 0.0 :
 	set(value):
-		flap_angle = clamp(value, -deg2rad(50.0), deg2rad(50.0))
+		flap_angle = clamp(value, -deg_to_rad(50.0), deg_to_rad(50.0))
 @export var flap_fraction : float = 0.0 :
 	set(value):
 		flap_fraction = clamp(value, 0.0, 0.4)

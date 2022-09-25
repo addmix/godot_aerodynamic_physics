@@ -9,7 +9,7 @@ func update_config() -> void:
 	config = AeroSurfaceConfig.new(lift_slope, skin_friction, zero_lift_aoa, stall_angle_high, stall_angle_low, chord, flap_fraction, span, auto_aspect_ratio, aspect_ratio)
 	update_gizmos()
 var is_control_surface : bool = false
-@export_group("Wing Properties")
+
 @export var auto_aspect_ratio : bool = true :
 	set(value):
 		auto_aspect_ratio = value
@@ -54,15 +54,6 @@ var is_control_surface : bool = false
 	set(value):
 		zero_lift_aoa = value
 		update_config()
-
-@export_group("Curves")
-
-@export var use_curves : bool = false
-@export var lift_curve : Curve
-@export var drag_curve : Curve
-@export var buffet_curve : Curve
-
-@export_group("")
 
 var _current_lift : Vector3
 var _current_drag : Vector3

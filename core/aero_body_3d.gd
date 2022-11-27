@@ -23,17 +23,21 @@ func _integrate_forces(state : PhysicsDirectBodyState3D) -> void:
 	#clamp force
 #	total_force_and_torque[0] = v3_clamp_length(total_force_and_torque[0], max_force)
 #	total_force_and_torque[1] = v3_clamp_length(total_force_and_torque[1], max_torque)
-	state.apply_central_impulse(total_force_and_torque[0] * get_physics_process_delta_time())
-	state.apply_torque_impulse(total_force_and_torque[1] * get_physics_process_delta_time())
+	apply_central_impulse(total_force_and_torque[0] * get_physics_process_delta_time())
+	apply_torque_impulse(total_force_and_torque[1] * get_physics_process_delta_time())
 
 func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
-	var last_force_and_torque := calculate_aerodynamic_forces(linear_velocity, angular_velocity, Vector3.ZERO, 1.2)
+	var air_density : float = AeroUnits.get_density_at_altitude(position.y)
+	var air_pressure : float = AeroUnits.get_pressure_at_altitude(position.y)
+	var wind : Vector3
+
+	var last_force_and_torque := calculate_aerodynamic_forces(linear_velocity, angular_velocity, Vector3.ZERO, air_density, air_pressure)
 	var total_force_and_torque := last_force_and_torque
 
 	for i in SUBSTEPS:
-		var velocity_prediction : Vector3 = predict_velocity(last_force_and_torque[0] + state.total_gravity * mass)
+		var linear_velocity_prediction : Vector3 = predict_linear_velocity(last_force_and_torque[0] + state.total_gravity * mass)
 		var angular_velocity_prediction : Vector3 = predict_angular_velocity(last_force_and_torque[1])
-		var force_and_torque_prediction : PackedVector3Array = calculate_aerodynamic_forces(velocity_prediction, angular_velocity_prediction, Vector3.ZERO, 1.2)
+		var force_and_torque_prediction : PackedVector3Array = calculate_aerodynamic_forces(linear_velocity_prediction, angular_velocity_prediction, Vector3.ZERO, air_density, air_pressure)
 		#add to total forces
 		total_force_and_torque[0] += force_and_torque_prediction[0]
 		total_force_and_torque[1] += force_and_torque_prediction[1]
@@ -48,21 +52,21 @@ static func v3_clamp_length(v : Vector3, length : float) -> Vector3:
 
 	return v.normalized() * min(length, v.length())
 
-func calculate_aerodynamic_forces(vel : Vector3, ang_vel : Vector3, wind : Vector3, air_density : float) -> PackedVector3Array:
+func calculate_aerodynamic_forces(vel : Vector3, ang_vel : Vector3, wind : Vector3, air_density : float, air_pressure : float) -> PackedVector3Array:
 	var force : Vector3
 	var torque : Vector3
 
 	for surface in aero_surfaces:
 		#relative_position is the position of the surface, centered on the AeroBody's origin, with the global rotation
 		var relative_position : Vector3 = global_transform.basis * (surface.transform.origin - center_of_mass)
-		var force_and_torque : PackedVector3Array = surface.calculate_forces(-vel + wind - (ang_vel.cross(relative_position)), air_density, relative_position)
+		var force_and_torque : PackedVector3Array = surface.calculate_forces(-vel + wind - (ang_vel.cross(relative_position)), air_density, air_pressure, relative_position, position.y)
 
 		force += force_and_torque[0]
 		torque += force_and_torque[1]
 
 	return PackedVector3Array([force, torque])
 
-func predict_velocity(force : Vector3) -> Vector3:
+func predict_linear_velocity(force : Vector3) -> Vector3:
 	return linear_velocity + get_physics_process_delta_time() * PREDICTION_TIMESTEP_FRACTION * force / mass
 
 func predict_angular_velocity(torque : Vector3) -> Vector3:

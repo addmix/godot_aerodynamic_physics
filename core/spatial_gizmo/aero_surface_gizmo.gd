@@ -72,4 +72,3 @@ func _redraw(gizmo : EditorNode3DGizmo) -> void:
 	var mesh : ArrayMesh = st.commit()
 	gizmo.add_mesh(mesh, wing_material)
 	gizmo.add_collision_triangles(mesh.generate_triangle_mesh())
-

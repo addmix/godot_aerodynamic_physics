@@ -1,6 +1,10 @@
 extends Resource
 class_name AeroSurfaceConfig
 
+
+@export_group("Wing Properties")
+
+
 @export var auto_aspect_ratio : bool = true :
 	set(value):
 		auto_aspect_ratio = value
@@ -12,6 +16,9 @@ class_name AeroSurfaceConfig
 	set(value):
 		chord = max(value, 0.001)
 		validate()
+@export var flap_angle : float = 0.0 :
+	set(value):
+		flap_angle = clamp(value, -deg_to_rad(50.0), deg_to_rad(50.0))
 @export var flap_fraction : float = 0.0 :
 	set(value):
 		flap_fraction = clamp(value, 0.0, 0.4)
@@ -35,19 +42,27 @@ class_name AeroSurfaceConfig
 	set(value):
 		zero_lift_aoa = value
 
-func _init(_lift_slope : float, _skin_friction : float, _zero_lift_aoa : float, _stall_angle_high : float, _stall_angle_low : float, _chord : float, _flap_fraction : float, _span : float, _auto_aspect_ratio : bool, _aspect_ratio : float) -> void:
-	lift_slope = _lift_slope
-	skin_friction = _skin_friction
-	zero_lift_aoa = _zero_lift_aoa
-	stall_angle_high = _stall_angle_high
-	stall_angle_low = _stall_angle_low
-	chord = _chord
-	flap_fraction = _flap_fraction
-	span = _span
-	auto_aspect_ratio = _auto_aspect_ratio
-	aspect_ratio = _aspect_ratio
 
-	validate()
+@export_group("Curves")
+
+
+@export var use_curves : bool = false
+
+#@export_subgroup("Angle of attack")
+#
+#@export var lift_aoa_curve : Curve
+#@export var drag_aoa_curve : Curve
+#@export var buffet_aoa_curve : Curve
+
+@export_subgroup("Sweep")
+@export var sweep_curve := Curve.new()
+
+@export var drag_at_mach_multiplier_curve := Curve.new()
+func get_drag_multiplier_at_mach(mach : float) -> float:
+	var lerp : float = AeroUnits.range_to_lerp(mach, AeroUnits.min_mach, AeroUnits.max_mach)
+	return drag_at_mach_multiplier_curve.sample(lerp)
+
+@export_group("")
 
 func validate() -> void:
 	#optimize out

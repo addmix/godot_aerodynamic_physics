@@ -4,21 +4,41 @@ class_name AeroSurface3D
 
 enum {Pitch, Yaw, Roll, Flap}
 
-@export var config : AeroSurfaceConfig = AeroSurfaceConfig.new(6.28, 0.02, -3.0, 15.0, -15.0, 1.57, 0.2, 2.1, 0, 7):
+var config := AeroSurfaceConfig.new():
 	set(x):
-		config = x
 		update_gizmos()
-var is_control_surface : bool = false
-
+@export var is_control_surface : bool = false
 @export var flap_angle : float = 0.0 :
 	set(value):
 		flap_angle = clamp(value, -deg_to_rad(50.0), deg_to_rad(50.0))
+
+
 
 var _current_lift : Vector3
 var _current_drag : Vector3
 var _current_torque : Vector3
 
-func calculate_forces(world_air_velocity : Vector3, air_density : float, relative_position : Vector3) -> PackedVector3Array:
+
+func _ready() -> void:
+	if config.sweep_curve == null:
+		config.sweep_curve = load("res://addons/godot_aerodynamic_physics/core/resources/default_sweep_multiplier.tres")
+	if config.drag_at_mach_multiplier_curve == null:
+		config.drag_at_mach_multiplier_curve = load("res://addons/godot_aerodynamic_physics/core/resources/default_drag_at_mach_curve.tres")
+
+
+func calculate_forces(world_air_velocity : Vector3, air_density : float, air_pressure : float, relative_position : Vector3, altitude : float) -> PackedVector3Array:
+	if config.use_curves:
+		return calculate_procedural_forces(world_air_velocity, air_density, air_pressure, relative_position, altitude)
+	else:
+		return calculate_procedural_forces(world_air_velocity, air_density, air_pressure, relative_position, altitude)
+
+func flap_effectiveness_correction(flap_angle : float = 0.0) -> float:
+	return lerp(0.8, 0.4, (rad_to_deg(abs(flap_angle)) - 10.0) / 50.0)
+
+func lift_coefficient_max_friction(fraction : float = 0.0) -> float:
+	return clamp(1.0 - 0.5 * (fraction - 0.1) / 0.3, 0, 1)
+
+func calculate_procedural_forces(world_air_velocity : Vector3, air_density : float, air_pressure : float, relative_position : Vector3, altitude : float) -> PackedVector3Array:
 	var force := Vector3.ZERO
 	var torque := Vector3.ZERO
 
@@ -37,20 +57,27 @@ func calculate_forces(world_air_velocity : Vector3, air_density : float, relativ
 
 	#Calculating air velocity relative to the surface's coordinate system.
 	var air_velocity : Vector3 = global_transform.basis.inverse() * world_air_velocity
-
+	var sweep_angle : float =  atan2(air_velocity.z, air_velocity.x) / PI - 0.5
 	air_velocity = Vector3(0.0, air_velocity.y, air_velocity.z)
 	var drag_direction : Vector3 = global_transform.basis * (air_velocity.normalized())
 	var lift_direction : Vector3 = drag_direction.cross(-global_transform.basis.x)
 
 	var area : float = config.chord * config.span
-	var dynamic_pressure : float = 0.5 * air_density * air_velocity.length_squared()
+	var mach : float = AeroUnits.speed_to_mach_at_altitude(air_velocity.length(), altitude)
+
+	var dynamic_pressure : float = (mach * mach) * 0.5 * AeroUnits.ratio_of_specific_heat * AeroUnits.get_pressure_at_altitude(altitude)
 
 	var angle_of_attack : float = atan2(air_velocity.y, -air_velocity.z)
 
+
 	var aerodynamic_coefficients : Vector3 = calculate_coefficients(angle_of_attack, corrected_lift_slope, zero_lift_aoa, stall_angle_high, stall_angle_low)
+
+#	if name == "Fore":
+#		print(drag_at_mach_multiplier_curve.sample(AeroUnits.range_to_lerp(mach, AeroUnits.min_mach, AeroUnits.max_mach)))
 
 	var lift : Vector3 = lift_direction * aerodynamic_coefficients.x * dynamic_pressure * area
 	var drag : Vector3 = drag_direction * aerodynamic_coefficients.y * dynamic_pressure * area
+
 	var _torque : Vector3 = global_transform.basis.x * aerodynamic_coefficients.z * dynamic_pressure * area * config.chord
 
 	force = lift + drag
@@ -62,12 +89,6 @@ func calculate_forces(world_air_velocity : Vector3, air_density : float, relativ
 	_current_torque = torque
 
 	return PackedVector3Array([force, torque])
-
-func flap_effectiveness_correction(flap_angle : float = 0.0) -> float:
-	return lerp(0.8, 0.4, (rad_to_deg(abs(flap_angle)) - 10.0) / 50.0)
-
-func lift_coefficient_max_friction(fraction : float = 0.0) -> float:
-	return clamp(1.0 - 0.5 * (fraction - 0.1) / 0.3, 0, 1)
 
 func calculate_coefficients(angle_of_attack : float, corrected_lift_slope : float, zero_lift_aoa : float, stall_angle_high : float, stall_angle_low : float) -> Vector3:
 	var aerodynamic_coefficients : Vector3
@@ -151,6 +172,9 @@ func calculate_coefficients_at_stall(angle_of_attack : float, corrected_lift_slo
 	var torque_coefficient : float = -normal_coefficient * torque_coefficient_proportion(effective_angle)
 
 	return Vector3(lift_coefficient, drag_coefficient, torque_coefficient)
+
+func get_drag_multiplier_at_speed_and_sweep(mach : float, sweep : float) -> float:
+	return config.sweep_curve.sample(sweep) * config.drag_at_mach_multiplier_curve.sample(AeroUnits.range_to_lerp(mach, AeroUnits.min_mach, AeroUnits.max_mach))
 
 func friction_at_90_degrees(flap_angle : float) -> float:
 	return 1.98 - 0.0426 * flap_angle * flap_angle + 0.21 * flap_angle

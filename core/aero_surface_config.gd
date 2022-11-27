@@ -8,13 +8,10 @@ class_name AeroSurfaceConfig
 @export var aspect_ratio : float = 2.0 :
 	set(value):
 		aspect_ratio = value
-@export var chord : float = 1.0 : 
+@export var chord : float = 1.0 :
 	set(value):
 		chord = max(value, 0.001)
 		validate()
-@export var flap_angle : float = 0.0 :
-	set(value):
-		flap_angle = clamp(value, -deg_to_rad(50.0), deg_to_rad(50.0))
 @export var flap_fraction : float = 0.0 :
 	set(value):
 		flap_fraction = clamp(value, 0.0, 0.4)
@@ -49,7 +46,7 @@ func _init(_lift_slope : float, _skin_friction : float, _zero_lift_aoa : float, 
 	span = _span
 	auto_aspect_ratio = _auto_aspect_ratio
 	aspect_ratio = _aspect_ratio
-	
+
 	validate()
 
 func validate() -> void:

@@ -23,8 +23,8 @@ func _integrate_forces(state : PhysicsDirectBodyState3D) -> void:
 	#clamp force
 #	total_force_and_torque[0] = v3_clamp_length(total_force_and_torque[0], max_force)
 #	total_force_and_torque[1] = v3_clamp_length(total_force_and_torque[1], max_torque)
-	apply_central_impulse(total_force_and_torque[0] * get_physics_process_delta_time())
-	apply_torque_impulse(total_force_and_torque[1] * get_physics_process_delta_time())
+	state.apply_central_impulse(total_force_and_torque[0] * get_physics_process_delta_time())
+	state.apply_torque_impulse(total_force_and_torque[1] * get_physics_process_delta_time())
 
 func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	var last_force_and_torque := calculate_aerodynamic_forces(linear_velocity, angular_velocity, Vector3.ZERO, 1.2)

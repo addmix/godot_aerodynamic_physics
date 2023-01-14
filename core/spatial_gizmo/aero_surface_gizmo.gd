@@ -26,10 +26,10 @@ func _redraw(gizmo : EditorNode3DGizmo) -> void:
 	var st := SurfaceTool.new()
 
 	#origin
-	var half_chord : float = spatial.config.chord / 2.0
-	var quater_chord : float = spatial.config.chord / 4.0
-	var half_span : float = spatial.config.span / 2.0
-	var flap_fraction : float = spatial.config.flap_fraction
+	var half_chord : float = spatial.wing_config.chord / 2.0
+	var quater_chord : float = spatial.wing_config.chord / 4.0
+	var half_span : float = spatial.wing_config.span / 2.0
+	var flap_fraction : float = spatial.wing_config.flap_fraction
 	var flap_angle : float = spatial.flap_angle
 
 	var axis_z : float = half_chord * (1.0 - flap_fraction * 2.0)

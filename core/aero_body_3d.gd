@@ -7,22 +7,16 @@ var PREDICTION_TIMESTEP_FRACTION = 1.0 / float(SUBSTEPS + 1)
 
 var aero_surfaces = []
 
-@export var max_force : float = 10000.0
-@export var max_torque : float = 10000.0
-
 var current_force := Vector3.ZERO
 var current_torque := Vector3.ZERO
 
 func _enter_tree() -> void:
 	for i in get_children():
-		if i is AeroSurface3D:
+		if i is AeroSurface3D or i is ProceduralAeroSurface3D or i is ManualAeroSurface3D:
 			aero_surfaces.append(i)
 
 func _integrate_forces(state : PhysicsDirectBodyState3D) -> void:
 	var total_force_and_torque := calculate_forces(state)
-	#clamp force
-#	total_force_and_torque[0] = v3_clamp_length(total_force_and_torque[0], max_force)
-#	total_force_and_torque[1] = v3_clamp_length(total_force_and_torque[1], max_torque)
 	apply_central_impulse(total_force_and_torque[0] * get_physics_process_delta_time())
 	apply_torque_impulse(total_force_and_torque[1] * get_physics_process_delta_time())
 

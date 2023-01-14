@@ -13,6 +13,7 @@
 [Godot Utils](https://github.com/addmix/godot_utils)
 
 ## Usage
+> A usage example is available [here](https://github.com/addmix/godot-aerodynamic-physics-demo)
 1. Add an `AeroBody` to your scene, and add one or more `AeroSurface`s as children, adjust settings to change the characteristics.
 
 ## Development Direction

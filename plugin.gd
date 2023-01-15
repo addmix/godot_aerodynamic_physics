@@ -5,7 +5,7 @@ var gizmo_plugin : EditorNode3DGizmoPlugin = preload("./core/spatial_gizmo/aero_
 var base_dir : String = "res://addons/godot_aerodynamic_physics/"
 
 func _enter_tree():
-	PluginUtils.ifndef("physics/3d/aerodynamics/substeps", 1)
+	SettingsUtils.ifndef("physics/3d/aerodynamics/substeps", 1)
 	add_custom_type("AeroSurface", "Node3D", load(base_dir + "core/aero_surface_3d.gd"), load(base_dir + "icons/node3d.svg"))
 	add_custom_type("AeroBody", "RigidDynamicBody3D", load(base_dir + "core/aero_body_3d.gd"), load(base_dir + "icons/node3d.svg"))
 

@@ -4,19 +4,19 @@ class_name AeroSurfaceConfig
 
 @export_group("Wing profile")
 
-@export var chord : float = 1.0 :
+@export var chord : float = 1.0:
 	set(value):
 		chord = max(value, 0.001)
 		if auto_aspect_ratio:
 			aspect_ratio = span / chord
 		emit_changed()
-@export var span : float = 1.0 :
+@export var span : float = 2.0:
 	set(value):
 		span = value
 		if auto_aspect_ratio:
 			aspect_ratio = span / chord
 		emit_changed()
-@export var auto_aspect_ratio : bool = true :
+@export var auto_aspect_ratio : bool = true:
 	set(value):
 		auto_aspect_ratio = value
 		if auto_aspect_ratio:
@@ -24,21 +24,21 @@ class_name AeroSurfaceConfig
 		emit_changed()
 
 #nonfunctinal
-@export var aspect_ratio : float = 2.0 :
+@export var aspect_ratio : float = 2.0:
 	set(value):
 		aspect_ratio = value
 		if !auto_aspect_ratio:
 			#keep area
 			var current_area : float = span * chord
 		emit_changed()
-@export var zero_lift_aoa : float = 0.0 :
+@export var zero_lift_aoa : float = 0.0:
 	set(value):
 		zero_lift_aoa = value
 		emit_changed()
 
 @export_group("Control")
 
-@export var flap_fraction : float = 0.0 :
+@export var flap_fraction : float = 0.0:
 	set(value):
 		flap_fraction = clamp(value, 0.0, 0.4)
 		emit_changed()
@@ -49,11 +49,11 @@ class_name AeroSurfaceConfig
 
 @export_group("Curves")
 
-@export var sweep_drag_multiplier_curve := Curve.new():
+@export var sweep_drag_multiplier_curve : Curve = preload("res://addons/godot_aerodynamic_physics/core/resources/default_sweep_drag_multiplier.tres"):
 	set(value):
 		sweep_drag_multiplier_curve = value
 		emit_changed()
-@export var drag_at_mach_multiplier_curve := Curve.new():
+@export var drag_at_mach_multiplier_curve : Curve = preload("res://addons/godot_aerodynamic_physics/core/resources/default_drag_at_mach_curve.tres"):
 	set(value):
 		drag_at_mach_multiplier_curve = value
 		emit_changed()
@@ -66,7 +66,7 @@ func get_drag_multiplier_at_mach(mach : float) -> float:
 
 @export_group("")
 
-func _init(_chord : float = 1.0, _span : float = 2.0, _auto_aspect_ratio : bool = false, _aspect_ratio : float = 2.0, _zero_lift_aoa : float = 0.0, _flap_fraction : float = 0.0, _is_control_surface : bool = false, _sweep_drag_multiplier_curve : Curve = load("res://addons/godot_aerodynamic_physics/core/resources/default_sweep_drag_multiplier.tres"), _drag_at_mach_multiplier_curve : Curve = load("res://addons/godot_aerodynamic_physics/core/resources/default_drag_at_mach_curve.tres"), _buffet_aoa_curve : Curve = Curve.new(), ) -> void:
+func _init(_chord : float = 1.0, _span : float = 2.0, _auto_aspect_ratio : bool = true, _aspect_ratio : float = 2.0, _zero_lift_aoa : float = 0.0, _flap_fraction : float = 0.0, _is_control_surface : bool = false, _sweep_drag_multiplier_curve : Curve = load("res://addons/godot_aerodynamic_physics/core/resources/default_sweep_drag_multiplier.tres"), _drag_at_mach_multiplier_curve : Curve = load("res://addons/godot_aerodynamic_physics/core/resources/default_drag_at_mach_curve.tres"), _buffet_aoa_curve : Curve = Curve.new(), ) -> void:
 	chord = _chord
 	span = _span
 	auto_aspect_ratio = _auto_aspect_ratio
@@ -82,5 +82,7 @@ func _init(_chord : float = 1.0, _span : float = 2.0, _auto_aspect_ratio : bool 
 
 	if sweep_drag_multiplier_curve == null:
 		sweep_drag_multiplier_curve = load("res://addons/godot_aerodynamic_physics/core/resources/default_sweep_drag_multiplier.tres")
+		sweep_drag_multiplier_curve.resource_local_to_scene = true
 	if drag_at_mach_multiplier_curve == null:
 		drag_at_mach_multiplier_curve = load("res://addons/godot_aerodynamic_physics/core/resources/default_drag_at_mach_curve.tres")
+		drag_at_mach_multiplier_curve.resource_local_to_scene = true

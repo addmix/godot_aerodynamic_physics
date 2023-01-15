@@ -4,8 +4,6 @@ class_name ProceduralAeroSurface3D
 
 @export var procedural_config = ProceduralAeroSurfaceConfig.new()
 
-
-
 func flap_effectiveness_correction(_flap_angle : float = 0.0) -> float:
 	return lerp(0.8, 0.4, (rad_to_deg(abs(_flap_angle)) - 10.0) / 50.0)
 

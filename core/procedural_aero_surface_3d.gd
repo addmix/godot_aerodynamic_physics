@@ -40,17 +40,22 @@ func calculate_forces(_world_air_velocity : Vector3, _air_density : float, _air_
 
 	var aerodynamic_coefficients : Vector3 = calculate_procedural_coefficients(temp_angle, corrected_lift_slope, zero_lift_aoa, stall_angle_high, stall_angle_low)
 
-	var lift : Vector3 = lift_direction * aerodynamic_coefficients.x * dynamic_pressure * area
-	var drag : Vector3 = drag_direction * aerodynamic_coefficients.y * dynamic_pressure * area * get_drag_multiplier_at_speed_and_sweep(mach, sweep_angle)
+	#I'm not sure if the rest of the algorithm accounts for projected wing area, this may need to change
+	var lift : float = aerodynamic_coefficients.x * dynamic_pressure * area
+	var drag : float = aerodynamic_coefficients.y * dynamic_pressure * area * get_drag_multiplier_at_speed_and_sweep(mach, sweep_angle)
+	var induced_drag : float = lift * lift / (0.5 * dynamic_pressure * PI * wing_config.span * wing_config.span)
 
 	var _torque : Vector3 = global_transform.basis.x * aerodynamic_coefficients.z * dynamic_pressure * area * wing_config.chord
 
-	force = lift + drag
+	var lift_vector : Vector3 = lift * lift_direction
+	var drag_vector : Vector3 = drag * drag_direction
+
+	force = lift_vector + drag_vector
 	torque += relative_position.cross(force)
 	torque += _torque
 
-	_current_lift = lift
-	_current_drag = drag
+	_current_lift = lift_vector
+	_current_drag = drag_vector
 	_current_torque = torque
 
 	return PackedVector3Array([force, torque])
@@ -92,6 +97,7 @@ func calculate_procedural_coefficients(angle_of_attack : float, corrected_lift_s
 
 func calculate_coefficients_at_low_aoa(angle_of_attack : float, corrected_lift_slope : float, zero_lift_aoa : float) -> Vector3:
 	var lift_coefficient : float = corrected_lift_slope * (angle_of_attack - zero_lift_aoa)
+
 	var induced_angle : float = lift_coefficient / (PI * wing_config.aspect_ratio)
 	var effective_angle : float = angle_of_attack - zero_lift_aoa - induced_angle
 

@@ -30,10 +30,11 @@ var sweep_angle := 0.0
 var drag_direction := Vector3.ZERO
 var lift_direction := Vector3.ZERO
 
-var area : float = wing_config.chord * wing_config.span
 var mach : float = 0.0
 var dynamic_pressure : float = 0.0
 var angle_of_attack : float = 0.0
+var area : float = wing_config.chord * wing_config.span
+var projected_wing_area : float = 0.0
 
 var _current_lift : Vector3
 var _current_drag : Vector3
@@ -72,10 +73,12 @@ func calculate_properties() -> void:
 	drag_direction = global_transform.basis * (air_velocity.normalized())
 	lift_direction = drag_direction.cross(-global_transform.basis.x)
 
-	area = wing_config.chord * wing_config.span
+
 	mach = AeroUnits.speed_to_mach_at_altitude(air_velocity.length(), altitude)
 	dynamic_pressure = (mach * mach) * 0.5 * AeroUnits.ratio_of_specific_heat * AeroUnits.get_pressure_at_altitude(altitude)
 	angle_of_attack = atan2(air_velocity.y, air_velocity.z)
+	area = wing_config.chord * wing_config.span
+	projected_wing_area = wing_config.span * wing_config.chord * sin(angle_of_attack)
 
 func update_debug_vectors() -> void:
 	pass

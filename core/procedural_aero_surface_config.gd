@@ -14,13 +14,8 @@ class_name ProceduralAeroSurfaceConfig
 	set(value):
 		lift_slope = value
 		emit_changed()
-@export var skin_friction : float = 0.02 :
-	set(value):
-		skin_friction = value
-		emit_changed()
 
-func _init(_stall_angle_high : float = 15.0, _stall_angle_low : float = -15.0, _lift_slope : float = 6.28, _skin_friction : float = 0.02) -> void:
+func _init(_stall_angle_high : float = 15.0, _stall_angle_low : float = -15.0, _lift_slope : float = 6.28) -> void:
 	stall_angle_high = _stall_angle_high
 	stall_angle_low = _stall_angle_low
 	lift_slope = _lift_slope
-	skin_friction = _skin_friction

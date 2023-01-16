@@ -1,3 +1,4 @@
+@tool
 extends AeroSurface3D
 class_name ManualAeroSurface3D
 
@@ -10,7 +11,7 @@ class_name ManualAeroSurface3D
 
 
 func _ready() -> void:
-	super._ready()
+#	super._ready()
 	if lift_aoa_curve == null:
 		lift_aoa_curve = load("res://addons/godot_aerodynamic_physics/core/resources/default_lift_aoa_curve.tres")
 	if drag_aoa_curve == null:
@@ -24,17 +25,28 @@ func calculate_forces(_world_air_velocity : Vector3, _air_density : float, _air_
 	var torque := Vector3.ZERO
 
 	var aerodynamic_coefficients : Vector3 = calculate_curve_coefficients()
+	var lift : float = lift_aoa_curve.sample(angle_of_attack / PI / 2.0 + 0.5) * dynamic_pressure * projected_wing_area * sign(angle_of_attack)
+	var form_drag : float = drag_aoa_curve.sample(angle_of_attack / PI / 2.0 + 0.5) * dynamic_pressure * projected_wing_area  * wing_config.drag_at_mach_multiplier_curve.sample(mach / 10.0) * wing_config.sweep_drag_multiplier_curve.sample(sweep_angle)
+	var induced_drag : float = lift * lift / (0.5 * dynamic_pressure * PI * wing_config.span * wing_config.span)
 
-	var lift : Vector3 = lift_direction * lift_aoa_curve.sample(angle_of_attack / PI / 2.0 + 1.0) * dynamic_pressure * area
-	var drag : Vector3 = drag_direction * drag_aoa_curve.sample(angle_of_attack / PI / 2.0 + 1.0) * dynamic_pressure * area * wing_config.drag_at_mach_multiplier_curve.sample(mach / 10.0) * wing_config.sweep_curve.sample(sweep_angle)
+
+#	this still needs a lot of work. Reynolds number is relevant here
+#	https://en.wikipedia.org/wiki/Skin_friction_drag
+	var skin_friction_drag : float = wing_config.skin_friction * dynamic_pressure
+
+
+
 	var _torque : Vector3 = global_transform.basis.x * aerodynamic_coefficients.z * dynamic_pressure * area * wing_config.chord
 
-	force = lift + drag
+	var lift_vector : Vector3 = lift * lift_direction
+	var drag_vector : Vector3 = drag_direction * (form_drag + induced_drag + skin_friction_drag)
+
+	force = lift_vector + drag_vector
 	torque += relative_position.cross(force)
 	torque += _torque
 
-	_current_lift = lift
-	_current_drag = drag
+	_current_lift = lift_vector
+	_current_drag = drag_vector
 	_current_torque = torque
 
 	return PackedVector3Array([force, torque])

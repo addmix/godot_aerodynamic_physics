@@ -98,7 +98,7 @@ func calculate_coefficients_at_low_aoa(angle_of_attack : float, corrected_lift_s
 	var sin_effective : float = sin(effective_angle)
 	var cos_effective : float = cos(effective_angle)
 
-	var tangential_coefficient : float = procedural_config.skin_friction * cos_effective
+	var tangential_coefficient : float = wing_config.skin_friction * cos_effective
 	var normal_coefficient : float = (lift_coefficient + sin_effective * tangential_coefficient) / cos_effective
 
 	var drag_coefficient : float = normal_coefficient * sin_effective + tangential_coefficient * cos_effective
@@ -131,7 +131,7 @@ func calculate_coefficients_at_stall(angle_of_attack : float, corrected_lift_slo
 	var sin_effective : float = sin(effective_angle)
 	var cos_effective : float = cos(effective_angle)
 	var normal_coefficient : float = friction_at_90_degrees(flap_angle) * sin_effective * (1.0 / (0.56 + 0.44 * abs(sin_effective)) - 0.41 * (1.0 - exp(-17.0 / wing_config.aspect_ratio)))
-	var tangential_coefficient : float = 0.5 * procedural_config.skin_friction * cos_effective
+	var tangential_coefficient : float = 0.5 * wing_config.skin_friction * cos_effective
 	var lift_coefficient : float = normal_coefficient * cos_effective - tangential_coefficient * sin_effective
 	var drag_coefficient : float = normal_coefficient * sin_effective + tangential_coefficient * cos_effective
 	var torque_coefficient : float = -normal_coefficient * torque_coefficient_proportion(effective_angle)

@@ -12,6 +12,12 @@ func _enter_tree():
 	#register units singleton
 	add_autoload_singleton("AeroUnits", base_dir + "core/singletons/units.gd")
 
+#	print(InputMap.has_action("toggle_aerodynamic_debug"))
+#	InputMap.add_action("toggle_aerodynamic_debug")
+#	var debug_key := InputEventKey.new()
+#	debug_key.set_keycode(KEY_F10)
+#	InputMap.action_add_event("toggle_aerodynamic_debug", debug_key)
+
 	add_node_3d_gizmo_plugin(gizmo_plugin)
 
 func _exit_tree():

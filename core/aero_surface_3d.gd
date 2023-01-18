@@ -13,6 +13,14 @@ enum {Pitch, Yaw, Roll, Flap}
 			wing_config.changed.connect(update_gizmos)
 			update_gizmos()
 
+@export_category("Debug")
+@export var debug_scale : float = 0.001
+@export var show_debug : bool = false
+@export var show_lift : bool = true
+@export var show_drag : bool = true
+@export var show_airflow : bool = true
+@export_category("")
+
 @export_group("")
 @export var flap_angle : float = 0.0:
 	set(value):
@@ -40,6 +48,10 @@ var _current_lift : Vector3
 var _current_drag : Vector3
 var _current_torque : Vector3
 
+var lift_debug_vector : Vector3D
+var drag_debug_vector : Vector3D
+var airflow_debug_vector : Vector3D
+
 func _process(delta: float) -> void:
 	#do wing debug vectors
 	pass
@@ -50,6 +62,25 @@ func _enter_tree() -> void:
 		if not wing_config.is_connected("changed", update_gizmos):
 			wing_config.changed.connect(update_gizmos)
 			update_gizmos()
+
+	lift_debug_vector = Vector3D.new(Color(0, 0, 1))
+	lift_debug_vector.visible = false
+	add_child(lift_debug_vector)
+	drag_debug_vector = Vector3D.new(Color(1, 0, 0))
+	drag_debug_vector.visible = false
+	add_child(drag_debug_vector)
+	airflow_debug_vector = Vector3D.new(Color(0, 1, 0))
+	airflow_debug_vector.visible = false
+	add_child(airflow_debug_vector)
+
+func _exit_tree() -> void:
+	remove_child(lift_debug_vector)
+	lift_debug_vector.queue_free()
+	remove_child(drag_debug_vector)
+	drag_debug_vector.queue_free()
+	remove_child(airflow_debug_vector)
+	airflow_debug_vector.queue_free()
+
 
 #They found that with increase in Mach number the coefficient of lift increases but
 #coefficient of drag remains constant. In the current study the effects of air velocity
@@ -63,7 +94,7 @@ func calculate_forces(_world_air_velocity : Vector3, _air_density : float, _air_
 	relative_position = _relative_position
 	altitude = _altitude
 	calculate_properties()
-
+	update_debug_vectors()
 	return PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 
 func calculate_properties() -> void:
@@ -79,5 +110,22 @@ func calculate_properties() -> void:
 	area = wing_config.chord * wing_config.span
 	projected_wing_area = wing_config.span * wing_config.chord * sin(angle_of_attack)
 
+func update_debug_visibility(_show_debug : bool = false, _show_lift : bool = false, _show_drag : bool = false, _show_airflow : bool = false) -> void:
+	show_debug = _show_debug
+	show_lift = _show_lift
+	show_drag = _show_drag
+	show_airflow = _show_airflow
+
+	if !lift_debug_vector or !drag_debug_vector or !airflow_debug_vector:
+		return
+	lift_debug_vector.visible = show_debug and show_lift
+	drag_debug_vector.visible = show_debug and show_drag
+	airflow_debug_vector.visible = show_debug and show_airflow
+
 func update_debug_vectors() -> void:
-	pass
+	if !lift_debug_vector or !drag_debug_vector or !airflow_debug_vector:
+		return
+
+	lift_debug_vector.value = _current_lift * global_transform.basis * debug_scale
+	drag_debug_vector.value = _current_drag * global_transform.basis * debug_scale
+	airflow_debug_vector.value = air_velocity * debug_scale# * global_transform

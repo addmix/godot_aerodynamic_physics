@@ -1,6 +1,43 @@
 extends RigidBody3D
 class_name AeroBody3D
 
+@export_category("Debug")
+@export var show_debug : bool = false:
+	set(x):
+		show_debug = x
+		_update_debug_visibility()
+@export_group("Options")
+@export var show_center_of_mass : bool = true:
+	set(x):
+		show_center_of_mass = x
+		_update_debug_visibility()
+@export var show_center_of_lift : bool = true:
+	set(x):
+		show_center_of_lift = x
+		_update_debug_visibility()
+@export var show_center_of_thrust : bool = true:
+	set(x):
+		show_center_of_thrust = x
+		_update_debug_visibility()
+@export var show_wing_debug_vectors : bool = true:
+	set(x):
+		show_wing_debug_vectors = x
+		_update_debug_visibility()
+@export var show_lift : bool = true:
+	set(x):
+		show_lift = x
+		_update_debug_visibility()
+@export var show_drag : bool = true:
+	set(x):
+		show_drag = x
+		_update_debug_visibility()
+@export var show_airflow : bool = true:
+	set(x):
+		show_airflow = x
+		_update_debug_visibility()
+@export_group("")
+@export_category("")
+
 # ~constant
 var SUBSTEPS = ProjectSettings.get_setting("physics/3d/aerodynamics/substeps")
 var PREDICTION_TIMESTEP_FRACTION = 1.0 / float(SUBSTEPS + 1)
@@ -14,6 +51,9 @@ func _enter_tree() -> void:
 	for i in NodeUtils.get_child_recursive(self):
 		if i is AeroSurface3D or i is ProceduralAeroSurface3D or i is ManualAeroSurface3D:
 			aero_surfaces.append(i)
+
+func _ready() -> void:
+	_update_debug_visibility()
 
 func _integrate_forces(state : PhysicsDirectBodyState3D) -> void:
 	var total_force_and_torque := calculate_forces(state)
@@ -81,3 +121,7 @@ func predict_angular_velocity(torque : Vector3) -> Vector3:
 #control surface local transform cross local Y axis, X value of vector is relevant
 func control(input : Vector3) -> void:
 	pass
+
+func _update_debug_visibility():
+	for surface in aero_surfaces:
+		surface.update_debug_visibility(show_debug and show_wing_debug_vectors, show_lift, show_drag, show_airflow)

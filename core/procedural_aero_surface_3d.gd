@@ -97,7 +97,6 @@ func calculate_procedural_coefficients(angle_of_attack : float, corrected_lift_s
 
 func calculate_coefficients_at_low_aoa(angle_of_attack : float, corrected_lift_slope : float, zero_lift_aoa : float) -> Vector3:
 	var lift_coefficient : float = corrected_lift_slope * (angle_of_attack - zero_lift_aoa)
-
 	var induced_angle : float = lift_coefficient / (PI * wing_config.aspect_ratio)
 	var effective_angle : float = angle_of_attack - zero_lift_aoa - induced_angle
 

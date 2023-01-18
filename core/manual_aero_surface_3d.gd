@@ -27,9 +27,6 @@ func calculate_forces(_world_air_velocity : Vector3, _air_density : float, _air_
 	var aerodynamic_coefficients : Vector3 = calculate_curve_coefficients()
 	var lift : float = lift_aoa_curve.sample(angle_of_attack / PI / 2.0 + 0.5) * dynamic_pressure * projected_wing_area * sign(angle_of_attack)
 	var form_drag : float = drag_aoa_curve.sample(angle_of_attack / PI / 2.0 + 0.5) * dynamic_pressure * projected_wing_area  * wing_config.drag_at_mach_multiplier_curve.sample(mach / 10.0) * wing_config.sweep_drag_multiplier_curve.sample(sweep_angle)
-
-#	This may need to change
-#	https://aviation.stackexchange.com/questions/77581/how-much-is-alpha-induced-angle
 	var induced_drag : float = lift * lift / (0.5 * dynamic_pressure * PI * wing_config.span * wing_config.span)
 
 

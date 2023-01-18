@@ -11,7 +11,7 @@ var current_force := Vector3.ZERO
 var current_torque := Vector3.ZERO
 
 func _enter_tree() -> void:
-	for i in get_children():
+	for i in NodeUtils.get_child_recursive(self):
 		if i is AeroSurface3D or i is ProceduralAeroSurface3D or i is ManualAeroSurface3D:
 			aero_surfaces.append(i)
 

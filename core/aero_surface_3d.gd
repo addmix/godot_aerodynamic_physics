@@ -73,7 +73,6 @@ func calculate_properties() -> void:
 	drag_direction = global_transform.basis * (air_velocity.normalized())
 	lift_direction = drag_direction.cross(-global_transform.basis.x)
 
-
 	mach = AeroUnits.speed_to_mach_at_altitude(air_velocity.length(), altitude)
 	dynamic_pressure = (mach * mach) * 0.5 * AeroUnits.ratio_of_specific_heat * AeroUnits.get_pressure_at_altitude(altitude)
 	angle_of_attack = atan2(air_velocity.y, air_velocity.z)

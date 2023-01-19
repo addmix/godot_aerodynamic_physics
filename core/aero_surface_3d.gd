@@ -125,7 +125,7 @@ func update_debug_visibility(_show_debug : bool = false, _show_lift : bool = fal
 func update_debug_vectors() -> void:
 	if !lift_debug_vector or !drag_debug_vector or !airflow_debug_vector:
 		return
-
+	#not ensuring proper transforms when aero_surface has a parent that is not aerobody
 	lift_debug_vector.value = _current_lift * global_transform.basis * debug_scale
 	drag_debug_vector.value = _current_drag * global_transform.basis * debug_scale
 	airflow_debug_vector.value = air_velocity * debug_scale# * global_transform

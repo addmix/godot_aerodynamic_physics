@@ -71,7 +71,7 @@ func get_drag_multiplier_at_mach(mach : float) -> float:
 
 @export_group("")
 
-func _init(_chord : float = 1.0, _span : float = 2.0, _skin_friction : float = 0.001, _auto_aspect_ratio : bool = true, _aspect_ratio : float = 2.0, _zero_lift_aoa : float = 0.0, _flap_fraction : float = 0.0, _is_control_surface : bool = false, _sweep_drag_multiplier_curve : Curve = load("res://addons/godot_aerodynamic_physics/core/resources/default_sweep_drag_multiplier.tres"), _drag_at_mach_multiplier_curve : Curve = load("res://addons/godot_aerodynamic_physics/core/resources/default_drag_at_mach_curve.tres"), _buffet_aoa_curve : Curve = Curve.new()) -> void:
+func _init(_chord : float = 1.0, _span : float = 2.0, _skin_friction : float = 0.001, _auto_aspect_ratio : bool = true, _aspect_ratio : float = 2.0, _zero_lift_aoa : float = 0.0, _flap_fraction : float = 0.0, _is_control_surface : bool = false, _sweep_drag_multiplier_curve : Curve = load("res://addons/godot_aerodynamic_physics/core/resources/default_sweep_drag_multiplier.tres").duplicate(), _drag_at_mach_multiplier_curve : Curve = load("res://addons/godot_aerodynamic_physics/core/resources/default_drag_at_mach_curve.tres").duplicate(), _buffet_aoa_curve : Curve = Curve.new().duplicate()) -> void:
 	chord = _chord
 	span = _span
 	skin_friction = _skin_friction

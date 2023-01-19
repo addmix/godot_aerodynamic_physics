@@ -16,10 +16,11 @@ class_name AeroSurfaceConfig
 		if auto_aspect_ratio:
 			aspect_ratio = span / chord
 		emit_changed()
-@export var skin_friction : float = 0.02 :
+@export var skin_friction : float = 0.001 :
 	set(value):
 		skin_friction = value
 		emit_changed()
+@export var drag_modifier : float = 0.3
 @export var auto_aspect_ratio : bool = true:
 	set(value):
 		auto_aspect_ratio = value
@@ -70,7 +71,7 @@ func get_drag_multiplier_at_mach(mach : float) -> float:
 
 @export_group("")
 
-func _init(_chord : float = 1.0, _span : float = 2.0, _skin_friction : float = 0.02, _auto_aspect_ratio : bool = true, _aspect_ratio : float = 2.0, _zero_lift_aoa : float = 0.0, _flap_fraction : float = 0.0, _is_control_surface : bool = false, _sweep_drag_multiplier_curve : Curve = load("res://addons/godot_aerodynamic_physics/core/resources/default_sweep_drag_multiplier.tres"), _drag_at_mach_multiplier_curve : Curve = load("res://addons/godot_aerodynamic_physics/core/resources/default_drag_at_mach_curve.tres"), _buffet_aoa_curve : Curve = Curve.new()) -> void:
+func _init(_chord : float = 1.0, _span : float = 2.0, _skin_friction : float = 0.001, _auto_aspect_ratio : bool = true, _aspect_ratio : float = 2.0, _zero_lift_aoa : float = 0.0, _flap_fraction : float = 0.0, _is_control_surface : bool = false, _sweep_drag_multiplier_curve : Curve = load("res://addons/godot_aerodynamic_physics/core/resources/default_sweep_drag_multiplier.tres"), _drag_at_mach_multiplier_curve : Curve = load("res://addons/godot_aerodynamic_physics/core/resources/default_drag_at_mach_curve.tres"), _buffet_aoa_curve : Curve = Curve.new()) -> void:
 	chord = _chord
 	span = _span
 	skin_friction = _skin_friction
@@ -86,8 +87,6 @@ func _init(_chord : float = 1.0, _span : float = 2.0, _skin_friction : float = 0
 	buffet_aoa_curve = _buffet_aoa_curve
 
 	if sweep_drag_multiplier_curve == null:
-		sweep_drag_multiplier_curve = load("res://addons/godot_aerodynamic_physics/core/resources/default_sweep_drag_multiplier.tres")
-		sweep_drag_multiplier_curve.resource_local_to_scene = true
+		sweep_drag_multiplier_curve = load("res://addons/godot_aerodynamic_physics/core/resources/default_sweep_drag_multiplier.tres").duplicate()
 	if drag_at_mach_multiplier_curve == null:
-		drag_at_mach_multiplier_curve = load("res://addons/godot_aerodynamic_physics/core/resources/default_drag_at_mach_curve.tres")
-		drag_at_mach_multiplier_curve.resource_local_to_scene = true
+		drag_at_mach_multiplier_curve = load("res://addons/godot_aerodynamic_physics/core/resources/default_drag_at_mach_curve.tres").duplicate()

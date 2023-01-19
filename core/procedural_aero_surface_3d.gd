@@ -42,13 +42,13 @@ func calculate_forces(_world_air_velocity : Vector3, _air_density : float, _air_
 
 	#I'm not sure if the rest of the algorithm accounts for projected wing area, this may need to change
 	var lift : float = aerodynamic_coefficients.x * dynamic_pressure * area
-	var drag : float = aerodynamic_coefficients.y * dynamic_pressure * area * get_drag_multiplier_at_speed_and_sweep(mach, sweep_angle)
+	var drag : float = aerodynamic_coefficients.y * dynamic_pressure * area * wing_config.sweep_drag_multiplier_curve.sample(sweep_angle) * wing_config.drag_at_mach_multiplier_curve.sample(mach / 10.0)
 	var induced_drag : float = lift * lift / (0.5 * dynamic_pressure * PI * wing_config.span * wing_config.span)
 
 	var _torque : Vector3 = global_transform.basis.x * aerodynamic_coefficients.z * dynamic_pressure * area * wing_config.chord
 
-	var lift_vector : Vector3 = lift * lift_direction
-	var drag_vector : Vector3 = drag * drag_direction
+	var lift_vector : Vector3 = lift_direction * lift
+	var drag_vector : Vector3 = drag_direction * (drag + induced_drag) * wing_config.drag_modifier
 
 	force = lift_vector + drag_vector
 	torque += relative_position.cross(force)
@@ -142,9 +142,6 @@ func calculate_coefficients_at_stall(angle_of_attack : float, corrected_lift_slo
 	var torque_coefficient : float = -normal_coefficient * torque_coefficient_proportion(effective_angle)
 
 	return Vector3(lift_coefficient, drag_coefficient, torque_coefficient)
-
-func get_drag_multiplier_at_speed_and_sweep(mach : float, sweep : float) -> float:
-	return wing_config.sweep_drag_multiplier_curve.sample(sweep) * wing_config.drag_at_mach_multiplier_curve.sample(mach / 10.0)
 
 func friction_at_90_degrees(flap_angle : float) -> float:
 	return 1.98 - 0.0426 * flap_angle * flap_angle + 0.21 * flap_angle

@@ -100,7 +100,7 @@ func calculate_forces(_world_air_velocity : Vector3, _air_density : float, _air_
 func calculate_properties() -> void:
 	#Calculating air velocity relative to the surface's coordinate system.
 	air_velocity = global_transform.basis.inverse() * world_air_velocity
-	sweep_angle =  atan2(air_velocity.z, air_velocity.x) / PI - 0.5
+	sweep_angle =  abs(atan2(air_velocity.z, air_velocity.x) / PI - 0.5)
 	drag_direction = global_transform.basis * (air_velocity.normalized())
 	lift_direction = drag_direction.cross(-global_transform.basis.x)
 
@@ -121,6 +121,7 @@ func update_debug_visibility(_show_debug : bool = false, _show_lift : bool = fal
 	lift_debug_vector.visible = show_debug and show_lift
 	drag_debug_vector.visible = show_debug and show_drag
 	airflow_debug_vector.visible = show_debug and show_airflow
+
 
 func update_debug_vectors() -> void:
 	if !lift_debug_vector or !drag_debug_vector or !airflow_debug_vector:

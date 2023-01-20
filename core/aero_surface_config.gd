@@ -20,7 +20,7 @@ class_name AeroSurfaceConfig
 	set(value):
 		skin_friction = value
 		emit_changed()
-@export var drag_modifier : float = 0.3
+#@export var drag_modifier : float = 0.3
 @export var auto_aspect_ratio : bool = true:
 	set(value):
 		auto_aspect_ratio = value

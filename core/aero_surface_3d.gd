@@ -86,6 +86,8 @@ func _exit_tree() -> void:
 #coefficient of drag remains constant. In the current study the effects of air velocity
 #and angle of attack on aerodynamic parameters across NACA6415 airfoil are investigated.
 
+func _physics_process(delta: float) -> void:
+	update_debug_vectors()
 
 func calculate_forces(_world_air_velocity : Vector3, _air_density : float, _air_pressure : float, _relative_position : Vector3, _altitude : float) -> PackedVector3Array:
 	world_air_velocity = _world_air_velocity
@@ -94,17 +96,18 @@ func calculate_forces(_world_air_velocity : Vector3, _air_density : float, _air_
 	relative_position = _relative_position
 	altitude = _altitude
 	calculate_properties()
-	update_debug_vectors()
 	return PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 
 func calculate_properties() -> void:
 	#Calculating air velocity relative to the surface's coordinate system.
 	air_velocity = global_transform.basis.inverse() * world_air_velocity
 	sweep_angle =  abs(atan2(air_velocity.z, air_velocity.x) / PI - 0.5)
-	drag_direction = global_transform.basis * (air_velocity.normalized())
-	lift_direction = drag_direction.cross(-global_transform.basis.x)
-
+	drag_direction = global_transform.basis * (air_velocity.normalized()).normalized()
+	var right_facing_air_vector : Vector3 = world_air_velocity.cross(-global_transform.basis.y).normalized()
+	lift_direction = drag_direction.cross(-right_facing_air_vector).normalized()
 	mach = AeroUnits.speed_to_mach_at_altitude(air_velocity.length(), altitude)
+
+#	https://en.wikipedia.org/wiki/Dynamic_pressure
 	dynamic_pressure = (mach * mach) * 0.5 * AeroUnits.ratio_of_specific_heat * AeroUnits.get_pressure_at_altitude(altitude)
 	angle_of_attack = atan2(air_velocity.y, air_velocity.z)
 	area = wing_config.chord * wing_config.span
@@ -127,6 +130,6 @@ func update_debug_vectors() -> void:
 	if !lift_debug_vector or !drag_debug_vector or !airflow_debug_vector:
 		return
 	#not ensuring proper transforms when aero_surface has a parent that is not aerobody
-	lift_debug_vector.value = _current_lift * global_transform.basis * debug_scale
-	drag_debug_vector.value = _current_drag * global_transform.basis * debug_scale
-	airflow_debug_vector.value = air_velocity * debug_scale# * global_transform
+	lift_debug_vector.value = global_transform.basis.inverse() * _current_lift * debug_scale
+	drag_debug_vector.value = global_transform.basis.inverse() * _current_drag * debug_scale
+	airflow_debug_vector.value = global_transform.basis.inverse() * air_velocity * debug_scale

@@ -10,7 +10,7 @@ const gizmo_plugin = preload("./core/spatial_gizmo/aero_surface_gizmo.gd")
 var gizmo_plugin_instance = gizmo_plugin.new()
 
 #singletons
-const aero_units = "./core/singletons/units.gd"
+const aero_units = "res://addons/godot_aerodynamic_physics/core/singletons/units.gd"
 
 #nodes
 const aero_body_3d = preload("./core/aero_body_3d.gd")

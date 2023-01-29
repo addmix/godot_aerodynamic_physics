@@ -34,6 +34,7 @@ var altitude := 0.0
 
 #Calculating air velocity relative to the surface's coordinate system.
 var air_velocity := Vector3.ZERO
+var air_speed := 0.0
 var sweep_angle := 0.0
 var drag_direction := Vector3.ZERO
 var lift_direction := Vector3.ZERO
@@ -101,17 +102,21 @@ func calculate_forces(_world_air_velocity : Vector3, _air_density : float, _air_
 func calculate_properties() -> void:
 	#Calculating air velocity relative to the surface's coordinate system.
 	air_velocity = global_transform.basis.inverse() * world_air_velocity
+	air_speed = air_velocity.length()
 	sweep_angle =  abs(atan2(air_velocity.z, air_velocity.x) / PI - 0.5)
 	drag_direction = global_transform.basis * (air_velocity.normalized()).normalized()
 	var right_facing_air_vector : Vector3 = world_air_velocity.cross(-global_transform.basis.y).normalized()
-	lift_direction = drag_direction.cross(-right_facing_air_vector).normalized()
+	lift_direction = drag_direction.cross(right_facing_air_vector).normalized()
 	mach = AeroUnits.speed_to_mach_at_altitude(air_velocity.length(), altitude)
+	dynamic_pressure = 0.5 * AeroUnits.get_density_at_altitude(altitude) * (air_speed * air_speed)
 
-#	https://en.wikipedia.org/wiki/Dynamic_pressure
-	dynamic_pressure = (mach * mach) * 0.5 * AeroUnits.ratio_of_specific_heat * AeroUnits.get_pressure_at_altitude(altitude)
 	angle_of_attack = atan2(air_velocity.y, air_velocity.z)
+
+#	if name == "ElevonLControl":
+#		print(rad_to_deg(angle_of_attack))
+
 	area = wing_config.chord * wing_config.span
-	projected_wing_area = wing_config.span * wing_config.chord * sin(angle_of_attack)
+	projected_wing_area = abs(wing_config.span * wing_config.chord * sin(angle_of_attack))
 
 func update_debug_visibility(_show_debug : bool = false, _show_lift : bool = false, _show_drag : bool = false, _show_airflow : bool = false) -> void:
 	show_debug = _show_debug

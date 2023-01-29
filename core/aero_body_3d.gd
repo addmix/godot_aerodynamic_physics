@@ -1,3 +1,4 @@
+@tool
 extends VehicleBody3D
 class_name AeroBody3D
 
@@ -47,15 +48,45 @@ var aero_surfaces = []
 var current_force := Vector3.ZERO
 var current_torque := Vector3.ZERO
 var air_velocity := Vector3.ZERO
+var air_speed := 0.0
+var mach := 0.0
 var angle_of_attack := 0.0
+var altitude := 0.0
 
 func _enter_tree() -> void:
+	if Engine.is_editor_hint():
+		update_configuration_warnings()
+		return
+
 	for i in NodeUtils.get_child_recursive(self):
 		if i is AeroSurface3D or i is ProceduralAeroSurface3D or i is ManualAeroSurface3D:
 			aero_surfaces.append(i)
 
 func _ready() -> void:
+	if Engine.is_editor_hint():
+		update_configuration_warnings()
+		return
 	_update_debug_visibility()
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings := PackedStringArray([])
+	var default_linear_damp : float = ProjectSettings.get_setting("physics/3d/default_linear_damp", 0.0)
+	if linear_damp_mode == DAMP_MODE_COMBINE:
+		if default_linear_damp + linear_damp > 0.0:
+			warnings.append("Linear damping is greater than 0. Unexpected aerodynamic characteristics will be present.")
+	else:
+		if linear_damp > 0.0:
+			warnings.append("Linear damping is greater than 0. Unexpected aerodynamic characteristics will be present.")
+
+	var default_angular_damp : float = ProjectSettings.get_setting("physics/3d/default_angular_damp", 0.0)
+	if angular_damp_mode == DAMP_MODE_COMBINE:
+		if default_angular_damp + angular_damp > 0.0:
+			warnings.append("Angular damping is greater than 0. Unexpected aerodynamic characteristics will be present.")
+	else:
+		if angular_damp > 0.0:
+			warnings.append("Angular damping is greater than 0. Unexpected aerodynamic characteristics will be present.")
+
+	return warnings
 
 func _integrate_forces(state : PhysicsDirectBodyState3D) -> void:
 	var total_force_and_torque := calculate_forces(state)
@@ -63,11 +94,14 @@ func _integrate_forces(state : PhysicsDirectBodyState3D) -> void:
 	apply_torque(total_force_and_torque[1])
 
 func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
+	#eventually implement wind
+	var wind := Vector3.ZERO
+	air_velocity = -linear_velocity + wind
+	air_speed = air_velocity.length()
+	altitude = global_position.y
+	mach = AeroUnits.speed_to_mach_at_altitude(air_speed, altitude)
 	var air_density : float = AeroUnits.get_density_at_altitude(position.y)
 	var air_pressure : float = AeroUnits.get_pressure_at_altitude(position.y)
-	var wind := Vector3.ZERO
-
-	air_velocity = -linear_velocity + wind
 	var local_air_velocity := global_transform.basis.inverse() * air_velocity
 	angle_of_attack = atan2(local_air_velocity.y, local_air_velocity.z)
 
@@ -100,10 +134,6 @@ func calculate_aerodynamic_forces(_velocity : Vector3, _angular_velocity : Vecto
 		#relative_position is the position of the surface, centered on the AeroBody's origin, with the global rotation
 		var relative_position : Vector3 = global_transform.basis * (surface.transform.origin - center_of_mass)
 		var force_and_torque : PackedVector3Array = surface.calculate_forces(-_velocity - _angular_velocity.cross(relative_position), air_density, air_pressure, relative_position, position.y)
-
-#		if surface.name == "ElevonLControl":
-#			print(-_velocity - _angular_velocity.cross(relative_position))
-
 		force += force_and_torque[0]
 		torque += force_and_torque[1]
 
@@ -121,15 +151,6 @@ func predict_angular_velocity(torque : Vector3) -> Vector3:
 	angular_velocity_change_in_diagonal_space.z = torque_in_diagonal_space.z / get_inverse_inertia_tensor().z.length()
 
 	return angular_velocity + get_physics_process_delta_time() * PREDICTION_TIMESTEP_FRACTION * (get_inverse_inertia_tensor() * angular_velocity_change_in_diagonal_space)
-
-#pitch authority
-#control surface local transform cross local Y axis, X value of vector is relevant
-#roll authority
-#control surface local transform cross local Z axis, Z value of vector is relevant
-#yaw authority
-#control surface local transform cross local Y axis, X value of vector is relevant
-func control(input : Vector3) -> void:
-	pass
 
 func _update_debug_visibility():
 	for surface in aero_surfaces:

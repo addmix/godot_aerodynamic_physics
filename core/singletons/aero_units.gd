@@ -56,7 +56,7 @@ func update_machspeed_curve() -> void:
 	mach_at_altitude_curve.max_value = max_machspeed
 func get_mach_at_altitude(altitude : float) -> float:
 	var lerp : float = altitude_to_lerp(altitude)
-	return mach_at_altitude_curve.sample(altitude)
+	return mach_at_altitude_curve.sample(lerp)
 
 
 @export var min_pressure : float = 0.0:
@@ -92,11 +92,6 @@ func get_temp_at_altitude(altitude : float) -> float:
 	var lerp : float = altitude_to_lerp(altitude)
 	return temperature_at_altitude_curve.sample(altitude)
 
-
-
-
-
-
 func _ready() -> void:
 	for key in altitude_values.keys():
 		var entry : Dictionary = altitude_values[key]
@@ -108,9 +103,6 @@ func _ready() -> void:
 
 		var speed_of_sound : float = get_speed_of_sound_at_pressure_and_density(entry["pressure"], entry["density"])
 		mach_at_altitude_curve.add_point(Vector2(altitude_lerp, speed_of_sound), 0, 0, Curve.TANGENT_LINEAR, Curve.TANGENT_LINEAR)
-
-
-
 
 
 func altitude_to_lerp(altitude : float) -> float:

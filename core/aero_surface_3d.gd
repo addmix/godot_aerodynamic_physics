@@ -2,8 +2,6 @@
 extends Node3D
 class_name AeroSurface3D
 
-enum {Pitch, Yaw, Roll, Flap}
-
 @export var wing_config : AeroSurfaceConfig = AeroSurfaceConfig.new():
 	set(value):
 		wing_config = value
@@ -19,9 +17,8 @@ enum {Pitch, Yaw, Roll, Flap}
 @export var show_lift : bool = true
 @export var show_drag : bool = true
 @export var show_airflow : bool = true
-@export_category("")
 
-@export_group("")
+@export_category("")
 @export var flap_angle : float = 0.0:
 	set(value):
 		flap_angle = clamp(value, deg_to_rad(-50), deg_to_rad(50))
@@ -53,10 +50,6 @@ var lift_debug_vector : Vector3D
 var drag_debug_vector : Vector3D
 var airflow_debug_vector : Vector3D
 
-func _process(delta: float) -> void:
-	#do wing debug vectors
-	pass
-
 func _enter_tree() -> void:
 	#initialize signal connections from resources
 	if wing_config != null:
@@ -64,6 +57,7 @@ func _enter_tree() -> void:
 			wing_config.changed.connect(update_gizmos)
 			update_gizmos()
 
+	#initialize debug vectors
 	lift_debug_vector = Vector3D.new(Color(0, 0, 1))
 	lift_debug_vector.visible = false
 	add_child(lift_debug_vector)
@@ -74,19 +68,6 @@ func _enter_tree() -> void:
 	airflow_debug_vector.visible = false
 	add_child(airflow_debug_vector)
 
-func _exit_tree() -> void:
-	remove_child(lift_debug_vector)
-	lift_debug_vector.queue_free()
-	remove_child(drag_debug_vector)
-	drag_debug_vector.queue_free()
-	remove_child(airflow_debug_vector)
-	airflow_debug_vector.queue_free()
-
-
-#They found that with increase in Mach number the coefficient of lift increases but
-#coefficient of drag remains constant. In the current study the effects of air velocity
-#and angle of attack on aerodynamic parameters across NACA6415 airfoil are investigated.
-
 func _physics_process(delta: float) -> void:
 	update_debug_vectors()
 
@@ -96,11 +77,9 @@ func calculate_forces(_world_air_velocity : Vector3, _air_density : float, _air_
 	air_pressure = _air_pressure
 	relative_position = _relative_position
 	altitude = _altitude
-	calculate_properties()
-	return PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 
-func calculate_properties() -> void:
-	#Calculating air velocity relative to the surface's coordinate system.
+	#calculate some common values, some necessary for debugging
+	#air velocity in local space
 	air_velocity = global_transform.basis.inverse() * world_air_velocity
 	air_speed = air_velocity.length()
 	sweep_angle =  abs(atan2(air_velocity.z, air_velocity.x) / PI - 0.5)
@@ -109,14 +88,11 @@ func calculate_properties() -> void:
 	lift_direction = drag_direction.cross(right_facing_air_vector).normalized()
 	mach = AeroUnits.speed_to_mach_at_altitude(air_velocity.length(), altitude)
 	dynamic_pressure = 0.5 * AeroUnits.get_density_at_altitude(altitude) * (air_speed * air_speed)
-
 	angle_of_attack = atan2(air_velocity.y, air_velocity.z)
-
-#	if name == "ElevonLControl":
-#		print(rad_to_deg(angle_of_attack))
-
 	area = wing_config.chord * wing_config.span
 	projected_wing_area = abs(wing_config.span * wing_config.chord * sin(angle_of_attack))
+
+	return PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 
 func update_debug_visibility(_show_debug : bool = false, _show_lift : bool = false, _show_drag : bool = false, _show_airflow : bool = false) -> void:
 	show_debug = _show_debug
@@ -124,6 +100,7 @@ func update_debug_visibility(_show_debug : bool = false, _show_lift : bool = fal
 	show_drag = _show_drag
 	show_airflow = _show_airflow
 
+	#check that debug vectors exist
 	if !lift_debug_vector or !drag_debug_vector or !airflow_debug_vector:
 		return
 	lift_debug_vector.visible = show_debug and show_lift
@@ -132,6 +109,7 @@ func update_debug_visibility(_show_debug : bool = false, _show_lift : bool = fal
 
 
 func update_debug_vectors() -> void:
+	#check that debug vectors exist
 	if !lift_debug_vector or !drag_debug_vector or !airflow_debug_vector:
 		return
 	#not ensuring proper transforms when aero_surface has a parent that is not aerobody

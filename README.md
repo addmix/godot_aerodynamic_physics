@@ -13,5 +13,6 @@
 1. Add an `AeroBody` to your scene, and add one or more `AeroSurface`s as children, adjust settings to change the characteristics.
 
 ## Development Direction
->Currently this plugin does not account for Reynolds number, nor Mach number, but it will (hopefully) be added soon.
 1. Different Aero shapes (Sphere, Box, Cylinder, Plane)
+2. Preset airfoil profiles
+3. AeroBody performance profiling

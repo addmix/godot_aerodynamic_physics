@@ -95,6 +95,7 @@ func calculate_forces(_world_air_velocity : Vector3, _air_density : float, _air_
 	return PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 
 func update_debug_visibility(_show_debug : bool = false, _show_lift : bool = false, _show_drag : bool = false, _show_airflow : bool = false) -> void:
+	visible = _show_debug
 	show_debug = _show_debug
 	show_lift = _show_lift
 	show_drag = _show_drag

@@ -48,9 +48,11 @@ var aero_surfaces = []
 var current_force := Vector3.ZERO
 var current_torque := Vector3.ZERO
 var air_velocity := Vector3.ZERO
+var local_air_velocity := Vector3.ZERO
 var air_speed := 0.0
 var mach := 0.0
 var angle_of_attack := 0.0
+var sideslip_angle := 0.0
 var altitude := 0.0
 
 func _enter_tree() -> void:
@@ -102,8 +104,9 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	mach = AeroUnits.speed_to_mach_at_altitude(air_speed, altitude)
 	var air_density : float = AeroUnits.get_density_at_altitude(position.y)
 	var air_pressure : float = AeroUnits.get_pressure_at_altitude(position.y)
-	var local_air_velocity := global_transform.basis.inverse() * air_velocity
+	local_air_velocity = global_transform.basis.inverse() * air_velocity
 	angle_of_attack = atan2(local_air_velocity.y, local_air_velocity.z)
+	sideslip_angle = atan2(-local_air_velocity.x, local_air_velocity.z)
 
 	var last_force_and_torque := calculate_aerodynamic_forces(air_velocity, angular_velocity, air_density, air_pressure)
 	var total_force_and_torque := last_force_and_torque

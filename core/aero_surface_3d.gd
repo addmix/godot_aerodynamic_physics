@@ -60,13 +60,13 @@ func _enter_tree() -> void:
 	#initialize debug vectors
 	lift_debug_vector = Vector3D.new(Color(0, 0, 1))
 	lift_debug_vector.visible = false
-	add_child(lift_debug_vector)
+	add_child(lift_debug_vector, INTERNAL_MODE_FRONT)
 	drag_debug_vector = Vector3D.new(Color(1, 0, 0))
 	drag_debug_vector.visible = false
-	add_child(drag_debug_vector)
+	add_child(drag_debug_vector, INTERNAL_MODE_FRONT)
 	airflow_debug_vector = Vector3D.new(Color(0, 1, 0))
 	airflow_debug_vector.visible = false
-	add_child(airflow_debug_vector)
+	add_child(airflow_debug_vector, INTERNAL_MODE_FRONT)
 
 func _physics_process(delta: float) -> void:
 	update_debug_vectors()

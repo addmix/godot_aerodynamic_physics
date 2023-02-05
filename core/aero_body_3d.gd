@@ -100,7 +100,7 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	var wind := Vector3.ZERO
 	air_velocity = -linear_velocity + wind
 	air_speed = air_velocity.length()
-	altitude = global_position.y
+	altitude = AeroUnits.get_altitude(self)
 	mach = AeroUnits.speed_to_mach_at_altitude(air_speed, altitude)
 	var air_density : float = AeroUnits.get_density_at_altitude(position.y)
 	var air_pressure : float = AeroUnits.get_pressure_at_altitude(position.y)

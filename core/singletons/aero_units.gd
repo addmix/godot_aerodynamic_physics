@@ -22,6 +22,11 @@ extends Node
 
 @export var min_altitude : float = 0.0
 @export var max_altitude : float = 80000.0
+func get_altitude(node : Node) -> float:
+	var floating_origin : FloatingOrigin = node.get_parent_node_3d()
+	if floating_origin is FloatingOrigin:
+		return node.global_position.y + (float(floating_origin.current_offset.y) * floating_origin.shift_threshold)
+	return node.global_position.y
 
 @export var min_mach : float = 0.0
 @export var max_mach : float = 10.0

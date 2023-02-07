@@ -47,6 +47,7 @@ var aero_surfaces = []
 
 var current_force := Vector3.ZERO
 var current_torque := Vector3.ZERO
+var current_gravity := Vector3.ZERO
 var air_velocity := Vector3.ZERO
 var local_air_velocity := Vector3.ZERO
 var air_speed := 0.0
@@ -91,6 +92,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 func _integrate_forces(state : PhysicsDirectBodyState3D) -> void:
+	current_gravity = state.total_gravity
 	var total_force_and_torque := calculate_forces(state)
 	apply_central_force(total_force_and_torque[0])
 	apply_torque(total_force_and_torque[1])
@@ -136,7 +138,8 @@ func calculate_aerodynamic_forces(_velocity : Vector3, _angular_velocity : Vecto
 	for surface in aero_surfaces:
 		#relative_position is the position of the surface, centered on the AeroBody's origin, with the global rotation
 		var relative_position : Vector3 = global_transform.basis * (surface.transform.origin - center_of_mass)
-		var force_and_torque : PackedVector3Array = surface.calculate_forces(-_velocity - _angular_velocity.cross(relative_position), air_density, air_pressure, relative_position, position.y)
+
+		var force_and_torque : PackedVector3Array = surface.calculate_forces(-(_velocity + _angular_velocity.cross(relative_position)), air_density, air_pressure, relative_position, position.y)
 		force += force_and_torque[0]
 		torque += force_and_torque[1]
 

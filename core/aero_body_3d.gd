@@ -61,7 +61,7 @@ func _enter_tree() -> void:
 		update_configuration_warnings()
 		return
 
-	for i in NodeUtils.get_child_recursive(self):
+	for i in NodeUtils.get_descendants(self):
 		if i is AeroSurface3D or i is ProceduralAeroSurface3D or i is ManualAeroSurface3D:
 			aero_surfaces.append(i)
 

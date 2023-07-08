@@ -1,6 +1,5 @@
 [gd_resource type="Curve" format=3 uid="uid://bf3v5qwdrjkmt"]
 
 [resource]
-max_value = 0.2
-_data = [Vector2(0, 0.02), 0.0, 0.0, 0, 0, Vector2(0.25, 0.2), 0.0, 0.0, 0, 0, Vector2(0.4, 0.12), 0.0, 0.0, 0, 0, Vector2(0.5, 0.02), 0.0, 0.0, 0, 0, Vector2(0.6, 0.12), 0.0, 0.0, 0, 0, Vector2(0.75, 0.2), 0.0, 0.0, 0, 0, Vector2(1, 0.02), 0.0, 0.0, 0, 0]
-point_count = 7
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.25, 1), 0.0, 0.0, 0, 0, Vector2(0.5, 0), 0.0, 0.0, 0, 0, Vector2(0.75, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 5

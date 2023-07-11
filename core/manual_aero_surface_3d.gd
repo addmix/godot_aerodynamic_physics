@@ -20,6 +20,12 @@ func calculate_forces(_world_air_velocity : Vector3, _air_density : float, _air_
 	var total_drag = form_drag + induced_drag + skin_friction_drag
 #	print("Percentages of total drag:\nSkin friction: %s\nForm drag: %s\nInduced drag: %s" % [skin_friction_drag / total_drag, form_drag / total_drag, induced_drag / total_drag])
 
+#	https://aviation.stackexchange.com/questions/84210/difference-in-lift-generation-for-a-swept-wing-and-straight-wing-in-subsonic-con
+#	Since both the lift curve slope and the effective angle of attack are reduced
+#	by the cosine of the sweep angle at quarter chord, the lift coefficient of a
+#	swept wing at the same geometric angle of attack is reduced by the square of
+#	the cosine of the sweep angle.
+
 	var lift_vector : Vector3 = lift_direction * lift
 	var drag_vector : Vector3 = drag_direction * total_drag
 

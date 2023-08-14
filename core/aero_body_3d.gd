@@ -50,6 +50,7 @@ var current_torque := Vector3.ZERO
 var current_gravity := Vector3.ZERO
 var air_velocity := Vector3.ZERO
 var local_air_velocity := Vector3.ZERO
+var local_angular_velocity := Vector3.ZERO
 var air_speed := 0.0
 var mach := 0.0
 var angle_of_attack := 0.0
@@ -107,6 +108,7 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	var air_density : float = AeroUnits.get_density_at_altitude(position.y)
 	var air_pressure : float = AeroUnits.get_pressure_at_altitude(position.y)
 	local_air_velocity = global_transform.basis.inverse() * air_velocity
+	local_angular_velocity = global_transform.basis.inverse() * angular_velocity
 	angle_of_attack = atan2(local_air_velocity.y, local_air_velocity.z)
 	sideslip_angle = atan2(-local_air_velocity.x, local_air_velocity.z)
 

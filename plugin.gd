@@ -32,8 +32,6 @@ func _enter_tree():
 	add_custom_type("AeroSurfaceConfig", "Resource", aero_surface_config, object_icon)
 	add_custom_type("ManualAeroSurface3D", "Node3D", manual_aero_surface_3d, node3d_icon)
 	add_custom_type("ManualAeroSurfaceConfig", "Resource", manual_aero_surface_config, object_icon)
-	add_custom_type("ProceduralAeroSurface3D", "Node3D", procedural_aero_surface_3d, node3d_icon)
-	add_custom_type("ProceduralAeroSurfaceConfig", "Resource", procedural_aero_surface_config, object_icon)
 
 func _exit_tree():
 	remove_custom_type("AeroBody3D")
@@ -41,8 +39,6 @@ func _exit_tree():
 	remove_custom_type("AeroSurfaceConfig")
 	remove_custom_type("ManualAeroSurface3D")
 	remove_custom_type("ManualAeroSurfaceConfig")
-	remove_custom_type("ProceduralAeroSurface3D")
-	remove_custom_type("ProceduralAeroSurfaceConfig")
 
 	remove_autoload_singleton("AeroUnits")
 	remove_node_3d_gizmo_plugin(gizmo_plugin_instance)

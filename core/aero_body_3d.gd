@@ -63,7 +63,7 @@ func _enter_tree() -> void:
 		return
 
 	for i in NodeUtils.get_descendants(self):
-		if i is AeroSurface3D or i is ProceduralAeroSurface3D or i is ManualAeroSurface3D:
+		if i is AeroSurface3D:
 			aero_surfaces.append(i)
 
 func _ready() -> void:

@@ -1,6 +1,6 @@
 @tool
 extends AeroSurface3D
-class_name ProceduralAeroSurface3D
+#class_name ProceduralAeroSurface3D
 
 @export var procedural_config = ProceduralAeroSurfaceConfig.new()
 

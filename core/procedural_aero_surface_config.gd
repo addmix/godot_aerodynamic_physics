@@ -1,6 +1,6 @@
 @tool
 extends Resource
-class_name ProceduralAeroSurfaceConfig
+#class_name ProceduralAeroSurfaceConfig
 
 @export var stall_angle_high : float = 15.0 :
 	set(value):

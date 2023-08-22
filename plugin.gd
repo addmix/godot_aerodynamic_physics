@@ -1,5 +1,8 @@
 @tool
 extends EditorPlugin
+
+var path := PluginUtils.get_plugin_path("Godot Aerodynamic Physics")
+
 #icons
 const object_icon = preload("./icons/object.svg")
 const node_icon = preload("./icons/node.svg")
@@ -9,9 +12,6 @@ const node3d_icon = preload("./icons/node3d.svg")
 #plugin gizmos
 const gizmo_plugin = preload("./core/spatial_gizmo/aero_surface_gizmo.gd")
 var gizmo_plugin_instance = gizmo_plugin.new()
-
-#singletons
-const aero_units = "res://addons/godot_aerodynamic_physics/core/singletons/aero_units.gd"
 
 #nodes
 const aero_body_3d = preload("./core/aero_body_3d.gd")
@@ -24,7 +24,7 @@ const procedural_aero_surface_config = preload("./core/procedural_aero_surface_c
 
 func _enter_tree():
 	SettingsUtils.ifndef("physics/3d/aerodynamics/substeps", 1)
-	add_autoload_singleton("AeroUnits", aero_units)
+	add_autoload_singleton("AeroUnits", path + "/core/singletons/aero_units.gd")
 	add_node_3d_gizmo_plugin(gizmo_plugin_instance)
 	
 	add_custom_type("AeroBody3D", "VehicleBody3D", aero_body_3d, node3d_icon)

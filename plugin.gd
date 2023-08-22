@@ -24,6 +24,9 @@ const procedural_aero_surface_config = preload("./core/procedural_aero_surface_c
 
 func _enter_tree():
 	SettingsUtils.ifndef("physics/3d/aerodynamics/substeps", 1)
+	add_autoload_singleton("AeroUnits", aero_units)
+	add_node_3d_gizmo_plugin(gizmo_plugin_instance)
+	
 	add_custom_type("AeroBody3D", "VehicleBody3D", aero_body_3d, node3d_icon)
 	add_custom_type("AeroSurface3D", "Node3D", aero_surface_3d, node3d_icon)
 	add_custom_type("AeroSurfaceConfig", "Resource", aero_surface_config, object_icon)
@@ -31,9 +34,6 @@ func _enter_tree():
 	add_custom_type("ManualAeroSurfaceConfig", "Resource", manual_aero_surface_config, object_icon)
 	add_custom_type("ProceduralAeroSurface3D", "Node3D", procedural_aero_surface_3d, node3d_icon)
 	add_custom_type("ProceduralAeroSurfaceConfig", "Resource", procedural_aero_surface_config, object_icon)
-
-	add_autoload_singleton("AeroUnits", aero_units)
-	add_node_3d_gizmo_plugin(gizmo_plugin_instance)
 
 func _exit_tree():
 	remove_custom_type("AeroBody3D")

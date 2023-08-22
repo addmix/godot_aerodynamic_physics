@@ -40,8 +40,8 @@ class_name AeroBody3D
 @export_category("")
 
 # ~constant
-var SUBSTEPS = ProjectSettings.get_setting("physics/3d/aerodynamics/substeps")
-var PREDICTION_TIMESTEP_FRACTION = 1.0 / float(SUBSTEPS + 1)
+var SUBSTEPS = ProjectSettings.get_setting("physics/3d/aerodynamics/substeps", 0)
+var PREDICTION_TIMESTEP_FRACTION = 1.0 / float(SUBSTEPS)
 
 var aero_surfaces = []
 

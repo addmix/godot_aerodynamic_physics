@@ -40,7 +40,6 @@ func calculate_forces(_world_air_velocity : Vector3, _air_density : float, _air_
 
 	var aerodynamic_coefficients : Vector3 = calculate_procedural_coefficients(temp_angle, corrected_lift_slope, zero_lift_aoa, stall_angle_high, stall_angle_low)
 
-	#I'm not sure if the rest of the algorithm accounts for projected wing area, this may need to change
 	var lift : float = aerodynamic_coefficients.x * dynamic_pressure * area
 	var drag : float = aerodynamic_coefficients.y * dynamic_pressure * area * wing_config.sweep_drag_multiplier_curve.sample(sweep_angle) * wing_config.drag_at_mach_multiplier_curve.sample(mach / 10.0)
 	var induced_drag : float = lift * lift / (0.5 * dynamic_pressure * PI * wing_config.span * wing_config.span)
@@ -48,7 +47,7 @@ func calculate_forces(_world_air_velocity : Vector3, _air_density : float, _air_
 	var _torque : Vector3 = global_transform.basis.x * aerodynamic_coefficients.z * dynamic_pressure * area * wing_config.chord
 
 	var lift_vector : Vector3 = lift_direction * lift
-	var drag_vector : Vector3 = drag_direction * (drag + induced_drag) * wing_config.drag_modifier
+	var drag_vector : Vector3 = drag_direction * (drag + induced_drag)
 
 	force = lift_vector + drag_vector
 	torque += relative_position.cross(force)
@@ -92,7 +91,9 @@ func calculate_procedural_coefficients(angle_of_attack : float, corrected_lift_s
 				lerp_param = (angle_of_attack - stall_angle_low) / (padded_stall_angle_low - stall_angle_low)
 
 			aerodynamic_coefficients = aerodynamic_coefficients_low.lerp(aerodynamic_coefficients_stall, lerp_param)
-
+	
+	#this is a really bad fix, but the lift direction was in the wrong orientation.
+	aerodynamic_coefficients.x *= -1
 	return aerodynamic_coefficients
 
 func calculate_coefficients_at_low_aoa(angle_of_attack : float, corrected_lift_slope : float, zero_lift_aoa : float) -> Vector3:

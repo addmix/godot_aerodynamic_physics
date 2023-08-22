@@ -4,7 +4,8 @@
 1. Download and un-zip files.
 2. Place the `godot_aerodynamic_physics` folder inside your project's `addons` folder.
 3. Download and install [dependencies](#dependencies).
-4. Enable plugin in project settings `project settings > plugins tab > enable`
+4. Enable plugin in project settings `Project > Project Settings > Plugins`
+5. Reload project (if necessary).
 
 # Dependencies
 [Godot Utils](https://github.com/addmix/godot_utils)

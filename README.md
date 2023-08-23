@@ -8,7 +8,7 @@
 5. Reload project (if necessary).
 
 # Dependencies
-[Godot Utils](https://github.com/addmix/godot_utils)
+[Godot Utils v0.2.0]([https://github.com/addmix/godot_utils](https://github.com/addmix/godot_utils/releases/tag/v0.2.0))
 
 # Usage
 1. Add an `AeroBody` to your scene, and add one or more `AeroSurface` derived classes as children, adjust settings to change the characteristics.

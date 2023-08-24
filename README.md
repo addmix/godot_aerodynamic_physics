@@ -11,6 +11,7 @@
 [Godot Utils v0.2.0](https://github.com/addmix/godot_utils/releases/tag/v0.2.0)
 
 # Usage
+Tutorial available [here](https://youtu.be/iI8SXQdaqDQ)
 1. Add an `AeroBody` to your scene, and add one or more `AeroSurface` derived classes as children, adjust settings to change the characteristics.
 
 # Development Direction

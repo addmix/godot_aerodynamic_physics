@@ -65,7 +65,7 @@ func _enter_tree() -> void:
 		update_configuration_warnings()
 		return
 
-	for i in NodeUtils.get_descendants(self):
+	for i in get_children():
 		if i is AeroSurface3D:
 			aero_surfaces.append(i)
 

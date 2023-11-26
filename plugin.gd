@@ -19,8 +19,8 @@ const aero_surface_3d = preload("./core/aero_surface_3d.gd")
 const aero_surface_config = preload("./core/aero_surface_config.gd")
 const manual_aero_surface_3d = preload("./core/manual_aero_surface_3d.gd")
 const manual_aero_surface_config = preload("./core/manual_aero_surface_config.gd")
-const procedural_aero_surface_3d = preload("./core/procedural_aero_surface_3d.gd")
-const procedural_aero_surface_config = preload("./core/procedural_aero_surface_config.gd")
+#const procedural_aero_surface_3d = preload("./core/procedural_aero_surface_3d.gd")
+#const procedural_aero_surface_config = preload("./core/procedural_aero_surface_config.gd")
 
 func _enter_tree():
 	SettingsUtils.ifndef("physics/3d/aerodynamics/substeps", 1)

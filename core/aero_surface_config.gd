@@ -16,7 +16,7 @@ class_name AeroSurfaceConfig
 		if auto_aspect_ratio:
 			aspect_ratio = span / chord
 		emit_changed()
-@export var skin_friction : float = 0.001 :
+@export var skin_friction : float = 0.02 :
 	set(value):
 		skin_friction = value
 		emit_changed()

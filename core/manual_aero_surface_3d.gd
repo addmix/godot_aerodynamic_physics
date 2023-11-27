@@ -16,7 +16,7 @@ func calculate_forces(_world_air_velocity : Vector3, _air_density : float, _air_
 	var drag_coefficient : float = manual_config.get_drag_coefficient(angle_of_attack) * wing_config.sweep_drag_multiplier_curve.sample(sweep_angle) * wing_config.get_drag_multiplier_at_mach(mach)
 	var form_drag : float = aero_reference * drag_coefficient
 	var induced_drag : float = (lift * lift) / (dynamic_pressure * PI * wing_config.span * wing_config.span)
-	var skin_friction_drag : float = wing_config.skin_friction * dynamic_pressure
+	var skin_friction_drag : float = wing_config.skin_friction * aero_reference
 	var total_drag = form_drag + induced_drag + skin_friction_drag
 #	print("Percentages of total drag:\nSkin friction: %s\nForm drag: %s\nInduced drag: %s" % [skin_friction_drag / total_drag, form_drag / total_drag, induced_drag / total_drag])
 

@@ -59,6 +59,9 @@ var air_pressure : float = 0.0
 var angle_of_attack := 0.0
 var sideslip_angle := 0.0
 var altitude := 0.0
+var bank_angle := 0.0
+var heading := 0.0
+var inclination := 0.0
 
 func _enter_tree() -> void:
 	if Engine.is_editor_hint():
@@ -114,6 +117,10 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	local_angular_velocity = global_transform.basis.inverse() * angular_velocity
 	angle_of_attack = atan2(local_air_velocity.y, local_air_velocity.z)
 	sideslip_angle = atan2(-local_air_velocity.x, local_air_velocity.z)
+	bank_angle = rotation.z
+	heading = rotation.y
+	inclination = rotation.x
+	
 
 	var last_force_and_torque := calculate_aerodynamic_forces(air_velocity, angular_velocity, air_density, air_pressure)
 	var total_force_and_torque := last_force_and_torque

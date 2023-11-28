@@ -101,8 +101,10 @@ func _get_configuration_warnings() -> PackedStringArray:
 func _integrate_forces(state : PhysicsDirectBodyState3D) -> void:
 	current_gravity = state.total_gravity
 	var total_force_and_torque := calculate_forces(state)
-	apply_central_force(total_force_and_torque[0])
-	apply_torque(total_force_and_torque[1])
+	current_force = total_force_and_torque[0]
+	current_torque = total_force_and_torque[1]
+	apply_central_force(current_force)
+	apply_torque(current_torque)
 
 func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	#eventually implement wind

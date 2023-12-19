@@ -122,7 +122,6 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	bank_angle = rotation.z
 	heading = rotation.y
 	inclination = rotation.x
-	
 
 	var last_force_and_torque := calculate_aerodynamic_forces(air_velocity, angular_velocity, air_density, air_pressure)
 	var total_force_and_torque := last_force_and_torque

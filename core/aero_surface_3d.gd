@@ -30,7 +30,7 @@ var relative_position := Vector3.ZERO
 var altitude := 0.0
 
 #Calculating air velocity relative to the surface's coordinate system.
-var air_velocity := Vector3.ZERO
+var local_air_velocity := Vector3.ZERO
 var air_speed := 0.0
 var sweep_angle := 0.0
 var drag_direction := Vector3.ZERO
@@ -80,18 +80,17 @@ func calculate_forces(_world_air_velocity : Vector3, _air_density : float, _air_
 
 	#calculate some common values, some necessary for debugging
 	#air velocity in local space
-	air_velocity = global_transform.basis.inverse() * world_air_velocity
-	air_speed = air_velocity.length()
-	sweep_angle =  abs(atan2(air_velocity.z, air_velocity.x) / PI - 0.5)
-	drag_direction = global_transform.basis * (air_velocity.normalized()).normalized()
+	local_air_velocity = global_transform.basis.inverse() * world_air_velocity
+	air_speed = world_air_velocity.length()
+	sweep_angle =  abs(atan2(local_air_velocity.z, local_air_velocity.x) / PI - 0.5)
+	drag_direction = world_air_velocity.normalized()
 	var right_facing_air_vector : Vector3 = world_air_velocity.cross(-global_transform.basis.y).normalized()
 	lift_direction = drag_direction.cross(right_facing_air_vector).normalized()
-	mach = AeroUnits.speed_to_mach_at_altitude(air_velocity.length(), altitude)
+	mach = AeroUnits.speed_to_mach_at_altitude(world_air_velocity.length(), altitude)
 	dynamic_pressure = 0.5 * AeroUnits.get_density_at_altitude(altitude) * (air_speed * air_speed)
-	angle_of_attack = atan2(air_velocity.y, air_velocity.z)
+	angle_of_attack = atan2(local_air_velocity.y, local_air_velocity.z)
 	area = wing_config.chord * wing_config.span
 	projected_wing_area = abs(wing_config.span * wing_config.chord * sin(angle_of_attack))
-
 	return PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 
 func update_debug_visibility(_show_debug : bool = false, _show_lift : bool = false, _show_drag : bool = false, _show_airflow : bool = false) -> void:
@@ -116,4 +115,4 @@ func update_debug_vectors() -> void:
 	#not ensuring proper transforms when aero_surface has a parent that is not aerobody
 	lift_debug_vector.value = global_transform.basis.inverse() * _current_lift * debug_scale
 	drag_debug_vector.value = global_transform.basis.inverse() * _current_drag * debug_scale
-	airflow_debug_vector.value = global_transform.basis.inverse() * air_velocity * debug_scale
+	airflow_debug_vector.value = global_transform.basis.inverse() * local_air_velocity * debug_scale

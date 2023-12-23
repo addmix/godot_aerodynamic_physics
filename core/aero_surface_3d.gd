@@ -77,11 +77,15 @@ func calculate_forces(_world_air_velocity : Vector3, _air_density : float, _air_
 	air_pressure = _air_pressure
 	relative_position = _relative_position
 	altitude = _altitude
-
-	#calculate some common values, some necessary for debugging
-	#air velocity in local space
 	local_air_velocity = global_transform.basis.inverse() * world_air_velocity
 	air_speed = world_air_velocity.length()
+	
+	#prevent crash when sitting still
+	if is_equal_approx(air_speed, 0.0):
+		return PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
+	
+	#calculate some common values, some necessary for debugging
+	#air velocity in local space
 	sweep_angle =  abs(atan2(local_air_velocity.z, local_air_velocity.x) / PI - 0.5)
 	drag_direction = world_air_velocity.normalized()
 	var right_facing_air_vector : Vector3 = world_air_velocity.cross(-global_transform.basis.y).normalized()

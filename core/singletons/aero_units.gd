@@ -1,3 +1,4 @@
+@tool
 extends Node
 
 #air is 1.402

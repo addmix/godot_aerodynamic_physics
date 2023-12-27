@@ -7,23 +7,26 @@ class_name AeroBody3D
 	set(x):
 		show_debug = x
 		_update_debug_visibility()
+@export var update_debug : bool = false
+
 @export_group("Options")
-@export var show_center_of_mass : bool = true:
-	set(x):
-		show_center_of_mass = x
-		_update_debug_visibility()
-@export var show_center_of_lift : bool = true:
-	set(x):
-		show_center_of_lift = x
-		_update_debug_visibility()
-@export var show_center_of_thrust : bool = true:
-	set(x):
-		show_center_of_thrust = x
-		_update_debug_visibility()
 @export var show_wing_debug_vectors : bool = true:
 	set(x):
 		show_wing_debug_vectors = x
 		_update_debug_visibility()
+@export var debug_scale : float = 0.001:
+	set(x):
+		debug_scale = x
+		_update_debug_scale()
+@export var debug_width : float = 0.05:
+	set(x):
+		debug_width = x
+		_update_debug_scale()
+@export var debug_center_width : float = 0.2:
+	set(x):
+		debug_center_width = x
+		_update_debug_scale()
+@export_subgroup("Vectors")
 @export var show_lift : bool = true:
 	set(x):
 		show_lift = x
@@ -32,10 +35,37 @@ class_name AeroBody3D
 	set(x):
 		show_drag = x
 		_update_debug_visibility()
-@export var show_airflow : bool = true:
+
+
+@export_group("Physics")
+@export var show_linear_velocity : bool = true:
 	set(x):
-		show_airflow = x
+		show_linear_velocity = x
 		_update_debug_visibility()
+@export var show_angular_velocity : bool = true:
+	set(x):
+		show_angular_velocity = x
+		_update_debug_visibility()
+
+@export_subgroup("Centers")
+
+@export var show_center_of_lift : bool = true:
+	set(x):
+		show_center_of_lift = x
+		_update_debug_visibility()
+@export var show_center_of_drag : bool = true:
+	set(x):
+		show_center_of_drag = x
+		_update_debug_visibility()
+@export var show_center_of_mass : bool = true:
+	set(x):
+		show_center_of_mass = x
+		_update_debug_visibility()
+@export var show_center_of_thrust : bool = true:
+	set(x):
+		show_center_of_thrust = x
+		_update_debug_visibility()
+
 @export_group("")
 @export_category("")
 
@@ -43,7 +73,7 @@ class_name AeroBody3D
 var SUBSTEPS = ProjectSettings.get_setting("physics/3d/aerodynamics/substeps", 0)
 var PREDICTION_TIMESTEP_FRACTION = 1.0 / float(SUBSTEPS)
 
-var aero_surfaces = []
+var aero_surfaces : Array[AeroSurface3D] = []
 
 var current_force := Vector3.ZERO
 var current_torque := Vector3.ZERO
@@ -63,6 +93,48 @@ var bank_angle := 0.0
 var heading := 0.0
 var inclination := 0.0
 
+
+#debug
+var linear_velocity_vector : Vector3D
+var angular_velocity_vector : Vector3D
+
+var lift_debug_vector : Vector3D
+var drag_debug_vector : Vector3D
+
+var mass_debug_point : Point3D
+var thrust_debug_vector : Vector3D
+
+func _init():
+	mass_debug_point = Point3D.new(Color(1, 1, 0), debug_center_width, true)
+	mass_debug_point.visible = false
+	mass_debug_point.sorting_offset = 0.0
+	add_child(mass_debug_point, INTERNAL_MODE_FRONT)
+	
+	lift_debug_vector = Vector3D.new(Color(0, 1, 1), debug_center_width, true)
+	lift_debug_vector.visible = false
+	lift_debug_vector.sorting_offset = 0.0
+	add_child(lift_debug_vector, INTERNAL_MODE_FRONT)
+	
+	drag_debug_vector = Vector3D.new(Color(1, 0, 0), debug_width, true)
+	drag_debug_vector.visible = false
+	drag_debug_vector.sorting_offset = -0.01
+	add_child(drag_debug_vector, INTERNAL_MODE_FRONT)
+	
+	thrust_debug_vector = Vector3D.new(Color(1, 0, 1), debug_width, true)
+	thrust_debug_vector.visible = false
+	thrust_debug_vector.sorting_offset = -0.02
+	add_child(thrust_debug_vector, INTERNAL_MODE_FRONT)
+	
+	linear_velocity_vector = Vector3D.new(Color(0, 0.5, 0.5), debug_width, false)
+	linear_velocity_vector.visible = false
+	linear_velocity_vector.sorting_offset = -0.03
+	mass_debug_point.add_child(linear_velocity_vector, INTERNAL_MODE_FRONT)
+	
+	angular_velocity_vector = Vector3D.new(Color(0, 0.333, 0), debug_width, false)
+	angular_velocity_vector.visible = false
+	angular_velocity_vector.sorting_offset = -0.04
+	mass_debug_point.add_child(angular_velocity_vector, INTERNAL_MODE_FRONT)
+
 func _enter_tree() -> void:
 	if Engine.is_editor_hint():
 		update_configuration_warnings()
@@ -76,7 +148,6 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		update_configuration_warnings()
 		return
-	_update_debug_visibility()
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray([])
@@ -97,6 +168,10 @@ func _get_configuration_warnings() -> PackedStringArray:
 			warnings.append("Angular damping is greater than 0. Unexpected aerodynamic characteristics will be present.")
 
 	return warnings
+
+func _physics_process(delta):
+	if show_debug and update_debug:
+		_update_debug()
 
 func _integrate_forces(state : PhysicsDirectBodyState3D) -> void:
 	current_gravity = state.total_gravity
@@ -123,13 +198,13 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	heading = rotation.y
 	inclination = rotation.x
 
-	var last_force_and_torque := calculate_aerodynamic_forces(air_velocity, angular_velocity, air_density, air_pressure)
+	var last_force_and_torque := calculate_aerodynamic_forces(air_velocity, angular_velocity, air_density)
 	var total_force_and_torque := last_force_and_torque
 
-	for i in SUBSTEPS:
+	for i : int in SUBSTEPS:
 		var linear_velocity_prediction : Vector3 = predict_linear_velocity(last_force_and_torque[0] + state.total_gravity * mass)
 		var angular_velocity_prediction : Vector3 = predict_angular_velocity(last_force_and_torque[1])
-		var force_and_torque_prediction : PackedVector3Array = calculate_aerodynamic_forces(linear_velocity_prediction, angular_velocity_prediction, air_density, air_pressure)
+		var force_and_torque_prediction : PackedVector3Array = calculate_aerodynamic_forces(linear_velocity_prediction, angular_velocity_prediction, air_density)
 		#add to total forces
 		total_force_and_torque[0] += force_and_torque_prediction[0]
 		total_force_and_torque[1] += force_and_torque_prediction[1]
@@ -138,21 +213,15 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	total_force_and_torque[1] = total_force_and_torque[1] / (SUBSTEPS + 1)
 	return total_force_and_torque
 
-static func v3_clamp_length(v : Vector3, length : float) -> Vector3:
-	if v.length_squared() == 0:
-		return v
-
-	return v.normalized() * min(length, v.length())
-
-func calculate_aerodynamic_forces(_velocity : Vector3, _angular_velocity : Vector3, air_density : float, air_pressure : float) -> PackedVector3Array:
+func calculate_aerodynamic_forces(_velocity : Vector3, _angular_velocity : Vector3, air_density : float) -> PackedVector3Array:
 	var force : Vector3
 	var torque : Vector3
 
-	for surface in aero_surfaces:
+	for surface : AeroSurface3D in aero_surfaces:
 		#relative_position is the position of the surface, centered on the AeroBody's origin, with the global rotation
 		var relative_position : Vector3 = global_transform.basis * (surface.transform.origin - center_of_mass)
-
-		var force_and_torque : PackedVector3Array = surface.calculate_forces(-(_velocity + _angular_velocity.cross(relative_position)), air_density, air_pressure, relative_position, position.y)
+		
+		var force_and_torque : PackedVector3Array = surface.calculate_forces(-(_velocity + _angular_velocity.cross(relative_position)), air_density, relative_position, position.y)
 		force += force_and_torque[0]
 		torque += force_and_torque[1]
 
@@ -171,6 +240,86 @@ func predict_angular_velocity(torque : Vector3) -> Vector3:
 
 	return angular_velocity + get_physics_process_delta_time() * PREDICTION_TIMESTEP_FRACTION * (get_inverse_inertia_tensor() * angular_velocity_change_in_diagonal_space)
 
-func _update_debug_visibility():
-	for surface in aero_surfaces:
-		surface.update_debug_visibility(show_debug and show_wing_debug_vectors, show_lift, show_drag, show_airflow)
+
+#debug
+
+
+func _update_debug() -> void:
+	aero_surfaces = []
+	for i in get_children():
+		if i is AeroSurface3D:
+			aero_surfaces.append(i)
+	
+	_update_debug_visibility()
+	_update_debug_scale()
+	
+	mass_debug_point.position = center_of_mass
+	#thrust_debug_vector.position = center of thrust
+	
+	linear_velocity_vector.value = global_transform.basis.inverse() * linear_velocity * 0.01
+	angular_velocity_vector.value = global_transform.basis.inverse() * angular_velocity
+	
+	if is_equal_approx(linear_velocity.length_squared(), 0.0):
+		return
+	if Engine.is_editor_hint():
+		calculate_aerodynamic_forces(linear_velocity, angular_velocity, AeroUnits.get_density_at_altitude(position.y))
+	
+	
+	var drag_direction = -linear_velocity.normalized()
+	var right_facing_air_vector : Vector3 = -linear_velocity.cross(-global_transform.basis.y).normalized()
+	var lift_direction = drag_direction.cross(right_facing_air_vector).normalized()
+	
+	var lift_sum := 0.0
+	var drag_sum := 0.0
+	for surface : AeroSurface3D in aero_surfaces:
+		lift_sum += surface.lift_force
+		drag_sum += surface.drag_force
+	
+	var lift_position_sum := Vector3.ZERO
+	var drag_position_sum := Vector3.ZERO
+	for surface : AeroSurface3D in aero_surfaces:
+		lift_position_sum += surface.transform.origin * surface.lift_force
+		drag_position_sum += surface.transform.origin * surface.drag_force
+	
+	lift_debug_vector.value = global_transform.basis.inverse() * lift_direction * lift_sum * debug_scale
+	drag_debug_vector.value = global_transform.basis.inverse() * drag_direction * drag_sum * debug_scale
+	
+	
+	if is_equal_approx(lift_sum, 0.0):
+		lift_sum = 1.0
+	lift_debug_vector.position = lift_position_sum / lift_sum / aero_surfaces.size()
+	if is_equal_approx(drag_sum, 0.0):
+		drag_sum = 1.0
+	drag_debug_vector.position = drag_position_sum / drag_sum / aero_surfaces.size()
+	
+	
+	
+	
+
+func _update_debug_visibility() -> void:
+	#update aerosurface visibility
+	for surface : AeroSurface3D in aero_surfaces:
+		surface.update_debug_visibility(show_debug and show_wing_debug_vectors, show_lift, show_drag)
+	
+	#update self visibility
+	linear_velocity_vector.visible = show_debug and show_linear_velocity
+	angular_velocity_vector.visible = show_debug and show_angular_velocity
+
+	lift_debug_vector.visible = show_debug and show_lift
+	drag_debug_vector.visible = show_debug and show_drag
+
+	mass_debug_point.visible = show_debug and show_center_of_mass
+	thrust_debug_vector.visible = show_debug and show_center_of_thrust
+
+func _update_debug_scale() -> void:
+	for surface : AeroSurface3D in aero_surfaces:
+		surface.update_debug_scale(debug_scale, debug_width)
+	
+	lift_debug_vector.width = debug_center_width
+	mass_debug_point.width = debug_center_width
+	thrust_debug_vector.width = debug_width
+	
+	linear_velocity_vector.width = debug_width
+	angular_velocity_vector.width = debug_width
+	drag_debug_vector.width = debug_width
+	thrust_debug_vector.width = debug_width

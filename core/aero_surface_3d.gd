@@ -11,12 +11,12 @@ class_name AeroSurface3D
 			wing_config.changed.connect(update_gizmos)
 			update_gizmos()
 
-@export_category("Debug")
+@export_group("Debug")
 @export var debug_scale : float = 0.001
+@export var debug_width : float = 0.05
 @export var show_debug : bool = false
 @export var show_lift : bool = true
 @export var show_drag : bool = true
-@export var show_airflow : bool = true
 
 @export_category("")
 @export var flap_angle : float = 0.0:
@@ -25,7 +25,6 @@ class_name AeroSurface3D
 
 var world_air_velocity := Vector3.ZERO
 var air_density := 0.0
-var air_pressure := 0.0
 var relative_position := Vector3.ZERO
 var altitude := 0.0
 
@@ -33,8 +32,10 @@ var altitude := 0.0
 var local_air_velocity := Vector3.ZERO
 var air_speed := 0.0
 var sweep_angle := 0.0
-var drag_direction := Vector3.ZERO
 var lift_direction := Vector3.ZERO
+var lift_force : float = 0.0
+var drag_direction := Vector3.ZERO
+var drag_force : float = 0.0
 
 var mach : float = 0.0
 var dynamic_pressure : float = 0.0
@@ -48,7 +49,18 @@ var _current_torque : Vector3
 
 var lift_debug_vector : Vector3D
 var drag_debug_vector : Vector3D
-var airflow_debug_vector : Vector3D
+
+func _init():
+	#initialize debug vectors
+	lift_debug_vector = Vector3D.new(Color(0, 0, 1))
+	lift_debug_vector.visible = false
+	lift_debug_vector.sorting_offset = 0.02
+	add_child(lift_debug_vector, INTERNAL_MODE_FRONT)
+	
+	drag_debug_vector = Vector3D.new(Color(1, 0, 0))
+	drag_debug_vector.visible = false
+	drag_debug_vector.sorting_offset = 0.01
+	add_child(drag_debug_vector, INTERNAL_MODE_FRONT)
 
 func _enter_tree() -> void:
 	#initialize signal connections from resources
@@ -57,24 +69,12 @@ func _enter_tree() -> void:
 			wing_config.changed.connect(update_gizmos)
 			update_gizmos()
 
-	#initialize debug vectors
-	lift_debug_vector = Vector3D.new(Color(0, 0, 1))
-	lift_debug_vector.visible = false
-	add_child(lift_debug_vector, INTERNAL_MODE_FRONT)
-	drag_debug_vector = Vector3D.new(Color(1, 0, 0))
-	drag_debug_vector.visible = false
-	add_child(drag_debug_vector, INTERNAL_MODE_FRONT)
-	airflow_debug_vector = Vector3D.new(Color(0, 1, 0))
-	airflow_debug_vector.visible = false
-	add_child(airflow_debug_vector, INTERNAL_MODE_FRONT)
-
 func _physics_process(delta: float) -> void:
 	update_debug_vectors()
 
-func calculate_forces(_world_air_velocity : Vector3, _air_density : float, _air_pressure : float, _relative_position : Vector3, _altitude : float) -> PackedVector3Array:
+func calculate_forces(_world_air_velocity : Vector3, _air_density : float, _relative_position : Vector3, _altitude : float) -> PackedVector3Array:
 	world_air_velocity = _world_air_velocity
 	air_density = _air_density
-	air_pressure = _air_pressure
 	relative_position = _relative_position
 	altitude = _altitude
 	local_air_velocity = global_transform.basis.inverse() * world_air_velocity
@@ -95,28 +95,34 @@ func calculate_forces(_world_air_velocity : Vector3, _air_density : float, _air_
 	angle_of_attack = atan2(local_air_velocity.y, local_air_velocity.z)
 	area = wing_config.chord * wing_config.span
 	projected_wing_area = abs(wing_config.span * wing_config.chord * sin(angle_of_attack))
+	
 	return PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 
-func update_debug_visibility(_show_debug : bool = false, _show_lift : bool = false, _show_drag : bool = false, _show_airflow : bool = false) -> void:
-	visible = _show_debug
+func update_debug_visibility(_show_debug : bool = false, _show_lift : bool = false, _show_drag : bool = false) -> void:
 	show_debug = _show_debug
 	show_lift = _show_lift
 	show_drag = _show_drag
-	show_airflow = _show_airflow
 
 	#check that debug vectors exist
-	if !lift_debug_vector or !drag_debug_vector or !airflow_debug_vector:
+	if !lift_debug_vector or !drag_debug_vector:
 		return
 	lift_debug_vector.visible = show_debug and show_lift
 	drag_debug_vector.visible = show_debug and show_drag
-	airflow_debug_vector.visible = show_debug and show_airflow
 
+func update_debug_scale(_scale : float, _width : float) -> void:
+	debug_scale = _scale
+	debug_width = _width
+	
+	lift_debug_vector.width = debug_width
+	drag_debug_vector.width = debug_width
 
 func update_debug_vectors() -> void:
 	#check that debug vectors exist
-	if !lift_debug_vector or !drag_debug_vector or !airflow_debug_vector:
+	if !lift_debug_vector or !drag_debug_vector:
 		return
-	#not ensuring proper transforms when aero_surface has a parent that is not aerobody
-	lift_debug_vector.value = global_transform.basis.inverse() * _current_lift * debug_scale
-	drag_debug_vector.value = global_transform.basis.inverse() * _current_drag * debug_scale
-	airflow_debug_vector.value = global_transform.basis.inverse() * local_air_velocity * debug_scale
+	
+	#don't update invisible vectors
+	if lift_debug_vector.visible:
+		lift_debug_vector.value = global_transform.basis.inverse() * _current_lift * debug_scale
+	if drag_debug_vector.visible:
+		drag_debug_vector.value = global_transform.basis.inverse() * _current_drag * debug_scale

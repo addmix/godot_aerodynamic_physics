@@ -15,12 +15,12 @@ var gizmo_plugin_instance = gizmo_plugin.new()
 
 #nodes
 const aero_body_3d = preload("./core/aero_body_3d.gd")
-const aero_influencer_3d = preload("./core/aero_influencer_3d.gd")
-const aero_rotator_3d = preload("./core/aero_rotator_3d.gd")
-const aero_surface_3d = preload("./core/aero_surface_3d.gd")
-const aero_surface_config = preload("./core/aero_surface_config.gd")
-const manual_aero_surface_3d = preload("./core/manual_aero_surface_3d.gd")
-const manual_aero_surface_config = preload("./core/manual_aero_surface_config.gd")
+const aero_influencer_3d = preload("./core/aero_influencer_3d/aero_influencer_3d.gd")
+const aero_rotator_3d = preload("./core/aero_influencer_3d/aero_rotator_3d/aero_rotator_3d.gd")
+const aero_surface_3d = preload("./core/aero_influencer_3d/aero_surface_3d/aero_surface_3d.gd")
+const aero_surface_config = preload("./core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd")
+const manual_aero_surface_3d = preload("./core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd")
+const manual_aero_surface_config = preload("./core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_config.gd")
 #const procedural_aero_surface_3d = preload("./core/aero_influencer_3d/aero_surface_3d/procedural_aero_surface_3d/procedural_aero_surface_3d.gd")
 #const procedural_aero_surface_config = preload("./core/aero_influencer_3d/aero_surface_3d/procedural_aero_surface_3d/procedural_aero_surface_config.gd")
 

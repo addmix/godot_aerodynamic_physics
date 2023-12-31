@@ -9,14 +9,14 @@ class_name ManualAeroSurfaceConfig
 @export var max_drag_coefficient : float = 1.0
 @export var drag_aoa_curve : Curve
 
-func _init(_lift_aoa_curve : Curve = preload("./resources/default_lift_aoa_curve.tres").duplicate(), _drag_aoa_curve : Curve = preload("./resources/default_drag_aoa_curve.tres").duplicate()) -> void:
+func _init(_lift_aoa_curve : Curve = preload("../../../resources/default_lift_aoa_curve.tres").duplicate(), _drag_aoa_curve : Curve = preload("../../../resources/default_drag_aoa_curve.tres").duplicate()) -> void:
 	lift_aoa_curve = _lift_aoa_curve
 	drag_aoa_curve = _drag_aoa_curve
 
 	if lift_aoa_curve == null:
-		lift_aoa_curve = preload("./resources/default_lift_aoa_curve.tres").duplicate()
+		lift_aoa_curve = preload("../../../resources/default_lift_aoa_curve.tres").duplicate()
 	if drag_aoa_curve == null:
-		drag_aoa_curve = preload("./resources/default_drag_aoa_curve.tres").duplicate()
+		drag_aoa_curve = preload("../../../resources/default_drag_aoa_curve.tres").duplicate()
 
 func get_lift_coefficient(aoa : float) -> float:
 	return remap(lift_aoa_curve.sample(aoa / PI / 2.0 + 0.5), -1, 1, min_lift_coefficient, max_lift_coefficient)

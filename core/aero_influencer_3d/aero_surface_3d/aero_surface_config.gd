@@ -54,11 +54,11 @@ class_name AeroSurfaceConfig
 
 @export_group("Curves")
 
-@export var sweep_drag_multiplier_curve : Curve = preload("./resources/default_sweep_drag_multiplier.tres"):
+@export var sweep_drag_multiplier_curve : Curve = preload("../../resources/default_sweep_drag_multiplier.tres"):
 	set(value):
 		sweep_drag_multiplier_curve = value
 		emit_changed()
-@export var drag_at_mach_multiplier_curve : Curve = preload("./resources/default_drag_at_mach_curve.tres"):
+@export var drag_at_mach_multiplier_curve : Curve = preload("../../resources/default_drag_at_mach_curve.tres"):
 	set(value):
 		drag_at_mach_multiplier_curve = value
 		emit_changed()
@@ -71,7 +71,7 @@ func get_drag_multiplier_at_mach(mach : float) -> float:
 
 @export_group("")
 
-func _init(_chord : float = 1.0, _span : float = 2.0, _skin_friction : float = 0.001, _auto_aspect_ratio : bool = true, _aspect_ratio : float = 2.0, _zero_lift_aoa : float = 0.0, _flap_fraction : float = 0.0, _is_control_surface : bool = false, _sweep_drag_multiplier_curve : Curve = preload("./resources/default_sweep_drag_multiplier.tres").duplicate(), _drag_at_mach_multiplier_curve : Curve = preload("./resources/default_drag_at_mach_curve.tres").duplicate(), _buffet_aoa_curve : Curve = Curve.new().duplicate()) -> void:
+func _init(_chord : float = 1.0, _span : float = 2.0, _skin_friction : float = 0.001, _auto_aspect_ratio : bool = true, _aspect_ratio : float = 2.0, _zero_lift_aoa : float = 0.0, _flap_fraction : float = 0.0, _is_control_surface : bool = false, _sweep_drag_multiplier_curve : Curve = preload("../../resources/default_sweep_drag_multiplier.tres").duplicate(), _drag_at_mach_multiplier_curve : Curve = preload("../../resources/default_drag_at_mach_curve.tres").duplicate(), _buffet_aoa_curve : Curve = Curve.new().duplicate()) -> void:
 	chord = _chord
 	span = _span
 	skin_friction = _skin_friction
@@ -87,6 +87,6 @@ func _init(_chord : float = 1.0, _span : float = 2.0, _skin_friction : float = 0
 	buffet_aoa_curve = _buffet_aoa_curve
 
 	if sweep_drag_multiplier_curve == null:
-		sweep_drag_multiplier_curve = preload("./resources/default_sweep_drag_multiplier.tres").duplicate()
+		sweep_drag_multiplier_curve = preload("../../resources/default_sweep_drag_multiplier.tres").duplicate()
 	if drag_at_mach_multiplier_curve == null:
-		drag_at_mach_multiplier_curve = preload("./resources/default_drag_at_mach_curve.tres").duplicate()
+		drag_at_mach_multiplier_curve = preload("../../resources/default_drag_at_mach_curve.tres").duplicate()

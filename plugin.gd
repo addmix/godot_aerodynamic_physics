@@ -15,12 +15,14 @@ var gizmo_plugin_instance = gizmo_plugin.new()
 
 #nodes
 const aero_body_3d = preload("./core/aero_body_3d.gd")
+const aero_influencer_3d = preload("./core/aero_influencer_3d.gd")
+const aero_rotator_3d = preload("./core/aero_rotator_3d.gd")
 const aero_surface_3d = preload("./core/aero_surface_3d.gd")
 const aero_surface_config = preload("./core/aero_surface_config.gd")
 const manual_aero_surface_3d = preload("./core/manual_aero_surface_3d.gd")
 const manual_aero_surface_config = preload("./core/manual_aero_surface_config.gd")
-#const procedural_aero_surface_3d = preload("./core/procedural_aero_surface_3d.gd")
-#const procedural_aero_surface_config = preload("./core/procedural_aero_surface_config.gd")
+#const procedural_aero_surface_3d = preload("./core/aero_influencer_3d/aero_surface_3d/procedural_aero_surface_3d/procedural_aero_surface_3d.gd")
+#const procedural_aero_surface_config = preload("./core/aero_influencer_3d/aero_surface_3d/procedural_aero_surface_3d/procedural_aero_surface_config.gd")
 
 func _enter_tree():
 	SettingsUtils.ifndef("physics/3d/aerodynamics/substeps", 1)
@@ -28,6 +30,8 @@ func _enter_tree():
 	add_node_3d_gizmo_plugin(gizmo_plugin_instance)
 	
 	add_custom_type("AeroBody3D", "VehicleBody3D", aero_body_3d, node3d_icon)
+	add_custom_type("AeroInfluencer3D", "Node3D", aero_influencer_3d, node3d_icon)
+	add_custom_type("AeroRotator3D", "Node3D", aero_rotator_3d, node3d_icon)
 	add_custom_type("AeroSurface3D", "Node3D", aero_surface_3d, node3d_icon)
 	add_custom_type("AeroSurfaceConfig", "Resource", aero_surface_config, object_icon)
 	add_custom_type("ManualAeroSurface3D", "Node3D", manual_aero_surface_3d, node3d_icon)
@@ -35,6 +39,8 @@ func _enter_tree():
 
 func _exit_tree():
 	remove_custom_type("AeroBody3D")
+	remove_custom_type("AeroInfluencer3D")
+	remove_custom_type("AeroRotator3D")
 	remove_custom_type("AeroSurface3D")
 	remove_custom_type("AeroSurfaceConfig")
 	remove_custom_type("ManualAeroSurface3D")

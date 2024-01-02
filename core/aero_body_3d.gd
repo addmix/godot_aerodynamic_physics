@@ -140,6 +140,7 @@ func _enter_tree() -> void:
 	if Engine.is_editor_hint():
 		update_configuration_warnings()
 	
+	aero_influencers = []
 	for i in get_children():
 		if i is AeroInfluencer3D:
 			aero_influencers.append(i)
@@ -197,18 +198,18 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	heading = rotation.y
 	inclination = rotation.x
 
-	var substep_delta : float = state.step / SUBSTEPS + 1
+	var substep_delta : float = state.step / (SUBSTEPS + 1)
 	var last_force_and_torque := calculate_aerodynamic_forces(air_velocity, angular_velocity, air_density)
 	var total_force_and_torque := last_force_and_torque
 	
 	for i : int in SUBSTEPS:
 		var linear_velocity_prediction : Vector3 = predict_linear_velocity(last_force_and_torque[0] + state.total_gravity * mass)
 		var angular_velocity_prediction : Vector3 = predict_angular_velocity(last_force_and_torque[1])
-		var force_and_torque_prediction : PackedVector3Array = calculate_aerodynamic_forces(linear_velocity_prediction, angular_velocity_prediction, air_density, substep_delta)
+		last_force_and_torque = calculate_aerodynamic_forces(linear_velocity_prediction, angular_velocity_prediction, air_density, substep_delta)
 		
 		#add to total forces
-		total_force_and_torque[0] += force_and_torque_prediction[0]
-		total_force_and_torque[1] += force_and_torque_prediction[1]
+		total_force_and_torque[0] += last_force_and_torque[0]
+		total_force_and_torque[1] += last_force_and_torque[1]
 
 	total_force_and_torque[0] = total_force_and_torque[0] / (SUBSTEPS + 1)
 	total_force_and_torque[1] = total_force_and_torque[1] / (SUBSTEPS + 1)
@@ -229,7 +230,7 @@ func calculate_aerodynamic_forces(_velocity : Vector3, _angular_velocity : Vecto
 	return PackedVector3Array([force, torque])
 
 func predict_linear_velocity(force : Vector3) -> Vector3:
-	return linear_velocity + get_physics_process_delta_time() * PREDICTION_TIMESTEP_FRACTION * force / mass
+	return linear_velocity + get_physics_process_delta_time() * (PREDICTION_TIMESTEP_FRACTION * force / mass)
 
 func predict_angular_velocity(torque : Vector3) -> Vector3:
 	var torque_in_diagonal_space : Vector3 = get_inverse_inertia_tensor() * torque
@@ -263,25 +264,8 @@ func _update_debug() -> void:
 	if is_equal_approx(linear_velocity.length_squared(), 0.0):
 		return
 	
-	var calculated_force_and_torque : PackedVector3Array
 	if Engine.is_editor_hint():
-		var last_force_and_torque := calculate_aerodynamic_forces(linear_velocity, angular_velocity, AeroUnits.get_density_at_altitude(position.y))
-		var total_force_and_torque := last_force_and_torque
-		
-		for i : int in SUBSTEPS:
-			
-			var linear_velocity_prediction : Vector3 = predict_linear_velocity(last_force_and_torque[0] + current_gravity * Vector3(0, -1, 0) * mass)
-			var angular_velocity_prediction : Vector3 = predict_angular_velocity(last_force_and_torque[1])
-			var force_and_torque_prediction : PackedVector3Array = calculate_aerodynamic_forces(linear_velocity_prediction, angular_velocity_prediction, AeroUnits.get_density_at_altitude(position.y))
-			#add to total forces
-			total_force_and_torque[0] += force_and_torque_prediction[0]
-			total_force_and_torque[1] += force_and_torque_prediction[1]
-			
-			total_force_and_torque[0] = total_force_and_torque[0] / (SUBSTEPS + 1)
-			total_force_and_torque[1] = total_force_and_torque[1] / (SUBSTEPS + 1)
-		
-		calculated_force_and_torque = total_force_and_torque
-	
+		var last_force_and_torque := calculate_aerodynamic_forces(linear_velocity, angular_velocity, air_density)
 	
 	#force and torque debug
 	if aero_influencers.size() > 0:
@@ -293,7 +277,7 @@ func _update_debug() -> void:
 		
 		
 	
-	#lift and drag debug
+	##lift and drag debug
 	if aero_surfaces.size() > 0:
 		var lift_sum := 0.0
 		var lift_sum_vector := Vector3.ZERO
@@ -323,6 +307,7 @@ func _update_debug() -> void:
 
 func _update_debug_visibility() -> void:
 	#update aerosurface visibility
+	
 	for influencer : AeroInfluencer3D in aero_influencers:
 		influencer.update_debug_visibility(show_debug and show_wing_debug_vectors)
 	

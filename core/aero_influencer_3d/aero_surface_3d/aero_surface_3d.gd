@@ -36,12 +36,12 @@ func _init():
 	super._init()
 	#initialize debug vectors
 	lift_debug_vector = Vector3D.new(Color(0, 0, 1))
-	lift_debug_vector.visible = true
+	lift_debug_vector.visible = false
 	lift_debug_vector.sorting_offset = 0.02
 	add_child(lift_debug_vector, INTERNAL_MODE_FRONT)
 	
 	drag_debug_vector = Vector3D.new(Color(1, 0, 0))
-	drag_debug_vector.visible = true
+	drag_debug_vector.visible = false
 	drag_debug_vector.sorting_offset = 0.01
 	add_child(drag_debug_vector, INTERNAL_MODE_FRONT)
 
@@ -70,8 +70,8 @@ func update_debug_visibility(_show_debug : bool = false) -> void:
 	super.update_debug_visibility(_show_debug)
 	#check that debug vectors exist
 	if lift_debug_vector and drag_debug_vector:
-		lift_debug_vector.visible = show_debug
-		drag_debug_vector.visible = show_debug
+		lift_debug_vector.visible = show_debug and show_lift
+		drag_debug_vector.visible = show_debug and show_drag
 
 func update_debug_scale(_scale : float, _width : float) -> void:
 	super.update_debug_scale(_scale, _width)

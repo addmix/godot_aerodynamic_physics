@@ -31,12 +31,12 @@ var torque_debug_vector : Vector3D
 func _init():
 	#initialize debug vectors
 	force_debug_vector = Vector3D.new(Color(1, 1, 1), debug_width, true)
-	force_debug_vector.visible = true
+	force_debug_vector.visible = false
 	force_debug_vector.sorting_offset = 0.02
 	add_child(force_debug_vector, INTERNAL_MODE_FRONT)
 	
 	torque_debug_vector = Vector3D.new(Color(0, 0, 0))
-	torque_debug_vector.visible = true
+	torque_debug_vector.visible = false
 	torque_debug_vector.sorting_offset = 0.01
 	add_child(torque_debug_vector, INTERNAL_MODE_FRONT)
 

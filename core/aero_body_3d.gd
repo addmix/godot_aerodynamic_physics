@@ -198,7 +198,7 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	heading = rotation.y
 	inclination = rotation.x
 
-	var substep_delta : float = state.step / (SUBSTEPS + 1)
+	var substep_delta : float = state.step / SUBSTEPS
 	var last_force_and_torque := calculate_aerodynamic_forces(air_velocity, angular_velocity, air_density)
 	var total_force_and_torque := last_force_and_torque
 	
@@ -222,7 +222,7 @@ func calculate_aerodynamic_forces(_velocity : Vector3, _angular_velocity : Vecto
 	for influencer : AeroInfluencer3D in aero_influencers:
 		#relative_position is the position of the surface, centered on the AeroBody's origin, with the global rotation
 		var relative_position : Vector3 = global_transform.basis * (influencer.transform.origin - center_of_mass)
-		var force_and_torque : PackedVector3Array = influencer._calculate_forces(-(_velocity + _angular_velocity.cross(relative_position)), air_density, relative_position, position.y, substep_delta)
+		var force_and_torque : PackedVector3Array = influencer._calculate_forces(-(_velocity + _angular_velocity.cross(relative_position)), _angular_velocity, air_density, relative_position, position.y, substep_delta)
 		
 		force += force_and_torque[0]
 		torque += force_and_torque[1]

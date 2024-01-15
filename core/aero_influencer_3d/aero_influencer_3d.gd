@@ -11,6 +11,7 @@ class_name AeroInfluencer3D
 @export var show_torque : bool = true
 
 var world_air_velocity := Vector3.ZERO
+var world_angular_velocity := Vector3.ZERO
 var air_density := 0.0
 var relative_position := Vector3.ZERO
 var altitude := 0.0
@@ -43,8 +44,9 @@ func _init():
 func _physics_process(delta: float) -> void:
 	update_debug_vectors()
 
-func _calculate_forces(_world_air_velocity : Vector3, _air_density : float, _relative_position : Vector3, _altitude : float, substep_delta : float = 0.0) -> PackedVector3Array:
+func _calculate_forces(_world_air_velocity : Vector3, _world_angular_velocity : Vector3, _air_density : float, _relative_position : Vector3, _altitude : float, substep_delta : float = 0.0) -> PackedVector3Array:
 	world_air_velocity = _world_air_velocity
+	world_angular_velocity = _world_angular_velocity
 	air_speed = world_air_velocity.length()
 	#prevent crash when sitting still
 	if is_equal_approx(air_speed, 0.0):

@@ -22,6 +22,8 @@ func _calculate_forces(_world_air_velocity : Vector3, _world_angular_velocity : 
 	var force : Vector3 = Vector3.ZERO
 	var torque : Vector3 = Vector3.ZERO
 	
+	
+	
 	for influencer : AeroInfluencer3D in aero_influencers:
 		#position relative to AeroBody origin, using global rotation
 		var influencer_relative_position : Vector3 = (global_transform.basis * influencer.position)

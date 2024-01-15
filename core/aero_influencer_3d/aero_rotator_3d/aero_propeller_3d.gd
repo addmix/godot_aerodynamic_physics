@@ -45,8 +45,6 @@ func update_propeller_amount() -> void:
 	if not propeller:
 		push_warning("No propeller defined. Aborting...")
 	
-	print("uopdate")
-	
 	var change_in_amount : int = propeller_amount - propeller_instances.size()
 	
 	#return early

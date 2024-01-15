@@ -52,8 +52,8 @@ func _enter_tree() -> void:
 			wing_config.changed.connect(update_gizmos)
 			update_gizmos()
 
-func _calculate_forces(_world_air_velocity : Vector3, _air_density : float, _relative_position : Vector3, _altitude : float, substep_delta : float = 0.0) -> PackedVector3Array:
-	super._calculate_forces(_world_air_velocity, _air_density, _relative_position, _altitude, substep_delta)
+func _calculate_forces(_world_air_velocity : Vector3, _world_angular_velocity : Vector3, _air_density : float, _relative_position : Vector3, _altitude : float, substep_delta : float = 0.0) -> PackedVector3Array:
+	super._calculate_forces(_world_air_velocity, _world_angular_velocity, _air_density, _relative_position, _altitude, substep_delta)
 	#calculate some common values, some necessary for debugging
 	#air velocity in local space
 	sweep_angle =  abs(atan2(local_air_velocity.z, local_air_velocity.x) / PI - 0.5)

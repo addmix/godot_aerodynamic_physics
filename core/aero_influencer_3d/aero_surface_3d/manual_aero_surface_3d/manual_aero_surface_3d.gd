@@ -4,8 +4,8 @@ class_name ManualAeroSurface3D
 
 @export var manual_config := ManualAeroSurfaceConfig.new()
 
-func _calculate_forces(_world_air_velocity : Vector3, _air_density : float, _relative_position : Vector3, _altitude : float, substep_delta : float = 0.0) -> PackedVector3Array:
-	super._calculate_forces(_world_air_velocity, _air_density, _relative_position, _altitude, substep_delta)
+func _calculate_forces(_world_air_velocity : Vector3, _world_angular_velocity : Vector3, _air_density : float, _relative_position : Vector3, _altitude : float, substep_delta : float = 0.0) -> PackedVector3Array:
+	super._calculate_forces(_world_air_velocity, _world_angular_velocity, _air_density, _relative_position, _altitude, substep_delta)
 
 	var force := Vector3.ZERO
 	var torque := Vector3.ZERO

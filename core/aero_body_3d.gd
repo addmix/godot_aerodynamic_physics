@@ -203,6 +203,11 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	var total_force_and_torque := last_force_and_torque
 	
 	for i : int in SUBSTEPS:
+		#allow aeroinfluencers to update their own transforms before we calculate forces
+		if not Engine.is_editor_hint():
+			for influencer : AeroInfluencer3D in aero_influencers:
+				influencer._update_transform_substep(substep_delta)
+		
 		var linear_velocity_prediction : Vector3 = predict_linear_velocity(last_force_and_torque[0] + state.total_gravity * mass)
 		var angular_velocity_prediction : Vector3 = predict_angular_velocity(last_force_and_torque[1])
 		last_force_and_torque = calculate_aerodynamic_forces(linear_velocity_prediction, angular_velocity_prediction, air_density, substep_delta)

@@ -15,14 +15,8 @@ func _ready():
 func _calculate_forces(_world_air_velocity : Vector3, _world_angular_velocity : Vector3, _air_density : float, _relative_position : Vector3, _altitude : float, substep_delta : float = 0.0) -> PackedVector3Array:
 	super._calculate_forces(_world_air_velocity, _world_angular_velocity, _air_density, _relative_position, _altitude, substep_delta)
 	
-	if not is_equal_approx(angular_velocity.length_squared(), 0.0) and not Engine.is_editor_hint():
-		#rotate by angular velocity
-		basis = basis.rotated((angular_velocity * basis.inverse()).normalized(), angular_velocity.length() * substep_delta)
-	
 	var force : Vector3 = Vector3.ZERO
 	var torque : Vector3 = Vector3.ZERO
-	
-	
 	
 	for influencer : AeroInfluencer3D in aero_influencers:
 		#position relative to AeroBody origin, using global rotation
@@ -32,10 +26,21 @@ func _calculate_forces(_world_air_velocity : Vector3, _world_angular_velocity : 
 		force += force_and_torque[0]
 		torque += force_and_torque[1]
 	
+	torque += relative_position.cross(force)
+	
 	_current_force = force
 	_current_torque = torque
 	
 	return PackedVector3Array([force, torque])
+
+func _update_transform_substep(substep_delta : float) -> void:
+	#rotate by angular velocity
+	if not is_equal_approx(angular_velocity.length_squared(), 0.0):
+		basis = basis.rotated((angular_velocity * basis.inverse()).normalized(), angular_velocity.length() * substep_delta)
+	
+	#update children nodes
+	for influencer : AeroInfluencer3D in aero_influencers:
+		influencer._update_transform_substep(substep_delta)
 
 func update_debug_visibility(_show_debug : bool = false) -> void:
 	super.update_debug_visibility(_show_debug)

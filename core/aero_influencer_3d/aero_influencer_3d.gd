@@ -62,6 +62,9 @@ func _calculate_forces(_world_air_velocity : Vector3, _world_angular_velocity : 
 	
 	return PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 
+#virtual
+func _update_transform_substep(substep_delta : float) -> void:
+	pass
 
 func update_debug_visibility(_show_debug : bool = false) -> void:
 	show_debug = _show_debug

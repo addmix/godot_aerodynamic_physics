@@ -19,12 +19,14 @@ class_name AeroPropeller3D
 		if is_node_ready():
 			#remove all propellers
 			while propeller_instances.size() > 0:
-				propeller_instances.pop_back().queue_free()
+				var instance : AeroInfluencer3D = propeller_instances.pop_back()
+				if instance:
+					instance.queue_free()
 		
 		#reinitialize instances array
 		propeller_instances = [propeller]
 		update_propeller_amount()
-var propeller_instances : Array[AeroInfluencer3D] = [propeller]
+var propeller_instances : Array[AeroInfluencer3D] = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready():

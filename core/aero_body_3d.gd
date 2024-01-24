@@ -70,7 +70,7 @@ class_name AeroBody3D
 @export_category("")
 
 # ~constant
-var SUBSTEPS = ProjectSettings.get_setting("physics/3d/aerodynamics/substeps", 0)
+var SUBSTEPS = ProjectSettings.get_setting("physics/3d/aerodynamics/substeps", 1)
 var PREDICTION_TIMESTEP_FRACTION = 1.0 / float(SUBSTEPS)
 
 var aero_influencers : Array[AeroInfluencer3D] = []
@@ -199,8 +199,12 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	inclination = rotation.x
 
 	var substep_delta : float = state.step / SUBSTEPS
-	var last_force_and_torque := calculate_aerodynamic_forces(air_velocity, angular_velocity, air_density)
+	
+	var last_force_and_torque := PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 	var total_force_and_torque := last_force_and_torque
+	
+	var linear_velocity_prediction : Vector3 = air_velocity
+	var angular_velocity_prediction : Vector3 = angular_velocity
 	
 	for i : int in SUBSTEPS:
 		#allow aeroinfluencers to update their own transforms before we calculate forces
@@ -208,16 +212,16 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 			for influencer : AeroInfluencer3D in aero_influencers:
 				influencer._update_transform_substep(substep_delta)
 		
-		var linear_velocity_prediction : Vector3 = predict_linear_velocity(last_force_and_torque[0] + state.total_gravity * mass)
-		var angular_velocity_prediction : Vector3 = predict_angular_velocity(last_force_and_torque[1])
+		linear_velocity_prediction = predict_linear_velocity(last_force_and_torque[0] + state.total_gravity * mass)
+		angular_velocity_prediction = predict_angular_velocity(last_force_and_torque[1])
 		last_force_and_torque = calculate_aerodynamic_forces(linear_velocity_prediction, angular_velocity_prediction, air_density, substep_delta)
 		
 		#add to total forces
 		total_force_and_torque[0] += last_force_and_torque[0]
 		total_force_and_torque[1] += last_force_and_torque[1]
 
-	total_force_and_torque[0] = total_force_and_torque[0] / (SUBSTEPS + 1)
-	total_force_and_torque[1] = total_force_and_torque[1] / (SUBSTEPS + 1)
+	total_force_and_torque[0] = total_force_and_torque[0] / SUBSTEPS
+	total_force_and_torque[1] = total_force_and_torque[1] / SUBSTEPS
 	return total_force_and_torque
 
 func calculate_aerodynamic_forces(_velocity : Vector3, _angular_velocity : Vector3, air_density : float, substep_delta : float = 0.0) -> PackedVector3Array:

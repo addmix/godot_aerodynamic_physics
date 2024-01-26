@@ -19,7 +19,8 @@ func _init(_lift_aoa_curve : Curve = preload("../../../resources/default_lift_ao
 		drag_aoa_curve = preload("../../../resources/default_drag_aoa_curve.tres").duplicate()
 
 func get_lift_coefficient(aoa : float) -> float:
-	return remap(lift_aoa_curve.sample(aoa / PI / 2.0 + 0.5), -1, 1, min_lift_coefficient, max_lift_coefficient)
+	var sample : float = lift_aoa_curve.sample(aoa / PI / 2.0 + 0.5)
+	return sample * MathUtils.float_toggle(sign(sample) == 1.0, max_lift_coefficient, abs(min_lift_coefficient))
 
 func get_drag_coefficient(aoa : float) -> float:
 	return remap(drag_aoa_curve.sample(aoa / PI / 2.0 + 0.5), 0, 1, min_drag_coefficient, max_drag_coefficient)

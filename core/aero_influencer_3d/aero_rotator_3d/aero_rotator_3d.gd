@@ -21,8 +21,7 @@ func _calculate_forces(_world_air_velocity : Vector3, _world_angular_velocity : 
 	for influencer : AeroInfluencer3D in aero_influencers:
 		#position relative to AeroBody origin, using global rotation
 		var influencer_relative_position : Vector3 = (global_transform.basis * influencer.position)
-		var force_and_torque : PackedVector3Array = influencer._calculate_forces(world_air_velocity - ((angular_velocity + world_angular_velocity) * global_basis.inverse()).cross(influencer_relative_position), world_angular_velocity, air_density, influencer_relative_position, position.y, substep_delta)
-		
+		var force_and_torque : PackedVector3Array = influencer._calculate_forces(world_air_velocity - (world_angular_velocity.cross(relative_position + influencer_relative_position) + (angular_velocity * global_basis.inverse()).cross(influencer_relative_position)), world_angular_velocity + angular_velocity, air_density, influencer_relative_position, position.y, substep_delta)
 		force += force_and_torque[0]
 		torque += force_and_torque[1]
 	

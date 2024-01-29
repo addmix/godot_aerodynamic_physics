@@ -192,8 +192,8 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	air_pressure = AeroUnits.get_pressure_at_altitude(position.y)
 	local_air_velocity = global_transform.basis.inverse() * air_velocity
 	local_angular_velocity = global_transform.basis.inverse() * angular_velocity
-	angle_of_attack = atan2(local_air_velocity.y, local_air_velocity.z)
-	sideslip_angle = atan2(-local_air_velocity.x, local_air_velocity.z)
+	angle_of_attack = global_basis.y.angle_to(-air_velocity) - (PI / 2.0)
+	sideslip_angle = global_basis.x.angle_to(air_velocity) - (PI / 2.0)
 	bank_angle = rotation.z
 	heading = rotation.y
 	inclination = rotation.x

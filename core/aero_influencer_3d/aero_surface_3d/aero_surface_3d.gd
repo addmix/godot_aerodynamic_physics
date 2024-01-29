@@ -56,13 +56,15 @@ func _calculate_forces(_world_air_velocity : Vector3, _world_angular_velocity : 
 	super._calculate_forces(_world_air_velocity, _world_angular_velocity, _air_density, _relative_position, _altitude, substep_delta)
 	#calculate some common values, some necessary for debugging
 	#air velocity in local space
-	sweep_angle =  abs(atan2(local_air_velocity.z, local_air_velocity.x) / PI - 0.5)
+	angle_of_attack = global_basis.y.angle_to(-world_air_velocity) - (PI / 2.0)
+	sweep_angle = global_basis.x.angle_to(-world_air_velocity) - (PI / 2.0)
+	
+	area = wing_config.chord * wing_config.span
+	projected_wing_area = abs(wing_config.span * wing_config.chord * sin(angle_of_attack))
+	
 	drag_direction = world_air_velocity.normalized()
 	var right_facing_air_vector : Vector3 = world_air_velocity.cross(-global_transform.basis.y).normalized()
 	lift_direction = drag_direction.cross(right_facing_air_vector).normalized()
-	angle_of_attack = atan2(local_air_velocity.y, local_air_velocity.z)
-	area = wing_config.chord * wing_config.span
-	projected_wing_area = abs(wing_config.span * wing_config.chord * sin(angle_of_attack))
 	
 	return PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 

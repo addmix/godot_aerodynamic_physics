@@ -58,6 +58,8 @@ class_name AeroSurfaceConfig
 	set(value):
 		sweep_drag_multiplier_curve = value
 		emit_changed()
+func get_drag_at_sweep_angle(sweep_angle : float) -> float:
+	return sweep_drag_multiplier_curve.sample(abs(sweep_angle / PI))
 @export var drag_at_mach_multiplier_curve : Curve = preload("../../resources/default_drag_at_mach_curve.tres"):
 	set(value):
 		drag_at_mach_multiplier_curve = value

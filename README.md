@@ -8,7 +8,7 @@
 5. Reload project (if necessary).
 
 # Dependencies
-[Godot Utils v0.3.0](https://github.com/addmix/godot_utils/releases/tag/v0.3.0)
+[Godot Utils v0.3.1](https://github.com/addmix/godot_utils/releases/tag/v0.3.1)
 
 # Usage
 Tutorial available [here](https://youtu.be/iI8SXQdaqDQ)

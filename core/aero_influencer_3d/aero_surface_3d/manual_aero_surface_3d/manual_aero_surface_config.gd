@@ -2,13 +2,14 @@
 extends Resource
 class_name ManualAeroSurfaceConfig
 
-@export var min_lift_coefficient : float = -1.5
-@export var max_lift_coefficient : float = 1.5
+@export var min_lift_coefficient : float = -1.0
+@export var max_lift_coefficient : float = 1.0
 @export var lift_aoa_curve : Curve
-@export var min_drag_coefficient : float = 0.001
-@export var max_drag_coefficient : float = 0.5
-
+@export var min_drag_coefficient : float = 0.0
+@export var max_drag_coefficient : float = 1.0
 @export var drag_aoa_curve : Curve
+
+const MathUtils = preload("../../../../utils/math_utils.gd")
 
 func _init(_lift_aoa_curve : Curve = preload("../../../resources/default_lift_aoa_curve.tres").duplicate(), _drag_aoa_curve : Curve = preload("../../../resources/default_drag_aoa_curve.tres").duplicate()) -> void:
 	lift_aoa_curve = _lift_aoa_curve

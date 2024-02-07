@@ -1,6 +1,8 @@
 @tool
 extends EditorPlugin
 
+const PluginUtils = preload("./utils/plugin_utils.gd")
+
 var path := PluginUtils.get_plugin_path("Godot Aerodynamic Physics")
 
 #icons
@@ -28,7 +30,7 @@ const manual_aero_surface_config = preload("./core/aero_influencer_3d/aero_surfa
 #const procedural_aero_surface_config = preload("./core/aero_influencer_3d/aero_surface_3d/procedural_aero_surface_3d/procedural_aero_surface_config.gd")
 
 func _enter_tree():
-	SettingsUtils.ifndef("physics/3d/aerodynamics/substeps", 1)
+	ifndef("physics/3d/aerodynamics/substeps", 1)
 	add_autoload_singleton("AeroUnits", path + "/core/singletons/aero_units.gd")
 	add_node_3d_gizmo_plugin(gizmo_plugin_instance)
 	
@@ -57,3 +59,11 @@ func _exit_tree():
 
 	remove_autoload_singleton("AeroUnits")
 	remove_node_3d_gizmo_plugin(gizmo_plugin_instance)
+
+static func ifndef(setting : String, default_value : Variant) -> Variant:
+	if not ProjectSettings.has_setting(setting):
+		ProjectSettings.set_setting(setting, default_value)
+		if not default_value == null:
+			ProjectSettings.set_initial_value(setting, default_value)
+	
+	return ProjectSettings.get_setting(setting)

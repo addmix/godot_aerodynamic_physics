@@ -26,6 +26,7 @@ var dynamic_pressure : float = 0.0
 var _current_force : Vector3 = Vector3.ZERO
 var _current_torque : Vector3 = Vector3.ZERO
 
+const Vector3D = preload("../../utils/vector_3d/vector_3d.gd")
 var force_debug_vector : Vector3D
 var torque_debug_vector : Vector3D
 

@@ -1,6 +1,8 @@
 @tool
 extends Node
 
+const NodeUtils = preload("../../utils/node_utils.gd")
+
 #air is 1.402
 @export var ratio_of_specific_heat : float = 1.402
 
@@ -24,10 +26,12 @@ extends Node
 @export var min_altitude : float = 0.0
 @export var max_altitude : float = 80000.0
 func get_altitude(node : Node) -> float:
-	var floating_origin = NodeUtils.get_first_parent_of_type(node, FloatingOrigin)
-	if floating_origin is FloatingOrigin:
+	# Need to find a better way to check for floating origin
+	
+	var floating_origin = NodeUtils.get_first_parent_of_type_with_string(node, "FloatingOrigin")
+	if floating_origin:
 		return node.global_position.y + (float(floating_origin.current_offset.y) * floating_origin.shift_threshold)
-	return node.global_position.y
+	return node.position.y
 
 @export var min_mach : float = 0.0
 @export var max_mach : float = 10.0

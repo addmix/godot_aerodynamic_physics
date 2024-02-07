@@ -96,6 +96,9 @@ var inclination := 0.0
 
 
 #debug
+const Vector3D = preload("../utils/vector_3d/vector_3d.gd")
+const Point3D = preload("../utils/point_3d/point_3d.gd")
+
 var linear_velocity_vector : Vector3D
 var angular_velocity_vector : Vector3D
 

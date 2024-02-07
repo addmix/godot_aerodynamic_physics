@@ -2,6 +2,7 @@
 
 @tool
 extends MeshInstance3D
+class_name AeroDebugPoint3D
 
 @export var color := Color(1, 1, 1):
 	set(x):

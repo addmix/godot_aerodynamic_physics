@@ -2,6 +2,7 @@
 
 @tool
 extends MeshInstance3D
+class_name AeroDebugVector3D
 
 @export var value := Vector3.ZERO:
 	set(x):

@@ -7,9 +7,6 @@
 4. Enable plugin in project settings `Project > Project Settings > Plugins`
 5. Reload project (if necessary).
 
-# Dependencies
-[Godot Utils v0.3.1](https://github.com/addmix/godot_utils/releases/tag/v0.3.1)
-
 # Usage
 Tutorial available [here](https://youtu.be/iI8SXQdaqDQ)
 1. Add an `AeroBody` to your scene, and add one or more `AeroSurface` derived classes as children, adjust settings to change the characteristics.

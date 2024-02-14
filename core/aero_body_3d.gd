@@ -135,6 +135,9 @@ func _init():
 	angular_velocity_vector.visible = false
 	angular_velocity_vector.sorting_offset = -0.04
 	mass_debug_point.add_child(angular_velocity_vector, INTERNAL_MODE_FRONT)
+	
+	linear_damp_mode = RigidBody3D.DAMP_MODE_REPLACE
+	angular_damp_mode = RigidBody3D.DAMP_MODE_REPLACE
 
 func _enter_tree() -> void:
 	if Engine.is_editor_hint():

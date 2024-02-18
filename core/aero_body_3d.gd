@@ -2,6 +2,8 @@
 extends VehicleBody3D
 class_name AeroBody3D
 
+const NodeUtils = preload("../utils/node_utils.gd")
+
 @export var substeps_override : int = -1:
 	set(x):
 		substeps_override = x
@@ -211,7 +213,11 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	wind = Vector3.ZERO
 	air_velocity = -linear_velocity + wind
 	air_speed = air_velocity.length()
-	altitude = AeroUnits.get_altitude(self)
+	
+	altitude = global_position.y
+	if has_node("/root/FloatingOriginHelper"):
+		altitude = $"/root/FloatingOriginHelper".get_altitude(self)
+	
 	mach = AeroUnits.speed_to_mach_at_altitude(air_speed, altitude)
 	air_density = AeroUnits.get_density_at_altitude(position.y)
 	air_pressure = AeroUnits.get_pressure_at_altitude(position.y)

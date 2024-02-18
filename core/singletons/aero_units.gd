@@ -25,10 +25,15 @@ const NodeUtils = preload("../../utils/node_utils.gd")
 
 @export var min_altitude : float = 0.0
 @export var max_altitude : float = 80000.0
+
+var _integrate_forces_time : float = 0.0
 func get_altitude(node : Node) -> float:
 	# Need to find a better way to check for floating origin
 	
-	var floating_origin = NodeUtils.get_first_parent_of_type_with_string(node, "FloatingOrigin")
+	#NodeUtils.get_first_parent_of_type_with_string() can't be used, takes 0.16 milliseconds
+	#NodeUtils.get_first_parent_of_type() only takes 0.002 milliseconds
+	var floating_origin = NodeUtils.get_first_parent_of_type(node, FloatingOrigin)
+	
 	if floating_origin:
 		return node.global_position.y + (float(floating_origin.current_offset.y) * floating_origin.shift_threshold)
 	return node.position.y
@@ -48,9 +53,11 @@ func get_altitude(node : Node) -> float:
 func update_density_curve() -> void:
 	density_at_altitude_curve.min_value = min_density
 	density_at_altitude_curve.max_value = max_density
+	density_at_altitude_curve.bake_resolution = 16
+	density_at_altitude_curve.bake()
 func get_density_at_altitude(altitude : float) -> float:
 	var lerp : float = altitude_to_lerp(altitude)
-	return density_at_altitude_curve.sample(lerp)
+	return density_at_altitude_curve.sample_baked(lerp)
 
 @export var min_machspeed : float = 0.0:
 	set(x):
@@ -64,9 +71,11 @@ func get_density_at_altitude(altitude : float) -> float:
 func update_machspeed_curve() -> void:
 	mach_at_altitude_curve.min_value = min_machspeed
 	mach_at_altitude_curve.max_value = max_machspeed
+	mach_at_altitude_curve.bake_resolution = 16
+	mach_at_altitude_curve.bake()
 func get_mach_at_altitude(altitude : float) -> float:
 	var lerp : float = altitude_to_lerp(altitude)
-	return mach_at_altitude_curve.sample(lerp)
+	return mach_at_altitude_curve.sample_baked(lerp)
 
 
 @export var min_pressure : float = 0.0:
@@ -81,9 +90,11 @@ func get_mach_at_altitude(altitude : float) -> float:
 func update_pressure_curve() -> void:
 	pressure_at_altitude_curve.min_value = min_pressure
 	pressure_at_altitude_curve.max_value = max_pressure
+	pressure_at_altitude_curve.bake_resolution = 16
+	pressure_at_altitude_curve.bake()
 func get_pressure_at_altitude(altitude : float) -> float:
 	var lerp : float = altitude_to_lerp(altitude)
-	return pressure_at_altitude_curve.sample(lerp)
+	return pressure_at_altitude_curve.sample_baked(lerp)
 
 
 @export var min_temperature : float = 100.0:
@@ -98,9 +109,11 @@ func get_pressure_at_altitude(altitude : float) -> float:
 func update_temperature_curve() -> void:
 	temperature_at_altitude_curve.min_value = min_temperature
 	temperature_at_altitude_curve.max_value = max_temperature
+	temperature_at_altitude_curve.bake_resolution = 16
+	temperature_at_altitude_curve.bake()
 func get_temp_at_altitude(altitude : float) -> float:
 	var lerp : float = altitude_to_lerp(altitude)
-	return temperature_at_altitude_curve.sample(altitude)
+	return temperature_at_altitude_curve.sample_baked(altitude)
 
 func _ready() -> void:
 	for key in altitude_values.keys():

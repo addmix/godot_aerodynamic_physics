@@ -2,6 +2,11 @@
 extends VehicleBody3D
 class_name AeroBody3D
 
+@export var substeps_override : int = -1:
+	set(x):
+		substeps_override = x
+		PREDICTION_TIMESTEP_FRACTION = 1.0 / float(SUBSTEPS)
+
 @export_category("Debug")
 @export var show_debug : bool = false:
 	set(x):
@@ -66,12 +71,19 @@ class_name AeroBody3D
 		show_center_of_thrust = x
 		_update_debug_visibility()
 
+@export_subgroup("")
 @export_group("")
 @export_category("")
 
-# ~constant
-var SUBSTEPS = ProjectSettings.get_setting("physics/3d/aerodynamics/substeps", 1)
-var PREDICTION_TIMESTEP_FRACTION = 1.0 / float(SUBSTEPS)
+var SUBSTEPS : int = ProjectSettings.get_setting("physics/3d/aerodynamics/substeps", 1):
+	set(x):
+		SUBSTEPS = x
+		PREDICTION_TIMESTEP_FRACTION = 1.0 / float(SUBSTEPS)
+	get:
+		if substeps_override > -1:
+			return substeps_override
+		return ProjectSettings.get_setting("physics/3d/aerodynamics/substeps", 1)
+var PREDICTION_TIMESTEP_FRACTION : float = 1.0 / float(SUBSTEPS)
 
 var aero_influencers : Array[AeroInfluencer3D] = []
 var aero_surfaces : Array[AeroSurface3D] = []
@@ -176,13 +188,23 @@ func _physics_process(delta):
 	if show_debug and update_debug:
 		_update_debug()
 
+var _integrate_forces_time : float = 0.0
 func _integrate_forces(state : PhysicsDirectBodyState3D) -> void:
+	if state.sleeping or SUBSTEPS == 0:
+		return
+	
+	var pre_time : int = Time.get_ticks_usec()
+	integrator(state)
+	var post_time : int = Time.get_ticks_usec()
+	_integrate_forces_time = float(post_time - pre_time) * 0.001
+
+func integrator(state : PhysicsDirectBodyState3D) -> void:
 	current_gravity = state.total_gravity
 	var total_force_and_torque := calculate_forces(state)
 	current_force = total_force_and_torque[0]
 	current_torque = total_force_and_torque[1]
-	apply_central_force(current_force)
-	apply_torque(current_torque)
+	state.apply_central_force(current_force)
+	state.apply_torque(current_torque)
 
 func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	#eventually implement wind
@@ -200,6 +222,8 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	bank_angle = rotation.z
 	heading = rotation.y
 	inclination = rotation.x
+	if not Engine.is_editor_hint():
+		center_of_mass = state.center_of_mass_local
 
 	var substep_delta : float = state.step / SUBSTEPS
 	
@@ -230,7 +254,8 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 func calculate_aerodynamic_forces(_velocity : Vector3, _angular_velocity : Vector3, air_density : float, substep_delta : float = 0.0) -> PackedVector3Array:
 	var force : Vector3
 	var torque : Vector3
-
+	
+	#can we parallelize this for loop?
 	for influencer : AeroInfluencer3D in aero_influencers:
 		#relative_position is the position of the surface, centered on the AeroBody's origin, with the global rotation
 		var relative_position : Vector3 = global_transform.basis * (influencer.transform.origin - center_of_mass)

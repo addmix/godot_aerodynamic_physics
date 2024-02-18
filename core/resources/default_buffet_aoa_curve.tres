@@ -3,5 +3,6 @@
 [resource]
 min_value = 1.0
 max_value = 1.01
+bake_resolution = 2
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 1.01), 0.0, 0.0, 0, 0]
 point_count = 2

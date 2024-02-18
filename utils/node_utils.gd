@@ -64,6 +64,7 @@ static func get_first_parent_of_type(node : Node, type) -> Node:
 	else:
 		return get_first_parent_of_type(parent, type)
 
+#extremely slow
 static func get_first_parent_of_type_with_string(node : Node, type : String) -> Node:
 	var parent := node.get_parent()
 	if parent == null:
@@ -83,6 +84,7 @@ static func get_first_parent_with_name(node : Node, _name : String) -> Node:
 	else:
 		return get_first_parent_with_name(parent, _name)
 
+#extremely slow
 static func is_instance_of_string(obj : Object, given_class_name : String) -> bool:
 	if ClassDB.class_exists(given_class_name):
 		# We have a build in class

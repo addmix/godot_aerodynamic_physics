@@ -11,6 +11,7 @@ func _ready():
 	for i in get_children():
 		if i is AeroInfluencer3D:
 			aero_influencers.append(i)
+			i.aero_body = aero_body
 
 func _calculate_forces(_world_air_velocity : Vector3, _world_angular_velocity : Vector3, _air_density : float, _relative_position : Vector3, _altitude : float, substep_delta : float = 0.0) -> PackedVector3Array:
 	super._calculate_forces(_world_air_velocity, _world_angular_velocity, _air_density, _relative_position, _altitude, substep_delta)
@@ -40,6 +41,9 @@ func _update_transform_substep(substep_delta : float) -> void:
 	#update children nodes
 	for influencer : AeroInfluencer3D in aero_influencers:
 		influencer._update_transform_substep(substep_delta)
+
+func is_overriding_body_sleep() -> bool:
+	return not is_equal_approx(angular_velocity.length_squared(), 0.0)
 
 func update_debug_visibility(_show_debug : bool = false) -> void:
 	super.update_debug_visibility(_show_debug)

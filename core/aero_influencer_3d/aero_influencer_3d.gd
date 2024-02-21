@@ -10,6 +10,14 @@ class_name AeroInfluencer3D
 @export var show_force : bool = true
 @export var show_torque : bool = true
 
+var aero_body : AeroBody3D
+var override_body_sleep : bool = false:
+	set(x):
+		override_body_sleep = x
+		
+		if override_body_sleep and aero_body:
+			aero_body.sleeping = false
+
 var world_air_velocity := Vector3.ZERO
 var world_angular_velocity := Vector3.ZERO
 var air_density := 0.0
@@ -43,6 +51,9 @@ func _init():
 
 func _physics_process(delta: float) -> void:
 	update_debug_vectors()
+	
+	if is_overriding_body_sleep() and aero_body:
+		aero_body.sleeping = false
 
 func _calculate_forces(_world_air_velocity : Vector3, _world_angular_velocity : Vector3, _air_density : float, _relative_position : Vector3, _altitude : float, substep_delta : float = 0.0) -> PackedVector3Array:
 	world_air_velocity = _world_air_velocity
@@ -65,6 +76,10 @@ func _calculate_forces(_world_air_velocity : Vector3, _world_angular_velocity : 
 #virtual
 func _update_transform_substep(substep_delta : float) -> void:
 	pass
+
+#virtual
+func is_overriding_body_sleep() -> bool:
+	return false
 
 func update_debug_visibility(_show_debug : bool = false) -> void:
 	show_debug = _show_debug

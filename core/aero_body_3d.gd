@@ -161,6 +161,7 @@ func _enter_tree() -> void:
 	for i in get_children():
 		if i is AeroInfluencer3D:
 			aero_influencers.append(i)
+			i.aero_body = self
 
 func _ready() -> void:
 	if Engine.is_editor_hint():

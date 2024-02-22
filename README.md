@@ -1,4 +1,5 @@
 # Godot Aerodynamic Physics
+<img src="icon.png" alt="drawing" height="256"/>
 
 # Installation
 1. Download and un-zip files.

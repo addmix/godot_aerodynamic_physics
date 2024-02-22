@@ -11,8 +11,9 @@ func _update_transform_substep(substep_delta : float) -> void:
 	var rotor_offset : float = basis.get_euler(EULER_ORDER_XZY).y
 	for influencer : AeroInfluencer3D in propeller_instances:
 		var angular_position : float = rotor_offset + influencer.rotation.y
+		#must be *2 because sin and cos are 50% out of phase
+		var cyclic_effect : float = cos(angular_position) * cyclic.x + sin(angular_position) * cyclic.y * 2.0
 		
-		var cyclic_effect : float = cos(angular_position) * cyclic.x + sin(angular_position) * cyclic.y
 		cyclic_effect *= deg_to_rad(cyclic_pitch)
 		
 		influencer.rotation.x = deg_to_rad(propeller_pitch) + cyclic_effect

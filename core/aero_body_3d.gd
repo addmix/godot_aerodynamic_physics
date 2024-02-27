@@ -302,11 +302,14 @@ func _update_debug() -> void:
 	mass_debug_point.position = center_of_mass
 	#thrust_debug_vector.position = center of thrust
 	
-	linear_velocity_vector.value = global_transform.basis.inverse() * linear_velocity * 0.01
-	angular_velocity_vector.value = global_transform.basis.inverse() * angular_velocity
+	
+	
 	
 	if is_equal_approx(linear_velocity.length_squared(), 0.0):
 		return
+	
+	linear_velocity_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(linear_velocity, 2.0)
+	angular_velocity_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(angular_velocity, 2.0)
 	
 	if Engine.is_editor_hint():
 		var last_force_and_torque := calculate_aerodynamic_forces(linear_velocity, angular_velocity, air_density)
@@ -338,8 +341,8 @@ func _update_debug() -> void:
 			drag_position_sum += surface.transform.origin * surface.drag_force
 		
 		if lift_sum_vector.is_finite() and drag_sum_vector.is_finite():
-			lift_debug_vector.value = global_transform.basis.inverse() * lift_sum_vector / aero_surfaces.size()
-			drag_debug_vector.value = global_transform.basis.inverse() * drag_sum_vector / aero_surfaces.size()
+			lift_debug_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(lift_sum_vector / aero_surfaces.size(), 2.0)
+			drag_debug_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(drag_sum_vector / aero_surfaces.size(), 2.0)
 			
 			if is_equal_approx(lift_sum, 0.0):
 				lift_sum = 1.0
@@ -377,3 +380,7 @@ func _update_debug_scale() -> void:
 	angular_velocity_vector.width = debug_width
 	drag_debug_vector.width = debug_width
 	thrust_debug_vector.width = debug_width
+
+
+static func log_with_base(vector : Vector3, base : float) -> Vector3:
+	return vector.normalized() * MathUtils.log_with_base(vector.length() + 1, base)

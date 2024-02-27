@@ -103,6 +103,6 @@ func update_debug_vectors() -> void:
 	
 	#don't update invisible vectors
 	if force_debug_vector.visible:
-		force_debug_vector.value = global_transform.basis.inverse() * _current_force * debug_scale
+		force_debug_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(_current_force, 2.0) * debug_scale
 	if torque_debug_vector.visible:
-		torque_debug_vector.value = global_transform.basis.inverse() * _current_torque * debug_scale
+		torque_debug_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(_current_torque, 2.0) * debug_scale

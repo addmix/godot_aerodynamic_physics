@@ -21,7 +21,7 @@ const NodeUtils = preload("../utils/node_utils.gd")
 	set(x):
 		show_wing_debug_vectors = x
 		_update_debug_visibility()
-@export var debug_scale : float = 0.001:
+@export var debug_scale : float = 0.1:
 	set(x):
 		debug_scale = x
 		_update_debug_scale()

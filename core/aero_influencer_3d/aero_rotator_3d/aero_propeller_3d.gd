@@ -2,6 +2,8 @@
 extends AeroRotator3D
 class_name AeroPropeller3D
 
+@export var do_propeller_setup : bool = true
+
 @export_range(1, 128) var propeller_amount : int = 2:
 	set(x):
 		update_configuration_warnings()
@@ -42,6 +44,11 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return arr
 
 func update_propeller_amount() -> void:
+	if not do_propeller_setup:
+		for wing in get_children():
+			if wing is AeroInfluencer3D:
+				propeller_instances.append(wing)
+		return
 	if Engine.is_editor_hint() or not is_node_ready():
 		return
 	if not propeller:

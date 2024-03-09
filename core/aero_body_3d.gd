@@ -346,10 +346,10 @@ func _update_debug() -> void:
 			
 			if is_equal_approx(lift_sum, 0.0):
 				lift_sum = 1.0
-			lift_debug_vector.position = lift_position_sum / lift_sum / aero_surfaces.size()
+			lift_debug_vector.position = lift_position_sum / aero_surfaces.size() / (lift_sum / aero_surfaces.size()) 
 			if is_equal_approx(drag_sum, 0.0):
 				drag_sum = 1.0
-			drag_debug_vector.position = drag_position_sum / drag_sum / aero_surfaces.size()
+			drag_debug_vector.position = drag_position_sum / aero_surfaces.size() / (drag_sum / aero_surfaces.size())
 	
 
 func _update_debug_visibility() -> void:

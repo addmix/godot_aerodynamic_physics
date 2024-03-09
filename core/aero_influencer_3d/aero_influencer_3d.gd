@@ -3,6 +3,7 @@ extends Node3D
 class_name AeroInfluencer3D
 
 @export_group("Debug")
+@export var omit_from_debug : bool = false
 @export var debug_scale : float = 0.1
 @export var debug_width : float = 0.05
 @export var show_debug : bool = false

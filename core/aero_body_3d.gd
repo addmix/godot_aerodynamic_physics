@@ -314,18 +314,27 @@ func _update_debug() -> void:
 	if Engine.is_editor_hint():
 		var last_force_and_torque := calculate_aerodynamic_forces(linear_velocity, angular_velocity, air_density)
 	
+	
 	#force and torque debug
 	if aero_influencers.size() > 0:
+		var amount_of_aero_influencers : int = aero_influencers.size()
 		var force_sum := 0.0
 		var force_vector_sum := Vector3.ZERO
 		
-		for influencers : AeroInfluencer3D in aero_influencers:
-			force_vector_sum += influencers._current_force
-		
-		
+		for influencer : AeroInfluencer3D in aero_influencers:
+			if influencer.omit_from_debug:
+				amount_of_aero_influencers -= 1
+				continue
+			force_vector_sum += influencer._current_force
 	
-	##lift and drag debug
-	if aero_surfaces.size() > 0:
+	
+	#lift and drag debug
+	var amount_of_aero_surfaces : int = aero_surfaces.size()
+	for surface : AeroSurface3D in aero_surfaces:
+		if surface.omit_from_debug:
+			amount_of_aero_surfaces -= 1
+	
+	if amount_of_aero_surfaces > 0:
 		var lift_sum := 0.0
 		var lift_sum_vector := Vector3.ZERO
 		var drag_sum := 0.0
@@ -333,6 +342,9 @@ func _update_debug() -> void:
 		var lift_position_sum := Vector3.ZERO
 		var drag_position_sum := Vector3.ZERO
 		for surface : AeroSurface3D in aero_surfaces:
+			if surface.omit_from_debug:
+				continue
+			
 			lift_sum += surface.lift_force
 			lift_sum_vector += surface._current_lift
 			drag_sum += surface.drag_force
@@ -341,15 +353,15 @@ func _update_debug() -> void:
 			drag_position_sum += surface.transform.origin * surface.drag_force
 		
 		if lift_sum_vector.is_finite() and drag_sum_vector.is_finite():
-			lift_debug_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(lift_sum_vector / aero_surfaces.size(), 2.0)
-			drag_debug_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(drag_sum_vector / aero_surfaces.size(), 2.0)
+			lift_debug_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(lift_sum_vector / amount_of_aero_surfaces, 2.0)
+			drag_debug_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(drag_sum_vector / amount_of_aero_surfaces, 2.0)
 			
 			if is_equal_approx(lift_sum, 0.0):
 				lift_sum = 1.0
-			lift_debug_vector.position = lift_position_sum / aero_surfaces.size() / (lift_sum / aero_surfaces.size()) 
+			lift_debug_vector.position = lift_position_sum / amount_of_aero_surfaces / (lift_sum / amount_of_aero_surfaces) 
 			if is_equal_approx(drag_sum, 0.0):
 				drag_sum = 1.0
-			drag_debug_vector.position = drag_position_sum / aero_surfaces.size() / (drag_sum / aero_surfaces.size())
+			drag_debug_vector.position = drag_position_sum / amount_of_aero_surfaces / (drag_sum / amount_of_aero_surfaces)
 	
 
 func _update_debug_visibility() -> void:

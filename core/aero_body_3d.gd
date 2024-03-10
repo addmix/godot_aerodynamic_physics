@@ -17,6 +17,8 @@ const NodeUtils = preload("../utils/node_utils.gd")
 @export var update_debug : bool = false
 
 @export_group("Options")
+@export var debug_linear_velocity := Vector3(0, -10, -100)
+@export var debug_angular_velocity := Vector3.ZERO
 @export var show_wing_debug_vectors : bool = true:
 	set(x):
 		show_wing_debug_vectors = x
@@ -303,17 +305,16 @@ func _update_debug() -> void:
 	#thrust_debug_vector.position = center of thrust
 	
 	
-	
-	
-	if is_equal_approx(linear_velocity.length_squared(), 0.0):
-		return
-	
-	linear_velocity_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(linear_velocity, 2.0)
-	angular_velocity_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(angular_velocity, 2.0)
-	
+	var linear_velocity_to_use := linear_velocity
+	var angular_velocity_to_use := angular_velocity
 	if Engine.is_editor_hint():
-		var last_force_and_torque := calculate_aerodynamic_forces(linear_velocity, angular_velocity, air_density)
+		linear_velocity_to_use = debug_linear_velocity
+		angular_velocity_to_use = debug_angular_velocity
 	
+	linear_velocity_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(linear_velocity_to_use, 2.0)
+	angular_velocity_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(angular_velocity_to_use, 2.0)
+	
+	var last_force_and_torque := calculate_aerodynamic_forces(linear_velocity_to_use, angular_velocity_to_use, air_density)
 	
 	#force and torque debug
 	if aero_influencers.size() > 0:

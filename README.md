@@ -1,11 +1,14 @@
 # Godot Aerodynamic Physics
 <img src="icon.png" alt="drawing" height="256"/>
 
-# Installation
+# For Godot Asset Library downloads.
+1. Ensure that addon files are installed inside `res://addons/godot_aerodynamic_physics`
+
+# Manual Installation
 1. Download and un-zip files.
 2. Place the `godot_aerodynamic_physics` folder inside your project's `addons` folder.
 3. Enable plugin in project settings `Project > Project Settings > Plugins`
-4. Reload project (if necessary).
+4. Reload project.
 
 # Usage
 Tutorial available [here](https://youtu.be/iI8SXQdaqDQ)

@@ -29,18 +29,18 @@ var drag_force : float = 0.0
 var _current_lift : Vector3
 var _current_drag : Vector3
 
-var lift_debug_vector : Vector3D
-var drag_debug_vector : Vector3D
+var lift_debug_vector : AeroDebugVector3D
+var drag_debug_vector : AeroDebugVector3D
 
 func _init():
 	super._init()
 	#initialize debug vectors
-	lift_debug_vector = Vector3D.new(Color(0, 0, 1))
+	lift_debug_vector = AeroDebugVector3D.new(Color(0, 0, 1))
 	lift_debug_vector.visible = false
 	lift_debug_vector.sorting_offset = 0.02
 	add_child(lift_debug_vector, INTERNAL_MODE_FRONT)
 	
-	drag_debug_vector = Vector3D.new(Color(1, 0, 0))
+	drag_debug_vector = AeroDebugVector3D.new(Color(1, 0, 0))
 	drag_debug_vector.visible = false
 	drag_debug_vector.sorting_offset = 0.01
 	add_child(drag_debug_vector, INTERNAL_MODE_FRONT)

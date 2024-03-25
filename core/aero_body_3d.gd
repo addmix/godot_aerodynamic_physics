@@ -2,7 +2,7 @@
 extends VehicleBody3D
 class_name AeroBody3D
 
-const NodeUtils = preload("../utils/node_utils.gd")
+const AeroMathUtils = preload("../utils/math_utils.gd")
 
 @export var substeps_override : int = -1:
 	set(x):
@@ -396,4 +396,4 @@ func _update_debug_scale() -> void:
 
 
 static func log_with_base(vector : Vector3, base : float) -> Vector3:
-	return vector.normalized() * MathUtils.log_with_base(vector.length() + 1, base)
+	return vector.normalized() * AeroMathUtils.log_with_base(vector.length() + 1, base)

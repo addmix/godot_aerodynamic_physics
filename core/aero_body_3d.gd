@@ -242,7 +242,7 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	var linear_velocity_prediction : Vector3 = air_velocity
 	var angular_velocity_prediction : Vector3 = angular_velocity
 	
-	for i : int in SUBSTEPS:
+	for substep : int in SUBSTEPS:
 		#allow aeroinfluencers to update their own transforms before we calculate forces
 		if not Engine.is_editor_hint():
 			for influencer : AeroInfluencer3D in aero_influencers:

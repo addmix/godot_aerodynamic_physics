@@ -18,6 +18,7 @@ var gizmo_plugin_instance = gizmo_plugin.new()
 #nodes
 const aero_body_3d = preload("./core/aero_body_3d.gd")
 const aero_influencer_3d = preload("./core/aero_influencer_3d/aero_influencer_3d.gd")
+const aero_mover_3d = preload("./core/aero_influencer_3d/aero_mover_3d/aero_mover_3d.gd")
 const aero_rotator_3d = preload("./core/aero_influencer_3d/aero_rotator_3d/aero_rotator_3d.gd")
 const aero_propeller_3d = preload("./core/aero_influencer_3d/aero_rotator_3d/aero_propeller_3d.gd")
 const aero_variable_propeller_3d = preload("./core/aero_influencer_3d/aero_rotator_3d/aero_variable_propeller_3d.gd")
@@ -36,6 +37,7 @@ func _enter_tree():
 	
 	add_custom_type("AeroBody3D", "VehicleBody3D", aero_body_3d, node3d_icon)
 	add_custom_type("AeroInfluencer3D", "Node3D", aero_influencer_3d, node3d_icon)
+	add_custom_type("AeroMover3D", "Node3D", aero_mover_3d, node3d_icon)
 	add_custom_type("AeroRotator3D", "Node3D", aero_rotator_3d, node3d_icon)
 	add_custom_type("AeroPropeller3D", "Node3D", aero_propeller_3d, node3d_icon)
 	add_custom_type("AeroVariablePropeller3D", "Node3D", aero_variable_propeller_3d, node3d_icon)
@@ -48,6 +50,7 @@ func _enter_tree():
 func _exit_tree():
 	remove_custom_type("AeroBody3D")
 	remove_custom_type("AeroInfluencer3D")
+	remove_custom_type("AeroMover3D")
 	remove_custom_type("AeroRotator3D")
 	remove_custom_type("AeroPropeller3D")
 	remove_custom_type("AeroVariablePropeller3D")

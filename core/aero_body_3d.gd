@@ -3,6 +3,7 @@ extends VehicleBody3D
 class_name AeroBody3D
 
 const AeroMathUtils = preload("../utils/math_utils.gd")
+const AeroNodeUtils = preload("../utils/node_utils.gd")
 
 @export var substeps_override : int = -1:
 	set(x):
@@ -156,14 +157,19 @@ func _init():
 	angular_damp_mode = RigidBody3D.DAMP_MODE_REPLACE
 
 func _enter_tree() -> void:
+	child_entered_tree.connect(on_child_enter_tree)
+	child_exiting_tree.connect(on_child_exit_tree)
+	
 	if Engine.is_editor_hint():
 		update_configuration_warnings()
-	
-	aero_influencers = []
-	for i in get_children():
-		if i is AeroInfluencer3D:
-			aero_influencers.append(i)
-			i.aero_body = self
+
+func on_child_enter_tree(node : Node) -> void:
+	if node is AeroInfluencer3D:
+		aero_influencers.append(node)
+
+func on_child_exit_tree(node : Node) -> void:
+	if node is AeroInfluencer3D and aero_influencers.has(node):
+		aero_influencers.erase(node)
 
 func _ready() -> void:
 	if Engine.is_editor_hint():

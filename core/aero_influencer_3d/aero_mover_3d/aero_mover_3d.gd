@@ -3,6 +3,7 @@ extends AeroInfluencer3D
 class_name AeroMover3D
 
 const AeroTransformUtils = preload("../../../utils/transform_utils.gd")
+const AeroNodeUtils = preload("../../../utils/node_utils.gd")
 
 var aero_influencers : Array[AeroInfluencer3D] = []
 

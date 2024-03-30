@@ -7,14 +7,13 @@ const AeroNodeUtils = preload("../../../utils/node_utils.gd")
 
 var aero_influencers : Array[AeroInfluencer3D] = []
 
-var default_transform : Transform3D = transform
 @export var linear_velocity : Vector3 = Vector3.ZERO
 @export var angular_velocity : Vector3 = Vector3.ZERO
 
 var _linear_velocity : Vector3 = Vector3.ZERO
 var _angular_velocity : Vector3 = Vector3.ZERO
 
-var translation_velocity : Vector3 = Vector3.ZERO #(position - last_position) / substep_delta
+var translation_velocity : Vector3 = Vector3.ZERO
 var rotation_velocity : Vector3 = Vector3.ZERO
 
 @onready var last_position : Vector3 = position
@@ -48,8 +47,8 @@ func _calculate_forces(_world_air_velocity : Vector3, _world_angular_velocity : 
 		#negative because air velocity is opposite to object velocity
 		var world_angular_point_velocity : Vector3 = -world_angular_velocity.cross(total_relative_position)
 		var rotor_point_velocity : Vector3 = global_angular_velocity.cross(-influencer_relative_position)
-		var total_angular_velocity : Vector3 = world_angular_velocity + global_angular_velocity
-		var total_linear_velocity : Vector3 = world_air_velocity + global_linear_velocity + world_angular_point_velocity + rotor_point_velocity
+		var total_angular_velocity : Vector3 = world_angular_velocity - global_angular_velocity
+		var total_linear_velocity : Vector3 = world_air_velocity + world_angular_point_velocity + rotor_point_velocity - global_linear_velocity
 		
 		var force_and_torque : PackedVector3Array = influencer._calculate_forces(total_linear_velocity, total_angular_velocity, air_density, total_relative_position, position.y, substep_delta)
 		
@@ -65,15 +64,18 @@ func _calculate_forces(_world_air_velocity : Vector3, _world_angular_velocity : 
 	return PackedVector3Array([force, torque])
 
 func _update_transform_substep(substep_delta : float) -> void:
+	#update movement velocity
+	_linear_velocity = (position - last_position) / substep_delta
+	var axis_angle : Quaternion = AeroTransformUtils.quat_to_axis_angle(basis * last_rotation.inverse())
+	_angular_velocity = Vector3(axis_angle.x, axis_angle.y, axis_angle.z) * axis_angle.w / substep_delta * basis
+	
 	position += linear_velocity * basis * substep_delta
 	#rotate by angular velocity
 	if not is_equal_approx(angular_velocity.length_squared(), 0.0):
-		basis = basis.rotated(angular_velocity.normalized(), angular_velocity.length() * substep_delta) #(angular_velocity * basis.inverse()).normalized(), angular_velocity.length() * delta)
+		basis = basis.rotated((angular_velocity * basis.inverse()).normalized(), angular_velocity.length() * substep_delta)
 	
-	#update movement velocity
-	_linear_velocity = (position - last_position) / substep_delta + linear_velocity
-	var axis_angle : Quaternion = AeroTransformUtils.quat_to_axis_angle(basis * last_rotation.inverse())
-	_angular_velocity = Vector3(axis_angle.x, axis_angle.y, axis_angle.z) * axis_angle.w / substep_delta + angular_velocity
+	_linear_velocity += linear_velocity
+	_angular_velocity += angular_velocity
 	
 	last_position = position
 	last_rotation = basis

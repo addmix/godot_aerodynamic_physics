@@ -1,5 +1,5 @@
 @tool
-extends AeroRotator3D
+extends AeroMover3D
 class_name AeroPropeller3D
 
 @export var do_propeller_setup : bool = true
@@ -34,7 +34,6 @@ var propeller_instances : Array[AeroInfluencer3D] = []
 func _ready():
 	update_configuration_warnings()
 	update_propeller_amount()
-	super._ready()
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var arr : PackedStringArray = []#super._get_configuration_warnings()

@@ -166,10 +166,12 @@ func _enter_tree() -> void:
 func on_child_enter_tree(node : Node) -> void:
 	if node is AeroInfluencer3D:
 		aero_influencers.append(node)
+		node.aero_body = self
 
 func on_child_exit_tree(node : Node) -> void:
 	if node is AeroInfluencer3D and aero_influencers.has(node):
 		aero_influencers.erase(node)
+		node.aero_body = null
 
 func _ready() -> void:
 	if Engine.is_editor_hint():
@@ -217,6 +219,9 @@ func integrator(state : PhysicsDirectBodyState3D) -> void:
 	state.apply_central_force(current_force)
 	state.apply_torque(current_torque)
 
+var linear_velocity_prediction : Vector3 = linear_velocity
+var angular_velocity_prediction : Vector3 = angular_velocity
+
 func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	#eventually implement wind
 	wind = Vector3.ZERO
@@ -243,8 +248,8 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	var last_force_and_torque := PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 	var total_force_and_torque := last_force_and_torque
 	
-	var linear_velocity_prediction : Vector3 = air_velocity
-	var angular_velocity_prediction : Vector3 = angular_velocity
+	linear_velocity_prediction = linear_velocity
+	angular_velocity_prediction = angular_velocity
 	
 	for substep : int in SUBSTEPS:
 		#allow aeroinfluencers to update their own transforms before we calculate forces
@@ -272,7 +277,7 @@ func calculate_aerodynamic_forces(_velocity : Vector3, _angular_velocity : Vecto
 	for influencer : AeroInfluencer3D in aero_influencers:
 		#relative_position is the position of the surface, centered on the AeroBody's origin, with the global rotation
 		var relative_position : Vector3 = global_basis * (influencer.transform.origin - center_of_mass)
-		var force_and_torque : PackedVector3Array = influencer._calculate_forces(-(_velocity + _angular_velocity.cross(relative_position)), _angular_velocity, air_density, relative_position, altitude, substep_delta)
+		var force_and_torque : PackedVector3Array = influencer._calculate_forces(substep_delta)
 		
 		force += force_and_torque[0]
 		torque += force_and_torque[1]
@@ -297,6 +302,15 @@ func get_altitude() -> float:
 		return $"/root/FloatingOriginHelper".get_altitude(self)
 	else:
 		return global_position.y
+
+func get_relative_position() -> Vector3:
+	return global_basis * -center_of_mass
+
+func get_linear_velocity() -> Vector3:
+	return linear_velocity_prediction
+
+func get_angular_velocity() -> Vector3:
+	return angular_velocity_prediction
 
 
 #debug

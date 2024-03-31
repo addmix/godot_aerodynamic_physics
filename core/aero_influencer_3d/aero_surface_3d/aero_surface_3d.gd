@@ -46,14 +46,15 @@ func _init():
 	add_child(drag_debug_vector, INTERNAL_MODE_FRONT)
 
 func _enter_tree() -> void:
+	super._enter_tree()
 	#initialize signal connections from resources
 	if wing_config != null:
 		if not wing_config.is_connected("changed", update_gizmos):
 			wing_config.changed.connect(update_gizmos)
 			update_gizmos()
 
-func _calculate_forces(_world_air_velocity : Vector3, _world_angular_velocity : Vector3, _air_density : float, _relative_position : Vector3, _altitude : float, substep_delta : float = 0.0) -> PackedVector3Array:
-	super._calculate_forces(_world_air_velocity, _world_angular_velocity, _air_density, _relative_position, _altitude, substep_delta)
+func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
+	var force_and_torque : PackedVector3Array = super._calculate_forces(substep_delta)
 	#calculate some common values, some necessary for debugging
 	#air velocity in local space
 	angle_of_attack = global_basis.y.angle_to(-world_air_velocity) - (PI / 2.0)
@@ -66,7 +67,7 @@ func _calculate_forces(_world_air_velocity : Vector3, _world_angular_velocity : 
 	var right_facing_air_vector : Vector3 = world_air_velocity.cross(-global_transform.basis.y).normalized()
 	lift_direction = drag_direction.cross(right_facing_air_vector).normalized()
 	
-	return PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
+	return force_and_torque
 
 func update_debug_visibility(_show_debug : bool = false) -> void:
 	super.update_debug_visibility(_show_debug)
@@ -78,8 +79,10 @@ func update_debug_visibility(_show_debug : bool = false) -> void:
 func update_debug_scale(_scale : float, _width : float) -> void:
 	super.update_debug_scale(_scale, _width)
 	
-	lift_debug_vector.width = debug_width
-	drag_debug_vector.width = debug_width
+	if lift_debug_vector:
+		lift_debug_vector.width = debug_width
+	if drag_debug_vector:
+		drag_debug_vector.width = debug_width
 
 func update_debug_vectors() -> void:
 	super.update_debug_vectors()

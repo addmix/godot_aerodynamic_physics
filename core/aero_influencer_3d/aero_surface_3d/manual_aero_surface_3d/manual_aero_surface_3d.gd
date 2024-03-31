@@ -5,10 +5,9 @@ class_name ManualAeroSurface3D
 @export var manual_config := ManualAeroSurfaceConfig.new()
 
 var _integrate_forces_time : float = 0.0
-func _calculate_forces(_world_air_velocity : Vector3, _world_angular_velocity : Vector3, _air_density : float, _relative_position : Vector3, _altitude : float, substep_delta : float = 0.0) -> PackedVector3Array:
+func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
+	var force_and_torque : PackedVector3Array = super._calculate_forces(substep_delta)
 	var pre_time : int = Time.get_ticks_usec()
-	
-	super._calculate_forces(_world_air_velocity, _world_angular_velocity, _air_density, _relative_position, _altitude, substep_delta)
 	
 	var force := Vector3.ZERO
 	var torque := Vector3.ZERO
@@ -45,5 +44,5 @@ func _calculate_forces(_world_air_velocity : Vector3, _world_angular_velocity : 
 	
 	var post_time : int = Time.get_ticks_usec()
 	_integrate_forces_time = float(post_time - pre_time) * 0.001
-
-	return PackedVector3Array([force, torque])
+	
+	return PackedVector3Array([force_and_torque[0] + force, force_and_torque[1] + torque])

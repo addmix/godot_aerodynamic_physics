@@ -12,7 +12,7 @@ func flap_effectiveness_correction(_flap_angle : float = 0.0) -> float:
 func lift_coefficient_max_friction(fraction : float = 0.0) -> float:
 	return clamp(1.0 - 0.5 * (fraction - 0.1) / 0.3, 0, 1)
 
-func _calculate_forces(_world_air_velocity : Vector3, _world_angular_velocity : Vector3, _air_density : float, _relative_position : Vector3, _altitude : float, substep_delta : float = 0.0) -> PackedVector3Array:
+func _calculate_forces(_world_air_velocity : Vector3, _world_angular_velocity : Vector3, _air_density : float, _altitude : float, substep_delta : float = 0.0) -> PackedVector3Array:
 	super._calculate_forces(_world_air_velocity, _world_angular_velocity, _air_density, _relative_position, _altitude, substep_delta)
 
 	var force := Vector3.ZERO

@@ -223,13 +223,11 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	air_velocity = -linear_velocity + wind
 	air_speed = air_velocity.length()
 	
-	altitude = global_position.y
-	if has_node("/root/FloatingOriginHelper"):
-		altitude = $"/root/FloatingOriginHelper".get_altitude(self)
+	altitude = get_altitude()
 	
 	mach = AeroUnits.speed_to_mach_at_altitude(air_speed, altitude)
-	air_density = AeroUnits.get_density_at_altitude(position.y)
-	air_pressure = AeroUnits.get_pressure_at_altitude(position.y)
+	air_density = AeroUnits.get_density_at_altitude(altitude)
+	air_pressure = AeroUnits.get_pressure_at_altitude(altitude)
 	local_air_velocity = global_transform.basis.inverse() * air_velocity
 	local_angular_velocity = global_transform.basis.inverse() * angular_velocity
 	angle_of_attack = global_basis.y.angle_to(-air_velocity) - (PI / 2.0)
@@ -273,8 +271,8 @@ func calculate_aerodynamic_forces(_velocity : Vector3, _angular_velocity : Vecto
 	#can we parallelize this for loop?
 	for influencer : AeroInfluencer3D in aero_influencers:
 		#relative_position is the position of the surface, centered on the AeroBody's origin, with the global rotation
-		var relative_position : Vector3 = global_transform.basis * (influencer.transform.origin - center_of_mass)
-		var force_and_torque : PackedVector3Array = influencer._calculate_forces(-(_velocity + _angular_velocity.cross(relative_position)), _angular_velocity, air_density, relative_position, position.y, substep_delta)
+		var relative_position : Vector3 = global_basis * (influencer.transform.origin - center_of_mass)
+		var force_and_torque : PackedVector3Array = influencer._calculate_forces(-(_velocity + _angular_velocity.cross(relative_position)), _angular_velocity, air_density, relative_position, altitude, substep_delta)
 		
 		force += force_and_torque[0]
 		torque += force_and_torque[1]
@@ -293,6 +291,12 @@ func predict_angular_velocity(torque : Vector3) -> Vector3:
 	angular_velocity_change_in_diagonal_space.z = torque_in_diagonal_space.z / get_inverse_inertia_tensor().z.length()
 
 	return angular_velocity + get_physics_process_delta_time() * PREDICTION_TIMESTEP_FRACTION * (get_inverse_inertia_tensor() * angular_velocity_change_in_diagonal_space)
+
+func get_altitude() -> float:
+	if has_node("/root/FloatingOriginHelper"):
+		return $"/root/FloatingOriginHelper".get_altitude(self)
+	else:
+		return global_position.y
 
 
 #debug

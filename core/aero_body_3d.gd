@@ -261,6 +261,8 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 		#allow aeroinfluencers to update their own transforms before we calculate forces
 		if not Engine.is_editor_hint():
 			for influencer : AeroInfluencer3D in aero_influencers:
+				if influencer.disabled:
+					continue
 				influencer._update_transform_substep(substep_delta)
 		
 		linear_velocity_prediction = predict_linear_velocity(last_force_and_torque[0] + state.total_gravity * mass)
@@ -281,6 +283,9 @@ func calculate_aerodynamic_forces(_velocity : Vector3, _angular_velocity : Vecto
 	
 	#can we parallelize this for loop?
 	for influencer : AeroInfluencer3D in aero_influencers:
+		if influencer.disabled:
+			continue
+		
 		#relative_position is the position of the surface, centered on the AeroBody's origin, with the global rotation
 		var relative_position : Vector3 = global_basis * (influencer.transform.origin - center_of_mass)
 		var force_and_torque : PackedVector3Array = influencer._calculate_forces(substep_delta)
@@ -302,6 +307,14 @@ func predict_angular_velocity(torque : Vector3) -> Vector3:
 	angular_velocity_change_in_diagonal_space.z = torque_in_diagonal_space.z / get_inverse_inertia_tensor().z.length()
 
 	return angular_velocity + get_physics_process_delta_time() * PREDICTION_TIMESTEP_FRACTION * (get_inverse_inertia_tensor() * angular_velocity_change_in_diagonal_space)
+
+func get_amount_of_active_influencers() -> int:
+	var count : int = 0
+	for influencer : AeroInfluencer3D in aero_influencers:
+		if not influencer.disabled:
+			count += 1
+	
+	return count
 
 func get_altitude() -> float:
 	if has_node("/root/FloatingOriginHelper"):
@@ -359,16 +372,15 @@ func _update_debug() -> void:
 		var force_vector_sum := Vector3.ZERO
 		
 		for influencer : AeroInfluencer3D in aero_influencers:
-			if influencer.omit_from_debug:
+			if influencer.omit_from_debug or influencer.disabled:
 				amount_of_aero_influencers -= 1
 				continue
 			force_vector_sum += influencer._current_force
 	
-	
 	#lift and drag debug
 	var amount_of_aero_surfaces : int = aero_surfaces.size()
 	for surface : AeroSurface3D in aero_surfaces:
-		if surface.omit_from_debug:
+		if surface.omit_from_debug or surface.disabled:
 			amount_of_aero_surfaces -= 1
 	
 	if amount_of_aero_surfaces > 0:

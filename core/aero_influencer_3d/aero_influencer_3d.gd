@@ -4,6 +4,8 @@ class_name AeroInfluencer3D
 
 const AeroNodeUtils = preload("../../utils/node_utils.gd")
 
+@export var disabled : bool = false
+
 @export_group("Debug")
 @export var omit_from_debug : bool = false
 @export var debug_scale : float = 0.1

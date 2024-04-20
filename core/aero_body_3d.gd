@@ -96,6 +96,8 @@ var aero_surfaces : Array[AeroSurface3D] = []
 var current_force := Vector3.ZERO
 var current_torque := Vector3.ZERO
 var current_gravity := Vector3.ZERO
+@onready var last_linear_velocity : Vector3 = linear_velocity
+@onready var last_angular_velocity : Vector3 = angular_velocity
 var wind := Vector3.ZERO
 var air_velocity := Vector3.ZERO
 var local_air_velocity := Vector3.ZERO
@@ -157,8 +159,8 @@ func _init():
 	angular_damp_mode = RigidBody3D.DAMP_MODE_REPLACE
 
 func _enter_tree() -> void:
-	child_entered_tree.connect(on_child_enter_tree)
-	child_exiting_tree.connect(on_child_exit_tree)
+	AeroNodeUtils.connect_signal_safe(self, "child_entered_tree", on_child_enter_tree, 0, true)
+	AeroNodeUtils.connect_signal_safe(self, "child_exiting_tree", on_child_exit_tree, 0, true)
 	
 	if Engine.is_editor_hint():
 		update_configuration_warnings()
@@ -221,6 +223,7 @@ func integrator(state : PhysicsDirectBodyState3D) -> void:
 
 var linear_velocity_prediction : Vector3 = linear_velocity
 var angular_velocity_prediction : Vector3 = angular_velocity
+var substep_delta : float = get_physics_process_delta_time() / SUBSTEPS
 
 func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	#eventually implement wind
@@ -242,8 +245,8 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	inclination = rotation.x
 	if not Engine.is_editor_hint():
 		center_of_mass = state.center_of_mass_local
-
-	var substep_delta : float = state.step / SUBSTEPS
+	
+	substep_delta = state.step / SUBSTEPS
 	
 	var last_force_and_torque := PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 	var total_force_and_torque := last_force_and_torque
@@ -252,6 +255,9 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	angular_velocity_prediction = angular_velocity
 	
 	for substep : int in SUBSTEPS:
+		last_linear_velocity = linear_velocity_prediction
+		last_angular_velocity = angular_velocity_prediction
+		
 		#allow aeroinfluencers to update their own transforms before we calculate forces
 		if not Engine.is_editor_hint():
 			for influencer : AeroInfluencer3D in aero_influencers:
@@ -264,7 +270,7 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 		#add to total forces
 		total_force_and_torque[0] += last_force_and_torque[0]
 		total_force_and_torque[1] += last_force_and_torque[1]
-
+	
 	total_force_and_torque[0] = total_force_and_torque[0] / SUBSTEPS
 	total_force_and_torque[1] = total_force_and_torque[1] / SUBSTEPS
 	return total_force_and_torque
@@ -311,6 +317,12 @@ func get_linear_velocity() -> Vector3:
 
 func get_angular_velocity() -> Vector3:
 	return angular_velocity_prediction
+
+func get_linear_acceleration() -> Vector3:
+	return (linear_velocity_prediction - last_linear_velocity) / substep_delta
+
+func get_angular_acceleration() -> Vector3:
+	return (angular_velocity_prediction - last_angular_velocity) / substep_delta
 
 
 #debug

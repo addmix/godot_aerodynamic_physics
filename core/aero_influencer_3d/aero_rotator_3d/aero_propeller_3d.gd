@@ -18,6 +18,9 @@ class_name AeroPropeller3D
 		
 		propeller = x
 		
+		if Engine.is_editor_hint():
+			return
+		
 		if is_node_ready():
 			#remove all propellers
 			while propeller_instances.size() > 0:
@@ -33,6 +36,8 @@ var propeller_instances : Array[AeroInfluencer3D] = []
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	update_configuration_warnings()
+	if Engine.is_editor_hint():
+		return
 	update_propeller_amount()
 
 func _get_configuration_warnings() -> PackedStringArray:

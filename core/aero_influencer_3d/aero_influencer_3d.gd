@@ -2,6 +2,8 @@
 extends Node3D
 class_name AeroInfluencer3D
 
+const AeroNodeUtils = preload("../../utils/node_utils.gd")
+
 @export_group("Debug")
 @export var omit_from_debug : bool = false
 @export var debug_scale : float = 0.1
@@ -22,7 +24,6 @@ var override_body_sleep : bool = false:
 			aero_body.sleeping = false
 
 var world_air_velocity := Vector3.ZERO
-var world_angular_velocity := Vector3.ZERO
 var linear_velocity := Vector3.ZERO
 var angular_velocity := Vector3.ZERO
 @onready var last_linear_velocity : Vector3 = linear_velocity
@@ -57,8 +58,8 @@ func _init():
 	add_child(torque_debug_vector, INTERNAL_MODE_FRONT)
 
 func _enter_tree() -> void:
-	child_entered_tree.connect(on_child_enter_tree)
-	child_exiting_tree.connect(on_child_exit_tree)
+	AeroNodeUtils.connect_signal_safe(self, "child_entered_tree", on_child_enter_tree, 0, true)
+	AeroNodeUtils.connect_signal_safe(self, "child_exiting_tree", on_child_exit_tree, 0, true)
 
 func on_child_enter_tree(node : Node) -> void:
 	if node is AeroInfluencer3D:
@@ -77,23 +78,17 @@ func _physics_process(delta: float) -> void:
 		aero_body.sleeping = false
 
 func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
+	linear_velocity = get_linear_velocity()
+	angular_velocity = get_angular_velocity()
+	
 	relative_position = get_relative_position()
 	world_air_velocity = get_world_air_velocity()
-	world_angular_velocity = get_angular_velocity()
 	air_speed = world_air_velocity.length()
 	air_density = aero_body.air_density
 	altitude = aero_body.altitude
-	
-	#prevent crash when sitting still
-	if is_equal_approx(air_speed, 0.0):
-		return PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
-	
 	local_air_velocity = global_transform.basis.inverse() * world_air_velocity
 	mach = AeroUnits.speed_to_mach_at_altitude(world_air_velocity.length(), altitude)
 	dynamic_pressure = 0.5 * AeroUnits.get_density_at_altitude(altitude) * (air_speed * air_speed)
-	
-	linear_velocity = get_linear_velocity()
-	angular_velocity = get_angular_velocity()
 	
 	var force : Vector3 = Vector3.ZERO
 	var torque : Vector3 = Vector3.ZERO
@@ -113,11 +108,16 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 
 #virtual
 func _update_transform_substep(substep_delta : float) -> void:
-	pass
+	for influencer : AeroInfluencer3D in aero_influencers:
+		influencer._update_transform_substep(substep_delta)
 
 #virtual
 func is_overriding_body_sleep() -> bool:
-	return false
+	var overriding : bool = false
+	for influencer : AeroInfluencer3D in aero_influencers:
+		overriding = overriding or influencer.is_overriding_body_sleep()
+	
+	return overriding
 
 func get_relative_position() -> Vector3:
 	return get_parent().get_relative_position() + (get_parent().global_basis * position)
@@ -126,10 +126,33 @@ func get_world_air_velocity() -> Vector3:
 	return -get_linear_velocity()
 
 func get_linear_velocity() -> Vector3:
-	return get_parent().get_linear_velocity() + get_angular_velocity().cross(get_parent().global_basis * position)
+	return get_parent().get_linear_velocity() + get_parent().get_angular_velocity().cross(get_parent().global_basis * position)
 
 func get_angular_velocity() -> Vector3:
 	return get_parent().get_angular_velocity()
+
+#virtual
+func get_centrifugal_offset() -> Vector3:
+	return position
+
+func get_linear_acceleration() -> Vector3:
+	var position_in_global_rotation : Vector3 = get_parent().global_basis * position
+	
+	var centrifugal_offset : Vector3 = get_parent().global_basis * get_centrifugal_offset()
+	
+	var axis : Vector3 = angular_velocity.normalized()
+	var nearest_point_on_line : Vector3 = axis * centrifugal_offset.dot(axis.normalized())
+	var rotation_radius : float = nearest_point_on_line.distance_to(centrifugal_offset)
+	var acceleration_axis : Vector3 = nearest_point_on_line - centrifugal_offset
+	
+	var centripetal_acceleration_force : float = get_parent().get_angular_velocity().length_squared() * rotation_radius
+	var centripetal_acceleration_vector : Vector3 = centripetal_acceleration_force * acceleration_axis
+	
+	return get_parent().get_linear_acceleration() + get_parent().get_angular_acceleration().cross(centrifugal_offset) + centripetal_acceleration_vector
+
+func get_angular_acceleration() -> Vector3:
+	return get_parent().get_angular_acceleration()
+
 
 
 #debug
@@ -140,11 +163,9 @@ func update_debug_visibility(_show_debug : bool = false) -> void:
 		i.update_debug_visibility(_show_debug)
 	
 	show_debug = _show_debug
-
-	#check that debug vectors exist
-	if force_debug_vector and torque_debug_vector:
-		force_debug_vector.visible = show_debug and show_force
-		torque_debug_vector.visible = show_debug and show_torque
+	
+	force_debug_vector.visible = show_debug and show_force
+	torque_debug_vector.visible = show_debug and show_torque
 
 func update_debug_scale(_scale : float, _width : float) -> void:
 	for i : AeroInfluencer3D in aero_influencers:
@@ -153,18 +174,12 @@ func update_debug_scale(_scale : float, _width : float) -> void:
 	debug_scale = _scale
 	debug_width = _width
 	
-	if force_debug_vector:
-		force_debug_vector.width = debug_width
-	if torque_debug_vector:
-		torque_debug_vector.width = debug_width
+	force_debug_vector.width = debug_width
+	torque_debug_vector.width = debug_width
 
 func update_debug_vectors() -> void:
 	for i : AeroInfluencer3D in aero_influencers:
 		i.update_debug_vectors()
-	
-	#check that debug vectors exist
-	if !force_debug_vector or !torque_debug_vector:
-		return
 	
 	#don't update invisible vectors
 	if force_debug_vector.visible:

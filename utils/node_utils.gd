@@ -1,10 +1,15 @@
 #returns signal connection error, if any. Mainly for plugin nodes
-static func connect_signal_safe(node : Node, _signal : StringName, callable : Callable, flags : int = 0) -> int:
+static func connect_signal_safe(node : Node, _signal : StringName, callable : Callable, flags : int = 0, silence_warning : bool = false) -> int:
 	if not node.has_signal(_signal):
-		return node.connect(_signal, callable, flags)
-	#mimick godot's default error for doubly connected signals
-	push_warning("Signal already connected")
-	return ERR_INVALID_PARAMETER
+		if not silence_warning:
+			push_warning("Signal does not exist on object")
+		return ERR_DOES_NOT_EXIST
+	elif node.is_connected(_signal, callable):
+		if not silence_warning:
+			push_warning("Signal already connected")
+		return ERR_INVALID_PARAMETER
+	
+	return node.connect(_signal, callable, flags)
 
 
 static func get_descendants(node : Node, include_internal : bool = false) -> Array[Node]:

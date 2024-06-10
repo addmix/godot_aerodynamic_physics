@@ -3,8 +3,8 @@
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd" id="2_ygpq6"]
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_config.gd" id="3_dhflf"]
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="4_ht3i8"]
-[ext_resource type="Script" path="res://demo/thruster.gd" id="5_50cgi"]
-[ext_resource type="Script" path="res://demo/aero_body_3d.gd" id="5_208xj"]
+[ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/demo/thruster.gd" id="5_50cgi"]
+[ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/demo/aero_body_3d.gd" id="5_208xj"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_swshj"]
 friction = 0.0
@@ -150,4 +150,9 @@ size = Vector3(0.141602, 1.41797, 1.14014)
 
 [node name="Marker3D" type="Marker3D" parent="."]
 script = ExtResource("5_50cgi")
-force = 600.0
+force = 2000.0
+
+[node name="Label3D" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.15356, 3.43796, 0)
+pixel_size = 0.01
+text = "Use arrow keys for pitch/roll control"

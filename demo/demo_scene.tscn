@@ -1,6 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://cpbp7en0cerjl"]
+[gd_scene load_steps=8 format=3 uid="uid://cpbp7en0cerjl"]
 
-[ext_resource type="PackedScene" uid="uid://dx0v1i14fyw8c" path="res://demo/demo_plane.tscn" id="1_bbdyo"]
+[ext_resource type="PackedScene" uid="uid://dx0v1i14fyw8c" path="res://addons/godot_aerodynamic_physics/demo/demo_plane.tscn" id="1_bbdyo"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_lajrc"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -15,8 +15,15 @@ sky = SubResource("Sky_dsdc3")
 tonemap_mode = 2
 glow_enabled = true
 
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ty4ai"]
+frequency = 0.2125
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_rutke"]
+noise = SubResource("FastNoiseLite_ty4ai")
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1sawy"]
 albedo_color = Color(0, 0.490196, 0.0823529, 1)
+albedo_texture = SubResource("NoiseTexture2D_rutke")
 
 [node name="Main" type="Node3D"]
 

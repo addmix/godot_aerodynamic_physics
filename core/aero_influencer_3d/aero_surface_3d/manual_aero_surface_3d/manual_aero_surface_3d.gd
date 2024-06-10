@@ -4,7 +4,6 @@ class_name ManualAeroSurface3D
 
 @export var manual_config := ManualAeroSurfaceConfig.new()
 
-var _integrate_forces_time : float = 0.0
 func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	var force_and_torque : PackedVector3Array = super._calculate_forces(substep_delta)
 	

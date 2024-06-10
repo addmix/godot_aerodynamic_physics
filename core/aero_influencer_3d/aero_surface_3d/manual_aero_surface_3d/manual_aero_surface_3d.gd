@@ -7,7 +7,6 @@ class_name ManualAeroSurface3D
 var _integrate_forces_time : float = 0.0
 func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	var force_and_torque : PackedVector3Array = super._calculate_forces(substep_delta)
-	var pre_time : int = Time.get_ticks_usec()
 	
 	var force := Vector3.ZERO
 	var torque := Vector3.ZERO
@@ -25,7 +24,7 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	var skin_friction_drag : float = wing_config.skin_friction * aero_reference
 	drag_force = form_drag + induced_drag + skin_friction_drag
 #	print("Percentages of total drag:\nSkin friction: %s\nForm drag: %s\nInduced drag: %s" % [skin_friction_drag / total_drag, form_drag / total_drag, induced_drag / total_drag])
-
+	
 #	https://aviation.stackexchange.com/questions/84210/difference-in-lift-generation-for-a-swept-wing-and-straight-wing-in-subsonic-con
 #	Since both the lift curve slope and the effective angle of attack are reduced
 #	by the cosine of the sweep angle at quarter chord, the lift coefficient of a
@@ -34,19 +33,16 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	
 	var lift_vector : Vector3 = lift_direction * lift_force
 	var drag_vector : Vector3 = drag_direction * drag_force
-
+	
 	#sum of all linear forces
 	force = lift_vector + drag_vector
 	#resultant torque from linear forces
 	torque += relative_position.cross(force)
-
+	
 	#current values for debug
 	_current_lift = lift_vector
 	_current_drag = drag_vector
 	_current_force = force
 	_current_torque = torque
-	
-	var post_time : int = Time.get_ticks_usec()
-	_integrate_forces_time = float(post_time - pre_time) * 0.001
 	
 	return PackedVector3Array([force_and_torque[0] + force, force_and_torque[1] + torque])

@@ -26,8 +26,10 @@ var override_body_sleep : bool = false:
 			aero_body.sleeping = false
 
 var world_air_velocity := Vector3.ZERO
-var linear_velocity := Vector3.ZERO
-var angular_velocity := Vector3.ZERO
+var linear_velocity := Vector3.ZERO:
+	get = get_linear_velocity
+var angular_velocity := Vector3.ZERO:
+	get = get_angular_velocity
 @onready var last_linear_velocity : Vector3 = linear_velocity
 @onready var last_angular_velocity : Vector3 = angular_velocity
 var air_density := 0.0
@@ -128,10 +130,10 @@ func get_world_air_velocity() -> Vector3:
 	return -get_linear_velocity()
 
 func get_linear_velocity() -> Vector3:
-	return get_parent().get_linear_velocity() + get_parent().get_angular_velocity().cross(get_parent().global_basis * position)
+	return get_parent().linear_velocity + get_parent().angular_velocity.cross(get_parent().global_basis * position)
 
 func get_angular_velocity() -> Vector3:
-	return get_parent().get_angular_velocity()
+	return get_parent().angular_velocity
 
 #virtual
 func get_centrifugal_offset() -> Vector3:

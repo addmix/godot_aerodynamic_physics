@@ -363,7 +363,14 @@ func _update_debug() -> void:
 	linear_velocity_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(linear_velocity_to_use, 2.0)
 	angular_velocity_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(angular_velocity_to_use, 2.0)
 	
+	#Godot doesn't run physics engine in-editor.
+	#A consequence of this is that get_linear_velocity doesn't work.
+	#Instead, we must access linear_velocity directly.
+	#We don't want to overwrite user configured linear velocity, so we must use this workaround.
+	var original_linear_velocity := linear_velocity
+	linear_velocity = debug_linear_velocity
 	var last_force_and_torque := calculate_aerodynamic_forces(linear_velocity_to_use, angular_velocity_to_use, air_density)
+	linear_velocity = original_linear_velocity
 	
 	#force and torque debug
 	if aero_influencers.size() > 0:

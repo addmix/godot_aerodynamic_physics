@@ -105,7 +105,7 @@ static func multiply(a : Array, b : Array) -> Array:
 				matrix[i][j] = matrix[i][j] + a[i][k] * b[k][j]
 	return matrix
 
-#plane intersection fucntion
+#plane intersection function
 #http://tbirdal.blogspot.com/2016/10/a-better-approach-to-plane-intersection.html
 static func ray_plane_intersection(p1 : Vector3, n1 : Vector3, p2 : Vector3, n2 : Vector3, p0 : Vector3) -> Array[Vector3]:
 

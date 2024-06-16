@@ -6,6 +6,17 @@ const AeroNodeUtils = preload("../../utils/node_utils.gd")
 
 @export var disabled : bool = false
 
+@export_group("Control")
+#X = pitch, Y = yaw, Z = roll
+var control_command := Vector3.ZERO
+var brake_input : float = 0.0
+@export var max_actuation := Vector3.ZERO
+@export var pitch_contribution := Vector3.ZERO
+@export var yaw_contribution := Vector3.ZERO
+@export var roll_contribution := Vector3.ZERO
+@export var brake_contribution := Vector3.ZERO
+@export_enum("XYZ", "XZY", "YXZ", "YZX", "ZXY", "ZYX") var control_rotation_order : int = 0
+
 @export_group("Debug")
 @export var omit_from_debug : bool = false
 @export var debug_scale : float = 0.1
@@ -22,9 +33,11 @@ var override_body_sleep : bool = false:
 	set(x):
 		override_body_sleep = x
 		
+		#not correct
 		if override_body_sleep and aero_body:
 			aero_body.sleeping = false
 
+@onready var default_transform := transform
 var world_air_velocity := Vector3.ZERO
 var linear_velocity := Vector3.ZERO:
 	get = get_linear_velocity
@@ -112,8 +125,27 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 
 #virtual
 func _update_transform_substep(substep_delta : float) -> void:
+	_update_control_transform(substep_delta)
 	for influencer : AeroInfluencer3D in aero_influencers:
 		influencer._update_transform_substep(substep_delta)
+
+func _update_control_transform(substep_delta : float) -> void:
+	control_command = get_parent().control_command
+	brake_input = get_parent().brake_input
+	
+	var pitch_actuation : Vector3 = pitch_contribution * control_command.x
+	var yaw_actuation : Vector3 = yaw_contribution * control_command.y
+	var roll_actuation : Vector3 = roll_contribution * control_command.z
+	var brake_actuation : Vector3 = brake_contribution * brake_input
+	
+	var total_control_actuation : Vector3 = Vector3(
+		pitch_actuation.x + yaw_actuation.x + roll_actuation.x + brake_actuation.x,
+		pitch_actuation.y + yaw_actuation.y + roll_actuation.y + brake_actuation.y,
+		pitch_actuation.z + yaw_actuation.z + roll_actuation.z + brake_actuation.z
+	)
+	total_control_actuation = total_control_actuation.clamp(-Vector3.ONE, Vector3.ONE)
+	
+	basis = default_transform.basis * Basis().from_euler(total_control_actuation * max_actuation, control_rotation_order)
 
 #virtual
 func is_overriding_body_sleep() -> bool:

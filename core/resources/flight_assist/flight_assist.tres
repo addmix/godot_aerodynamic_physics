@@ -1,0 +1,52 @@
+[gd_resource type="Resource" script_class="FlightAssist" load_steps=12 format=3 uid="uid://bgiequn1eb1mo"]
+
+[ext_resource type="Resource" uid="uid://d8tp3u2ibcyh" path="res://addons/godot_aerodynamic_physics/core/resources/pids/altitude_pid.tres" id="1_r8yan"]
+[ext_resource type="Resource" uid="uid://dwdilr3th15ut" path="res://addons/godot_aerodynamic_physics/core/resources/pids/bank_angle_pid.tres" id="2_twr5t"]
+[ext_resource type="Resource" uid="uid://cqgo7v8jao5fi" path="res://addons/godot_aerodynamic_physics/core/resources/pids/direction_pitch_pid.tres" id="3_nvxre"]
+[ext_resource type="Resource" uid="uid://cjcwr3fy8sjjr" path="res://addons/godot_aerodynamic_physics/core/resources/pids/direction_roll_pid.tres" id="4_qjn0o"]
+[ext_resource type="Resource" uid="uid://cimkndlj6fknf" path="res://addons/godot_aerodynamic_physics/core/resources/pids/direction_yaw_pid.tres" id="5_m2x50"]
+[ext_resource type="Resource" uid="uid://dhn1xf3nrt43k" path="res://addons/godot_aerodynamic_physics/core/resources/pids/heading_pid.tres" id="6_e5trs"]
+[ext_resource type="Resource" uid="uid://dsteqcbn3er33" path="res://addons/godot_aerodynamic_physics/core/resources/pids/pitch.tres" id="7_pjewb"]
+[ext_resource type="Resource" uid="uid://dkjwrbs3c0wvr" path="res://addons/godot_aerodynamic_physics/core/resources/pids/roll_pid.tres" id="8_raf21"]
+[ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/flight_assist.gd" id="9_fw51e"]
+[ext_resource type="Resource" uid="uid://ck80cone11d5w" path="res://addons/godot_aerodynamic_physics/core/resources/pids/speed_pid.tres" id="10_f8rdn"]
+[ext_resource type="Resource" uid="uid://c266ngwax13x5" path="res://addons/godot_aerodynamic_physics/core/resources/pids/yaw_pid.tres" id="11_gb5dk"]
+
+[resource]
+script = ExtResource("9_fw51e")
+max_angular_rates = Vector3(2, 1, 6)
+enable_flight_assist = true
+enable_flight_assist_x = true
+pitch_assist_pid = ExtResource("7_pjewb")
+enable_flight_assist_y = true
+yaw_assist_pid = ExtResource("11_gb5dk")
+enable_flight_assist_z = true
+roll_assist_pid = ExtResource("8_raf21")
+enable_g_limiter = true
+g_limit = 9.0
+negative_g_limit = 3.0
+enable_aoa_limiter = true
+aoa_limit_start = 22.0
+aoa_limit_end = 25.0
+enable_control_adjustment = false
+tuned_airspeed = 100.0
+min_accounted_airspeed = 75.0
+tuned_density = 1.222
+min_accounted_air_density = 0.1
+enable_bank_angle_assist = false
+bank_angle_target = 0.0
+bank_angle_pid = ExtResource("2_twr5t")
+enable_speed_hold = false
+speed_target = 0.0
+speed_pid = ExtResource("10_f8rdn")
+enable_altitude_hold = false
+altitude_target = 0.0
+altitude_pid = ExtResource("1_r8yan")
+enable_heading_hold = false
+heading_target = 0.0
+heading_pid = ExtResource("6_e5trs")
+enable_target_direction = false
+direction_target = Vector3(0, 0, 0)
+direction_pitch_pid = ExtResource("3_nvxre")
+direction_yaw_pid = ExtResource("5_m2x50")
+direction_roll_pid = ExtResource("4_qjn0o")

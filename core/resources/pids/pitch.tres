@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="aero_PID" load_steps=2 format=3 uid="uid://dsteqcbn3er33"]
+
+[ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/utils/pid.gd" id="1_ffqiq"]
+
+[resource]
+script = ExtResource("1_ffqiq")
+p = 0.5
+i = 3.0
+d = 0.0
+clamp_integral = true
+min_integral = -0.1
+max_integral = 0.1

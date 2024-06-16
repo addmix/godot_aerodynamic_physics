@@ -1,6 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://cpbp7en0cerjl"]
+[gd_scene load_steps=21 format=3 uid="uid://cpbp7en0cerjl"]
 
 [ext_resource type="PackedScene" uid="uid://dx0v1i14fyw8c" path="res://addons/godot_aerodynamic_physics/demo/demo_plane.tscn" id="1_bbdyo"]
+[ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/utils/pid.gd" id="2_qbjn7"]
+[ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/flight_assist.gd" id="3_girpf"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_lajrc"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -14,6 +16,135 @@ background_mode = 2
 sky = SubResource("Sky_dsdc3")
 tonemap_mode = 2
 glow_enabled = true
+
+[sub_resource type="Resource" id="Resource_bs023"]
+script = ExtResource("2_qbjn7")
+p = 0.2
+i = 0.05
+d = 1.0
+clamp_integral = false
+min_integral = -1.0
+max_integral = 1.0
+
+[sub_resource type="Resource" id="Resource_ki0tb"]
+script = ExtResource("2_qbjn7")
+p = 0.2
+i = 0.05
+d = 1.0
+clamp_integral = false
+min_integral = -1.0
+max_integral = 1.0
+
+[sub_resource type="Resource" id="Resource_trprk"]
+script = ExtResource("2_qbjn7")
+p = 0.2
+i = 0.05
+d = 1.0
+clamp_integral = false
+min_integral = -1.0
+max_integral = 1.0
+
+[sub_resource type="Resource" id="Resource_kie5x"]
+script = ExtResource("2_qbjn7")
+p = 0.2
+i = 0.05
+d = 1.0
+clamp_integral = false
+min_integral = -1.0
+max_integral = 1.0
+
+[sub_resource type="Resource" id="Resource_6f63a"]
+script = ExtResource("2_qbjn7")
+p = 0.2
+i = 0.05
+d = 1.0
+clamp_integral = false
+min_integral = -1.0
+max_integral = 1.0
+
+[sub_resource type="Resource" id="Resource_frx4x"]
+script = ExtResource("2_qbjn7")
+p = 0.2
+i = 0.05
+d = 1.0
+clamp_integral = false
+min_integral = -1.0
+max_integral = 1.0
+
+[sub_resource type="Resource" id="Resource_ipach"]
+script = ExtResource("2_qbjn7")
+p = 0.2
+i = 0.05
+d = 1.0
+clamp_integral = false
+min_integral = -1.0
+max_integral = 1.0
+
+[sub_resource type="Resource" id="Resource_6lmlq"]
+script = ExtResource("2_qbjn7")
+p = 0.2
+i = 0.05
+d = 1.0
+clamp_integral = false
+min_integral = -1.0
+max_integral = 1.0
+
+[sub_resource type="Resource" id="Resource_xeg6a"]
+script = ExtResource("2_qbjn7")
+p = 0.2
+i = 0.05
+d = 1.0
+clamp_integral = false
+min_integral = -1.0
+max_integral = 1.0
+
+[sub_resource type="Resource" id="Resource_iygmt"]
+script = ExtResource("2_qbjn7")
+p = 0.2
+i = 0.05
+d = 1.0
+clamp_integral = false
+min_integral = -1.0
+max_integral = 1.0
+
+[sub_resource type="Resource" id="Resource_oaet1"]
+script = ExtResource("3_girpf")
+max_angular_rates = Vector3(0.35, 0.04, 5)
+enable_flight_assist = false
+enable_flight_assist_x = true
+pitch_assist_pid = SubResource("Resource_ipach")
+enable_flight_assist_y = true
+yaw_assist_pid = SubResource("Resource_iygmt")
+enable_flight_assist_z = true
+roll_assist_pid = SubResource("Resource_6lmlq")
+enable_g_limiter = true
+g_limit = 9.0
+negative_g_limit = 3.0
+enable_aoa_limiter = true
+aoa_limit_start = 22.0
+aoa_limit_end = 25.0
+enable_control_adjustment = false
+tuned_airspeed = 100.0
+min_accounted_airspeed = 75.0
+tuned_density = 1.222
+min_accounted_air_density = 0.1
+enable_bank_angle_assist = false
+bank_angle_target = 0.0
+bank_angle_pid = SubResource("Resource_ki0tb")
+enable_speed_hold = false
+speed_target = 0.0
+speed_pid = SubResource("Resource_xeg6a")
+enable_altitude_hold = false
+altitude_target = 0.0
+altitude_pid = SubResource("Resource_bs023")
+enable_heading_hold = false
+heading_target = 0.0
+heading_pid = SubResource("Resource_frx4x")
+enable_target_direction = false
+direction_target = Vector3(0, 0, 0)
+direction_pitch_pid = SubResource("Resource_trprk")
+direction_yaw_pid = SubResource("Resource_6f63a")
+direction_roll_pid = SubResource("Resource_kie5x")
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_ty4ai"]
 frequency = 0.2125
@@ -36,6 +167,12 @@ environment = SubResource("Environment_bkiet")
 
 [node name="AeroBody3D" parent="." instance=ExtResource("1_bbdyo")]
 linear_velocity = Vector3(0, 0, -100)
+flight_assist = SubResource("Resource_oaet1")
+
+[node name="Label3D" type="Label3D" parent="AeroBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.15356, 3.43796, 0)
+pixel_size = 0.01
+text = "Use arrow keys for pitch/roll control"
 
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.12099, -190.455)

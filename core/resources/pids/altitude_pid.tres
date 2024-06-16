@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="aero_PID" load_steps=2 format=3 uid="uid://d8tp3u2ibcyh"]
+
+[ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/utils/pid.gd" id="1_mpxsa"]
+
+[resource]
+script = ExtResource("1_mpxsa")
+p = 0.001
+i = 0.0
+d = 0.01
+clamp_integral = false
+min_integral = -1.0
+max_integral = 1.0

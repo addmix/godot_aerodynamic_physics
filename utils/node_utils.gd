@@ -1,3 +1,5 @@
+# From https://github.com/addmix/godot_utils
+
 #returns signal connection error, if any. Mainly for plugin nodes
 static func connect_signal_safe(node : Node, _signal : StringName, callable : Callable, flags : int = 0, silence_warning : bool = false) -> int:
 	if not node.has_signal(_signal):

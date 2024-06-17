@@ -9,7 +9,8 @@ const AeroNodeUtils = preload("../../utils/node_utils.gd")
 @export_group("Control")
 #X = pitch, Y = yaw, Z = roll
 var control_command := Vector3.ZERO
-var brake_input : float = 0.0
+var throttle_command : float = 0.0
+var brake_command : float = 0.0
 @export var max_actuation := Vector3.ZERO
 @export var pitch_contribution := Vector3.ZERO
 @export var yaw_contribution := Vector3.ZERO
@@ -131,12 +132,13 @@ func _update_transform_substep(substep_delta : float) -> void:
 
 func _update_control_transform(substep_delta : float) -> void:
 	control_command = get_parent().control_command
-	brake_input = get_parent().brake_input
+	throttle_command = get_parent().throttle_command
+	brake_command = get_parent().brake_command
 	
 	var pitch_actuation : Vector3 = pitch_contribution * control_command.x
 	var yaw_actuation : Vector3 = yaw_contribution * control_command.y
 	var roll_actuation : Vector3 = roll_contribution * control_command.z
-	var brake_actuation : Vector3 = brake_contribution * brake_input
+	var brake_actuation : Vector3 = brake_contribution * brake_command
 	
 	var total_control_actuation : Vector3 = Vector3(
 		pitch_actuation.x + yaw_actuation.x + roll_actuation.x + brake_actuation.x,

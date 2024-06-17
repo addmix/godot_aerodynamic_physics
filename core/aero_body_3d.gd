@@ -11,22 +11,9 @@ const AeroNodeUtils = preload("../utils/node_utils.gd")
 		PREDICTION_TIMESTEP_FRACTION = 1.0 / float(SUBSTEPS)
 
 @export_group("Control")
-@export var control_input : Vector3 = Vector3.ZERO
-var control_command := Vector3.ZERO
-@export var throttle_input : float = 0.0
-var throttle_command : float = 0.0
-@export var brake_input : float = 0.0
-@export var flight_assist : FlightAssist = FlightAssist.new()
-
-@export_subgroup("Bindings")
-@export var use_controls : bool = false
-@export var pitch_up_event : String = "ui_down"
-@export var pitch_down_event : String = "ui_up"
-@export var yaw_left_event : String = ""
-@export var yaw_right_event : String = ""
-@export var roll_left_event : String = "ui_left"
-@export var roll_right_event : String = "ui_right"
-@export_subgroup("")
+@export var control_command : Vector3 = Vector3.ZERO
+@export var throttle_command : float = 0.0
+@export var brake_command : float = 0.0
 
 @export_category("Debug")
 @export var show_debug : bool = false:
@@ -196,10 +183,6 @@ func on_child_exit_tree(node : Node) -> void:
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		update_configuration_warnings()
-	
-	if not Engine.is_editor_hint():
-		if flight_assist:
-			flight_assist = flight_assist.duplicate(true)
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray([])
@@ -224,9 +207,6 @@ func _get_configuration_warnings() -> PackedStringArray:
 func _physics_process(delta : float) -> void:
 	if show_debug and update_debug:
 		_update_debug()
-	
-	update_controls()
-	update_flight_assist(delta)
 
 var _integrate_forces_time : float = 0.0
 func _integrate_forces(state : PhysicsDirectBodyState3D) -> void:
@@ -361,51 +341,6 @@ func get_linear_acceleration() -> Vector3:
 
 func get_angular_acceleration() -> Vector3:
 	return (angular_velocity_prediction - last_angular_velocity) / substep_delta
-
-
-#control
-
-
-func update_controls() -> void:
-	if not use_controls:
-		return
-	
-	#prevent error spam when an axis is unassigned
-	var pitch_input : float = 0.0
-	if not (pitch_up_event == "" or pitch_down_event == ""):
-		pitch_input = Input.get_axis(pitch_down_event, pitch_up_event)
-	
-	var yaw_input : float = 0.0
-	if not (yaw_left_event == "" or yaw_right_event == ""):
-		yaw_input = Input.get_axis(yaw_right_event, yaw_left_event)
-	
-	var roll_input : float = 0.0
-	if not (roll_left_event == "" or roll_right_event == ""):
-		roll_input = Input.get_axis(roll_right_event, roll_left_event)
-	
-	control_input = Vector3(pitch_input, yaw_input, roll_input)
-
-func update_flight_assist(delta : float) -> void:
-	if not flight_assist:
-		control_command = control_input
-		return
-	
-	#input and pids
-	flight_assist.input = control_input
-	flight_assist.throttle = throttle_input
-	flight_assist.air_speed = air_speed
-	flight_assist.air_density = air_density
-	flight_assist.angle_of_attack = angle_of_attack
-	flight_assist.altitude = altitude
-	flight_assist.heading = heading
-	flight_assist.bank_angle = bank_angle
-	flight_assist.linear_velocity = linear_velocity
-	flight_assist.local_angular_velocity = local_angular_velocity
-	flight_assist.global_transform = global_transform
-	flight_assist.update(delta)
-	
-	control_command = flight_assist.control_value
-	throttle_command = flight_assist.throttle
 
 
 #debug

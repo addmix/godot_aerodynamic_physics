@@ -21,7 +21,6 @@ var control_value := Vector3.ZERO
 var throttle : float = 0.0
 
 @export_group("Flight Assist")
-@export var enable_flight_assist : bool = false
 @export_subgroup("Axes")
 @export var enable_flight_assist_x : bool = true
 @export var pitch_assist_pid : aero_PID = aero_PID.new()
@@ -86,10 +85,6 @@ var throttle : float = 0.0
 
 func update(delta : float) -> void:
 	control_value = Vector3.ZERO
-	
-	if not enable_flight_assist:
-		control_value = input
-		return
 	
 	speed_hold(delta)
 	bank_angle_assist(delta)

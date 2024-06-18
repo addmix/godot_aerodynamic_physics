@@ -50,9 +50,6 @@ const AeroNodeUtils = preload("../utils/node_utils.gd")
 	set(x):
 		show_drag = x
 		_update_debug_visibility()
-
-
-@export_group("Physics")
 @export var show_linear_velocity : bool = true:
 	set(x):
 		show_linear_velocity = x

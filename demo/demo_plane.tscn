@@ -1,9 +1,10 @@
-[gd_scene load_steps=19 format=3 uid="uid://dx0v1i14fyw8c"]
+[gd_scene load_steps=20 format=3 uid="uid://dx0v1i14fyw8c"]
 
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/aero_body_3d.gd" id="1_ddp7w"]
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/components/AeroControlComponent.gd" id="2_x2dhw"]
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd" id="2_ygpq6"]
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_config.gd" id="3_dhflf"]
+[ext_resource type="Resource" uid="uid://bgiequn1eb1mo" path="res://addons/godot_aerodynamic_physics/core/resources/flight_assist/flight_assist.tres" id="3_tqhsg"]
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="4_ht3i8"]
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/demo/thruster.gd" id="5_50cgi"]
 
@@ -98,6 +99,7 @@ script = ExtResource("1_ddp7w")
 
 [node name="AeroControlComponent" type="Node" parent="."]
 script = ExtResource("2_x2dhw")
+flight_assist = ExtResource("3_tqhsg")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0840454, 1.49654)

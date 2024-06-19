@@ -235,7 +235,7 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	air_velocity = -linear_velocity + wind
 	air_speed = air_velocity.length()
 	
-	altitude = get_altitude()
+	altitude = AeroUnits.get_altitude(self)
 	
 	mach = AeroUnits.speed_to_mach_at_altitude(air_speed, altitude)
 	air_density = AeroUnits.get_density_at_altitude(altitude)
@@ -319,12 +319,6 @@ func get_amount_of_active_influencers() -> int:
 			count += 1
 	
 	return count
-
-func get_altitude() -> float:
-	if has_node("/root/FloatingOriginHelper"):
-		return $"/root/FloatingOriginHelper".get_altitude(self)
-	else:
-		return global_position.y
 
 func get_relative_position() -> Vector3:
 	return global_basis * -center_of_mass

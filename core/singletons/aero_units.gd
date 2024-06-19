@@ -147,3 +147,9 @@ func get_speed_of_sound_at_pressure_and_density(pressure : float, density : floa
 
 func speed_to_mach_at_altitude(speed : float, altitude : float) -> float:
 	return speed / get_mach_at_altitude(altitude)
+
+func get_altitude(node : Node3D) -> float:
+	if has_node("/root/FloatingOriginHelper"):
+		return $"/root/FloatingOriginHelper".get_altitude(node)
+	else:
+		return node.global_position.y

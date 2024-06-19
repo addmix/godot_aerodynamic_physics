@@ -4,7 +4,7 @@ class_name AeroControlComponent
 
 @onready var aero_body : AeroBody3D = get_parent()
 
-@export var flight_assist : FlightAssist = preload("../core/resources/flight_assist/flight_assist.tres")
+@export var flight_assist : FlightAssist = preload("../core/resources/flight_assist/flight_assist.tres").duplicate()
 
 var control_input : Vector3 = Vector3.ZERO
 var control_command := Vector3.ZERO

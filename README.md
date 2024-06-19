@@ -12,7 +12,7 @@
 
 # Usage
 Tutorial available [here](https://youtu.be/iI8SXQdaqDQ)
-1. Add an `AeroBody` to your scene, and add one or more `AeroSurface` derived classes as children, adjust settings to change the characteristics.
+1. Add an ![AeroBody3D icon](icons/AeroBody3D.svg) AeroBody to your scene, and add one or more ![AeroInfluencer3D icon](icons/AeroInfluencer3D.svg) AeroInfluencer3D derived classes as children, adjust settings to change the characteristics.
 
 # Development Direction
 1. Different Aero shapes (Sphere, Box, Cylinder, Plane)

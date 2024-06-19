@@ -371,14 +371,15 @@ func _update_debug() -> void:
 	#A consequence of this is that get_linear_velocity doesn't work.
 	#Instead, we must access linear_velocity directly.
 	#We don't want to overwrite user configured linear velocity, so we must use this workaround.
-	var original_linear_velocity := linear_velocity
-	var original_angular_velocity := angular_velocity
+	
 	if Engine.is_editor_hint():
+		var original_linear_velocity := linear_velocity
+		var original_angular_velocity := angular_velocity
 		linear_velocity = debug_linear_velocity
 		angular_velocity = debug_angular_velocity
-	var last_force_and_torque := calculate_aerodynamic_forces(linear_velocity_to_use, angular_velocity_to_use, air_density)
-	linear_velocity = original_linear_velocity
-	angular_velocity = original_angular_velocity
+		var last_force_and_torque := calculate_aerodynamic_forces(linear_velocity_to_use, angular_velocity_to_use, air_density)
+		linear_velocity = original_linear_velocity
+		angular_velocity = original_angular_velocity
 	
 	#force and torque debug
 	if aero_influencers.size() > 0:

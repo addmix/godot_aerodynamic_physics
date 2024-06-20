@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://dx0v1i14fyw8c"]
+[gd_scene load_steps=20 format=3 uid="uid://dx0v1i14fyw8c"]
 
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/aero_body_3d.gd" id="1_ddp7w"]
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/components/AeroControlComponent.gd" id="2_x2dhw"]
@@ -6,7 +6,6 @@
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_config.gd" id="3_dhflf"]
 [ext_resource type="Resource" uid="uid://bgiequn1eb1mo" path="res://addons/godot_aerodynamic_physics/core/resources/flight_assist/flight_assist.tres" id="3_tqhsg"]
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="4_ht3i8"]
-[ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/demo/thruster.gd" id="5_50cgi"]
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/components/AeroThrusterComponent.gd" id="8_e4glj"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_swshj"]
@@ -101,8 +100,7 @@ script = ExtResource("1_ddp7w")
 [node name="AeroControlComponent" type="Node" parent="."]
 script = ExtResource("2_x2dhw")
 flight_assist = ExtResource("3_tqhsg")
-throttle_up_event = "ThrottleUp"
-throttle_down_event = "ThrottleDown"
+throttle_input = 1.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0840454, 1.49654)
@@ -119,7 +117,10 @@ manual_config = SubResource("Resource_raxm3")
 wing_config = SubResource("Resource_b87jk")
 max_actuation = Vector3(0.1, 0, 0)
 pitch_contribution = Vector3(-1, 0, 0)
-show_debug = true
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="Elevator"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.57628e-07, 0.29494)
+size = Vector3(2.0332, 0.113525, 1.14014)
 
 [node name="Rudder" type="Node3D" parent="."]
 transform = Transform3D(-4.37114e-08, -1, 3.55271e-15, 0.835693, -3.65293e-08, -0.549198, 0.549198, -2.40062e-08, 0.835693, -2.96035e-17, 0.742918, 3.32475)
@@ -128,7 +129,10 @@ manual_config = SubResource("Resource_raxm3")
 wing_config = SubResource("Resource_7jeqs")
 max_actuation = Vector3(0.1, 0, 0)
 yaw_contribution = Vector3(-1, 0, 0)
-show_debug = true
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="Rudder"]
+transform = Transform3D(-4.37114e-08, 0.999742, -0.0227224, -1, -4.37001e-08, 9.93232e-10, 3.55271e-15, 0.0227224, 0.999742, 0.0151641, -6.6283e-10, 0.239923)
+size = Vector3(0.141602, 1.41797, 1.14014)
 
 [node name="WingL" type="Node3D" parent="."]
 transform = Transform3D(1, 0, -5.96046e-08, 0, 1, 0, 5.96046e-08, 0, 1, -1.90776, 0, -0.473555)
@@ -137,7 +141,10 @@ manual_config = SubResource("Resource_raxm3")
 wing_config = SubResource("Resource_658jb")
 max_actuation = Vector3(0.1, 0, 0)
 roll_contribution = Vector3(-1, 0, 0)
-show_debug = true
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="WingL"]
+transform = Transform3D(1, 0, 5.96046e-08, 0, 1, 0, -5.96046e-08, 0, 1, 0.0698701, 0, 0.269345)
+size = Vector3(3.67285, 0.113525, 1.14014)
 
 [node name="WingR" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 5.96046e-08, 0, 1, 0, -5.96046e-08, 0, 1, 1.908, 0, -0.473945)
@@ -146,27 +153,13 @@ manual_config = SubResource("Resource_raxm3")
 wing_config = SubResource("Resource_658jb")
 max_actuation = Vector3(0.1, 0, 0)
 roll_contribution = Vector3(1, 0, 0)
-show_debug = true
+
+[node name="CSGBox3D5" type="CSGBox3D" parent="WingR"]
+transform = Transform3D(1, 0, -5.96046e-08, 0, 1, 0, 5.96046e-08, 0, 1, -0.0699999, 0, 0.269945)
+size = Vector3(3.67285, 0.113525, 1.14014)
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55771, 9.0562)
-
-[node name="CSGBox3D" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.20421)
-size = Vector3(7.34863, 0.113525, 1.14014)
-
-[node name="CSGBox3D2" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.35488)
-size = Vector3(2.0332, 0.113525, 1.14014)
-
-[node name="CSGBox3D3" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.822998, -0.568045, 0, 0.568045, 0.822998, 0, 0.623825, 3.53358)
-size = Vector3(0.141602, 1.41797, 1.14014)
-
-[node name="Marker3D" type="Marker3D" parent="."]
-script = ExtResource("5_50cgi")
-enabled = false
-force = 2000.0
 
 [node name="AeroThrusterComponent" type="Marker3D" parent="."]
 script = ExtResource("8_e4glj")

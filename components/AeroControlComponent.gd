@@ -5,11 +5,11 @@ class_name AeroControlComponent
 
 @export var flight_assist : FlightAssist = preload("../core/resources/flight_assist/flight_assist.tres").duplicate()
 
-var control_input : Vector3 = Vector3.ZERO
+@export var control_input : Vector3 = Vector3.ZERO
 var control_command := Vector3.ZERO
-var throttle_input : float = 0.0
+@export var throttle_input : float = 0.0
 var throttle_command : float = 0.0
-var brake_input : float = 0.0
+@export var brake_input : float = 0.0
 var brake_command : float = 0.0
 
 @export_subgroup("Bindings")
@@ -50,31 +50,35 @@ func update_controls(delta : float) -> void:
 		return
 	
 	#prevent error spam when an axis is unassigned
-	var _pitch_input : float = 0.0
+	var _pitch_input : float = control_input.x
 	if not (pitch_up_event == "" or pitch_down_event == ""):
 		_pitch_input = Input.get_axis(pitch_down_event, pitch_up_event)
+		_pitch_input = clamp(_pitch_input, -1.0, 1.0)
+		control_input.x = _pitch_input
 	
-	var _yaw_input : float = 0.0
+	var _yaw_input : float = control_input.y
 	if not (yaw_left_event == "" or yaw_right_event == ""):
 		_yaw_input = Input.get_axis(yaw_right_event, yaw_left_event)
+		_yaw_input = clamp(_yaw_input, -1.0, 1.0)
+		control_input.y = _yaw_input
 	
-	var _roll_input : float = 0.0
+	var _roll_input : float = control_input.z
 	if not (roll_left_event == "" or roll_right_event == ""):
 		_roll_input = Input.get_axis(roll_right_event, roll_left_event)
+		_roll_input = clamp(_roll_input, -1.0, 1.0)
+		control_input.z = _roll_input
 	
-	control_input = Vector3(_pitch_input, _yaw_input, _roll_input)
-	
-	var _throttle_input : float = 0.0
+	var _throttle_input : float = throttle_input
 	if not (throttle_up_event == "" or throttle_down_event == ""):
 		_throttle_input = Input.get_axis(throttle_down_event, throttle_up_event)
-	throttle_input += _throttle_input * delta
-	throttle_input = clamp(throttle_input, 0.0, 1.0)
+		throttle_input += _throttle_input * delta
+		throttle_input = clamp(throttle_input, 0.0, 1.0)
 	
-	var _brake_input : float = 0.0
+	var _brake_input : float = brake_input
 	if not (brake_up_event == "" or brake_down_event == ""):
 		_brake_input = Input.get_axis(brake_down_event, brake_up_event)
-	brake_input += _brake_input * delta
-	brake_input = clamp(brake_input, 0.0, 1.0)
+		brake_input += _brake_input * delta
+		brake_input = clamp(brake_input, 0.0, 1.0)
 	
 	control_command = control_input
 	throttle_command = throttle_input

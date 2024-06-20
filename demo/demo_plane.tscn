@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://dx0v1i14fyw8c"]
+[gd_scene load_steps=21 format=3 uid="uid://dx0v1i14fyw8c"]
 
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/aero_body_3d.gd" id="1_ddp7w"]
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/components/AeroControlComponent.gd" id="2_x2dhw"]
@@ -7,6 +7,7 @@
 [ext_resource type="Resource" uid="uid://bgiequn1eb1mo" path="res://addons/godot_aerodynamic_physics/core/resources/flight_assist/flight_assist.tres" id="3_tqhsg"]
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="4_ht3i8"]
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/demo/thruster.gd" id="5_50cgi"]
+[ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/components/AeroThrusterComponent.gd" id="8_e4glj"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_swshj"]
 friction = 0.0
@@ -100,6 +101,8 @@ script = ExtResource("1_ddp7w")
 [node name="AeroControlComponent" type="Node" parent="."]
 script = ExtResource("2_x2dhw")
 flight_assist = ExtResource("3_tqhsg")
+throttle_up_event = "ThrottleUp"
+throttle_down_event = "ThrottleDown"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0840454, 1.49654)
@@ -162,4 +165,11 @@ size = Vector3(0.141602, 1.41797, 1.14014)
 
 [node name="Marker3D" type="Marker3D" parent="."]
 script = ExtResource("5_50cgi")
+enabled = false
 force = 2000.0
+
+[node name="AeroThrusterComponent" type="Marker3D" parent="."]
+script = ExtResource("8_e4glj")
+intake_area = 0.1
+intake_fan_max_velocity = 300.0
+max_exhaust_velocity = 200.0

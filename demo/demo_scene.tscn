@@ -35,7 +35,7 @@ shadow_enabled = true
 environment = SubResource("Environment_bkiet")
 
 [node name="AeroBody3D" parent="." instance=ExtResource("1_bbdyo")]
-linear_velocity = Vector3(0, 0, -100)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.08791, 0)
 
 [node name="Label3D" type="Label3D" parent="AeroBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.15356, 3.43796, 0)

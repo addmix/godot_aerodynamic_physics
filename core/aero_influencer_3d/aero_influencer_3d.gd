@@ -7,6 +7,7 @@ const AeroNodeUtils = preload("../../utils/node_utils.gd")
 @export var disabled : bool = false
 
 @export_group("Control")
+@export var enable_automatic_control : bool = true
 #X = pitch, Y = yaw, Z = roll
 var control_command := Vector3.ZERO
 var throttle_command : float = 0.0
@@ -131,6 +132,9 @@ func _update_transform_substep(substep_delta : float) -> void:
 		influencer._update_transform_substep(substep_delta)
 
 func _update_control_transform(substep_delta : float) -> void:
+	if not enable_automatic_control:
+		return
+	
 	control_command = get_parent().control_command
 	throttle_command = get_parent().throttle_command
 	brake_command = get_parent().brake_command

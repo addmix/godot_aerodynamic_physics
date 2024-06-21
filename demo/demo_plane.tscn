@@ -12,10 +12,10 @@
 friction = 0.0
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_nchkm"]
-size = Vector3(5.34473, 0.454224, 5.40618)
+size = Vector3(7.3728, 0.215118, 5.40618)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_6onr1"]
-radius = 0.248054
+radius = 0.446985
 
 [sub_resource type="Curve" id="Curve_v5kpe"]
 _data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.25, 1), 0.0, 0.0, 0, 0, Vector2(0.5, 0), 0.0, 0.0, 0, 0, Vector2(0.75, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
@@ -90,7 +90,7 @@ drag_at_mach_multiplier_curve = SubResource("Curve_26y5e")
 buffet_aoa_curve = SubResource("Curve_8vcck")
 
 [node name="AeroBody3D" type="VehicleBody3D"]
-mass = 1000.0
+mass = 2000.0
 physics_material_override = SubResource("PhysicsMaterial_swshj")
 center_of_mass_mode = 1
 linear_damp_mode = 1
@@ -103,19 +103,19 @@ flight_assist = ExtResource("3_tqhsg")
 throttle_input = 1.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0840454, 1.49654)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.00468441, 1.49654)
 shape = SubResource("BoxShape3D_nchkm")
 
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="."]
-transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, -0.282653, -0.4323)
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, -0.434142, -0.41004)
 shape = SubResource("CapsuleShape3D_6onr1")
 
 [node name="Elevator" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.57628e-07, 3.05994)
+transform = Transform3D(1, 0, 0, 0, 0.999848, 0.0174524, 0, -0.0174524, 0.999848, 0, -3.57628e-07, 3.05994)
 script = ExtResource("2_ygpq6")
 manual_config = SubResource("Resource_raxm3")
 wing_config = SubResource("Resource_b87jk")
-max_actuation = Vector3(0.1, 0, 0)
+max_actuation = Vector3(0.2, 0, 0)
 pitch_contribution = Vector3(-1, 0, 0)
 
 [node name="CSGBox3D2" type="CSGBox3D" parent="Elevator"]
@@ -135,7 +135,7 @@ transform = Transform3D(-4.37114e-08, 0.999742, -0.0227224, -1, -4.37001e-08, 9.
 size = Vector3(0.141602, 1.41797, 1.14014)
 
 [node name="WingL" type="Node3D" parent="."]
-transform = Transform3D(1, 0, -5.96046e-08, 0, 1, 0, 5.96046e-08, 0, 1, -1.90776, 0, -0.473555)
+transform = Transform3D(0.996195, 0.0871557, 0, -0.0870363, 0.994829, -0.052336, -0.00456138, 0.0521368, 0.99863, -1.90776, 0, -0.473555)
 script = ExtResource("2_ygpq6")
 manual_config = SubResource("Resource_raxm3")
 wing_config = SubResource("Resource_658jb")
@@ -147,7 +147,7 @@ transform = Transform3D(1, 0, 5.96046e-08, 0, 1, 0, -5.96046e-08, 0, 1, 0.069870
 size = Vector3(3.67285, 0.113525, 1.14014)
 
 [node name="WingR" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 5.96046e-08, 0, 1, 0, -5.96046e-08, 0, 1, 1.908, 0, -0.473945)
+transform = Transform3D(0.996195, -0.0871557, 0, 0.0870363, 0.994829, -0.052336, 0.00456138, 0.0521368, 0.99863, 1.908, 0, -0.473945)
 script = ExtResource("2_ygpq6")
 manual_config = SubResource("Resource_raxm3")
 wing_config = SubResource("Resource_658jb")
@@ -165,4 +165,4 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55771, 9.0562)
 script = ExtResource("8_e4glj")
 intake_area = 0.1
 intake_fan_max_velocity = 300.0
-max_exhaust_velocity = 200.0
+max_exhaust_velocity = 100.0

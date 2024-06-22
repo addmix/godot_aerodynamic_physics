@@ -5,6 +5,7 @@ class_name AeroBody3D
 const AeroMathUtils = preload("../utils/math_utils.gd")
 const AeroNodeUtils = preload("../utils/node_utils.gd")
 
+##Overrides the amount of simulation substeps are used when calculating aerodynamic effects on this body.
 @export var substeps_override : int = -1:
 	set(x):
 		substeps_override = x

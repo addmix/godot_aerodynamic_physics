@@ -13,6 +13,7 @@
 [ext_resource type="Resource" uid="uid://c266ngwax13x5" path="res://addons/godot_aerodynamic_physics/core/resources/pids/yaw_pid.tres" id="11_gb5dk"]
 
 [resource]
+resource_local_to_scene = true
 script = ExtResource("9_fw51e")
 max_angular_rates = Vector3(2, 1, 6)
 enable_flight_assist_x = true

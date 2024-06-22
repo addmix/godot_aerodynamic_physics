@@ -36,8 +36,20 @@ environment = SubResource("Environment_bkiet")
 
 [node name="AeroBody3D" parent="." instance=ExtResource("1_bbdyo")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.08791, 0)
+show_debug = true
+update_debug = true
 
 [node name="Label3D" type="Label3D" parent="AeroBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.15356, 3.43796, 0)
+pixel_size = 0.01
+text = "Use arrow keys for pitch/roll control"
+
+[node name="AeroBody3D2" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.08791, -14.9813)
+show_debug = true
+update_debug = true
+
+[node name="Label3D" type="Label3D" parent="AeroBody3D2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.15356, 3.43796, 0)
 pixel_size = 0.01
 text = "Use arrow keys for pitch/roll control"

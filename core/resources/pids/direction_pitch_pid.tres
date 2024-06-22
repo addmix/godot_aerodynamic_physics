@@ -8,5 +8,5 @@ p = 10.0
 i = 0.3
 d = 4.0
 clamp_integral = false
-min_integral = -0.1
-max_integral = 0.1
+min_integral = -1.0
+max_integral = 1.0

@@ -23,10 +23,13 @@ var proportional_output : float = 0.0
 var integral_output : float = 0.0
 var derivative_output : float = 0.0
 
-func _init(_p : float = p, _i : float = i, _d : float = d) -> void:
+func _init(_p : float = p, _i : float = i, _d : float = d, _clamp_integral : bool = clamp_integral, _min_integral : float = min_integral, _max_integral : float = max_integral) -> void:
 	self.p = _p
 	self.i = _i
 	self.d = _d
+	self.clamp_integral = _clamp_integral
+	self.min_integral = _min_integral
+	self.max_integral = _max_integral
 
 func update(delta : float, error : float) -> float:
 	var derivative : float = (error - _last_error) / delta

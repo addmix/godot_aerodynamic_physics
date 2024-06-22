@@ -14,20 +14,20 @@ var linear_velocity : Vector3 = Vector3.ZERO
 var local_angular_velocity : Vector3 = Vector3.ZERO
 var global_transform : Transform3D = Transform3D()
 
-var input := Vector3.ZERO
-@export var max_angular_rates := Vector3(0.35, 0.04, 5.0)
+var control_input := Vector3.ZERO
+var control_command := Vector3.ZERO
+var throttle_command : float = 0.0
+@export var max_angular_rates := Vector3(2, 1, 5.0)
 var angular_rate_error := Vector3.ZERO
-var control_value := Vector3.ZERO
-var throttle : float = 0.0
 
 @export_group("Flight Assist")
 @export_subgroup("Axes")
 @export var enable_flight_assist_x : bool = true
-@export var pitch_assist_pid : aero_PID = aero_PID.new()
+@export var pitch_assist_pid : aero_PID = aero_PID.new(0.5, 3, 0, true, -0.2, 0.2)
 @export var enable_flight_assist_y : bool = true
-@export var yaw_assist_pid : aero_PID = aero_PID.new()
+@export var yaw_assist_pid : aero_PID = aero_PID.new(1, 0, 0)
 @export var enable_flight_assist_z : bool = true
-@export var roll_assist_pid : aero_PID = aero_PID.new()
+@export var roll_assist_pid : aero_PID = aero_PID.new(0.2, 0, 0)
 @export_subgroup("G Limiter")
 @export var enable_g_limiter : bool = true
 @export var g_limit : float = 9.0
@@ -47,7 +47,7 @@ var throttle : float = 0.0
 @export_subgroup("Bank Angle")
 @export var enable_bank_angle_assist : bool = false
 @export var bank_angle_target : float = 0.0
-@export var bank_angle_pid : aero_PID = aero_PID.new()
+@export var bank_angle_pid : aero_PID = aero_PID.new(1, 0.05, 0.1)
 
 @export_subgroup("Speed Hold")
 @export var enable_speed_hold : bool = false:
@@ -55,7 +55,7 @@ var throttle : float = 0.0
 		enable_speed_hold = x
 		speed_target = air_speed
 @export var speed_target : float = 0.0
-@export var speed_pid : aero_PID = aero_PID.new()
+@export var speed_pid : aero_PID = aero_PID.new(0, 0.4, 0)
 
 @export_subgroup("Altitude Hold")
 @export var enable_altitude_hold : bool = false:
@@ -63,7 +63,7 @@ var throttle : float = 0.0
 		enable_altitude_hold = x
 		altitude_target = altitude
 @export var altitude_target : float = 0.0
-@export var altitude_pid : aero_PID = aero_PID.new()
+@export var altitude_pid : aero_PID = aero_PID.new(0.001, 0, 0.01)
 
 @export_subgroup("Heading Hold")
 @export var enable_heading_hold : bool = false:
@@ -71,20 +71,20 @@ var throttle : float = 0.0
 		enable_heading_hold = x
 		heading_target = heading
 @export var heading_target : float = 0.0
-@export var heading_pid : aero_PID = aero_PID.new()
+@export var heading_pid : aero_PID = aero_PID.new(10, 0, 0)
 
 @export_subgroup("Target Direction")
 @export var enable_target_direction : bool = false
 @export var direction_target : Vector3 = Vector3.ZERO
-@export var direction_pitch_pid : aero_PID = aero_PID.new()
-@export var direction_yaw_pid : aero_PID = aero_PID.new()
-@export var direction_roll_pid : aero_PID = aero_PID.new()
+@export var direction_pitch_pid : aero_PID = aero_PID.new(10, 0.3, 4)
+@export var direction_yaw_pid : aero_PID = aero_PID.new(25, 0, 0)
+@export var direction_roll_pid : aero_PID = aero_PID.new(0.8, 0, 0)
 
 @export_subgroup("")
 @export_category("")
 
 func update(delta : float) -> void:
-	control_value = Vector3.ZERO
+	control_command = Vector3.ZERO
 	
 	speed_hold(delta)
 	bank_angle_assist(delta)
@@ -97,27 +97,27 @@ func bank_angle_assist(delta : float) -> void:
 	if not enable_bank_angle_assist and not enable_altitude_hold and not enable_heading_hold:
 		return
 	bank_angle_pid.update(delta, bank_angle_target - bank_angle)
-	input.z += bank_angle_pid.output
+	control_input.z += bank_angle_pid.output
 
 func speed_hold(delta : float) -> void:
 	if not enable_speed_hold:
 		return
 	speed_pid.update(delta, speed_target - air_speed)
-	throttle = speed_pid.output
+	throttle_command = speed_pid.output
 
 func altitude_hold(delta : float) -> void:
 	if not enable_altitude_hold:
 		return
 	#shit but works
 	altitude_pid.update(delta, altitude_target - altitude)
-	input.x += altitude_pid.output
+	control_input.x += altitude_pid.output
 
 func heading_hold(delta : float) -> void:
 	if not enable_heading_hold:
 		return
 	#shit but works. Also has -180/+180 wrapping issues
 	heading_pid.update(delta, heading_target - heading)
-	input.y += heading_pid.output
+	control_input.y += heading_pid.output
 
 
 func target_direction(delta : float) -> void:
@@ -152,11 +152,11 @@ func target_direction(delta : float) -> void:
 	direction_yaw_pid.update(delta, error.y)
 	direction_roll_pid.update(delta, error.z)
 	
-	input.x += direction_pitch_pid.output
-	input.y += direction_yaw_pid.output
-	input.z += direction_roll_pid.output
+	control_input.x += direction_pitch_pid.output
+	control_input.y += direction_yaw_pid.output
+	control_input.z += direction_roll_pid.output
 	
-	input = input.clamp(Vector3(-1, -1, -1), Vector3(1, 1, 1))
+	control_input = control_input.clamp(Vector3(-1, -1, -1), Vector3(1, 1, 1))
 	
 	#var normal_acceleration = local_acceleration_vector.z
 
@@ -182,31 +182,31 @@ func flight_assist(delta : float) -> void:
 
 			g_limited_angular_rate = (g_limit + zero_effort_g_force) * 9.81 / air_speed
 			#for negative g limit
-			if input.x <= 0.0:
+			if control_input.x <= 0.0:
 				g_limited_angular_rate = (negative_g_limit - zero_effort_g_force) * 9.81 / air_speed
 		
 		angular_rates.x = min(angular_rates.x, g_limited_angular_rate)
 	#g limit
 	
-	angular_rate_error = angular_rates * input - local_angular_velocity
+	angular_rate_error = angular_rates * control_input - local_angular_velocity
 	
 	#flight assist
 	#these should be adjusted when the reference frame changes.
 	if enable_flight_assist_x:
-		control_value.x += pitch_assist_pid.update(delta, angular_rate_error.x)
+		control_command.x += pitch_assist_pid.update(delta, angular_rate_error.x)
 	if enable_flight_assist_y:
-		control_value.y += yaw_assist_pid.update(delta, angular_rate_error.y)
+		control_command.y += yaw_assist_pid.update(delta, angular_rate_error.y)
 	if enable_flight_assist_z:
-		control_value.z += roll_assist_pid.update(delta, angular_rate_error.z)
+		control_command.z += roll_assist_pid.update(delta, angular_rate_error.z)
 	
 	if enable_aoa_limiter:
-		control_value *= clamp(remap(angle_of_attack, deg_to_rad(aoa_limit_start), deg_to_rad(aoa_limit_end), 1, 0), 0, 1)
+		control_command *= clamp(remap(angle_of_attack, deg_to_rad(aoa_limit_start), deg_to_rad(aoa_limit_end), 1, 0), 0, 1)
 	
 	#adjust for changing airspeed and density
 	if enable_control_adjustment:
-		control_value *= FlightAssist.get_control_adjustment_factor(air_speed, air_density, tuned_airspeed, tuned_density, min_accounted_airspeed, min_accounted_air_density)
+		control_command *= FlightAssist.get_control_adjustment_factor(air_speed, air_density, tuned_airspeed, tuned_density, min_accounted_airspeed, min_accounted_air_density)
 	
-	control_value = control_value.clamp(Vector3(-1, -1, -1), Vector3(1, 1, 1))
+	control_command = control_command.clamp(Vector3(-1, -1, -1), Vector3(1, 1, 1))
 
 static func get_control_adjustment_factor(speed : float, density : float, tuned_speed : float = 100.0, _tuned_density : float = 1.222, min_accounted_speed : float = 0.75, min_accounted_density : float = 0.2) -> float:
 	var control_adjustment : float = 1.0

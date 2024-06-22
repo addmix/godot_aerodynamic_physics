@@ -14,15 +14,14 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	var aero_reference := dynamic_pressure * area
 	
 	lift_force = aero_reference * manual_config.get_lift_coefficient(angle_of_attack)
-	var drag_coefficient : float = manual_config.get_drag_coefficient(angle_of_attack) * wing_config.get_drag_at_sweep_angle(sweep_angle) * wing_config.get_drag_multiplier_at_mach(mach)
+	var drag_coefficient : float = manual_config.get_drag_coefficient(angle_of_attack) * manual_config.get_drag_at_sweep_angle(sweep_angle) * manual_config.get_drag_multiplier_at_mach(mach)
 	var form_drag : float = aero_reference * drag_coefficient
 	var induced_drag : float = (lift_force * lift_force) / (dynamic_pressure * PI * wing_config.span * wing_config.span)
 	#dynamic pressure causes divide by zero when airspeed is 0, which results in NAN.
 	if is_equal_approx(air_speed, 0.0):
 		induced_drag = 0.0
 	
-	var skin_friction_drag : float = wing_config.skin_friction * aero_reference
-	drag_force = form_drag + induced_drag + skin_friction_drag
+	drag_force = form_drag + induced_drag
 #	print("Percentages of total drag:\nSkin friction: %s\nForm drag: %s\nInduced drag: %s" % [skin_friction_drag / total_drag, form_drag / total_drag, induced_drag / total_drag])
 	
 #	https://aviation.stackexchange.com/questions/84210/difference-in-lift-generation-for-a-swept-wing-and-straight-wing-in-subsonic-con

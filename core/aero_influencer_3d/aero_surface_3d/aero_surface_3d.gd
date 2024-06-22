@@ -51,7 +51,7 @@ func _init():
 func _enter_tree() -> void:
 	super._enter_tree()
 	#initialize signal connections from resources
-	if wing_config != null:
+	if wing_config:
 		if not wing_config.is_connected("changed", update_gizmos):
 			wing_config.changed.connect(update_gizmos)
 			update_gizmos()

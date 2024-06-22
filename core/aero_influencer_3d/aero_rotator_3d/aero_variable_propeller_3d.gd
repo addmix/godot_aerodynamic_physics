@@ -17,7 +17,7 @@ func _update_transform_substep(substep_delta : float) -> void:
 	super._update_transform_substep(substep_delta)
 	
 	for influencer : AeroInfluencer3D in propeller_instances:
-		influencer.rotation.x = deg_to_rad(propeller_pitch)
+		influencer.default_transform.basis = Basis.from_euler(Vector3(deg_to_rad(propeller_pitch), influencer.default_transform.basis.get_euler().y, influencer.default_transform.basis.get_euler().z)) 
 
 func is_overriding_body_sleep() -> bool:
 	return super.is_overriding_body_sleep() and not is_equal_approx(propeller_pitch, 0.0)

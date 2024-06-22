@@ -17,4 +17,4 @@ func _update_transform_substep(substep_delta : float) -> void:
 		var cyclic_effect : float = cos(angular_position) * cyclic.x + sin(angular_position) * cyclic.y
 		cyclic_effect *= deg_to_rad(cyclic_pitch)
 		
-		influencer.rotation.x = deg_to_rad(propeller_pitch) + cyclic_effect
+		influencer.default_transform.basis = Basis.from_euler(Vector3(deg_to_rad(propeller_pitch) + cyclic_effect, influencer.default_transform.basis.get_euler().y, influencer.default_transform.basis.get_euler().z)) 

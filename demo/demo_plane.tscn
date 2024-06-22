@@ -1,19 +1,21 @@
-[gd_scene load_steps=32 format=3 uid="uid://dx0v1i14fyw8c"]
+[gd_scene load_steps=36 format=3 uid="uid://dx0v1i14fyw8c"]
 
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/aero_body_3d.gd" id="1_ddp7w"]
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/components/AeroControlComponent.gd" id="2_x2dhw"]
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd" id="2_ygpq6"]
-[ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/utils/pid.gd" id="3_30jfc"]
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_config.gd" id="3_dhflf"]
+[ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/utils/pid.gd" id="3_hyo05"]
+[ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/flight_assist.gd" id="4_a0mgf"]
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="4_ht3i8"]
+[ext_resource type="Curve" uid="uid://bf3v5qwdrjkmt" path="res://addons/godot_aerodynamic_physics/core/resources/default_drag_aoa_curve.tres" id="6_8c4yr"]
+[ext_resource type="Curve" uid="uid://cx3q3y0bx1rv7" path="res://addons/godot_aerodynamic_physics/core/resources/default_lift_aoa_curve.tres" id="7_8luro"]
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/components/AeroThrusterComponent.gd" id="8_e4glj"]
-[ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/flight_assist.gd" id="11_od3l4"]
 
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_swshj"]
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_m08mi"]
 friction = 0.0
 
-[sub_resource type="Resource" id="Resource_afh1y"]
-script = ExtResource("3_30jfc")
+[sub_resource type="Resource" id="Resource_6l1yh"]
+script = ExtResource("3_hyo05")
 p = 0.001
 i = 0.0
 d = 0.01
@@ -21,8 +23,8 @@ clamp_integral = false
 min_integral = -1.0
 max_integral = 1.0
 
-[sub_resource type="Resource" id="Resource_caa3t"]
-script = ExtResource("3_30jfc")
+[sub_resource type="Resource" id="Resource_rsy8r"]
+script = ExtResource("3_hyo05")
 p = 1.0
 i = 0.05
 d = 0.1
@@ -30,8 +32,8 @@ clamp_integral = false
 min_integral = -1.0
 max_integral = 1.0
 
-[sub_resource type="Resource" id="Resource_ol0pw"]
-script = ExtResource("3_30jfc")
+[sub_resource type="Resource" id="Resource_6l2fv"]
+script = ExtResource("3_hyo05")
 p = 10.0
 i = 0.3
 d = 4.0
@@ -39,8 +41,8 @@ clamp_integral = false
 min_integral = -1.0
 max_integral = 1.0
 
-[sub_resource type="Resource" id="Resource_5o5w8"]
-script = ExtResource("3_30jfc")
+[sub_resource type="Resource" id="Resource_wyxpf"]
+script = ExtResource("3_hyo05")
 p = 0.8
 i = 0.0
 d = 0.0
@@ -48,8 +50,8 @@ clamp_integral = false
 min_integral = -1.0
 max_integral = 1.0
 
-[sub_resource type="Resource" id="Resource_be4f7"]
-script = ExtResource("3_30jfc")
+[sub_resource type="Resource" id="Resource_wruso"]
+script = ExtResource("3_hyo05")
 p = 25.0
 i = 0.0
 d = 0.0
@@ -57,8 +59,8 @@ clamp_integral = false
 min_integral = -1.0
 max_integral = 1.0
 
-[sub_resource type="Resource" id="Resource_odl7k"]
-script = ExtResource("3_30jfc")
+[sub_resource type="Resource" id="Resource_x3iit"]
+script = ExtResource("3_hyo05")
 p = 10.0
 i = 0.0
 d = 0.0
@@ -66,8 +68,8 @@ clamp_integral = false
 min_integral = -1.0
 max_integral = 1.0
 
-[sub_resource type="Resource" id="Resource_tdj62"]
-script = ExtResource("3_30jfc")
+[sub_resource type="Resource" id="Resource_piqeh"]
+script = ExtResource("3_hyo05")
 p = 0.5
 i = 3.0
 d = 0.0
@@ -75,8 +77,8 @@ clamp_integral = true
 min_integral = -0.2
 max_integral = 0.2
 
-[sub_resource type="Resource" id="Resource_6l8vw"]
-script = ExtResource("3_30jfc")
+[sub_resource type="Resource" id="Resource_t6xgy"]
+script = ExtResource("3_hyo05")
 p = 0.2
 i = 0.0
 d = 0.0
@@ -84,8 +86,8 @@ clamp_integral = false
 min_integral = -1.0
 max_integral = 1.0
 
-[sub_resource type="Resource" id="Resource_0y6af"]
-script = ExtResource("3_30jfc")
+[sub_resource type="Resource" id="Resource_1qfso"]
+script = ExtResource("3_hyo05")
 p = 0.0
 i = 0.4
 d = 0.0
@@ -93,8 +95,8 @@ clamp_integral = false
 min_integral = -1.0
 max_integral = 1.0
 
-[sub_resource type="Resource" id="Resource_rfvh1"]
-script = ExtResource("3_30jfc")
+[sub_resource type="Resource" id="Resource_bvmql"]
+script = ExtResource("3_hyo05")
 p = 1.0
 i = 0.0
 d = 0.0
@@ -102,15 +104,15 @@ clamp_integral = false
 min_integral = -1.0
 max_integral = 1.0
 
-[sub_resource type="Resource" id="Resource_3kesd"]
-script = ExtResource("11_od3l4")
+[sub_resource type="Resource" id="Resource_qpum4"]
+script = ExtResource("4_a0mgf")
 max_angular_rates = Vector3(2, 1, 5)
 enable_flight_assist_x = true
-pitch_assist_pid = SubResource("Resource_tdj62")
+pitch_assist_pid = SubResource("Resource_piqeh")
 enable_flight_assist_y = true
-yaw_assist_pid = SubResource("Resource_rfvh1")
+yaw_assist_pid = SubResource("Resource_bvmql")
 enable_flight_assist_z = true
-roll_assist_pid = SubResource("Resource_6l8vw")
+roll_assist_pid = SubResource("Resource_t6xgy")
 enable_g_limiter = true
 g_limit = 9.0
 negative_g_limit = 3.0
@@ -124,36 +126,78 @@ tuned_density = 1.222
 min_accounted_air_density = 0.1
 enable_bank_angle_assist = false
 bank_angle_target = 0.0
-bank_angle_pid = SubResource("Resource_caa3t")
+bank_angle_pid = SubResource("Resource_rsy8r")
 enable_speed_hold = false
 speed_target = 0.0
-speed_pid = SubResource("Resource_0y6af")
+speed_pid = SubResource("Resource_1qfso")
 enable_altitude_hold = false
 altitude_target = 0.0
-altitude_pid = SubResource("Resource_afh1y")
+altitude_pid = SubResource("Resource_6l1yh")
 enable_heading_hold = false
 heading_target = 0.0
-heading_pid = SubResource("Resource_odl7k")
+heading_pid = SubResource("Resource_x3iit")
 enable_target_direction = false
 direction_target = Vector3(0, 0, 0)
-direction_pitch_pid = SubResource("Resource_ol0pw")
-direction_yaw_pid = SubResource("Resource_be4f7")
-direction_roll_pid = SubResource("Resource_5o5w8")
+direction_pitch_pid = SubResource("Resource_6l2fv")
+direction_yaw_pid = SubResource("Resource_wruso")
+direction_roll_pid = SubResource("Resource_wyxpf")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_nchkm"]
-size = Vector3(7.3728, 0.215118, 5.40618)
+size = Vector3(7.3728, 0.215118, 4.76475)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_6onr1"]
 radius = 0.446985
+
+[sub_resource type="Curve" id="Curve_et0wi"]
+min_value = 1.0
+max_value = 1.69
+bake_resolution = 23
+_data = [Vector2(0.07, 1), 0.0, 0.0, 0, 0, Vector2(0.088, 1.519), 0.0, 0.0, 0, 0, Vector2(0.119, 1), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_gxs22"]
+bake_resolution = 4
+_data = [Vector2(0, 1), 0.0, -2.09824, 0, 0, Vector2(0.406542, 0.490909), -0.666575, -0.666575, 0, 0, Vector2(1, 0.290909), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Resource" id="Resource_47npt"]
+script = ExtResource("3_dhflf")
+min_lift_coefficient = -1.0
+max_lift_coefficient = 1.0
+lift_aoa_curve = ExtResource("7_8luro")
+min_drag_coefficient = 0.0
+max_drag_coefficient = 1.0
+drag_aoa_curve = ExtResource("6_8c4yr")
+sweep_drag_multiplier_curve = SubResource("Curve_gxs22")
+drag_at_mach_multiplier_curve = SubResource("Curve_et0wi")
+
+[sub_resource type="Resource" id="Resource_b87jk"]
+script = ExtResource("4_ht3i8")
+chord = 1.0
+span = 3.0
+auto_aspect_ratio = true
+aspect_ratio = 2.0
 
 [sub_resource type="Curve" id="Curve_v5kpe"]
 _data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.25, 1), 0.0, 0.0, 0, 0, Vector2(0.5, 0), 0.0, 0.0, 0, 0, Vector2(0.75, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
 point_count = 5
 
+[sub_resource type="Curve" id="Curve_ob7c7"]
+min_value = 1.0
+max_value = 1.69
+bake_resolution = 23
+_data = [Vector2(0.07, 1), 0.0, 0.0, 0, 0, Vector2(0.088, 1.519), 0.0, 0.0, 0, 0, Vector2(0.119, 1), 0.0, 0.0, 0, 0]
+point_count = 3
+
 [sub_resource type="Curve" id="Curve_cmcrd"]
 min_value = -1.0
 _data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.25, -0.571), 0.0, 0.0, 0, 0, Vector2(0.375, -0.4), 0.0, 0.0, 0, 0, Vector2(0.403, -1), 0.0, 0.0, 0, 0, Vector2(0.597, 1), 0.0, 0.0, 0, 0, Vector2(0.625, 0.4), 0.0, 0.0, 0, 0, Vector2(0.75, 0.571), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
 point_count = 8
+
+[sub_resource type="Curve" id="Curve_l1ihd"]
+bake_resolution = 4
+_data = [Vector2(0, 1), 0.0, -2.09824, 0, 0, Vector2(0.406542, 0.490909), -0.666575, -0.666575, 0, 0, Vector2(1, 0.290909), 0.0, 0.0, 0, 0]
+point_count = 3
 
 [sub_resource type="Resource" id="Resource_raxm3"]
 script = ExtResource("3_dhflf")
@@ -163,64 +207,26 @@ lift_aoa_curve = SubResource("Curve_cmcrd")
 min_drag_coefficient = 0.01
 max_drag_coefficient = 0.5
 drag_aoa_curve = SubResource("Curve_v5kpe")
-
-[sub_resource type="Curve" id="Curve_8vcck"]
-
-[sub_resource type="Curve" id="Curve_26y5e"]
-min_value = 1.0
-max_value = 1.69
-_data = [Vector2(0.07, 1), 0.0, 0.0, 0, 0, Vector2(0.088, 1.519), 0.0, 0.0, 0, 0, Vector2(0.119, 1), 0.0, 0.0, 0, 0]
-point_count = 3
-
-[sub_resource type="Curve" id="Curve_u1ll1"]
-_data = [Vector2(0, 1), 0.0, -2.09824, 0, 0, Vector2(0.406542, 0.490909), -0.666575, -0.666575, 0, 0, Vector2(1, 0.290909), 0.0, 0.0, 0, 0]
-point_count = 3
-
-[sub_resource type="Resource" id="Resource_b87jk"]
-script = ExtResource("4_ht3i8")
-chord = 1.0
-span = 2.0
-skin_friction = 0.01
-auto_aspect_ratio = true
-aspect_ratio = 2.0
-zero_lift_aoa = 0.0
-flap_fraction = 0.0
-is_control_surface = false
-sweep_drag_multiplier_curve = SubResource("Curve_u1ll1")
-drag_at_mach_multiplier_curve = SubResource("Curve_26y5e")
-buffet_aoa_curve = SubResource("Curve_8vcck")
+sweep_drag_multiplier_curve = SubResource("Curve_l1ihd")
+drag_at_mach_multiplier_curve = SubResource("Curve_ob7c7")
 
 [sub_resource type="Resource" id="Resource_7jeqs"]
 script = ExtResource("4_ht3i8")
 chord = 1.0
 span = 1.4
-skin_friction = 0.001
 auto_aspect_ratio = true
 aspect_ratio = 1.4
-zero_lift_aoa = 0.0
-flap_fraction = 0.0
-is_control_surface = false
-sweep_drag_multiplier_curve = SubResource("Curve_u1ll1")
-drag_at_mach_multiplier_curve = SubResource("Curve_26y5e")
-buffet_aoa_curve = SubResource("Curve_8vcck")
 
 [sub_resource type="Resource" id="Resource_658jb"]
 script = ExtResource("4_ht3i8")
 chord = 1.0
 span = 3.55
-skin_friction = 0.001
 auto_aspect_ratio = true
 aspect_ratio = 3.55
-zero_lift_aoa = 0.0
-flap_fraction = 0.0
-is_control_surface = false
-sweep_drag_multiplier_curve = SubResource("Curve_u1ll1")
-drag_at_mach_multiplier_curve = SubResource("Curve_26y5e")
-buffet_aoa_curve = SubResource("Curve_8vcck")
 
 [node name="AeroBody3D" type="VehicleBody3D"]
-mass = 2000.0
-physics_material_override = SubResource("PhysicsMaterial_swshj")
+mass = 850.0
+physics_material_override = SubResource("PhysicsMaterial_m08mi")
 center_of_mass_mode = 1
 linear_damp_mode = 1
 angular_damp_mode = 1
@@ -228,11 +234,11 @@ script = ExtResource("1_ddp7w")
 
 [node name="AeroControlComponent" type="Node" parent="."]
 script = ExtResource("2_x2dhw")
-flight_assist = SubResource("Resource_3kesd")
+flight_assist = SubResource("Resource_qpum4")
 throttle_input = 1.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.00468441, 1.49654)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.00468441, 1.50782)
 shape = SubResource("BoxShape3D_nchkm")
 
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="."]
@@ -242,7 +248,7 @@ shape = SubResource("CapsuleShape3D_6onr1")
 [node name="Elevator" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.999848, 0.0174524, 0, -0.0174524, 0.999848, 0, -3.57628e-07, 3.05994)
 script = ExtResource("2_ygpq6")
-manual_config = SubResource("Resource_raxm3")
+manual_config = SubResource("Resource_47npt")
 wing_config = SubResource("Resource_b87jk")
 max_actuation = Vector3(0.2, 0, 0)
 pitch_contribution = Vector3(-1, 0, 0)
@@ -293,5 +299,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55771, 9.0562)
 [node name="AeroThrusterComponent" type="Marker3D" parent="."]
 script = ExtResource("8_e4glj")
 intake_area = 0.1
-intake_fan_max_velocity = 300.0
-max_exhaust_velocity = 100.0
+intake_fan_max_velocity = 100.0
+max_exhaust_velocity = 200.0
+max_fuel_flow = 0.1
+
+[node name="Label3D" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 3.133, 6.07)
+text = "Use arrow keys for pitch and roll."

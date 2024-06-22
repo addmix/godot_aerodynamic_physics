@@ -162,6 +162,10 @@ func update_controls(delta : float) -> void:
 	control_value = clamp(control_input + cumulative_control_input, min_control, max_control)
 	throttle_value = clamp(throttle_input + cumulative_throttle_input, min_throttle, max_throttle)
 	brake_value = clamp(brake_input + cumulative_brake_input, min_brake, max_brake)
+	
+	control_command = control_value
+	throttle_command = throttle_value
+	brake_command = brake_value
 
 func update_cumulative_control(delta : float, cumulative_value : float, negative_event : StringName, positive_event : StringName, cumulative_rate : float, min_value : float, max_value : float) -> float:
 	var input : float = 0.0

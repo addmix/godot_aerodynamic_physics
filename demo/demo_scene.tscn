@@ -34,28 +34,10 @@ shadow_enabled = true
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_bkiet")
 
-[node name="AeroBody3D" parent="." instance=ExtResource("1_bbdyo")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.08791, 0)
-show_debug = true
-update_debug = true
-
-[node name="Label3D" type="Label3D" parent="AeroBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.15356, 3.43796, 0)
-pixel_size = 0.01
-text = "Use arrow keys for pitch/roll control"
-
-[node name="AeroBody3D2" parent="." instance=ExtResource("1_bbdyo")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.08791, -14.9813)
-show_debug = true
-update_debug = true
-
-[node name="Label3D" type="Label3D" parent="AeroBody3D2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.15356, 3.43796, 0)
-pixel_size = 0.01
-text = "Use arrow keys for pitch/roll control"
-
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.12099, -190.455)
 use_collision = true
 size = Vector3(10000, 1, 10000)
 material = SubResource("StandardMaterial3D_1sawy")
+
+[node name="AeroBody3D" parent="." instance=ExtResource("1_bbdyo")]

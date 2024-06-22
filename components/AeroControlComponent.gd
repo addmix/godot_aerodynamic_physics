@@ -4,7 +4,7 @@ class_name AeroControlComponent
 
 @onready var aero_body : AeroBody3D = get_parent()
 
-@export var flight_assist : FlightAssist = FlightAssist.new()
+@export var flight_assist : FlightAssist
 ##Control input value read from player controls.
 @export var control_input : Vector3 = Vector3.ZERO
 var cumulative_control_input : Vector3 = Vector3.ZERO

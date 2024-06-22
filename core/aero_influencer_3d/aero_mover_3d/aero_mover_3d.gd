@@ -4,7 +4,9 @@ class_name AeroMover3D
 
 const AeroTransformUtils = preload("../../../utils/transform_utils.gd")
 
+##Rate (in meters per second) the AeroMover3D will move.
 @export var linear_motor : Vector3 = Vector3.ZERO
+##Rate (in radians per second) the AeroMover3D will rotate.
 @export var angular_motor : Vector3 = Vector3.ZERO
 
 var _linear_velocity : Vector3 = Vector3.ZERO

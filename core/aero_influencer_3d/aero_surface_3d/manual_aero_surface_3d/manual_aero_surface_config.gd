@@ -2,10 +2,15 @@
 extends Resource
 class_name ManualAeroSurfaceConfig
 
+##Lift coefficient used where the lift_aoa_curve has a value of -1.
 @export var min_lift_coefficient : float = -1.0
+##Lift coefficient used where the lift_aoa_curve has a value of 1.
 @export var max_lift_coefficient : float = 1.0
+##Curve that determines the ManualAeroSurface3D's lift coefficient, depending on the ManualAeroSurface3D's angle of attack.
 @export var lift_aoa_curve : Curve = preload("../../../resources/default_lift_aoa_curve.tres")
+##Drag coefficient used where the drag_aoa_curve has a value of 0.
 @export var min_drag_coefficient : float = 0.0
+##Drag coefficient used where the drag_aoa_curve has a value of 1.
 @export var max_drag_coefficient : float = 1.0
 @export var drag_aoa_curve : Curve = preload("../../../resources/default_drag_aoa_curve.tres")
 

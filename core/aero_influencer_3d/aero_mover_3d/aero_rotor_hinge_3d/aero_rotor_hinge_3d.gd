@@ -1,12 +1,17 @@
+
+### This is currently broken.
+
 @tool
 extends AeroMover3D
 class_name AeroRotorHinge3D
 
+##Length of the simulated blade, from the hinge root, to the tip.
 @export var blade_length : float = 10.0
+##Mass of the simulated blade.
 @export var blade_mass : float = 100.0
 
-@export var flap_velocity : float = 0.0
-@export var leadlag_velocity : float = 0.0
+var flap_velocity : float = 0.0
+var leadlag_velocity : float = 0.0
 
 var flap : float = 0.0
 var leadlag : float = 0.0

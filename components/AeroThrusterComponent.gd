@@ -2,24 +2,29 @@
 extends Marker3D
 class_name AeroThrusterComponent
 
-
 const AeroNodeUtils = preload("../utils/node_utils.gd")
 
 @onready var rigid_body : RigidBody3D = AeroNodeUtils.get_first_parent_of_type(self, RigidBody3D)
-
+##Enables simulation of the JetThrusterComponent.
 @export var enabled : bool = true
 @export_group("Control")
+##If enabled, throttle is automatically read from the ancestor AeroBody3D.
 @export var get_throttle_from_aero_body : bool = true
+##Throttle value used to simulate the JetThrusterComponent
 @export var throttle : float = 1.0
 
 @export_group("Simulation Parameters")
+##Area (in meters squared) of the JetThrusterComponent's intake.
 @export var intake_area : float = 0.5
-@export var intake_fan_max_velocity : float = 200.0
-@export var max_exhaust_velocity : float = 300
+##Area (in meters squared) of the JetThrusterComponent's exhaust. (Unused)
 #@export var exit_area : float = 1.0
-
-#fuel
+##Maxmimum air velocity the intake fan can create in static thrust, at max throttle.
+@export var intake_fan_max_velocity : float = 200.0
+##Velocity of exhaust gasses at max throttle.
+@export var max_exhaust_velocity : float = 300
+##Maximum amount of fuel (in kilograms) the engine can burn per second.
 @export var max_fuel_flow : float = 1.0 #flow rate in kilograms per second
+##Ratio of fuel volume before, and after combustion. (Unused)
 #@export var fuel_expansion_ratio : float = 10.0
 
 

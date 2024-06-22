@@ -4,28 +4,39 @@ class_name AeroInfluencer3D
 
 const AeroNodeUtils = preload("../../utils/node_utils.gd")
 
+##If true, this AeroInfluencer3D will not have any effect on the simulation.
 @export var disabled : bool = false
 
 @export_group("Control")
+##If enabled, this AeroInfluencer3D node will automatically rotate to accommodate control inputs.
 @export var enable_automatic_control : bool = true
 #X = pitch, Y = yaw, Z = roll
 var control_command := Vector3.ZERO
 var throttle_command : float = 0.0
 var brake_command : float = 0.0
+##Maximum rotation (in radians) this AeroInfluencer can rotate for controls.
 @export var max_actuation := Vector3.ZERO
+##Amount of rotation that pitch commands contribute to this node's rotation.
 @export var pitch_contribution := Vector3.ZERO
+##Amount of rotation that yaw commands contribute to this node's rotation.
 @export var yaw_contribution := Vector3.ZERO
+##Amount of rotation that roll commands contribute to this node's rotation.
 @export var roll_contribution := Vector3.ZERO
+##Amount of rotation that brake commands contribute to this node's rotation.
 @export var brake_contribution := Vector3.ZERO
+##Rotation order used when doing control rotations.
 @export_enum("XYZ", "XZY", "YXZ", "YZX", "ZXY", "ZYX") var control_rotation_order : int = 0
 
 @export_group("Debug")
+##If enabled, this AeroInfluencer3D is omitted from AeroBody3D debug calculations.
 @export var omit_from_debug : bool = false
-@export var debug_scale : float = 0.1
-@export var debug_width : float = 0.05
-@export var show_debug : bool = false
+var debug_scale : float = 0.1
+var debug_width : float = 0.05
+var show_debug : bool = false
 
+##Controls visibility of the AeroInfluencer3D's force debug vector.
 @export var show_force : bool = true
+##Controls visibility of the AeroInfluencer3D's torque debug vector.
 @export var show_torque : bool = true
 
 var aero_body : AeroBody3D

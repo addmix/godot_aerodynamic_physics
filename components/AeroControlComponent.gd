@@ -168,23 +168,25 @@ func update_controls(delta : float) -> void:
 	brake_command = brake_value
 
 func update_cumulative_control(delta : float, cumulative_value : float, negative_event : StringName, positive_event : StringName, cumulative_rate : float, min_value : float, max_value : float) -> float:
-	var input : float = 0.0
-	if not (negative_event == "" or positive_event == ""):
-		input = Input.get_axis(negative_event, positive_event)
-	
+	var input : float = get_axis(0.0, negative_event, positive_event)
 	cumulative_value += input * cumulative_rate * delta
 	return clamp(cumulative_value, min_value, max_value)
 
 func get_input(delta : float, default_value : float, negative_event : StringName, positive_event : StringName, enable_smoothing : bool, smoothing_rate : float) -> float:
-	var input : float = default_value
-	if not (negative_event == "" or positive_event == ""):
-		input = Input.get_axis(negative_event, positive_event)
-	
-	var output : float = input 
+	var input : float = get_axis(default_value, negative_event, positive_event)
 	if enable_smoothing:
-		output = move_toward(default_value, input, smoothing_rate * delta)
+		input = move_toward(default_value, input, smoothing_rate * delta)
+	return input
+
+static func get_axis(default_value : float, negative_event : StringName, positive_event : StringName) -> float:
+	var input : float = default_value
 	
-	return output
+	if not negative_event == "":
+		input -= Input.get_action_strength(negative_event)
+	if not positive_event == "":
+		input += Input.get_action_strength(positive_event)
+	
+	return input
 
 func smooth_control(delta : float, enabled : bool, current_position : float, target_position : float, speed : float) -> float:
 	if enabled:

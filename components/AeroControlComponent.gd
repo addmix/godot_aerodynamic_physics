@@ -167,12 +167,12 @@ func update_controls(delta : float) -> void:
 	throttle_command = throttle_value
 	brake_command = brake_value
 
-func update_cumulative_control(delta : float, cumulative_value : float, negative_event : StringName, positive_event : StringName, cumulative_rate : float, min_value : float, max_value : float) -> float:
+static func update_cumulative_control(delta : float, cumulative_value : float, negative_event : StringName, positive_event : StringName, cumulative_rate : float, min_value : float, max_value : float) -> float:
 	var input : float = get_axis(0.0, negative_event, positive_event)
 	cumulative_value += input * cumulative_rate * delta
 	return clamp(cumulative_value, min_value, max_value)
 
-func get_input(delta : float, default_value : float, negative_event : StringName, positive_event : StringName, enable_smoothing : bool, smoothing_rate : float) -> float:
+static func get_input(delta : float, default_value : float, negative_event : StringName, positive_event : StringName, enable_smoothing : bool, smoothing_rate : float) -> float:
 	var input : float = get_axis(default_value, negative_event, positive_event)
 	if enable_smoothing:
 		input = move_toward(default_value, input, smoothing_rate * delta)
@@ -188,7 +188,7 @@ static func get_axis(default_value : float, negative_event : StringName, positiv
 	
 	return input
 
-func smooth_control(delta : float, enabled : bool, current_position : float, target_position : float, speed : float) -> float:
+static func smooth_control(delta : float, enabled : bool, current_position : float, target_position : float, speed : float) -> float:
 	if enabled:
 		return move_toward(current_position, target_position, speed * delta)
 	else:

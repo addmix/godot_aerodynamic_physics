@@ -8,8 +8,6 @@ class_name AeroControlComponent
 ##Control input value read from player controls.
 @export var control_input : Vector3 = Vector3.ZERO
 var cumulative_control_input : Vector3 = Vector3.ZERO
-#process
-var control_value := Vector3.ZERO
 #output
 var control_command := Vector3.ZERO
 ##Throttle input value read from player controls.
@@ -159,13 +157,13 @@ func update_controls(delta : float) -> void:
 	cumulative_throttle_input = update_cumulative_control(delta, cumulative_throttle_input, cumulative_throttle_down_event, cumulative_throttle_up_event, cumulative_throttle_rate, min_throttle, max_throttle)
 	cumulative_brake_input = update_cumulative_control(delta, cumulative_brake_input, cumulative_brake_down_event, cumulative_brake_up_event, cumulative_brake_rate, min_brake, max_brake)
 	
-	control_value = clamp(control_input + cumulative_control_input, min_control, max_control)
-	throttle_value = clamp(throttle_input + cumulative_throttle_input, min_throttle, max_throttle)
-	brake_value = clamp(brake_input + cumulative_brake_input, min_brake, max_brake)
+	control_input = clamp(control_input + cumulative_control_input, min_control, max_control)
+	throttle_input = clamp(throttle_input + cumulative_throttle_input, min_throttle, max_throttle)
+	brake_input = clamp(brake_input + cumulative_brake_input, min_brake, max_brake)
 	
-	control_command = control_value
-	throttle_command = throttle_value
-	brake_command = brake_value
+	control_command = control_input
+	throttle_command = throttle_input
+	brake_command = brake_input
 
 func update_cumulative_control(delta : float, cumulative_value : float, negative_event : StringName, positive_event : StringName, cumulative_rate : float, min_value : float, max_value : float) -> float:
 	var input : float = get_axis(0.0, negative_event, positive_event)
@@ -202,8 +200,8 @@ func update_flight_assist(delta : float) -> void:
 		return
 	
 	#input and pids
-	flight_assist.control_input = control_value
-	flight_assist.throttle_command = throttle_value
+	flight_assist.control_input = control_input
+	flight_assist.throttle_command = throttle_input
 	flight_assist.air_speed = aero_body.air_speed
 	flight_assist.air_density = aero_body.air_density
 	flight_assist.angle_of_attack = aero_body.angle_of_attack

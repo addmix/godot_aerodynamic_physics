@@ -21,7 +21,7 @@ const AeroNodeUtils = preload("../utils/node_utils.gd")
 ##Maxmimum air velocity the intake fan can create in static thrust, at max throttle.
 @export var intake_fan_max_velocity : float = 100.0
 ##Velocity of exhaust gasses at max throttle.
-@export var max_exhaust_velocity : float = 1000
+@export var exhaust_velocity : float = 1000
 ##Maximum amount of fuel (in kilograms) the engine can burn per second.
 @export var max_fuel_flow : float = 0.1 #flow rate in kilograms per second
 ##Ratio of fuel volume before, and after combustion. (Unused)
@@ -68,4 +68,4 @@ func calculate_mass_flow_acceleration() -> float:
 	return (exhaust_mass_flow_rate * exhaust_velocity) - (intake_mass_flow_rate * intake_air_velocity)# + (exhaust_pressure - intake_air_pressure) * exit_area
 
 func calculate_exhaust_velocity() -> float:
-	return max_exhaust_velocity * throttle
+	return exhaust_velocity

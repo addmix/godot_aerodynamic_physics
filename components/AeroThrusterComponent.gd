@@ -19,11 +19,11 @@ const AeroNodeUtils = preload("../utils/node_utils.gd")
 ##Area (in meters squared) of the JetThrusterComponent's exhaust. (Unused)
 #@export var exit_area : float = 1.0
 ##Maxmimum air velocity the intake fan can create in static thrust, at max throttle.
-@export var intake_fan_max_velocity : float = 200.0
+@export var intake_fan_max_velocity : float = 100.0
 ##Velocity of exhaust gasses at max throttle.
-@export var max_exhaust_velocity : float = 300
+@export var max_exhaust_velocity : float = 1000
 ##Maximum amount of fuel (in kilograms) the engine can burn per second.
-@export var max_fuel_flow : float = 1.0 #flow rate in kilograms per second
+@export var max_fuel_flow : float = 0.1 #flow rate in kilograms per second
 ##Ratio of fuel volume before, and after combustion. (Unused)
 #@export var fuel_expansion_ratio : float = 10.0
 
@@ -32,15 +32,17 @@ func _physics_process(delta : float) -> void:
 	if not enabled:
 		return
 	
-	var force_magnitude : float = calculate_force()
-	
+	#forgot to integrate delta, result is way off.
+	var mass_acceleration_rate : float = calculate_mass_flow_acceleration()
+	var force_magnitude : float = mass_acceleration_rate * delta
+	print(mass_acceleration_rate)
 	if rigid_body:
 		rigid_body.apply_force(-global_transform.basis.z * force_magnitude, rigid_body.global_transform.basis * position)
 	
 	if rigid_body is AeroBody3D and get_throttle_from_aero_body:
 		throttle = rigid_body.throttle_command
 
-func calculate_force() -> float:
+func calculate_mass_flow_acceleration() -> float:
 	var altitude : float = 0.0
 	var air_velocity : Vector3 = rigid_body.linear_velocity
 	if rigid_body is AeroBody3D:

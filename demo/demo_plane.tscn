@@ -298,10 +298,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55771, 9.0562)
 
 [node name="AeroThrusterComponent" type="Marker3D" parent="."]
 script = ExtResource("8_e4glj")
-intake_area = 0.1
-intake_fan_max_velocity = 100.0
-max_exhaust_velocity = 200.0
-max_fuel_flow = 0.1
+max_fuel_flow = 0.05
 
 [node name="Label3D" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 3.133, 6.07)

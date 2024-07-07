@@ -256,11 +256,13 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	air_velocity = -linear_velocity + wind
 	air_speed = air_velocity.length()
 	
-	altitude = AeroUnits.get_altitude(self)
+	if has_node("/root/AeroUnits"):
+		var _AeroUnits : Node = $"/root/AeroUnits"
+		altitude = _AeroUnits.get_altitude(self)
+		mach = _AeroUnits.speed_to_mach_at_altitude(air_speed, altitude)
+		air_density = _AeroUnits.get_density_at_altitude(altitude)
+		air_pressure = _AeroUnits.get_pressure_at_altitude(altitude)
 	
-	mach = AeroUnits.speed_to_mach_at_altitude(air_speed, altitude)
-	air_density = AeroUnits.get_density_at_altitude(altitude)
-	air_pressure = AeroUnits.get_pressure_at_altitude(altitude)
 	local_air_velocity = global_transform.basis.inverse() * air_velocity
 	local_angular_velocity = global_transform.basis.inverse() * angular_velocity
 	angle_of_attack = global_basis.y.angle_to(-air_velocity) - (PI / 2.0)

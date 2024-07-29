@@ -381,8 +381,8 @@ func _update_debug() -> void:
 		linear_velocity_to_use = debug_linear_velocity
 		angular_velocity_to_use = debug_angular_velocity
 	
-	linear_velocity_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(linear_velocity_to_use, 2.0)
-	angular_velocity_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(angular_velocity_to_use, 2.0)
+	linear_velocity_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(linear_velocity_to_use, 2.0)
+	angular_velocity_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(angular_velocity_to_use, 2.0)
 	
 	#Godot doesn't run physics engine in-editor.
 	#A consequence of this is that get_linear_velocity doesn't work.
@@ -435,8 +435,8 @@ func _update_debug() -> void:
 			drag_position_sum += surface.transform.origin * surface.drag_force
 		
 		if lift_sum_vector.is_finite() and drag_sum_vector.is_finite():
-			lift_debug_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(lift_sum_vector / amount_of_aero_surfaces, 2.0)
-			drag_debug_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(drag_sum_vector / amount_of_aero_surfaces, 2.0)
+			lift_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(lift_sum_vector / amount_of_aero_surfaces, 2.0)
+			drag_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(drag_sum_vector / amount_of_aero_surfaces, 2.0)
 			
 			if is_equal_approx(lift_sum, 0.0):
 				lift_sum = 1.0
@@ -474,7 +474,3 @@ func _update_debug_scale() -> void:
 	angular_velocity_vector.width = debug_width
 	drag_debug_vector.width = debug_width
 	thrust_debug_vector.width = debug_width
-
-
-static func log_with_base(vector : Vector3, base : float) -> Vector3:
-	return vector.normalized() * AeroMathUtils.log_with_base(vector.length() + 1, base)

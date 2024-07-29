@@ -2,6 +2,7 @@
 extends Node3D
 class_name AeroInfluencer3D
 
+const AeroMathUtils = preload("../../utils/math_utils.gd")
 const AeroNodeUtils = preload("../../utils/node_utils.gd")
 
 ##If true, this AeroInfluencer3D will not have any effect on the simulation.
@@ -24,6 +25,8 @@ var brake_command : float = 0.0
 @export var roll_contribution := Vector3.ZERO
 ##Amount of rotation that brake commands contribute to this node's rotation.
 @export var brake_contribution := Vector3.ZERO
+##Amount of rotation that throttle commands contribute to this node's rotation.
+@export var throttle_contribution := Vector3.ZERO
 ##Rotation order used when doing control rotations.
 @export_enum("XYZ", "XZY", "YXZ", "YZX", "ZXY", "ZYX") var control_rotation_order : int = 0
 
@@ -238,6 +241,6 @@ func update_debug_vectors() -> void:
 	
 	#don't update invisible vectors
 	if force_debug_vector.visible:
-		force_debug_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(_current_force, 2.0) * debug_scale
+		force_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(_current_force, 2.0) * debug_scale
 	if torque_debug_vector.visible:
-		torque_debug_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(_current_torque, 2.0) * debug_scale
+		torque_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(_current_torque, 2.0) * debug_scale

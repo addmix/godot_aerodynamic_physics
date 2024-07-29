@@ -96,6 +96,6 @@ func update_debug_vectors() -> void:
 	
 	#don't update invisible vectors
 	if lift_debug_vector.visible:
-		lift_debug_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(_current_lift, 2.0) * debug_scale
+		lift_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(_current_lift, 2.0) * debug_scale
 	if drag_debug_vector.visible:
-		drag_debug_vector.value = global_transform.basis.inverse() * AeroBody3D.log_with_base(_current_drag, 2.0) * debug_scale
+		drag_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(_current_drag, 2.0) * debug_scale

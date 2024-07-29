@@ -50,6 +50,14 @@ static func sigmoid(x : float, e : float = E) -> float:
 
 
 
+#
+
+
+
+static func v3log_with_base(vector : Vector3, base : float) -> Vector3:
+	return vector.normalized() * log_with_base(vector.length() + 1, base)
+
+
 
 #matrix math stuff, very inefficient stuff
 

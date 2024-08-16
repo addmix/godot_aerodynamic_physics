@@ -151,32 +151,26 @@ func _init():
 	mass_debug_point = AeroDebugPoint3D.new(Color(1, 1, 0), debug_center_width, true)
 	mass_debug_point.visible = false
 	mass_debug_point.sorting_offset = 0.0
-	add_child(mass_debug_point, INTERNAL_MODE_FRONT)
 	
 	lift_debug_vector = AeroDebugVector3D.new(Color(0, 1, 1), debug_center_width, true)
 	lift_debug_vector.visible = false
 	lift_debug_vector.sorting_offset = 0.0
-	add_child(lift_debug_vector, INTERNAL_MODE_FRONT)
 	
 	drag_debug_vector = AeroDebugVector3D.new(Color(1, 0, 0), debug_width, true)
 	drag_debug_vector.visible = false
 	drag_debug_vector.sorting_offset = -0.01
-	add_child(drag_debug_vector, INTERNAL_MODE_FRONT)
 	
 	thrust_debug_vector = AeroDebugVector3D.new(Color(1, 0, 1), debug_width, true)
 	thrust_debug_vector.visible = false
 	thrust_debug_vector.sorting_offset = -0.02
-	add_child(thrust_debug_vector, INTERNAL_MODE_FRONT)
 	
 	linear_velocity_vector = AeroDebugVector3D.new(Color(0, 0.5, 0.5), debug_width, false)
 	linear_velocity_vector.visible = false
 	linear_velocity_vector.sorting_offset = -0.03
-	mass_debug_point.add_child(linear_velocity_vector, INTERNAL_MODE_FRONT)
 	
 	angular_velocity_vector = AeroDebugVector3D.new(Color(0, 0.333, 0), debug_width, false)
 	angular_velocity_vector.visible = false
 	angular_velocity_vector.sorting_offset = -0.04
-	mass_debug_point.add_child(angular_velocity_vector, INTERNAL_MODE_FRONT)
 	
 	linear_damp_mode = RigidBody3D.DAMP_MODE_REPLACE
 	angular_damp_mode = RigidBody3D.DAMP_MODE_REPLACE
@@ -201,6 +195,13 @@ func on_child_exit_tree(node : Node) -> void:
 		node.aero_body = null
 
 func _ready() -> void:
+	add_child(mass_debug_point, INTERNAL_MODE_FRONT)
+	add_child(lift_debug_vector, INTERNAL_MODE_FRONT)
+	add_child(drag_debug_vector, INTERNAL_MODE_FRONT)
+	add_child(thrust_debug_vector, INTERNAL_MODE_FRONT)
+	mass_debug_point.add_child(linear_velocity_vector, INTERNAL_MODE_FRONT)
+	mass_debug_point.add_child(angular_velocity_vector, INTERNAL_MODE_FRONT)
+	
 	if Engine.is_editor_hint():
 		update_configuration_warnings()
 

@@ -9,7 +9,7 @@
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="4_ht3i8"]
 [ext_resource type="Curve" uid="uid://bf3v5qwdrjkmt" path="res://addons/godot_aerodynamic_physics/core/resources/default_drag_aoa_curve.tres" id="6_8c4yr"]
 [ext_resource type="Curve" uid="uid://cx3q3y0bx1rv7" path="res://addons/godot_aerodynamic_physics/core/resources/default_lift_aoa_curve.tres" id="7_8luro"]
-[ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/components/AeroThrusterComponent.gd" id="8_e4glj"]
+[ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/components/aero_thruster_component/AeroJetThrusterComponent.gd" id="8_e4glj"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_m08mi"]
 friction = 0.0
@@ -298,7 +298,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55771, 9.0562)
 
 [node name="AeroThrusterComponent" type="Marker3D" parent="."]
 script = ExtResource("8_e4glj")
-max_fuel_flow = 0.05
 
 [node name="Label3D" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 3.133, 6.07)

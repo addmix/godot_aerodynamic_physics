@@ -215,4 +215,3 @@ func update_flight_assist(delta : float) -> void:
 	
 	control_command = flight_assist.control_command
 	throttle_command = flight_assist.throttle_command
-

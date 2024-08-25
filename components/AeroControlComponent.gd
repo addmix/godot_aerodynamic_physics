@@ -147,7 +147,7 @@ func update_controls(delta : float) -> void:
 	
 	control_input.x = get_input(delta, control_input.x, pitch_down_event, pitch_up_event, enable_pitch_smoothing, pitch_smoothing_rate)
 	control_input.y = get_input(delta, control_input.y, yaw_right_event, yaw_left_event, enable_yaw_smoothing, yaw_smoothing_rate)
-	control_input.z = get_input(delta, control_input.x, roll_right_event, roll_left_event, enable_roll_smoothing, roll_smoothing_rate)
+	control_input.z = get_input(delta, control_input.z, roll_right_event, roll_left_event, enable_roll_smoothing, roll_smoothing_rate)
 	throttle_input = get_input(delta, throttle_input, throttle_down_event, throttle_up_event, enable_throttle_smoothing, throttle_smoothing_rate)
 	brake_input = get_input(delta, brake_input, brake_down_event, brake_up_event, enable_brake_smoothing, brake_smoothing_rate)
 	

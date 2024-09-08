@@ -57,6 +57,7 @@ var brake_command : float = 0.0
 @export var cumulative_pitch_down_event : StringName = ""
 ##Rate at which Cumulative inputs change control value.
 @export var cumulative_pitch_rate : float = 1.0
+@export_exp_easing("inout") var pitch_easing := 1.0
 
 @export_subgroup("Yaw")
 ##InputMap action which controls yawing left.
@@ -72,6 +73,7 @@ var brake_command : float = 0.0
 @export var cumulative_yaw_right_event : StringName = ""
 ##Rate at which Cumulative inputs change control value.
 @export var cumulative_yaw_rate : float = 1.0
+@export_exp_easing("inout") var yaw_easing := 1.0
 
 @export_subgroup("Roll")
 ##InputMap action which controls rolling left.
@@ -87,6 +89,7 @@ var brake_command : float = 0.0
 @export var cumulative_roll_right_event : StringName = ""
 ##Rate at which Cumulative inputs change control value.
 @export var cumulative_roll_rate : float = 1.0
+@export_exp_easing("inout") var roll_easing := 1.0
 
 @export_subgroup("Throttle")
 ##InputMap action which controls throttling up.
@@ -102,6 +105,7 @@ var brake_command : float = 0.0
 @export var cumulative_throttle_down_event : StringName = ""
 ##Rate at which Cumulative inputs change control value.
 @export var cumulative_throttle_rate : float = 1.0
+@export_exp_easing("inout") var throttle_easing := 1.0
 
 @export_subgroup("Brake")
 ##InputMap action which controls brake increase.
@@ -117,6 +121,7 @@ var brake_command : float = 0.0
 @export var cumulative_brake_down_event : StringName = ""
 ##Rate at which Cumulative inputs change control value.
 @export var cumulative_brake_rate : float = 1.0
+@export_exp_easing("inout") var brake_easing := 1.0
 
 @export_subgroup("")
 @export_group("")
@@ -155,6 +160,12 @@ func update_controls(delta : float) -> void:
 	control_input = clamp(control_input + cumulative_control_input, min_control, max_control)
 	throttle_input = clamp(throttle_input + cumulative_throttle_input, min_throttle, max_throttle)
 	brake_input = clamp(brake_input + cumulative_brake_input, min_brake, max_brake)
+	
+	control_input.x = ease(abs(control_input.x), pitch_easing) * sign(control_input.x)
+	control_input.y = ease(abs(control_input.y), yaw_easing) * sign(control_input.y)
+	control_input.z = ease(abs(control_input.z), roll_easing) * sign(control_input.z)
+	throttle_input = ease(abs(throttle_input), throttle_easing) * sign(throttle_input)
+	brake_input = ease(abs(brake_input), brake_easing) * sign(brake_input)
 	
 	control_value.x = calculate_smoothing(control_value.x, control_input.x, enable_pitch_smoothing, pitch_smoothing_rate, delta)
 	control_value.y = calculate_smoothing(control_value.y, control_input.y, enable_yaw_smoothing, yaw_smoothing_rate, delta)

@@ -15,6 +15,8 @@ const AeroNodeUtils = preload("../../utils/node_utils.gd")
 var control_command := Vector3.ZERO
 var throttle_command : float = 0.0
 var brake_command : float = 0.0
+
+var current_actuation := Vector3.ZERO
 ##Maximum rotation (in radians) this AeroInfluencer can rotate for controls.
 @export var max_actuation := Vector3.ZERO
 ##Amount of rotation that pitch commands contribute to this node's rotation.
@@ -29,6 +31,8 @@ var brake_command : float = 0.0
 @export var throttle_contribution := Vector3.ZERO
 ##Rotation order used when doing control rotations.
 @export_enum("XYZ", "XZY", "YXZ", "YZX", "ZXY", "ZYX") var control_rotation_order : int = 0
+@export var limit_actuation_speed : bool = false
+@export var actuation_speed : float = 1.0
 
 @export_group("Debug")
 ##If enabled, this AeroInfluencer3D is omitted from AeroBody3D debug calculations.
@@ -167,7 +171,14 @@ func _update_control_transform(substep_delta : float) -> void:
 	)
 	total_control_actuation = total_control_actuation.clamp(-Vector3.ONE, Vector3.ONE)
 	
-	basis = default_transform.basis * Basis().from_euler(total_control_actuation * max_actuation, control_rotation_order)
+	var desired_control_actuation : Vector3 = total_control_actuation * max_actuation
+	
+	if limit_actuation_speed:
+		current_actuation = current_actuation.move_toward(desired_control_actuation, actuation_speed * substep_delta)
+	else:
+		current_actuation = desired_control_actuation
+	
+	basis = default_transform.basis * Basis().from_euler(current_actuation, control_rotation_order)
 
 #virtual
 func is_overriding_body_sleep() -> bool:

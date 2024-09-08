@@ -8,7 +8,7 @@ class_name AeroControlComponent
 ##Control input value read from player controls.
 @export var control_input : Vector3 = Vector3.ZERO
 var cumulative_control_input : Vector3 = Vector3.ZERO
-#output
+var control_value : Vector3 = Vector3.ZERO
 var control_command := Vector3.ZERO
 ##Throttle input value read from player controls.
 @export var throttle_input : float = 0.0
@@ -139,44 +139,44 @@ func _physics_process(delta : float) -> void:
 	aero_body.brake_command = brake_command
 
 func update_controls(delta : float) -> void:
-	if not use_bindings:
-		control_command = control_input
-		throttle_command = throttle_input
-		brake_command = brake_input
-		return
-	
-	control_input.x = get_input(delta, control_input.x, pitch_down_event, pitch_up_event, enable_pitch_smoothing, pitch_smoothing_rate)
-	control_input.y = get_input(delta, control_input.y, yaw_right_event, yaw_left_event, enable_yaw_smoothing, yaw_smoothing_rate)
-	control_input.z = get_input(delta, control_input.z, roll_right_event, roll_left_event, enable_roll_smoothing, roll_smoothing_rate)
-	throttle_input = get_input(delta, throttle_input, throttle_down_event, throttle_up_event, enable_throttle_smoothing, throttle_smoothing_rate)
-	brake_input = get_input(delta, brake_input, brake_down_event, brake_up_event, enable_brake_smoothing, brake_smoothing_rate)
-	
-	cumulative_control_input.x = update_cumulative_control(delta, cumulative_control_input.x, cumulative_pitch_down_event, cumulative_pitch_up_event, cumulative_pitch_rate, min_control.x, max_control.x)
-	cumulative_control_input.y = update_cumulative_control(delta, cumulative_control_input.y, cumulative_yaw_right_event, cumulative_yaw_left_event, cumulative_yaw_rate, min_control.y, max_control.y)
-	cumulative_control_input.z = update_cumulative_control(delta, cumulative_control_input.z, cumulative_roll_right_event, cumulative_roll_left_event, cumulative_roll_rate, min_control.z, max_control.z)
-	cumulative_throttle_input = update_cumulative_control(delta, cumulative_throttle_input, cumulative_throttle_down_event, cumulative_throttle_up_event, cumulative_throttle_rate, min_throttle, max_throttle)
-	cumulative_brake_input = update_cumulative_control(delta, cumulative_brake_input, cumulative_brake_down_event, cumulative_brake_up_event, cumulative_brake_rate, min_brake, max_brake)
+	if use_bindings:
+		control_input.x = get_input(delta, control_input.x, pitch_down_event, pitch_up_event)
+		control_input.y = get_input(delta, control_input.y, yaw_right_event, yaw_left_event)
+		control_input.z = get_input(delta, control_input.z, roll_right_event, roll_left_event)
+		throttle_input = get_input(delta, throttle_input, throttle_down_event, throttle_up_event)
+		brake_input = get_input(delta, brake_input, brake_down_event, brake_up_event)
+		
+		cumulative_control_input.x = update_cumulative_control(delta, cumulative_control_input.x, cumulative_pitch_down_event, cumulative_pitch_up_event, cumulative_pitch_rate, min_control.x, max_control.x)
+		cumulative_control_input.y = update_cumulative_control(delta, cumulative_control_input.y, cumulative_yaw_right_event, cumulative_yaw_left_event, cumulative_yaw_rate, min_control.y, max_control.y)
+		cumulative_control_input.z = update_cumulative_control(delta, cumulative_control_input.z, cumulative_roll_right_event, cumulative_roll_left_event, cumulative_roll_rate, min_control.z, max_control.z)
+		cumulative_throttle_input = update_cumulative_control(delta, cumulative_throttle_input, cumulative_throttle_down_event, cumulative_throttle_up_event, cumulative_throttle_rate, min_throttle, max_throttle)
+		cumulative_brake_input = update_cumulative_control(delta, cumulative_brake_input, cumulative_brake_down_event, cumulative_brake_up_event, cumulative_brake_rate, min_brake, max_brake)
 	
 	control_input = clamp(control_input + cumulative_control_input, min_control, max_control)
 	throttle_input = clamp(throttle_input + cumulative_throttle_input, min_throttle, max_throttle)
 	brake_input = clamp(brake_input + cumulative_brake_input, min_brake, max_brake)
 	
-	control_command = control_input
-	throttle_command = throttle_input
-	brake_command = brake_input
+	control_value.x = calculate_smoothing(control_value.x, control_input.x, enable_pitch_smoothing, pitch_smoothing_rate, delta)
+	control_value.y = calculate_smoothing(control_value.y, control_input.y, enable_yaw_smoothing, yaw_smoothing_rate, delta)
+	control_value.z = calculate_smoothing(control_value.z, control_input.z, enable_roll_smoothing, roll_smoothing_rate, delta)
+	throttle_value = calculate_smoothing(throttle_value, throttle_input, enable_throttle_smoothing, throttle_smoothing_rate, delta)
+	brake_value = calculate_smoothing(brake_value, brake_input, enable_brake_smoothing, brake_smoothing_rate, delta)
 
-func update_cumulative_control(delta : float, cumulative_value : float, negative_event : StringName, positive_event : StringName, cumulative_rate : float, min_value : float, max_value : float) -> float:
+static func update_cumulative_control(delta : float, cumulative_value : float, negative_event : StringName, positive_event : StringName, cumulative_rate : float, min_value : float, max_value : float) -> float:
 	var input : float = get_axis(0.0, negative_event, positive_event)
 	cumulative_value += input * cumulative_rate * delta
 	return clamp(cumulative_value, min_value, max_value)
 
-func get_input(delta : float, default_value : float, negative_event : StringName, positive_event : StringName, enable_smoothing : bool, smoothing_rate : float) -> float:
-	var input : float = get_axis(default_value, negative_event, positive_event)
-	if enable_smoothing:
-		input = move_toward(default_value, input, smoothing_rate * delta)
-	return input
+static func calculate_smoothing(current_value : float, new_value : float, smoothing_enabled : bool = false, smoothing_rate : float = 1.0, delta : float = 1.0/60.0) -> float:
+	if smoothing_enabled:
+		return move_toward(current_value, new_value, smoothing_rate * delta)
+	else:
+		return new_value
 
-func get_axis(default_value : float, negative_event : StringName, positive_event : StringName) -> float:
+static func get_input(delta : float, default_value : float, negative_event : StringName, positive_event : StringName) -> float:
+	return get_axis(default_value, negative_event, positive_event)
+
+static func get_axis(default_value : float, negative_event : StringName, positive_event : StringName) -> float:
 	var input : float = default_value
 	
 	if not negative_event == "":
@@ -189,19 +189,13 @@ func get_axis(default_value : float, negative_event : StringName, positive_event
 	
 	return input
 
-static func smooth_control(delta : float, enabled : bool, current_position : float, target_position : float, speed : float) -> float:
-	if enabled:
-		return move_toward(current_position, target_position, speed * delta)
-	else:
-		return target_position
-
 func update_flight_assist(delta : float) -> void:
 	if not flight_assist:
 		return
 	
 	#input and pids
-	flight_assist.control_input = control_input
-	flight_assist.throttle_command = throttle_input
+	flight_assist.control_input = control_value
+	flight_assist.throttle_command = throttle_value
 	flight_assist.air_speed = aero_body.air_speed
 	flight_assist.air_density = aero_body.air_density
 	flight_assist.angle_of_attack = aero_body.angle_of_attack

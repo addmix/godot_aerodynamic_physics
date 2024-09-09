@@ -204,6 +204,8 @@ static func get_axis(default_value : float, negative_event : StringName, positiv
 
 func update_flight_assist(delta : float) -> void:
 	if not flight_assist:
+		control_command = control_value
+		throttle_command = throttle_value
 		return
 	
 	#input and pids

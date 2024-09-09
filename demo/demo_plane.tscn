@@ -252,6 +252,7 @@ manual_config = SubResource("Resource_47npt")
 wing_config = SubResource("Resource_b87jk")
 max_actuation = Vector3(0.2, 0, 0)
 pitch_contribution = Vector3(-1, 0, 0)
+pitch_easing = 2.63902
 
 [node name="CSGBox3D2" type="CSGBox3D" parent="Elevator"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.57628e-07, 0.29494)

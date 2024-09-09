@@ -22,6 +22,9 @@ static func bias(x : float, bias : float) -> float:
 	var k : float = f * f * f
 	return (x * k) / (x * k - x + 1)
 
+static func improved_ease(value : float, curve : float = 1.0) -> float:
+	return ease(abs(value), curve) * sign(value)
+
 #branchlessly toggles a float between two values given a condition
 static func float_toggle(condition : bool, _true : float, _false : float) -> float:
 	return float(condition) * _true + float(!condition) * _false

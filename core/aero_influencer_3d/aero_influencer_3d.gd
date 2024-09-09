@@ -21,14 +21,19 @@ var current_actuation := Vector3.ZERO
 @export var max_actuation := Vector3.ZERO
 ##Amount of rotation that pitch commands contribute to this node's rotation.
 @export var pitch_contribution := Vector3.ZERO
+@export_exp_easing("inout") var pitch_easing : float = 1.0
 ##Amount of rotation that yaw commands contribute to this node's rotation.
 @export var yaw_contribution := Vector3.ZERO
+@export_exp_easing("inout") var yaw_easing : float = 1.0
 ##Amount of rotation that roll commands contribute to this node's rotation.
 @export var roll_contribution := Vector3.ZERO
+@export_exp_easing("inout") var roll_easing : float = 1.0
 ##Amount of rotation that brake commands contribute to this node's rotation.
 @export var brake_contribution := Vector3.ZERO
+@export_exp_easing("inout") var brake_easing : float = 1.0
 ##Amount of rotation that throttle commands contribute to this node's rotation.
 @export var throttle_contribution := Vector3.ZERO
+@export_exp_easing("inout") var throttle_easing : float = 1.0
 ##Rotation order used when doing control rotations.
 @export_enum("XYZ", "XZY", "YXZ", "YZX", "ZXY", "ZYX") var control_rotation_order : int = 0
 @export var limit_actuation_speed : bool = false
@@ -159,10 +164,10 @@ func _update_control_transform(substep_delta : float) -> void:
 	throttle_command = get_parent().throttle_command
 	brake_command = get_parent().brake_command
 	
-	var pitch_actuation : Vector3 = pitch_contribution * control_command.x
-	var yaw_actuation : Vector3 = yaw_contribution * control_command.y
-	var roll_actuation : Vector3 = roll_contribution * control_command.z
-	var brake_actuation : Vector3 = brake_contribution * brake_command
+	var pitch_actuation : Vector3 = pitch_contribution * AeroMathUtils.improved_ease(control_command.x, pitch_easing)
+	var yaw_actuation : Vector3 = yaw_contribution * AeroMathUtils.improved_ease(control_command.y, yaw_easing)
+	var roll_actuation : Vector3 = roll_contribution * AeroMathUtils.improved_ease(control_command.z, roll_easing)
+	var brake_actuation : Vector3 = brake_contribution * AeroMathUtils.improved_ease(brake_command, brake_easing)
 	
 	var total_control_actuation : Vector3 = Vector3(
 		pitch_actuation.x + yaw_actuation.x + roll_actuation.x + brake_actuation.x,

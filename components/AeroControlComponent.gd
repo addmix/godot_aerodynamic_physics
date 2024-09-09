@@ -2,6 +2,8 @@
 extends Node
 class_name AeroControlComponent
 
+const AeroMathUtils = preload("../utils/math_utils.gd")
+
 @onready var aero_body : AeroBody3D = get_parent()
 
 @export var flight_assist : FlightAssist
@@ -161,11 +163,11 @@ func update_controls(delta : float) -> void:
 	throttle_input = clamp(throttle_input + cumulative_throttle_input, min_throttle, max_throttle)
 	brake_input = clamp(brake_input + cumulative_brake_input, min_brake, max_brake)
 	
-	control_input.x = ease(abs(control_input.x), pitch_easing) * sign(control_input.x)
-	control_input.y = ease(abs(control_input.y), yaw_easing) * sign(control_input.y)
-	control_input.z = ease(abs(control_input.z), roll_easing) * sign(control_input.z)
-	throttle_input = ease(abs(throttle_input), throttle_easing) * sign(throttle_input)
-	brake_input = ease(abs(brake_input), brake_easing) * sign(brake_input)
+	control_input.x = AeroMathUtils.improved_ease(control_input.x, pitch_easing)
+	control_input.y = AeroMathUtils.improved_ease(control_input.y, yaw_easing)
+	control_input.z = AeroMathUtils.improved_ease(control_input.z, roll_easing)
+	throttle_input = AeroMathUtils.improved_ease(throttle_input, throttle_easing)
+	brake_input = AeroMathUtils.improved_ease(brake_input, brake_easing)
 	
 	control_value.x = calculate_smoothing(control_value.x, control_input.x, enable_pitch_smoothing, pitch_smoothing_rate, delta)
 	control_value.y = calculate_smoothing(control_value.y, control_input.y, enable_yaw_smoothing, yaw_smoothing_rate, delta)

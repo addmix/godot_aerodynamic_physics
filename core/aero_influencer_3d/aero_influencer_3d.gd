@@ -19,25 +19,33 @@ var brake_command : float = 0.0
 var current_actuation := Vector3.ZERO
 ##Maximum rotation (in radians) this AeroInfluencer can rotate for controls.
 @export var max_actuation := Vector3.ZERO
+@export var limit_actuation_speed : bool = false
+@export var actuation_speed : float = 1.0
+
+@export_subgroup("Pitch")
 ##Amount of rotation that pitch commands contribute to this node's rotation.
 @export var pitch_contribution := Vector3.ZERO
 @export_exp_easing("inout") var pitch_easing : float = 1.0
+@export_subgroup("Yaw")
 ##Amount of rotation that yaw commands contribute to this node's rotation.
 @export var yaw_contribution := Vector3.ZERO
 @export_exp_easing("inout") var yaw_easing : float = 1.0
+@export_subgroup("Roll")
 ##Amount of rotation that roll commands contribute to this node's rotation.
 @export var roll_contribution := Vector3.ZERO
 @export_exp_easing("inout") var roll_easing : float = 1.0
+@export_subgroup("Brake")
 ##Amount of rotation that brake commands contribute to this node's rotation.
 @export var brake_contribution := Vector3.ZERO
 @export_exp_easing("inout") var brake_easing : float = 1.0
+@export_subgroup("Throttle")
 ##Amount of rotation that throttle commands contribute to this node's rotation.
 @export var throttle_contribution := Vector3.ZERO
 @export_exp_easing("inout") var throttle_easing : float = 1.0
+
+@export_subgroup("")
 ##Rotation order used when doing control rotations.
 @export_enum("XYZ", "XZY", "YXZ", "YZX", "ZXY", "ZYX") var control_rotation_order : int = 0
-@export var limit_actuation_speed : bool = false
-@export var actuation_speed : float = 1.0
 
 @export_group("Debug")
 ##If enabled, this AeroInfluencer3D is omitted from AeroBody3D debug calculations.

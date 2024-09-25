@@ -10,9 +10,9 @@ class_name AeroCyclicPropeller3D
 @export var cyclic_control_config :=  create_cyclic_control_config()
 func create_cyclic_control_config() -> AeroInfluencerControlConfig:
 	var config := AeroInfluencerControlConfig.new()
-	config.max_value = Vector3(1.0, 1.0, 0.0)
-	config.roll_config = AeroInfluencerControlAxisConfig.new(Vector3(1.0, 0.0, 0.0))
-	config.pitch_config = AeroInfluencerControlAxisConfig.new(Vector3(0.0, 1.0, 0.0))
+	#config.max_value = Vector3(1.0, 1.0, 0.0)
+	#config.roll_config = AeroInfluencerControlAxisConfig.new(Vector3(1.0, 0.0, 0.0))
+	#config.pitch_config = AeroInfluencerControlAxisConfig.new(Vector3(0.0, 1.0, 0.0))
 	return config
 
 func _ready() -> void:
@@ -36,8 +36,8 @@ func _update_control_transform(substep_delta : float) -> void:
 	super._update_control_transform(substep_delta)
 	
 	var cyclic_value := Vector3.ZERO
-	if cyclic_control_config:
-		cyclic_value = apply_control_commands_to_config(substep_delta, cyclic_control_config)
-	
-	cyclic_control_config.update(substep_delta)
+	#if cyclic_control_config:
+		#cyclic_value = apply_control_commands_to_config(substep_delta, cyclic_control_config)
+	#
+	#cyclic_control_config.update(substep_delta)
 	cyclic = Vector2(cyclic_control_config.current_value.x, cyclic_control_config.current_value.y)

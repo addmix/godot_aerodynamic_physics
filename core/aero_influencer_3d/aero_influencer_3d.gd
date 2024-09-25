@@ -8,11 +8,6 @@ const AeroNodeUtils = preload("../../utils/node_utils.gd")
 ##If true, this AeroInfluencer3D will not have any effect on the simulation.
 @export var disabled : bool = false
 
-var control_command := Vector3.ZERO
-var throttle_command : float = 0.0
-var brake_command : float = 0.0
-var collective_command : float = 0.0
-
 @export_group("Actuation Control")
 @export var actuation_config : AeroInfluencerControlConfig
 ##Rotation order used when doing control rotations.
@@ -142,14 +137,9 @@ func _update_transform_substep(substep_delta : float) -> void:
 		influencer._update_transform_substep(substep_delta)
 
 func _update_control_transform(substep_delta : float) -> void:
-	control_command = get_parent().control_command
-	throttle_command = get_parent().throttle_command
-	brake_command = get_parent().brake_command
-	collective_command = get_parent().collective_command
-	
 	var actuation_value := Vector3.ZERO
 	if actuation_config:
-		actuation_value = apply_control_commands_to_config(substep_delta, actuation_config)
+		actuation_value = actuation_config.update(substep_delta, self)
 	
 	basis = default_transform.basis * Basis().from_euler(actuation_value, control_rotation_order)
 
@@ -195,6 +185,8 @@ func get_linear_acceleration() -> Vector3:
 func get_angular_acceleration() -> Vector3:
 	return get_parent().get_angular_acceleration()
 
+func get_control_command(axis_name : String = "") -> float:
+	return get_parent().get_control_command(axis_name)
 
 
 #debug
@@ -228,16 +220,6 @@ func update_debug_vectors() -> void:
 		force_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(_current_force, 2.0) * debug_scale
 	if torque_debug_vector.visible:
 		torque_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(_current_torque, 2.0) * debug_scale
-
-func apply_control_commands_to_config(delta : float, control_config : AeroInfluencerControlConfig) -> Vector3:
-	control_config.pitch_command = control_command.x
-	control_config.yaw_command = control_command.y
-	control_config.roll_command = control_command.z
-	control_config.brake_command = brake_command
-	control_config.throttle_command = throttle_command
-	control_config.collective_command = collective_command
-	
-	return control_config.update(delta)
 
 var updated_properties := get_property_conversion_info()
 func get_property_conversion_info() -> Dictionary:

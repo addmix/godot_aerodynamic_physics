@@ -11,17 +11,6 @@ const AeroNodeUtils = preload("../utils/node_utils.gd")
 		substeps_override = x
 		PREDICTION_TIMESTEP_FRACTION = 1.0 / float(SUBSTEPS)
 
-@export_group("Control")
-## Value used by AeroInfluencers to control the AeroBody3D. Represents rotational axes. 
-## X = Pitch, Y = Yaw, Z = Roll.
-@export var control_command : Vector3 = Vector3.ZERO
-## Value used by AeroInfluencers to control the AeroBody3D.
-@export var throttle_command : float = 0.0
-## Value used by AeroInfluencers to control the AeroBody3D.
-@export var brake_command : float = 0.0
-## Value used by AeroInfluencers to control the AeroBody3D.
-@export var collective_command : float = 0.0
-
 @export_group("Debug")
 
 @export_subgroup("Visibility")
@@ -477,3 +466,17 @@ func _update_debug_scale() -> void:
 	angular_velocity_vector.width = debug_width
 	drag_debug_vector.width = debug_width
 	thrust_debug_vector.width = debug_width
+
+
+
+## Controls
+
+
+func get_control_command(axis_name : String = "") -> float:
+	var control_component : AeroControlComponent = AeroNodeUtils.get_first_child_of_type(self, AeroControlComponent)
+	if is_instance_valid(control_component):
+		#if axis_name == "throttle":
+			#print(control_component.get_control_command(axis_name))
+		return control_component.get_control_command(axis_name)
+	
+	return 0.0

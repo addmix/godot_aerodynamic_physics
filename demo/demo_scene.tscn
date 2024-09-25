@@ -41,5 +41,6 @@ size = Vector3(10000, 1, 10000)
 material = SubResource("StandardMaterial3D_1sawy")
 
 [node name="AeroBody3D" parent="." instance=ExtResource("1_bbdyo")]
+linear_velocity = Vector3(0, 0, -200)
 show_debug = true
 update_debug = true

@@ -18,7 +18,7 @@ class_name AeroVariablePropeller3D
 func create_collective_control_config() -> AeroInfluencerControlConfig:
 	var config := AeroInfluencerControlConfig.new()
 	config.max_value.x = 0.5
-	config.collective_config = AeroInfluencerControlAxisConfig.new(Vector3(1.0, 0.0, 0.0))
+	#config.collective_config = AeroInfluencerControlAxisConfig.new(Vector3(1.0, 0.0, 0.0))
 	return config
 
 func _ready() -> void:
@@ -39,10 +39,10 @@ func _update_control_transform(substep_delta : float) -> void:
 	super._update_control_transform(substep_delta)
 	
 	var propeller_velocity_value := Vector3.ZERO
-	if propeller_collective_control_config:
-		propeller_velocity_value = apply_control_commands_to_config(substep_delta, propeller_collective_control_config)
-	
-	collective = propeller_collective_control_config.update(substep_delta).x
+	#if propeller_collective_control_config:
+		#propeller_velocity_value = apply_control_commands_to_config(substep_delta, propeller_collective_control_config)
+	#
+	#collective = propeller_collective_control_config.update(substep_delta).x
 
 
 func is_overriding_body_sleep() -> bool:

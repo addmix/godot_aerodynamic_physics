@@ -20,8 +20,8 @@ func _physics_process(delta : float) -> void:
 	if not enabled:
 		return
 	
-	if rigid_body is AeroBody3D and get_throttle_from_aero_body:
-		throttle = rigid_body.throttle_command
+	#if rigid_body is AeroBody3D and get_throttle_from_aero_body:
+		#throttle = rigid_body.throttle_command
 	
 	var force_magnitude : float = get_thrust_magnitude() * delta
 	

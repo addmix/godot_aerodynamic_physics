@@ -40,7 +40,7 @@ var propeller_instances : Array[AeroInfluencer3D] = []
 func create_speed_control_config() -> AeroInfluencerControlConfig:
 	var config := AeroInfluencerControlConfig.new()
 	config.max_value.y = 100.0
-	config.throttle_config = AeroInfluencerControlAxisConfig.new(Vector3.ONE)
+	#config.throttle_config = AeroInfluencerControlAxisConfig.new(Vector3.ONE)
 	return config
 
 # Called when the node enters the scene tree for the first time.
@@ -112,6 +112,5 @@ func _update_control_transform(substep_delta : float) -> void:
 	
 	var propeller_velocity_value := Vector3.ZERO
 	if propeller_speed_control_config:
-		propeller_velocity_value = apply_control_commands_to_config(substep_delta, propeller_speed_control_config)
-	
-	angular_motor = propeller_speed_control_config.update(substep_delta)
+		angular_motor = propeller_speed_control_config.update(substep_delta, self)
+		

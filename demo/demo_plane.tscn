@@ -1,4 +1,4 @@
-[gd_scene load_steps=53 format=3 uid="uid://dx0v1i14fyw8c"]
+[gd_scene load_steps=52 format=3 uid="uid://dx0v1i14fyw8c"]
 
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/aero_body_3d.gd" id="1_ddp7w"]
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/components/AeroControlComponent.gd" id="2_x2dhw"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/utils/pid.gd" id="3_hyo05"]
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/flight_assist.gd" id="4_a0mgf"]
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="4_ht3i8"]
+[ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_control_config_axis.gd" id="5_0c3u7"]
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_control_config.gd" id="5_x51t6"]
 [ext_resource type="Curve" uid="uid://bf3v5qwdrjkmt" path="res://addons/godot_aerodynamic_physics/core/resources/default_drag_aoa_curve.tres" id="6_8c4yr"]
 [ext_resource type="Curve" uid="uid://cx3q3y0bx1rv7" path="res://addons/godot_aerodynamic_physics/core/resources/default_lift_aoa_curve.tres" id="7_8luro"]
@@ -145,8 +146,10 @@ direction_pitch_pid = SubResource("Resource_6l2fv")
 direction_yaw_pid = SubResource("Resource_wruso")
 direction_roll_pid = SubResource("Resource_wyxpf")
 
-[sub_resource type="Resource" id="Resource_ry778"]
-script = ExtResource("5_x51t6")
+[sub_resource type="Resource" id="Resource_82wr6"]
+resource_name = "pitch"
+script = ExtResource("5_0c3u7")
+axis_name = "pitch"
 use_bindings = true
 input = 0.0
 min_limit = -1.0
@@ -160,8 +163,10 @@ cumulative_negative_event = &""
 cumulative_rate = 1.0
 easing = 1.0
 
-[sub_resource type="Resource" id="Resource_f2e3i"]
-script = ExtResource("5_x51t6")
+[sub_resource type="Resource" id="Resource_6hn8q"]
+resource_name = "yaw"
+script = ExtResource("5_0c3u7")
+axis_name = "yaw"
 use_bindings = true
 input = 0.0
 min_limit = -1.0
@@ -175,8 +180,10 @@ cumulative_negative_event = &""
 cumulative_rate = 1.0
 easing = 1.0
 
-[sub_resource type="Resource" id="Resource_7svdm"]
-script = ExtResource("5_x51t6")
+[sub_resource type="Resource" id="Resource_yoi77"]
+resource_name = "roll"
+script = ExtResource("5_0c3u7")
+axis_name = "roll"
 use_bindings = true
 input = 0.0
 min_limit = -1.0
@@ -190,8 +197,10 @@ cumulative_negative_event = &""
 cumulative_rate = 1.0
 easing = 1.0
 
-[sub_resource type="Resource" id="Resource_x0pkh"]
-script = ExtResource("5_x51t6")
+[sub_resource type="Resource" id="Resource_cokk7"]
+resource_name = "throttle"
+script = ExtResource("5_0c3u7")
+axis_name = "throttle"
 use_bindings = true
 input = 0.0
 min_limit = 0.0
@@ -205,8 +214,10 @@ cumulative_negative_event = &""
 cumulative_rate = 1.0
 easing = 1.0
 
-[sub_resource type="Resource" id="Resource_8exs8"]
-script = ExtResource("5_x51t6")
+[sub_resource type="Resource" id="Resource_du08k"]
+resource_name = "brake"
+script = ExtResource("5_0c3u7")
+axis_name = "brake"
 use_bindings = true
 input = 0.0
 min_limit = 0.0
@@ -220,8 +231,10 @@ cumulative_negative_event = &""
 cumulative_rate = 1.0
 easing = 1.0
 
-[sub_resource type="Resource" id="Resource_8vsie"]
-script = ExtResource("5_x51t6")
+[sub_resource type="Resource" id="Resource_2pb6g"]
+resource_name = "collective"
+script = ExtResource("5_0c3u7")
+axis_name = "collective"
 use_bindings = true
 input = 0.0
 min_limit = -1.0
@@ -234,6 +247,10 @@ cumulative_positive_event = &""
 cumulative_negative_event = &""
 cumulative_rate = 1.0
 easing = 1.0
+
+[sub_resource type="Resource" id="Resource_0dai8"]
+script = ExtResource("5_x51t6")
+axis_configs = Array[ExtResource("5_0c3u7")]([SubResource("Resource_82wr6"), SubResource("Resource_6hn8q"), SubResource("Resource_yoi77"), SubResource("Resource_cokk7"), SubResource("Resource_du08k"), SubResource("Resource_2pb6g")])
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_nchkm"]
 size = Vector3(7.3728, 0.215118, 4.76475)
@@ -271,18 +288,20 @@ span = 3.0
 auto_aspect_ratio = true
 aspect_ratio = 2.0
 
-[sub_resource type="Resource" id="Resource_4upop"]
+[sub_resource type="Resource" id="Resource_4sxh6"]
+resource_name = "pitch"
 script = ExtResource("11_1g5my")
+axis_name = "pitch"
 contribution = Vector3(-1, 0, 0)
-easing = 2.63902
+easing = 1.0
 
 [sub_resource type="Resource" id="Resource_11wlp"]
 script = ExtResource("12_njgyo")
 enable_control = true
+axis_configs = Array[ExtResource("11_1g5my")]([SubResource("Resource_4sxh6")])
 max_value = Vector3(0.2, 0, 0)
 limit_movement_speed = false
 movement_speed = 1.0
-pitch_config = SubResource("Resource_4upop")
 
 [sub_resource type="Curve" id="Curve_v5kpe"]
 _data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.25, 1), 0.0, 0.0, 0, 0, Vector2(0.5, 0), 0.0, 0.0, 0, 0, Vector2(0.75, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
@@ -323,18 +342,13 @@ span = 1.4
 auto_aspect_ratio = true
 aspect_ratio = 1.4
 
-[sub_resource type="Resource" id="Resource_kcr2m"]
-script = ExtResource("11_1g5my")
-contribution = Vector3(-1, 0, 0)
-easing = 1.0
-
 [sub_resource type="Resource" id="Resource_u1ahl"]
 script = ExtResource("12_njgyo")
 enable_control = true
+axis_configs = Array[ExtResource("11_1g5my")]([])
 max_value = Vector3(0.1, 0, 0)
 limit_movement_speed = false
 movement_speed = 1.0
-yaw_config = SubResource("Resource_kcr2m")
 
 [sub_resource type="Resource" id="Resource_658jb"]
 script = ExtResource("4_ht3i8")
@@ -343,31 +357,21 @@ span = 3.55
 auto_aspect_ratio = true
 aspect_ratio = 3.55
 
-[sub_resource type="Resource" id="Resource_tjhsd"]
-script = ExtResource("11_1g5my")
-contribution = Vector3(-1, 0, 0)
-easing = 1.0
-
 [sub_resource type="Resource" id="Resource_kwcql"]
 script = ExtResource("12_njgyo")
 enable_control = true
+axis_configs = Array[ExtResource("11_1g5my")]([])
 max_value = Vector3(0.1, 0, 0)
 limit_movement_speed = false
 movement_speed = 1.0
-roll_config = SubResource("Resource_tjhsd")
-
-[sub_resource type="Resource" id="Resource_tnj5l"]
-script = ExtResource("11_1g5my")
-contribution = Vector3(1, 0, 0)
-easing = 1.0
 
 [sub_resource type="Resource" id="Resource_hl3vl"]
 script = ExtResource("12_njgyo")
 enable_control = true
+axis_configs = Array[ExtResource("11_1g5my")]([])
 max_value = Vector3(0.1, 0, 0)
 limit_movement_speed = false
 movement_speed = 1.0
-roll_config = SubResource("Resource_tnj5l")
 
 [node name="AeroBody3D" type="VehicleBody3D"]
 mass = 850.0
@@ -380,12 +384,7 @@ script = ExtResource("1_ddp7w")
 [node name="AeroControlComponent" type="Node" parent="."]
 script = ExtResource("2_x2dhw")
 flight_assist = SubResource("Resource_qpum4")
-pitch_control_config = SubResource("Resource_ry778")
-yaw_control_config = SubResource("Resource_f2e3i")
-roll_control_config = SubResource("Resource_7svdm")
-throttle_control_config = SubResource("Resource_x0pkh")
-brake_control_config = SubResource("Resource_8exs8")
-collective_control_config = SubResource("Resource_8vsie")
+control_config = SubResource("Resource_0dai8")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.00468441, 1.50782)

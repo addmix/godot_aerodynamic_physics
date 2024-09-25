@@ -5,133 +5,28 @@ class_name AeroControlComponent
 const AeroMathUtils = preload("../utils/math_utils.gd")
 
 @onready var aero_body : AeroBody3D = get_parent()
-
 @export var flight_assist : FlightAssist
-##Control input value read from player controls.
-@export var control_input : Vector3 = Vector3.ZERO
-var cumulative_control_input : Vector3 = Vector3.ZERO
-var control_value : Vector3 = Vector3.ZERO
-var control_command := Vector3.ZERO
-##Throttle input value read from player controls.
-@export var throttle_input : float = 0.0
-var cumulative_throttle_input : float = 0.0
-var throttle_value : float = 0.0
-var throttle_command : float = 0.0
-##Brake input value read from player controls.
-@export var brake_input : float = 0.0
-var cumulative_brake_input : float = 0.0
-var brake_value : float = 0.0
-var brake_command : float = 0.0
 
-@export_group("Control Limits")
-@export_subgroup("Control")
-##Minimum control value limit
-@export var min_control : Vector3 = -Vector3.ONE
-##Maximum control value limit
-@export var max_control : Vector3 = Vector3.ONE
-@export_subgroup("Throttle")
-##Minimum throttle limit
-@export var min_throttle : float = 0.0
-##Maximum throttle limit
-@export var max_throttle : float = 1.0
-@export_subgroup("Brakes")
-##Minimum brake limit
-@export var min_brake : float = 0.0
-##Maximum brake limit
-@export var max_brake : float = 1.0
-@export_subgroup("")
-
-@export_group("Control")
-##If enabled, this AeroControlComponent will automatically read player inputs, and apply those inputs to control, throttle, and brake input values.
-@export var use_bindings : bool = true
-
-@export_subgroup("Pitch")
-##InputMap action which controls pitching up.
-@export var pitch_up_event : StringName = "ui_down"
-##InputMap action which controls pitching down.
-@export var pitch_down_event : StringName = "ui_up"
-##If enabled, inputs will change smoothly at `pitch_smoothing_rate` per second.
-@export var enable_pitch_smoothing : bool = false
-@export var pitch_smoothing_rate : float = 1.0
-##Cumulative inputs don't reset to 0 automatically. This would be similar to trim, or throttle that stays in place when not interacted with.
-@export var cumulative_pitch_up_event : StringName = ""
-##Cumulative inputs don't reset to 0 automatically. This would be similar to trim, or throttle that stays in place when not interacted with.
-@export var cumulative_pitch_down_event : StringName = ""
-##Rate at which Cumulative inputs change control value.
-@export var cumulative_pitch_rate : float = 1.0
-@export_exp_easing("inout") var pitch_easing := 1.0
-
-@export_subgroup("Yaw")
-##InputMap action which controls yawing left.
-@export var yaw_left_event : StringName = ""
-##InputMap action which controls yawing right.
-@export var yaw_right_event : StringName = ""
-##If enabled, inputs will change smoothly at `pitch_smoothing_rate` per second.
-@export var enable_yaw_smoothing : bool = false
-@export var yaw_smoothing_rate : float = 1.0
-##Cumulative inputs don't reset to 0 automatically. This would be similar to trim, or throttle that stays in place when not interacted with.
-@export var cumulative_yaw_left_event : StringName = ""
-##Cumulative inputs don't reset to 0 automatically. This would be similar to trim, or throttle that stays in place when not interacted with.
-@export var cumulative_yaw_right_event : StringName = ""
-##Rate at which Cumulative inputs change control value.
-@export var cumulative_yaw_rate : float = 1.0
-@export_exp_easing("inout") var yaw_easing := 1.0
-
-@export_subgroup("Roll")
-##InputMap action which controls rolling left.
-@export var roll_left_event : StringName = "ui_left"
-##InputMap action which controls rolling right.
-@export var roll_right_event : StringName = "ui_right"
-##If enabled, inputs will change smoothly at `pitch_smoothing_rate` per second.
-@export var enable_roll_smoothing : bool = false
-@export var roll_smoothing_rate : float = 1.0
-##Cumulative inputs don't reset to 0 automatically. This would be similar to trim, or throttle that stays in place when not interacted with.
-@export var cumulative_roll_left_event : StringName = ""
-##Cumulative inputs don't reset to 0 automatically. This would be similar to trim, or throttle that stays in place when not interacted with.
-@export var cumulative_roll_right_event : StringName = ""
-##Rate at which Cumulative inputs change control value.
-@export var cumulative_roll_rate : float = 1.0
-@export_exp_easing("inout") var roll_easing := 1.0
-
-@export_subgroup("Throttle")
-##InputMap action which controls throttling up.
-@export var throttle_up_event : StringName = ""
-##InputMap action which controls throttling down.
-@export var throttle_down_event : StringName = ""
-##If enabled, inputs will change smoothly at `pitch_smoothing_rate` per second.
-@export var enable_throttle_smoothing : bool = false
-@export var throttle_smoothing_rate : float = 1.0
-##Cumulative inputs don't reset to 0 automatically. This would be similar to trim, or throttle that stays in place when not interacted with.
-@export var cumulative_throttle_up_event : StringName = ""
-##Cumulative inputs don't reset to 0 automatically. This would be similar to trim, or throttle that stays in place when not interacted with.
-@export var cumulative_throttle_down_event : StringName = ""
-##Rate at which Cumulative inputs change control value.
-@export var cumulative_throttle_rate : float = 1.0
-@export_exp_easing("inout") var throttle_easing := 1.0
-
-@export_subgroup("Brake")
-##InputMap action which controls brake increase.
-@export var brake_up_event : StringName = ""
-##InputMap action which controls brake decrease.
-@export var brake_down_event : StringName = ""
-##If enabled, inputs will change smoothly at `pitch_smoothing_rate` per second.
-@export var enable_brake_smoothing : bool = false
-@export var brake_smoothing_rate : float = 1.0
-##Cumulative inputs don't reset to 0 automatically. This would be similar to trim, or throttle that stays in place when not interacted with.
-@export var cumulative_brake_up_event : StringName = ""
-##Cumulative inputs don't reset to 0 automatically. This would be similar to trim, or throttle that stays in place when not interacted with.
-@export var cumulative_brake_down_event : StringName = ""
-##Rate at which Cumulative inputs change control value.
-@export var cumulative_brake_rate : float = 1.0
-@export_exp_easing("inout") var brake_easing := 1.0
-
-@export_subgroup("")
-@export_group("")
+@export var pitch_control_config := AeroControlConfig.new(-1.0, 1.0, "ui_up", "ui_down")
+@export var yaw_control_config := AeroControlConfig.new()
+@export var roll_control_config := AeroControlConfig.new(-1.0, 1.0, "ui_left", "ui_right")
+@export var throttle_control_config := AeroControlConfig.new(0.0, 1.0)
+@export var brake_control_config := AeroControlConfig.new(0.0, 1.0)
+@export var collective_control_config := AeroControlConfig.new()
 
 func _ready() -> void:
 	#resource_local_to_scene impacts editability in some cases, so we manually duplicate the flight_assist resource.
-	if flight_assist and not Engine.is_editor_hint():
-		flight_assist = flight_assist.duplicate(true)
+	if not Engine.is_editor_hint():
+		#if proportional_navigation: proportional_navigation = proportional_navigation.duplicate(true)
+		if flight_assist:
+			flight_assist = flight_assist.duplicate(true)
+		
+		pitch_control_config = pitch_control_config.duplicate(true)
+		yaw_control_config = yaw_control_config.duplicate(true)
+		roll_control_config = roll_control_config.duplicate(true)
+		throttle_control_config = throttle_control_config.duplicate(true)
+		brake_control_config = brake_control_config.duplicate(true)
+		collective_control_config = collective_control_config.duplicate(true)
 
 func _physics_process(delta : float) -> void:
 	if Engine.is_editor_hint():
@@ -139,78 +34,22 @@ func _physics_process(delta : float) -> void:
 	
 	update_controls(delta)
 	update_flight_assist(delta)
-	
-	#update aerobody controls.
-	aero_body.control_command = control_command
-	aero_body.throttle_command = throttle_command
-	aero_body.brake_command = brake_command
 
 func update_controls(delta : float) -> void:
-	if use_bindings:
-		control_input.x = get_input(delta, control_input.x, pitch_down_event, pitch_up_event)
-		control_input.y = get_input(delta, control_input.y, yaw_right_event, yaw_left_event)
-		control_input.z = get_input(delta, control_input.z, roll_right_event, roll_left_event)
-		throttle_input = get_input(delta, throttle_input, throttle_down_event, throttle_up_event)
-		brake_input = get_input(delta, brake_input, brake_down_event, brake_up_event)
-		
-		cumulative_control_input.x = update_cumulative_control(delta, cumulative_control_input.x, cumulative_pitch_down_event, cumulative_pitch_up_event, cumulative_pitch_rate, min_control.x, max_control.x)
-		cumulative_control_input.y = update_cumulative_control(delta, cumulative_control_input.y, cumulative_yaw_right_event, cumulative_yaw_left_event, cumulative_yaw_rate, min_control.y, max_control.y)
-		cumulative_control_input.z = update_cumulative_control(delta, cumulative_control_input.z, cumulative_roll_right_event, cumulative_roll_left_event, cumulative_roll_rate, min_control.z, max_control.z)
-		cumulative_throttle_input = update_cumulative_control(delta, cumulative_throttle_input, cumulative_throttle_down_event, cumulative_throttle_up_event, cumulative_throttle_rate, min_throttle, max_throttle)
-		cumulative_brake_input = update_cumulative_control(delta, cumulative_brake_input, cumulative_brake_down_event, cumulative_brake_up_event, cumulative_brake_rate, min_brake, max_brake)
-	
-	control_input = clamp(control_input + cumulative_control_input, min_control, max_control)
-	throttle_input = clamp(throttle_input + cumulative_throttle_input, min_throttle, max_throttle)
-	brake_input = clamp(brake_input + cumulative_brake_input, min_brake, max_brake)
-	
-	control_input.x = AeroMathUtils.improved_ease(control_input.x, pitch_easing)
-	control_input.y = AeroMathUtils.improved_ease(control_input.y, yaw_easing)
-	control_input.z = AeroMathUtils.improved_ease(control_input.z, roll_easing)
-	throttle_input = AeroMathUtils.improved_ease(throttle_input, throttle_easing)
-	brake_input = AeroMathUtils.improved_ease(brake_input, brake_easing)
-	
-	control_value.x = calculate_smoothing(control_value.x, control_input.x, enable_pitch_smoothing, pitch_smoothing_rate, delta)
-	control_value.y = calculate_smoothing(control_value.y, control_input.y, enable_yaw_smoothing, yaw_smoothing_rate, delta)
-	control_value.z = calculate_smoothing(control_value.z, control_input.z, enable_roll_smoothing, roll_smoothing_rate, delta)
-	throttle_value = calculate_smoothing(throttle_value, throttle_input, enable_throttle_smoothing, throttle_smoothing_rate, delta)
-	brake_value = calculate_smoothing(brake_value, brake_input, enable_brake_smoothing, brake_smoothing_rate, delta)
-
-static func update_cumulative_control(delta : float, cumulative_value : float, negative_event : StringName, positive_event : StringName, cumulative_rate : float, min_value : float, max_value : float) -> float:
-	var input : float = get_axis(0.0, negative_event, positive_event)
-	cumulative_value += input * cumulative_rate * delta
-	return clamp(cumulative_value, min_value, max_value)
-
-static func calculate_smoothing(current_value : float, new_value : float, smoothing_enabled : bool = false, smoothing_rate : float = 1.0, delta : float = 1.0/60.0) -> float:
-	if smoothing_enabled:
-		return move_toward(current_value, new_value, smoothing_rate * delta)
-	else:
-		return new_value
-
-static func get_input(delta : float, default_value : float, negative_event : StringName, positive_event : StringName) -> float:
-	return get_axis(default_value, negative_event, positive_event)
-
-static func get_axis(default_value : float, negative_event : StringName, positive_event : StringName) -> float:
-	var input : float = default_value
-	
-	if not negative_event == "":
-		input -= Input.get_action_strength(negative_event)
-	if not positive_event == "":
-		input += Input.get_action_strength(positive_event)
-	
-	if not (negative_event == "" or positive_event == ""):
-		input -= default_value
-	
-	return input
+	aero_body.control_command.x = pitch_control_config.update(delta)
+	aero_body.control_command.y = yaw_control_config.update(delta)
+	aero_body.control_command.z = roll_control_config.update(delta)
+	aero_body.throttle_command = throttle_control_config.update(delta)
+	aero_body.brake_command = brake_control_config.update(delta)
+	aero_body.collective_command = collective_control_config.update(delta)
 
 func update_flight_assist(delta : float) -> void:
 	if not flight_assist:
-		control_command = control_value
-		throttle_command = throttle_value
 		return
 	
 	#input and pids
-	flight_assist.control_input = control_value
-	flight_assist.throttle_command = throttle_value
+	flight_assist.control_input = get_control_command()
+	flight_assist.throttle_command = throttle_control_config.command
 	flight_assist.air_speed = aero_body.air_speed
 	flight_assist.air_density = aero_body.air_density
 	flight_assist.angle_of_attack = aero_body.angle_of_attack
@@ -222,5 +61,260 @@ func update_flight_assist(delta : float) -> void:
 	flight_assist.global_transform = aero_body.global_transform
 	flight_assist.update(delta)
 	
-	control_command = flight_assist.control_command
-	throttle_command = flight_assist.throttle_command
+	aero_body.control_command = flight_assist.control_command
+	aero_body.throttle_command = flight_assist.throttle_command
+
+func set_control_input(value : Vector3) -> void:
+	pitch_control_config.input = value.x
+	yaw_control_config.input = value.y
+	roll_control_config.input = value.z
+
+func get_control_command() -> Vector3:
+	return Vector3(pitch_control_config.command, yaw_control_config.command, roll_control_config.command)
+
+@onready var updated_properties := get_property_conversion_info()
+func get_property_conversion_info() -> Dictionary:
+	#super.get_property_conversion_info().merge()
+	
+	return {
+	#input
+	"control_input" : [TYPE_VECTOR3, \
+	func(value) -> void:
+		pitch_control_config.input = value.x
+		yaw_control_config.input = value.y
+		roll_control_config.input = value.z
+	],
+
+	"throttle_input": [TYPE_FLOAT, \
+	func(value) -> void:
+		throttle_control_config.input = value
+	],
+
+	"brake_input": [TYPE_FLOAT, \
+	func(value) -> void:
+		brake_control_config.input = value
+	],
+
+	#limits
+	"min_control": [TYPE_VECTOR3],
+	"max_control": [TYPE_VECTOR3],
+	"min_throttle": [TYPE_FLOAT, \
+	func(value) -> void:
+		throttle_control_config.min_limit = value
+	],
+	"max_throttle": [TYPE_FLOAT, \
+	func(value) -> void:
+		throttle_control_config.max_limit = value
+	],
+	"min_brake": [TYPE_FLOAT, \
+	func(value) -> void:
+		brake_control_config.min_limit = value
+	],
+	"max_brake": [TYPE_FLOAT, \
+	func(value) -> void:
+		brake_control_config.max_limit = value
+	],
+
+	#bindings
+	"use_bindings": [TYPE_BOOL, \
+	func(value : bool) -> void:
+		pitch_control_config.use_bindings = value
+		yaw_control_config.use_bindings = value
+		roll_control_config.use_bindings = value
+		throttle_control_config.use_bindings = value
+		brake_control_config.use_bindings = value
+		collective_control_config.use_bindings = value
+	],
+
+	#pitch control
+	"pitch_up_event": [TYPE_STRING_NAME, \
+	func(value) -> void:
+		pitch_control_config.positive_event = value
+	],
+	"pitch_down_event": [TYPE_STRING_NAME, \
+	func(value) -> void:
+		pitch_control_config.negative_event = value
+	],
+	"enable_pitch_smoothing": [TYPE_BOOL, \
+	func(value) -> void:
+		pitch_control_config.enable_smoothing = value
+	],
+	"pitch_smoothing_rate": [TYPE_FLOAT, \
+	func(value) -> void:
+		pitch_control_config.smoothing_rate = value
+	],
+	"cumulative_pitch_up_event": [TYPE_STRING_NAME, \
+	func(value) -> void:
+		pitch_control_config.cumulative_positive_event = value
+	],
+	"cumulative_pitch_down_event": [TYPE_STRING_NAME, \
+	func(value) -> void:
+		pitch_control_config.cumulative_negative_event = value
+	],
+	"cumulative_pitch_rate": [TYPE_FLOAT, \
+	func(value) -> void:
+		pitch_control_config.cumulative_rate = value
+	],
+	"pitch_easing": [TYPE_FLOAT, \
+	func(value) -> void:
+		pitch_control_config.easing = value
+	],
+
+	#yaw control
+	"yaw_left_event": [TYPE_STRING_NAME, \
+	func(value) -> void:
+		yaw_control_config.positive_event = value
+	],
+	"yaw_right_event": [TYPE_STRING_NAME, \
+	func(value) -> void:
+		yaw_control_config.negative_event = value
+	],
+	"enable_yaw_smoothing": [TYPE_BOOL, \
+	func(value) -> void:
+		yaw_control_config.enable_smoothing = value
+	],
+	"yaw_smoothing_rate": [TYPE_FLOAT, \
+	func(value) -> void:
+		yaw_control_config.smoothing_rate = value
+	],
+	"cumulative_yaw_left_event": [TYPE_STRING_NAME, \
+	func(value) -> void:
+		yaw_control_config.cumulative_positive_event = value
+	],
+	"cumulative_yaw_right_event": [TYPE_STRING_NAME, \
+	func(value) -> void:
+		yaw_control_config.cumulative_negative_event = value
+	],
+	"cumulative_yaw_rate": [TYPE_FLOAT, \
+	func(value) -> void:
+		yaw_control_config.cumulative_rate = value
+	],
+	"yaw_easing": [TYPE_FLOAT, \
+	func(value) -> void:
+		yaw_control_config.easing = value
+	],
+
+	#roll control
+	"roll_left_event": [TYPE_STRING_NAME, \
+	func(value) -> void:
+		roll_control_config.positive_event = value
+	],
+	"roll_right_event": [TYPE_STRING_NAME, \
+	func(value) -> void:
+		roll_control_config.negative_event = value
+	],
+	"enable_roll_smoothing": [TYPE_BOOL, \
+	func(value) -> void:
+		roll_control_config.enable_smoothing = value
+	],
+	"roll_smoothing_rate": [TYPE_FLOAT, \
+	func(value) -> void:
+		roll_control_config.smoothing_rate = value
+	],
+	"cumulative_roll_left_event": [TYPE_STRING_NAME, \
+	func(value) -> void:
+		roll_control_config.cumulative_positive_event = value
+	],
+	"cumulative_roll_right_event": [TYPE_STRING_NAME, \
+	func(value) -> void:
+		roll_control_config.cumulative_negative_event = value
+	],
+	"cumulative_roll_rate": [TYPE_FLOAT, \
+	func(value) -> void:
+		roll_control_config.cumulative_rate = value
+	],
+	"roll_easing": [TYPE_FLOAT, \
+	func(value) -> void:
+		roll_control_config.easing = value
+	],
+
+	#throttle control
+	"throttle_up_event": [TYPE_STRING_NAME, \
+	func(value) -> void:
+		throttle_control_config.positive_event = value
+	],
+	"throttle_down_event": [TYPE_STRING_NAME, \
+	func(value) -> void:
+		throttle_control_config.negative_event = value
+	],
+	"enable_throttle_smoothing": [TYPE_BOOL, \
+	func(value) -> void:
+		throttle_control_config.enable_smoothing = value
+	],
+	"throttle_smoothing_rate": [TYPE_FLOAT, \
+	func(value) -> void:
+		throttle_control_config.smoothing_rate = value
+	],
+	"cumulative_throttle_up_event": [TYPE_STRING_NAME, \
+	func(value) -> void:
+		throttle_control_config.cumulative_positive_event = value
+	],
+	"cumulative_throttle_down_event": [TYPE_STRING_NAME, \
+	func(value) -> void:
+		throttle_control_config.cumulative_negative_event = value
+	],
+	"cumulative_throttle_rate": [TYPE_FLOAT, \
+	func(value) -> void:
+		throttle_control_config.cumulative_rate = value
+	],
+	"throttle_easing": [TYPE_FLOAT, \
+	func(value) -> void:
+		throttle_control_config.easing = value
+	],
+
+	#brake control
+	"brake_up_event": [TYPE_STRING_NAME, \
+	func(value) -> void:
+		brake_control_config.positive_event = value
+	],
+	"brake_down_event": [TYPE_STRING_NAME, \
+	func(value) -> void:
+		brake_control_config.negative_event = value
+	],
+	"enable_brake_smoothing": [TYPE_BOOL, \
+	func(value) -> void:
+		brake_control_config.enable_smoothing = value
+	],
+	"brake_smoothing_rate": [TYPE_FLOAT, \
+	func(value) -> void:
+		brake_control_config.smoothing_rate = value
+	],
+	"cumulative_brake_up_event": [TYPE_STRING_NAME, \
+	func(value) -> void:
+		brake_control_config.cumulative_positive_event = value
+	],
+	"cumulative_brake_down_event": [TYPE_STRING_NAME, \
+	func(value) -> void:
+		brake_control_config.cumulative_negative_event = value
+	],
+	"cumulative_brake_rate": [TYPE_FLOAT, \
+	func(value) -> void:
+		brake_control_config.cumulative_rate = value
+	],
+	"brake_easing": [TYPE_FLOAT, \
+	func(value) -> void:
+		brake_control_config.easing = value
+	],
+	}
+
+func _get_property_list() -> Array[Dictionary]:
+	var array : Array[Dictionary] = []
+	
+	for property in updated_properties.keys():
+		var property_info : Array = updated_properties[property]
+		array.append({
+			"name" : property,
+			"type" : property_info[0],
+			"usage" : 0,
+		})
+	
+	return array
+
+func _set(property: StringName, value: Variant) -> bool:
+	if property in updated_properties.keys():
+		var property_info : Array = updated_properties[property]
+		if property_info.size() >= 2:
+			property_info[1].call(value)
+		
+		return true
+	return false

@@ -35,12 +35,23 @@ class_name AeroPropeller3D
 		update_propeller_amount()
 var propeller_instances : Array[AeroInfluencer3D] = []
 
+@export_group("Speed Control")
+@export var propeller_speed_control_config := create_speed_control_config()
+func create_speed_control_config() -> AeroInfluencerControlConfig:
+	var config := AeroInfluencerControlConfig.new()
+	config.max_value.y = 100.0
+	config.throttle_config = AeroInfluencerControlAxisConfig.new(Vector3.ONE)
+	return config
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	super._ready()
 	update_configuration_warnings()
-	if Engine.is_editor_hint():
-		return
-	update_propeller_amount()
+	if not Engine.is_editor_hint():
+		update_propeller_amount()
+		
+		if propeller_speed_control_config:
+			propeller_speed_control_config = propeller_speed_control_config.duplicate(true)
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var arr : PackedStringArray = super._get_configuration_warnings()
@@ -61,6 +72,10 @@ func update_propeller_amount() -> void:
 		push_warning("No propeller defined. Aborting...")
 	
 	var change_in_amount : int = propeller_amount - propeller_instances.size()
+	
+	if not is_instance_valid(propeller_blade):
+		push_warning("Propeller blade not assigned.")
+		return
 	
 	#return early
 	if change_in_amount == 0:
@@ -91,3 +106,12 @@ func update_propeller_transforms() -> void:
 		new_blade.transform = new_blade.default_transform
 		new_blade.default_transform.origin = base_transform.origin.rotated(Vector3(0, 1, 0), deg_to_rad(360.0 / propeller_amount) * prop_index)
 		new_blade.position = new_blade.default_transform.origin
+
+func _update_control_transform(substep_delta : float) -> void:
+	super._update_control_transform(substep_delta)
+	
+	var propeller_velocity_value := Vector3.ZERO
+	if propeller_speed_control_config:
+		propeller_velocity_value = apply_control_commands_to_config(substep_delta, propeller_speed_control_config)
+	
+	angular_motor = propeller_speed_control_config.update(substep_delta)

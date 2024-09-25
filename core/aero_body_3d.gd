@@ -12,13 +12,15 @@ const AeroNodeUtils = preload("../utils/node_utils.gd")
 		PREDICTION_TIMESTEP_FRACTION = 1.0 / float(SUBSTEPS)
 
 @export_group("Control")
-##Value used by AeroInfluencers to control the AeroBody3D. Represents rotational axes. 
-##X = Pitch, Y = Yaw, Z = Roll.
+## Value used by AeroInfluencers to control the AeroBody3D. Represents rotational axes. 
+## X = Pitch, Y = Yaw, Z = Roll.
 @export var control_command : Vector3 = Vector3.ZERO
-##Value used by AeroInfluencers to control the AeroBody3D.
+## Value used by AeroInfluencers to control the AeroBody3D.
 @export var throttle_command : float = 0.0
-##Value used by AeroInfluencers to control the AeroBody3D.
+## Value used by AeroInfluencers to control the AeroBody3D.
 @export var brake_command : float = 0.0
+## Value used by AeroInfluencers to control the AeroBody3D.
+@export var collective_command : float = 0.0
 
 @export_group("Debug")
 
@@ -293,7 +295,7 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 					continue
 				influencer._update_transform_substep(substep_delta)
 		
-		linear_velocity_prediction = predict_linear_velocity(last_force_and_torque[0] + state.total_gravity * mass)
+		linear_velocity_prediction = predict_linear_velocity(last_force_and_torque[0]) + state.total_gravity * PREDICTION_TIMESTEP_FRACTION
 		angular_velocity_prediction = predict_angular_velocity(last_force_and_torque[1])
 		last_force_and_torque = calculate_aerodynamic_forces(linear_velocity_prediction, angular_velocity_prediction, air_density, substep_delta)
 		
@@ -324,16 +326,16 @@ func calculate_aerodynamic_forces(_velocity : Vector3, _angular_velocity : Vecto
 	return PackedVector3Array([force, torque])
 
 func predict_linear_velocity(force : Vector3) -> Vector3:
-	return linear_velocity + get_physics_process_delta_time() * (PREDICTION_TIMESTEP_FRACTION * force / mass)
+	return linear_velocity + (force / mass * get_physics_process_delta_time() * PREDICTION_TIMESTEP_FRACTION)
 
 func predict_angular_velocity(torque : Vector3) -> Vector3:
 	var torque_in_diagonal_space : Vector3 = get_inverse_inertia_tensor() * torque
-
+	
 	var angular_velocity_change_in_diagonal_space : Vector3
 	angular_velocity_change_in_diagonal_space.x = torque_in_diagonal_space.x / get_inverse_inertia_tensor().x.length()
 	angular_velocity_change_in_diagonal_space.y = torque_in_diagonal_space.y / get_inverse_inertia_tensor().y.length()
 	angular_velocity_change_in_diagonal_space.z = torque_in_diagonal_space.z / get_inverse_inertia_tensor().z.length()
-
+	
 	return angular_velocity + get_physics_process_delta_time() * PREDICTION_TIMESTEP_FRACTION * (get_inverse_inertia_tensor() * angular_velocity_change_in_diagonal_space)
 
 func get_amount_of_active_influencers() -> int:

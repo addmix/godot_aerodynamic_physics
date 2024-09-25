@@ -4,9 +4,9 @@ class_name AeroMover3D
 
 const AeroTransformUtils = preload("../../../utils/transform_utils.gd")
 
-##Rate (in meters per second) the AeroMover3D will move.
+## Rate (in meters per second) the AeroMover3D will move.
 @export var linear_motor : Vector3 = Vector3.ZERO
-##Rate (in radians per second) the AeroMover3D will rotate.
+## Rate (in radians per second) the AeroMover3D will rotate.
 @export var angular_motor : Vector3 = Vector3.ZERO
 
 var _linear_velocity : Vector3 = Vector3.ZERO
@@ -20,7 +20,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	
 	var influencers_have_automatic_control_enabled : bool = false
 	for influencer : AeroInfluencer3D in aero_influencers:
-		influencers_have_automatic_control_enabled = influencers_have_automatic_control_enabled or influencer.enable_automatic_control
+		influencers_have_automatic_control_enabled = influencers_have_automatic_control_enabled or is_instance_valid(influencer.actuation_config)
 	
 	if influencers_have_automatic_control_enabled:
 		warnings.append("1 or more child AeroInfluencer3D nodes have `enable_automatic_control` enabled. AeroMover3D may not be able to move them as needed.")
@@ -53,4 +53,3 @@ func get_linear_velocity() -> Vector3:
 
 func get_angular_velocity() -> Vector3:
 	return super.get_angular_velocity() + (_angular_velocity * global_basis.inverse())
-

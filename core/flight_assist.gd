@@ -119,7 +119,7 @@ var angular_rate_error := Vector3.ZERO
 @export_category("")
 
 func update(delta : float) -> void:
-	control_command = Vector3.ZERO
+	control_command = control_input
 	
 	speed_hold(delta)
 	bank_angle_assist(delta)
@@ -198,8 +198,8 @@ func target_direction(delta : float) -> void:
 #this should be standardized.
 func flight_assist(delta : float) -> void:
 	#prevent crashing the aero_PID when airspeed is 0
-	if is_equal_approx(air_speed, 0.0):
-		return
+	#if is_equal_approx(air_speed, 0.0):
+		#return
 
 	if air_speed < 5.0:
 		pitch_assist_pid._integral_error = 0.0
@@ -228,11 +228,11 @@ func flight_assist(delta : float) -> void:
 	#flight assist
 	#these should be adjusted when the reference frame changes.
 	if enable_flight_assist_x:
-		control_command.x += pitch_assist_pid.update(delta, angular_rate_error.x)
+		control_command.x = pitch_assist_pid.update(delta, angular_rate_error.x)
 	if enable_flight_assist_y:
-		control_command.y += yaw_assist_pid.update(delta, angular_rate_error.y)
+		control_command.y = yaw_assist_pid.update(delta, angular_rate_error.y)
 	if enable_flight_assist_z:
-		control_command.z += roll_assist_pid.update(delta, angular_rate_error.z)
+		control_command.z = roll_assist_pid.update(delta, angular_rate_error.z)
 	
 	if enable_aoa_limiter:
 		control_command *= clamp(remap(angle_of_attack, deg_to_rad(aoa_limit_start), deg_to_rad(aoa_limit_end), 1, 0), 0, 1)

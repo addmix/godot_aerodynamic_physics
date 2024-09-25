@@ -7,6 +7,19 @@ class_name AeroCyclicPropeller3D
 ##Maximum rotation angle (degrees) of cyclic control.
 @export var cyclic_pitch : float = 15.0
 
+@export var cyclic_control_config :=  create_cyclic_control_config()
+func create_cyclic_control_config() -> AeroInfluencerControlConfig:
+	var config := AeroInfluencerControlConfig.new()
+	config.max_value = Vector3(1.0, 1.0, 0.0)
+	config.roll_config = AeroInfluencerControlAxisConfig.new(Vector3(1.0, 0.0, 0.0))
+	config.pitch_config = AeroInfluencerControlAxisConfig.new(Vector3(0.0, 1.0, 0.0))
+	return config
+
+func _ready() -> void:
+	super._ready()
+	if not Engine.is_editor_hint():
+		cyclic_control_config = cyclic_control_config.duplicate(true)
+
 func _update_transform_substep(substep_delta : float) -> void:
 	super._update_transform_substep(substep_delta)
 	
@@ -18,3 +31,13 @@ func _update_transform_substep(substep_delta : float) -> void:
 		cyclic_effect *= deg_to_rad(cyclic_pitch)
 		
 		influencer.default_transform.basis = Basis.from_euler(Vector3(deg_to_rad(propeller_pitch) + cyclic_effect, influencer.default_transform.basis.get_euler().y, influencer.default_transform.basis.get_euler().z)) 
+
+func _update_control_transform(substep_delta : float) -> void:
+	super._update_control_transform(substep_delta)
+	
+	var cyclic_value := Vector3.ZERO
+	if cyclic_control_config:
+		cyclic_value = apply_control_commands_to_config(substep_delta, cyclic_control_config)
+	
+	cyclic_control_config.update(substep_delta)
+	cyclic = Vector2(cyclic_control_config.current_value.x, cyclic_control_config.current_value.y)

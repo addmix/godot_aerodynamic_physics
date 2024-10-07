@@ -21,8 +21,8 @@ const gizmo_plugin = preload("./core/spatial_gizmo/aero_surface_gizmo.gd")
 var gizmo_plugin_instance = gizmo_plugin.new()
 
 #nodes
-const aero_body_3d = preload("./core/aero_body_3d.gd")
-const aero_influencer_3d = preload("./core/aero_influencer_3d/aero_influencer_3d.gd")
+#const aero_body_3d = preload("./core/aero_body_3d.gd")
+#const aero_influencer_3d = preload("./core/aero_influencer_3d/aero_influencer_3d.gd")
 const aero_drag_influencer_3d = preload("./core/aero_influencer_3d/drag_influencer/aero_drag_influencer.gd")
 const aero_mover_3d = preload("./core/aero_influencer_3d/aero_mover_3d/aero_mover_3d.gd")
 const aero_propeller_3d = preload("./core/aero_influencer_3d/aero_mover_3d/aero_propeller_3d.gd")
@@ -40,8 +40,8 @@ func _enter_tree():
 	add_autoload_singleton("AeroUnits", path + "/core/singletons/aero_units.gd")
 	add_node_3d_gizmo_plugin(gizmo_plugin_instance)
 	
-	add_custom_type("AeroBody3D", "VehicleBody3D", aero_body_3d, aerobody3d_icon)
-	add_custom_type("AeroInfluencer3D", "Node3D", aero_influencer_3d, aeroinfluencer3d_icon)
+	#add_custom_type("AeroBody3D", "VehicleBody3D", aero_body_3d, aerobody3d_icon)
+	#add_custom_type("AeroInfluencer3D", "Node3D", aero_influencer_3d, aeroinfluencer3d_icon)
 	add_custom_type("AeroDragInfluencer3D", "Node3D", aero_drag_influencer_3d, aeroinfluencer3d_icon)
 	add_custom_type("AeroMover3D", "Node3D", aero_mover_3d, aeroinfluencer3d_icon)
 	add_custom_type("AeroPropeller3D", "Node3D", aero_propeller_3d, aeropropeller3d_icon)
@@ -55,8 +55,8 @@ func _enter_tree():
 	add_custom_type("FlightAssist", "Resource", flight_assist, object_icon)
 
 func _exit_tree():
-	remove_custom_type("AeroBody3D")
-	remove_custom_type("AeroInfluencer3D")
+	#remove_custom_type("AeroBody3D")
+	#remove_custom_type("AeroInfluencer3D")
 	remove_custom_type("AeroMover3D")
 	remove_custom_type("AeroPropeller3D")
 	remove_custom_type("AeroCyclicPropeller3D")

@@ -1,6 +1,6 @@
 @tool
 extends VehicleBody3D
-class_name AeroBody3D
+#class_name AeroBody3D
 ## AeroBody3D is the base node for simulating aerodynamic forces.[br]
 ##
 ## Aerodynamic forces are calculated from child [AeroInfluencer3D] nodes.[br]

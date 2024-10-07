@@ -35,7 +35,7 @@ var lift_debug_vector : AeroDebugVector3D
 var drag_debug_vector : AeroDebugVector3D
 
 func _init():
-	super._init()
+	#super._init()
 	#initialize debug vectors
 	lift_debug_vector = AeroDebugVector3D.new(Color(0, 0, 1))
 	lift_debug_vector.visible = false
@@ -48,7 +48,7 @@ func _init():
 	add_child(drag_debug_vector, INTERNAL_MODE_FRONT)
 
 func _enter_tree() -> void:
-	super._enter_tree()
+	#super._enter_tree()
 	#initialize signal connections from resources
 	if wing_config:
 		if not wing_config.is_connected("changed", update_gizmos):

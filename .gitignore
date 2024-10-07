@@ -12,3 +12,5 @@ export_presets.cfg
 data_*/
 mono_crash.*.json
 
+# godot-cpp ignores
+godot-cpp-components/bin

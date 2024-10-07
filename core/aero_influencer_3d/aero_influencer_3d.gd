@@ -1,6 +1,6 @@
 @tool
 extends Node3D
-class_name AeroInfluencer3D
+#class_name AeroInfluencer3D
 
 const AeroMathUtils = preload("../../utils/math_utils.gd")
 const AeroNodeUtils = preload("../../utils/node_utils.gd")

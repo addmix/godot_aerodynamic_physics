@@ -1,6 +1,6 @@
 @tool
 extends VehicleBody3D
-class_name AeroBody3D
+#class_name AeroBody3D
 
 const AeroMathUtils = preload("../utils/math_utils.gd")
 const AeroNodeUtils = preload("../utils/node_utils.gd")
@@ -199,10 +199,6 @@ func on_child_exit_tree(node : Node) -> void:
 	if node is AeroInfluencer3D and aero_influencers.has(node):
 		aero_influencers.erase(node)
 		node.aero_body = null
-
-func _ready() -> void:
-	if Engine.is_editor_hint():
-		update_configuration_warnings()
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray([])

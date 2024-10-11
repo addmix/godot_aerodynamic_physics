@@ -329,14 +329,7 @@ func predict_linear_velocity(force : Vector3) -> Vector3:
 	return linear_velocity + (force / mass * get_physics_process_delta_time() * PREDICTION_TIMESTEP_FRACTION)
 
 func predict_angular_velocity(torque : Vector3) -> Vector3:
-	var torque_in_diagonal_space : Vector3 = get_inverse_inertia_tensor() * torque
-	
-	var angular_velocity_change_in_diagonal_space : Vector3
-	angular_velocity_change_in_diagonal_space.x = torque_in_diagonal_space.x / get_inverse_inertia_tensor().x.length()
-	angular_velocity_change_in_diagonal_space.y = torque_in_diagonal_space.y / get_inverse_inertia_tensor().y.length()
-	angular_velocity_change_in_diagonal_space.z = torque_in_diagonal_space.z / get_inverse_inertia_tensor().z.length()
-	
-	return angular_velocity + get_physics_process_delta_time() * PREDICTION_TIMESTEP_FRACTION * (get_inverse_inertia_tensor() * angular_velocity_change_in_diagonal_space)
+	return angular_velocity + get_physics_process_delta_time() * PREDICTION_TIMESTEP_FRACTION * (get_inverse_inertia_tensor() * torque)
 
 func get_amount_of_active_influencers() -> int:
 	var count : int = 0

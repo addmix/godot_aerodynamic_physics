@@ -25,8 +25,12 @@ func _physics_process(delta : float) -> void:
 	
 	var force_magnitude : float = get_thrust_magnitude() * delta
 	
+	var force := -global_transform.basis.z * force_magnitude
+	var relative_position := global_position - rigid_body.global_position
 	if rigid_body:
-		rigid_body.apply_force(-global_transform.basis.z * force_magnitude, rigid_body.global_transform.basis * position)
+		#rigid_body.apply_force(-global_transform.basis.z * force_magnitude, rigid_body.global_transform.basis * position)
+		rigid_body.apply_central_force(-global_transform.basis.z * force_magnitude)
+		rigid_body.apply_torque(relative_position.cross(force))
 
 func get_thrust_magnitude() -> float:
 	return max_thrust_force * throttle

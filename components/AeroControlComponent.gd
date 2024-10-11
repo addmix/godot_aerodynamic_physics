@@ -7,7 +7,7 @@ const AeroMathUtils = preload("../utils/math_utils.gd")
 @onready var aero_body : AeroBody3D = get_parent()
 @export var flight_assist : FlightAssist
 
-@export var pitch_control_config := AeroControlConfig.new(-1.0, 1.0, "ui_up", "ui_down")
+@export var pitch_control_config := AeroControlConfig.new(-1.0, 1.0, "ui_down", "ui_up")
 @export var yaw_control_config := AeroControlConfig.new()
 @export var roll_control_config := AeroControlConfig.new(-1.0, 1.0, "ui_left", "ui_right")
 @export var throttle_control_config := AeroControlConfig.new(0.0, 1.0)

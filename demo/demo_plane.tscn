@@ -193,15 +193,15 @@ easing = 1.0
 [sub_resource type="Resource" id="Resource_x0pkh"]
 script = ExtResource("5_x51t6")
 use_bindings = true
-input = 1.0
+input = 0.0
 min_limit = 0.0
 max_limit = 1.0
 positive_event = &""
 negative_event = &""
 enable_smoothing = false
 smoothing_rate = 1.0
-cumulative_positive_event = &""
-cumulative_negative_event = &""
+cumulative_positive_event = &"ui_page_up"
+cumulative_negative_event = &"ui_page_down"
 cumulative_rate = 1.0
 easing = 1.0
 
@@ -447,4 +447,5 @@ script = ExtResource("8_e4glj")
 
 [node name="Label3D" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 3.133, 6.07)
-text = "Use arrow keys for pitch and roll."
+text = "Use arrow keys for pitch and roll.
+Use page up/page down for throttle control."

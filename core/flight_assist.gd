@@ -6,9 +6,11 @@ var air_speed : float = 0.0
 var air_density : float = 1.0
 
 var angle_of_attack : float = 0.0
-var altitude : float = 0.0
-var heading : float = 0.0
 var bank_angle : float = 0.0
+var heading : float = 0.0
+var inclination : float = 0.0
+
+var altitude : float = 0.0
 
 var linear_velocity : Vector3 = Vector3.ZERO
 var local_angular_velocity : Vector3 = Vector3.ZERO
@@ -22,7 +24,7 @@ var throttle_command : float = 0.0
 var angular_rate_error := Vector3.ZERO
 
 @export_group("Flight Assist")
-@export_subgroup("Axes")
+@export_subgroup("Angular rate tracking")
 ##If enabled, flight assist is enabled on the pitch (X) axis.
 @export var enable_flight_assist_x : bool = true
 ##PID controller used to evaluate appropriate control response.
@@ -62,7 +64,7 @@ var angular_rate_error := Vector3.ZERO
 @export var min_accounted_air_density : float = 0.1
 
 @export_group("Autopilot")
-@export_subgroup("Bank Angle")
+@export_subgroup("Bank Angle Target")
 ##If enabled, the flight assist resource will take control of the bank angle (roll), and attempt to drive it towards bank_angle_target.
 @export var enable_bank_angle_assist : bool = false
 ##Target bank angle that bank_angle_pid will attempt to maintain.
@@ -70,29 +72,7 @@ var angular_rate_error := Vector3.ZERO
 ##PID controller used to evaluate appropriate control response.
 @export var bank_angle_pid : aero_PID = aero_PID.new(1, 0.05, 0.1)
 
-@export_subgroup("Speed Hold")
-##If enabled, the flight assist resource will control throttle, and attempt to maintain airspeed at speed_target.
-@export var enable_speed_hold : bool = false:
-	set(x):
-		enable_speed_hold = x
-		speed_target = air_speed
-##Target speed that speed_pid will attempt to maintain.
-@export var speed_target : float = 0.0
-##PID controller used to evaluate appropriate control response.
-@export var speed_pid : aero_PID = aero_PID.new(0, 0.4, 0)
-
-@export_subgroup("Altitude Hold")
-##If enabled, the flight assist resource will attempt to maintain altitude at altitude_target.
-@export var enable_altitude_hold : bool = false:
-	set(x):
-		enable_altitude_hold = x
-		altitude_target = altitude
-##Target altitude that altitude_pid will attempt to maintain.
-@export var altitude_target : float = 0.0
-##PID controller used to evaluate appropriate control response.
-@export var altitude_pid : aero_PID = aero_PID.new(0.001, 0, 0.01)
-
-@export_subgroup("Heading Hold")
+@export_subgroup("Heading Target")
 ##If enabled, the flight assist resource will attempt to maintain heading at heading_target.
 @export var enable_heading_hold : bool = false:
 	set(x):
@@ -103,11 +83,44 @@ var angular_rate_error := Vector3.ZERO
 ##PID controller used to evaluate appropriate control response.
 @export var heading_pid : aero_PID = aero_PID.new(10, 0, 0)
 
+@export_subgroup("Inclination Target")
+##If enabled, the flight assist resource will attempt to maintain heading at heading_target.
+@export var enable_inclination_hold : bool = false:
+	set(x):
+		enable_inclination_hold = x
+		inclination_target = inclination
+##Target heading that heading_pid will attempt to maintain.
+@export var inclination_target : float = 0.0
+##PID controller used to evaluate appropriate control response.
+@export var inclination_pid : aero_PID = aero_PID.new(10, 0, 0)
+
+@export_subgroup("Speed Target")
+##If enabled, the flight assist resource will control throttle, and attempt to maintain airspeed at speed_target.
+@export var enable_speed_hold : bool = false:
+	set(x):
+		enable_speed_hold = x
+		speed_target = air_speed
+##Target speed that speed_pid will attempt to maintain.
+@export var speed_target : float = 0.0
+##PID controller used to evaluate appropriate control response.
+@export var speed_pid : aero_PID = aero_PID.new(0, 0.4, 0)
+
+@export_subgroup("Altitude Target")
+##If enabled, the flight assist resource will attempt to maintain altitude at altitude_target.
+@export var enable_altitude_hold : bool = false:
+	set(x):
+		enable_altitude_hold = x
+		altitude_target = altitude
+##Target altitude that altitude_pid will attempt to maintain.
+@export var altitude_target : float = 0.0
+##PID controller used to evaluate appropriate control response.
+@export var altitude_pid : aero_PID = aero_PID.new(0.001, 0, 0.01)
+
 @export_subgroup("Target Direction")
 ##If enabled, the flight assist resource will attempt to maintain linear_velocity pointing in the direction of direction_target.
 @export var enable_target_direction : bool = false
 ##Target direction that direction PIDs will attempt to maintain.
-@export var direction_target : Vector3 = Vector3.ZERO##PID controller used to evaluate appropriate control response.
+@export var direction_target : Vector3 = Vector3.ZERO
 ##PID controller used to evaluate appropriate control response.
 @export var direction_pitch_pid : aero_PID = aero_PID.new(10, 0.3, 4)
 ##PID controller used to evaluate appropriate control response.
@@ -121,18 +134,33 @@ var angular_rate_error := Vector3.ZERO
 func update(delta : float) -> void:
 	control_command = control_input
 	
-	speed_hold(delta)
-	bank_angle_assist(delta)
-	altitude_hold(delta)
+	bank_angle_hold(delta)
 	heading_hold(delta)
+	inclination_hold(delta)
+	altitude_hold(delta)
+	speed_hold(delta)
 	target_direction(delta)
 	flight_assist(delta)
 
-func bank_angle_assist(delta : float) -> void:
+func bank_angle_hold(delta : float) -> void:
 	if not enable_bank_angle_assist and not enable_altitude_hold and not enable_heading_hold:
 		return
 	bank_angle_pid.update(delta, bank_angle_target - bank_angle)
 	control_input.z += bank_angle_pid.output
+
+func heading_hold(delta : float) -> void:
+	if not enable_heading_hold:
+		return
+	#shit but works. Also has -180/+180 wrapping issues
+	heading_pid.update(delta, heading_target - heading)
+	control_input.y += heading_pid.output
+
+func inclination_hold(delta : float) -> void:
+	if not enable_inclination_hold:
+		return
+	#shit but works. Also has -180/+180 wrapping issues
+	inclination_pid.update(delta, inclination_target - inclination)
+	control_input.x += inclination_pid.output
 
 func speed_hold(delta : float) -> void:
 	if not enable_speed_hold:
@@ -146,13 +174,6 @@ func altitude_hold(delta : float) -> void:
 	#shit but works
 	altitude_pid.update(delta, altitude_target - altitude)
 	control_input.x += altitude_pid.output
-
-func heading_hold(delta : float) -> void:
-	if not enable_heading_hold:
-		return
-	#shit but works. Also has -180/+180 wrapping issues
-	heading_pid.update(delta, heading_target - heading)
-	control_input.y += heading_pid.output
 
 
 func target_direction(delta : float) -> void:

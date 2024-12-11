@@ -71,7 +71,10 @@ static func calculate_smoothing(current_value : float, target : float, smoothing
 	else:
 		return target
 
-static func get_axis(negative_event : StringName, positive_event : StringName) -> float:
+func get_axis(negative_event : StringName, positive_event : StringName) -> float:
+	if not use_bindings:
+		return 0.0
+	
 	var input : float = 0.0
 	
 	if not negative_event == "":

@@ -226,6 +226,7 @@ func flight_assist(delta : float) -> void:
 		pitch_assist_pid._integral_error = 0.0
 		yaw_assist_pid._integral_error = 0.0
 		roll_assist_pid._integral_error = 0.0
+		return #prevents unnecessary input commands
 
 	var angular_rates := max_angular_rates
 	

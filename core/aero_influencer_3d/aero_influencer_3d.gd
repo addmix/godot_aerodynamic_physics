@@ -34,13 +34,7 @@ var show_debug : bool = false
 var aero_body : AeroBody3D
 var aero_influencers : Array[AeroInfluencer3D] = []
 
-var override_body_sleep : bool = false:
-	set(x):
-		override_body_sleep = x
-		
-		#not correct
-		if override_body_sleep and aero_body:
-			aero_body.sleeping = false
+@export var can_override_body_sleep : bool = true
 
 @onready var default_transform := transform
 var world_air_velocity := Vector3.ZERO
@@ -98,11 +92,12 @@ func on_child_exit_tree(node : Node) -> void:
 		aero_influencers.erase(node)
 		node.aero_body = null
 
-func _physics_process(delta: float) -> void:
-	update_debug_vectors()
-	
-	if is_overriding_body_sleep() and aero_body:
-		aero_body.sleeping = false
+
+var last_transform : Transform3D = Transform3D()
+func _physics_process(delta : float) -> void:
+	if not transform == last_transform:
+		aero_body.interrupt_sleep()
+	last_transform = transform
 
 func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	linear_velocity = get_linear_velocity()
@@ -153,9 +148,13 @@ func _update_control_transform(substep_delta : float) -> void:
 	
 	basis = default_transform.basis * Basis().from_euler(actuation_value, control_rotation_order)
 
-#virtual
+#override
 func is_overriding_body_sleep() -> bool:
+	if not can_override_body_sleep:
+		return false
+	
 	var overriding : bool = false
+	
 	for influencer : AeroInfluencer3D in aero_influencers:
 		overriding = overriding or influencer.is_overriding_body_sleep()
 	

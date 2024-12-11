@@ -123,7 +123,10 @@ var current_torque := Vector3.ZERO
 var current_gravity := Vector3.ZERO
 @onready var last_linear_velocity : Vector3 = linear_velocity
 @onready var last_angular_velocity : Vector3 = angular_velocity
-var wind := Vector3.ZERO
+var wind := Vector3.ZERO:
+	set(x):
+		if not wind == x: interrupt_sleep()
+		wind = x
 var air_velocity := Vector3.ZERO
 var local_air_velocity := Vector3.ZERO
 var local_angular_velocity := Vector3.ZERO
@@ -176,7 +179,7 @@ func _init():
 	
 	linear_damp_mode = RigidBody3D.DAMP_MODE_REPLACE
 	angular_damp_mode = RigidBody3D.DAMP_MODE_REPLACE
-
+	
 	center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
 
 func _enter_tree() -> void:
@@ -224,7 +227,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	else:
 		if angular_damp > 0.0:
 			warnings.append("Angular damping is greater than 0. Unexpected aerodynamic characteristics will be present.")
-
+	
 	return warnings
 
 func _physics_process(delta : float) -> void:
@@ -233,6 +236,9 @@ func _physics_process(delta : float) -> void:
 
 var _integrate_forces_time : float = 0.0
 func _integrate_forces(state : PhysicsDirectBodyState3D) -> void:
+	if is_overriding_body_sleep():
+		interrupt_sleep()
+	
 	if state.sleeping or SUBSTEPS == 0:
 		return
 	
@@ -255,7 +261,7 @@ var substep_delta : float = get_physics_process_delta_time() / SUBSTEPS
 
 func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	#eventually implement wind
-	wind = Vector3.ZERO
+	#wind = Vector3.ZERO
 	air_velocity = -linear_velocity + wind
 	air_speed = air_velocity.length()
 	
@@ -354,13 +360,26 @@ func get_linear_acceleration() -> Vector3:
 func get_angular_acceleration() -> Vector3:
 	return (angular_velocity_prediction - last_angular_velocity) / substep_delta
 
+func is_overriding_body_sleep() -> bool:
+	var overriding : bool = false
+	for influencer : AeroInfluencer3D in aero_influencers:
+		overriding = overriding or influencer.is_overriding_body_sleep()
+	
+	return overriding
+
+func interrupt_sleep() -> void:
+	print(name, " interrupted sleep")
+	sleeping = false
 
 #debug
 
 
 func _update_debug() -> void:
+	for influencer : AeroInfluencer3D in aero_influencers:
+		influencer.update_debug_vectors()
+	
 	aero_surfaces = []
-	for i in get_children():
+	for i : AeroInfluencer3D in aero_influencers:
 		if i is AeroSurface3D:
 			aero_surfaces.append(i)
 	
@@ -441,6 +460,8 @@ func _update_debug() -> void:
 				drag_sum = 1.0
 			drag_debug_vector.position = drag_position_sum / amount_of_aero_surfaces / (drag_sum / amount_of_aero_surfaces)
 	
+	for influencer : AeroInfluencer3D in aero_influencers:
+		influencer.update_debug_vectors()
 
 func _update_debug_visibility() -> void:
 	#update aerosurface visibility

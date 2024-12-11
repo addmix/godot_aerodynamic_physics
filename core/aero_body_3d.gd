@@ -368,7 +368,6 @@ func is_overriding_body_sleep() -> bool:
 	return overriding
 
 func interrupt_sleep() -> void:
-	print(name, " interrupted sleep")
 	sleeping = false
 
 #debug

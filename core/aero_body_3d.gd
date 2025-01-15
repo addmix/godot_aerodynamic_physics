@@ -154,26 +154,32 @@ var thrust_debug_vector : AeroDebugVector3D
 
 func _init():
 	mass_debug_point = AeroDebugPoint3D.new(Color(1, 1, 0), debug_center_width, true)
+	mass_debug_point.name = "MassDebugPoint"
 	mass_debug_point.visible = false
 	mass_debug_point.sorting_offset = 0.0
 	
 	lift_debug_vector = AeroDebugVector3D.new(Color(0, 1, 1), debug_center_width, true)
+	lift_debug_vector.name = "LiftDebugVector"
 	lift_debug_vector.visible = false
 	lift_debug_vector.sorting_offset = 0.0
 	
 	drag_debug_vector = AeroDebugVector3D.new(Color(1, 0, 0), debug_width, true)
+	drag_debug_vector.name = "DragDebugVector"
 	drag_debug_vector.visible = false
 	drag_debug_vector.sorting_offset = -0.01
 	
 	thrust_debug_vector = AeroDebugVector3D.new(Color(1, 0, 1), debug_width, true)
+	thrust_debug_vector.name = "ThrustDebugVector"
 	thrust_debug_vector.visible = false
 	thrust_debug_vector.sorting_offset = -0.02
 	
 	linear_velocity_vector = AeroDebugVector3D.new(Color(0, 0.5, 0.5), debug_width, false)
+	linear_velocity_vector.name = "LinearVelocityVector"
 	linear_velocity_vector.visible = false
 	linear_velocity_vector.sorting_offset = -0.03
 	
 	angular_velocity_vector = AeroDebugVector3D.new(Color(0, 0.333, 0), debug_width, false)
+	angular_velocity_vector.name = "AngularVelocityVector"
 	angular_velocity_vector.visible = false
 	angular_velocity_vector.sorting_offset = -0.04
 	

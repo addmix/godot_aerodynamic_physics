@@ -25,13 +25,17 @@ func calculate_mass_flow_acceleration_force() -> float:
 	if rigid_body is AeroBody3D:
 		altitude = rigid_body.altitude
 		air_velocity = -rigid_body.air_velocity
-	else:
-		altitude = AeroUnits.get_altitude(self)
 	
 	var intake_air_velocity : float = air_velocity.dot(-global_basis.z)
-	var intake_air_density : float = AeroUnits.get_density_at_altitude(altitude)
-	var intake_air_pressure : float = AeroUnits.get_pressure_at_altitude(altitude)
+	var intake_air_density : float = 1.225
+	var intake_air_pressure : float = 101325.0
 	var intake_mass_flow_rate : float = intake_air_density * intake_air_velocity * intake_area
+	
+	var aero_units : Node = get_node_or_null("/root/AeroUnits")
+	if aero_units:
+		altitude = aero_units.get_altitude(self)
+		intake_air_density = aero_units.get_density_at_altitude(altitude)
+		intake_air_pressure = aero_units.get_pressure_at_altitude(altitude)
 	
 	var fuel_burn_rate : float = max_fuel_flow * throttle
 	var exhaust_velocity : float = calculate_exhaust_velocity()

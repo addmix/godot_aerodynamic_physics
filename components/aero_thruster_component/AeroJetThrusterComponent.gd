@@ -3,17 +3,17 @@ extends AeroThrusterComponent
 class_name AeroJetThrusterComponent
 
 @export_group("Simulation Parameters")
-##Area (in meters squared) of the JetThrusterComponent's intake.
+## Area (in meters squared) of the JetThrusterComponent's intake.
 @export var intake_area : float = 0.5
-##Area (in meters squared) of the JetThrusterComponent's exhaust. (Unused)
+## Area (in meters squared) of the JetThrusterComponent's exhaust. (Unused)
 #@export var exit_area : float = 1.0
-##Maxmimum air velocity the intake fan can create in static thrust, at max throttle.
+## Maxmimum air velocity the intake fan can create in static thrust, at max throttle.
 @export var intake_fan_max_velocity : float = 300.0
-##Velocity of exhaust gasses at max throttle.
+## Velocity of exhaust gasses at max throttle.
 @export var exhaust_velocity : float = 1000
-##Maximum amount of fuel (in kilograms) the engine can burn per second.
+## Maximum amount of fuel (in kilograms) the engine can burn per second.
 @export var max_fuel_flow : float = 0.1 #flow rate in kilograms per second
-##Ratio of fuel volume before, and after combustion. (Unused)
+## Ratio of fuel volume before, and after combustion. (Unused)
 #@export var fuel_expansion_ratio : float = 10.0
 
 func get_thrust_magnitude() -> float:

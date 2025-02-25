@@ -2,7 +2,7 @@
 extends AeroSurface3D
 class_name ManualAeroSurface3D
 
-##Config resource used to define the aerodynamic profile of the ManualAeroSurface3D. This includes lift-aoa and drag-aoa evaluation curves.
+## Config resource used to define the aerodynamic profile of the ManualAeroSurface3D. This includes lift-aoa and drag-aoa evaluation curves.
 @export var manual_config := ManualAeroSurfaceConfig.new()
 
 func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:

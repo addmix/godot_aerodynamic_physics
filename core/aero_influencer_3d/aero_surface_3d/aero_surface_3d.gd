@@ -2,7 +2,7 @@
 extends AeroInfluencer3D
 class_name AeroSurface3D
 
-##Config resource used to define the size of the AeroSurface3D node.
+## Config resource used to define the size of the AeroSurface3D node.
 @export var wing_config : AeroSurfaceConfig = AeroSurfaceConfig.new():
 	set(value):
 		wing_config = value
@@ -13,9 +13,9 @@ class_name AeroSurface3D
 			update_gizmos()
 
 @export_group("Debug")
-##Controls visibility of the AeroSurface3D's lift debug vector
+## Controls visibility of the AeroSurface3D's lift debug vector
 @export var show_lift : bool = true
-##Controls visibility of the AeroSurface3D's drag debug vector
+## Controls visibility of the AeroSurface3D's drag debug vector
 @export var show_drag : bool = true
 
 var angle_of_attack : float = 0.0

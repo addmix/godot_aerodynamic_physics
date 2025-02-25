@@ -5,7 +5,7 @@ class_name AeroBody3D
 const AeroMathUtils = preload("../utils/math_utils.gd")
 const AeroNodeUtils = preload("../utils/node_utils.gd")
 
-##Overrides the amount of simulation substeps are used when calculating aerodynamic effects on this body.
+## Overrides the amount of simulation substeps are used when calculating aerodynamic effects on this body.
 @export var substeps_override : int = -1:
 	set(x):
 		substeps_override = x
@@ -25,75 +25,75 @@ const AeroNodeUtils = preload("../utils/node_utils.gd")
 @export_group("Debug")
 
 @export_subgroup("Visibility")
-##Enables visibility of debug components.
+## Enables visibility of debug components.
 @export var show_debug : bool = false:
 	set(x):
 		show_debug = x
 		_update_debug_visibility()
-##Enables update of debug components. Debug is only updated when show_debug and update_debug are true.
+## Enables update of debug components. Debug is only updated when show_debug and update_debug are true.
 @export var update_debug : bool = false
-##Enables visibility of wing debug components.
+## Enables visibility of wing debug components.
 @export var show_wing_debug_vectors : bool = true:
 	set(x):
 		show_wing_debug_vectors = x
 		_update_debug_visibility()
-##Controls visibility of total lift vector.
+## Controls visibility of total lift vector.
 @export var show_lift_vectors : bool = true:
 	set(x):
 		show_lift_vectors = x
 		_update_debug_visibility()
-##Controls visibility of total drag vector.
+## Controls visibility of total drag vector.
 @export var show_drag_vectors : bool = true:
 	set(x):
 		show_drag_vectors = x
 		_update_debug_visibility()
-##Controls visibility of linear velocity vector.
+## Controls visibility of linear velocity vector.
 @export var show_linear_velocity : bool = true:
 	set(x):
 		show_linear_velocity = x
 		_update_debug_visibility()
-##Controls visibility of angular velocity vector.
+## Controls visibility of angular velocity vector.
 @export var show_angular_velocity : bool = true:
 	set(x):
 		show_angular_velocity = x
 		_update_debug_visibility()
 
-##Controls visibility of the center of lift vector.
+## Controls visibility of the center of lift vector.
 @export var show_center_of_lift : bool = true:
 	set(x):
 		show_center_of_lift = x
 		_update_debug_visibility()
-##Controls visibility of the center of drag vector.
+## Controls visibility of the center of drag vector.
 @export var show_center_of_drag : bool = true:
 	set(x):
 		show_center_of_drag = x
 		_update_debug_visibility()
-##Controls visibility of the center of mass marker.
+## Controls visibility of the center of mass marker.
 @export var show_center_of_mass : bool = true:
 	set(x):
 		show_center_of_mass = x
 		_update_debug_visibility()
-##Controls visibility of the center of lift marker. (Unused)
+## Controls visibility of the center of lift marker. (Unused)
 @export var show_center_of_thrust : bool = true:
 	set(x):
 		show_center_of_thrust = x
 
 @export_subgroup("Options")
-##Linear velocity used for debug components calculations in the editor.
+## Linear velocity used for debug components calculations in the editor.
 @export var debug_linear_velocity := Vector3(0, -10, -100)
-##Angular velocity used for debug components calculations in the editor.
+## Angular velocity used for debug components calculations in the editor.
 @export var debug_angular_velocity := Vector3.ZERO
-##Controls the scale of debug components.
+## Controls the scale of debug components.
 @export var debug_scale : float = 0.1:
 	set(x):
 		debug_scale = x
 		_update_debug_scale()
-##Controls the width/thickness of debug vectors.
+## Controls the width/thickness of debug vectors.
 @export var debug_width : float = 0.05:
 	set(x):
 		debug_width = x
 		_update_debug_scale()
-##Controls the width/thickness of debug center markers.
+## Controls the width/thickness of debug center markers.
 @export var debug_center_width : float = 0.2:
 	set(x):
 		debug_center_width = x

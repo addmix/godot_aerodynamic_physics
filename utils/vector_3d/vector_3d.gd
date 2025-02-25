@@ -23,7 +23,7 @@ class_name AeroDebugVector3D
 		if is_equal_approx(dot_squared, length_squared):
 			up = Vector3(1, 0, 0)
 		
-		transform = transform.looking_at(value, up)
+		transform.basis = transform.basis.looking_at(value, up)
 @export var color := Color(1, 1, 1):
 	set(x):
 		color = x

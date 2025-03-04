@@ -141,7 +141,8 @@ func _update_control_transform(substep_delta : float) -> void:
 	throttle_command = get_parent().throttle_command
 	brake_command = get_parent().brake_command
 	collective_command = get_parent().collective_command
-	
+
+	# TODO: Make it easier to manually control AeroInfluencers.
 	var actuation_value := Vector3.ZERO
 	if actuation_config:
 		actuation_value = apply_control_commands_to_config(substep_delta, actuation_config)

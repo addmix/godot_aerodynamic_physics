@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="FlightAssist" load_steps=12 format=3 uid="uid://bgiequn1eb1mo"]
+[gd_resource type="Resource" script_class="FlightAssist" load_steps=14 format=3 uid="uid://bgiequn1eb1mo"]
 
 [ext_resource type="Resource" uid="uid://d8tp3u2ibcyh" path="res://addons/godot_aerodynamic_physics/core/resources/pids/altitude_pid.tres" id="1_r8yan"]
 [ext_resource type="Resource" uid="uid://dwdilr3th15ut" path="res://addons/godot_aerodynamic_physics/core/resources/pids/bank_angle_pid.tres" id="2_twr5t"]
@@ -7,10 +7,20 @@
 [ext_resource type="Resource" uid="uid://cimkndlj6fknf" path="res://addons/godot_aerodynamic_physics/core/resources/pids/direction_yaw_pid.tres" id="5_m2x50"]
 [ext_resource type="Resource" uid="uid://dhn1xf3nrt43k" path="res://addons/godot_aerodynamic_physics/core/resources/pids/heading_pid.tres" id="6_e5trs"]
 [ext_resource type="Resource" uid="uid://dsteqcbn3er33" path="res://assets/vehicles/f16/resources/pids/pitch.tres" id="7_pjewb"]
+[ext_resource type="Script" uid="uid://b4xqlunpiyivk" path="res://addons/godot_aerodynamic_physics/utils/pid.gd" id="7_tohlm"]
 [ext_resource type="Resource" uid="uid://dkjwrbs3c0wvr" path="res://addons/godot_aerodynamic_physics/core/resources/pids/roll_pid.tres" id="8_raf21"]
-[ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/flight_assist.gd" id="9_fw51e"]
+[ext_resource type="Script" uid="uid://cdp8dc63ytxx1" path="res://addons/godot_aerodynamic_physics/core/flight_assist.gd" id="9_fw51e"]
 [ext_resource type="Resource" uid="uid://ck80cone11d5w" path="res://addons/godot_aerodynamic_physics/core/resources/pids/speed_pid.tres" id="10_f8rdn"]
 [ext_resource type="Resource" uid="uid://c266ngwax13x5" path="res://addons/godot_aerodynamic_physics/core/resources/pids/yaw_pid.tres" id="11_gb5dk"]
+
+[sub_resource type="Resource" id="Resource_qcbki"]
+script = ExtResource("7_tohlm")
+p = 10.0
+i = 0.0
+d = 0.0
+clamp_integral = false
+min_integral = -1.0
+max_integral = 1.0
 
 [resource]
 resource_local_to_scene = true
@@ -36,15 +46,18 @@ min_accounted_air_density = 0.1
 enable_bank_angle_assist = false
 bank_angle_target = 0.0
 bank_angle_pid = ExtResource("2_twr5t")
+enable_heading_hold = false
+heading_target = 0.0
+heading_pid = ExtResource("6_e5trs")
+enable_inclination_hold = false
+inclination_target = 0.0
+inclination_pid = SubResource("Resource_qcbki")
 enable_speed_hold = false
 speed_target = 0.0
 speed_pid = ExtResource("10_f8rdn")
 enable_altitude_hold = false
 altitude_target = 0.0
 altitude_pid = ExtResource("1_r8yan")
-enable_heading_hold = false
-heading_target = 0.0
-heading_pid = ExtResource("6_e5trs")
 enable_target_direction = false
 direction_target = Vector3(0, 0, 0)
 direction_pitch_pid = ExtResource("3_nvxre")

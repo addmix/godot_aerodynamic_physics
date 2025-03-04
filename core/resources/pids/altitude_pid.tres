@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="aero_PID" load_steps=2 format=3 uid="uid://d8tp3u2ibcyh"]
 
-[ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/utils/pid.gd" id="1_mpxsa"]
+[ext_resource type="Script" uid="uid://b4xqlunpiyivk" path="res://addons/godot_aerodynamic_physics/utils/pid.gd" id="1_mpxsa"]
 
 [resource]
 script = ExtResource("1_mpxsa")

@@ -31,7 +31,7 @@ const AeroNodeUtils = preload("../utils/node_utils.gd")
 		show_debug = x
 		_update_debug_visibility()
 ## Enables update of debug components. Debug is only updated when show_debug and update_debug are true.
-@export var update_debug : bool = false
+@export var update_debug : bool = true
 ## Enables visibility of wing debug components.
 @export var show_wing_debug_vectors : bool = true:
 	set(x):

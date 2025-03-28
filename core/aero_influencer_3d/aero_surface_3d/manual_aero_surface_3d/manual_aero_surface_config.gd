@@ -9,7 +9,7 @@ class_name ManualAeroSurfaceConfig
 ## Curve that determines the ManualAeroSurface3D's lift coefficient, depending on the ManualAeroSurface3D's angle of attack.
 @export var lift_aoa_curve : Curve = preload("../../../resources/default_lift_aoa_curve.tres").duplicate()
 ## Drag coefficient used where the drag_aoa_curve has a value of 0.
-@export_range(0.0, 100.0, 0.001, "or_greater", "exp", "suffix:cD") var min_drag_coefficient : float = 0.0
+@export_range(0.0, 100.0, 0.001, "or_greater", "exp", "suffix:cD") var min_drag_coefficient : float = 0.02
 ## Drag coefficient used where the drag_aoa_curve has a value of 1.
 @export_range(0.0, 100.0, 0.001, "or_greater", "exp", "suffix:cD") var max_drag_coefficient : float = 1.0
 @export var drag_aoa_curve : Curve = preload("../../../resources/default_drag_aoa_curve.tres").duplicate()

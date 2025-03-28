@@ -42,4 +42,3 @@ material = SubResource("StandardMaterial3D_1sawy")
 
 [node name="AeroBody3D" parent="." instance=ExtResource("1_bbdyo")]
 show_debug = true
-update_debug = true

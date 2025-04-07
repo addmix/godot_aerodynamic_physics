@@ -19,6 +19,7 @@ var global_transform : Transform3D = Transform3D()
 var control_input := Vector3.ZERO
 var control_command := Vector3.ZERO
 var throttle_command : float = 0.0
+@export var enable_flight_assist : bool = true
 ## Maximum turn rate (in radians per second) the flight assist will command.
 @export var max_angular_rates := Vector3(2, 1, 5.0)
 var angular_rate_error := Vector3.ZERO
@@ -133,6 +134,9 @@ var angular_rate_error := Vector3.ZERO
 
 func update(delta : float) -> void:
 	control_command = control_input
+	
+	if not enable_flight_assist:
+		return
 	
 	bank_angle_hold(delta)
 	heading_hold(delta)

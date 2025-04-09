@@ -3,7 +3,7 @@ extends Resource
 class_name ManualAeroSurfaceConfig
 
 ## Lift coefficient used where the lift_aoa_curve has a value of -1.
-@export_range(0.0, 100.0, 0.001, "or_greater", "exp", "suffix:cL") var min_lift_coefficient : float = -2.0
+@export_range(-100.0, 0.0, 0.001, "or_greater", "exp", "suffix:cL") var min_lift_coefficient : float = -2.0
 ## Lift coefficient used where the lift_aoa_curve has a value of 1.
 @export_range(0.0, 100.0, 0.001, "or_greater", "exp", "suffix:cL") var max_lift_coefficient : float = 2.0
 ## Curve that determines the ManualAeroSurface3D's lift coefficient, depending on the ManualAeroSurface3D's angle of attack.

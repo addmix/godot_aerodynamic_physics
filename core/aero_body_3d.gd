@@ -142,6 +142,31 @@ var heading := 0.0
 var inclination := 0.0
 
 
+#override warning tests
+var test_enter_tree_override : bool = false
+var test_ready_override : bool = false
+var test_physics_process_override : bool = false
+var test_integrate_forces_override : bool = false
+
+func test_overrides() -> void:
+	if not is_inside_tree() or not get_tree():
+		push_error("Not inside tree, couldn't test method overrides.")
+		return
+	
+	if not test_enter_tree_override:
+		push_warning("_enter_tree() was overriden, but super._enter_tree() was not called. AeroBody3D may not work properly. " + get_script().get_path())
+	if not test_ready_override:
+		push_warning("_ready() was overriden, but super._ready() was not called. AeroBody3D may not work properly." + get_script().get_path())
+	if can_process() and not test_physics_process_override:
+		push_warning("_physics_process() was overriden, but super._physics_process() was not called. AeroBody3D may not work properly. " + get_script().get_path())
+	
+	if not Engine.is_editor_hint():
+		await get_tree().physics_frame
+		if can_process() and not test_integrate_forces_override:
+			push_warning("_integrate_forces() was overriden, but super._integrate_forces() was not called. AeroBody3D may not work properly." + get_script().get_path())
+	
+	
+
 #debug
 var linear_velocity_vector : AeroDebugVector3D
 var angular_velocity_vector : AeroDebugVector3D
@@ -187,8 +212,13 @@ func _init():
 	angular_damp_mode = RigidBody3D.DAMP_MODE_REPLACE
 	
 	center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
+	
+	#test that necessary functions (_ready(), _enter_tree(), _physics_process()
+	test_overrides.call_deferred()
 
 func _enter_tree() -> void:
+	test_enter_tree_override = true
+	
 	AeroNodeUtils.connect_signal_safe(self, "child_entered_tree", on_child_enter_tree, 0, true)
 	AeroNodeUtils.connect_signal_safe(self, "child_exiting_tree", on_child_exit_tree, 0, true)
 	
@@ -206,6 +236,8 @@ func on_child_exit_tree(node : Node) -> void:
 		node.aero_body = null
 
 func _ready() -> void:
+	test_ready_override = true
+	
 	add_child(mass_debug_point, INTERNAL_MODE_FRONT)
 	add_child(lift_debug_vector, INTERNAL_MODE_FRONT)
 	add_child(drag_debug_vector, INTERNAL_MODE_FRONT)
@@ -237,11 +269,15 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 func _physics_process(delta : float) -> void:
+	test_physics_process_override = true
+	
 	if show_debug and update_debug:
 		_update_debug()
 
 var _integrate_forces_time : float = 0.0
 func _integrate_forces(state : PhysicsDirectBodyState3D) -> void:
+	test_integrate_forces_override = true
+	
 	if is_overriding_body_sleep():
 		interrupt_sleep()
 	

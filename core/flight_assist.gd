@@ -185,8 +185,7 @@ func target_direction(delta : float) -> void:
 		return
 	if linear_velocity.is_equal_approx(Vector3.ZERO):
 		return
-	var velocity_direction : Vector3 = linear_velocity.normalized()
-	var local_velocity_direction : Vector3 = velocity_direction * global_transform.basis
+	var local_velocity_direction : Vector3 = linear_velocity.normalized() * global_transform.basis
 	var angles_to_local_velocity_direction := Vector3(
 			atan2(local_velocity_direction.y, -local_velocity_direction.z),
 			atan2(-local_velocity_direction.x, -local_velocity_direction.z),
@@ -203,8 +202,7 @@ func target_direction(delta : float) -> void:
 	var error := angles_to_local_direction_target - angles_to_local_velocity_direction
 	
 	var local_desired_acceleration : Vector3 = local_direction_target * linear_velocity.length() - local_velocity_direction * linear_velocity.length() + Vector3(0, 9.8, 0) * global_transform.basis
-#	var local_current_force : Vector3 = current_force * global_transform.basis
-	var roll_error : float = atan2(-local_desired_acceleration.x, local_desired_acceleration.y) #* Vector2(-local_desired_acceleration.x, local_desired_acceleration.y).length()
+	var roll_error : float = -local_desired_acceleration.x
 	
 	error.z = roll_error
 	

@@ -7,6 +7,9 @@ const AeroNodeUtils = preload("../../utils/node_utils.gd")
 
 ## If true, this AeroInfluencer3D will not have any effect on the simulation.
 @export var disabled : bool = false
+## Allows the current AeroInfluencer to prevent/interrupt the AeroBody's sleep. This is useful for thrust-providing
+## nodes like AeroMovers or Propellers. Sleep is only interrupted if the AeroInfluencer sub-class triggers it.
+@export var can_override_body_sleep : bool = true
 
 var control_command := Vector3.ZERO
 var throttle_command : float = 0.0
@@ -33,8 +36,6 @@ var show_debug : bool = false
 
 var aero_body : AeroBody3D
 var aero_influencers : Array[AeroInfluencer3D] = []
-
-@export var can_override_body_sleep : bool = true
 
 @onready var default_transform := transform
 var world_air_velocity := Vector3.ZERO
@@ -91,7 +92,6 @@ func on_child_exit_tree(node : Node) -> void:
 	if node is AeroInfluencer3D and aero_influencers.has(node):
 		aero_influencers.erase(node)
 		node.aero_body = null
-
 
 var last_transform : Transform3D = Transform3D()
 func _physics_process(delta : float) -> void:

@@ -28,24 +28,31 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 func _update_transform_substep(substep_delta : float) -> void:
-	super._update_transform_substep(substep_delta)
-	#update movement velocity
+	_linear_velocity = Vector3.ZERO
+	_angular_velocity = Vector3.ZERO
+	#calculate velocity caused by moving the node
 	_linear_velocity = (position - last_position) / substep_delta
 	
 	var axis_angle : Quaternion = AeroTransformUtils.quat_to_axis_angle(basis * last_rotation.inverse())
 	_angular_velocity = -Vector3(axis_angle.x, axis_angle.y, axis_angle.z) * axis_angle.w / substep_delta * basis
+	#calculate angular velocity caused by rotating the node
+	var rotation_quat : Quaternion = Quaternion(basis * last_rotation.inverse())
+	#_angular_velocity = rotation_quat.get_axis() * rotation_quat.get_angle() / substep_delta * basis
 	
 	#motors
 	default_transform.origin += linear_motor * basis * substep_delta
 	#rotate by angular velocity
 	if not is_equal_approx(angular_motor.length_squared(), 0.0):
-		default_transform.basis = default_transform.basis.rotated((angular_motor * basis.inverse()).normalized(), angular_motor.length() * substep_delta)
+		default_transform.basis = default_transform.basis * Basis((angular_motor).normalized(), angular_motor.length() * substep_delta)
 	
 	_linear_velocity += linear_motor
 	_angular_velocity += angular_motor
 	
 	last_position = position
 	last_rotation = basis
+	
+	super._update_transform_substep(substep_delta)
+	
 
 
 func get_linear_velocity() -> Vector3:

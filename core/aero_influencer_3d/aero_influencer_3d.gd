@@ -132,16 +132,17 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 
 #virtual
 func _update_transform_substep(substep_delta : float) -> void:
-	_update_control_transform(substep_delta)
 	for influencer : AeroInfluencer3D in aero_influencers:
 		influencer._update_transform_substep(substep_delta)
+	
+	_update_control_transform(substep_delta)
 
 func _update_control_transform(substep_delta : float) -> void:
 	control_command = get_parent().control_command
 	throttle_command = get_parent().throttle_command
 	brake_command = get_parent().brake_command
 	collective_command = get_parent().collective_command
-
+	
 	# TODO: Make it easier to manually control AeroInfluencers.
 	var actuation_value := Vector3.ZERO
 	if actuation_config:

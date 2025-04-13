@@ -95,6 +95,8 @@ func on_child_exit_tree(node : Node) -> void:
 
 var last_transform : Transform3D = Transform3D()
 func _physics_process(delta : float) -> void:
+	if Engine.is_editor_hint():
+		return
 	if not transform == last_transform:
 		aero_body.interrupt_sleep()
 	last_transform = transform

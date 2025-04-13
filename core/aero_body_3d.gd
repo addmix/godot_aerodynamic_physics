@@ -150,7 +150,7 @@ var test_integrate_forces_override : bool = false
 
 func test_overrides() -> void:
 	if not is_inside_tree() or not get_tree():
-		push_error("Not inside tree, couldn't test method overrides.")
+		#push_error("Not inside tree, couldn't test method overrides.")
 		return
 	
 	if not test_enter_tree_override:

@@ -10,7 +10,7 @@
 3. Enable plugin in project settings `Project > Project Settings > Plugins`
 
 # Usage
-Tutorial available [here](https://youtu.be/iI8SXQdaqDQ)
+Tutorial available [here](https://youtu.be/hpR1vvaQJaM)
 1. Add an ![AeroBody3D icon](icons/AeroBody3D.svg) AeroBody to your scene, and add one or more ![AeroInfluencer3D icon](icons/AeroInfluencer3D.svg) AeroInfluencer3D derived classes as children, adjust settings to change the characteristics.
 
 # Development Direction

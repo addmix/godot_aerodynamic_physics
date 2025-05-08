@@ -4,9 +4,9 @@ class_name aero_PID
 
 const aeroMathUtils = preload("../utils/math_utils.gd")
 
-@export var p : float = 0.2
-@export var i : float = 0.05
-@export var d : float = 1.0
+@export var p : float = 1.0
+@export var i : float = 0.2
+@export var d : float = 0.0
 
 @export_category("Clamp Integral")
 @export var clamp_integral : bool = false

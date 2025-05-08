@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_jfsco")
 p = 0.0
-i = 0.4
+i = 1.0
 d = 0.0
-clamp_integral = false
-min_integral = -1.0
+clamp_integral = true
+min_integral = 0.0
 max_integral = 1.0

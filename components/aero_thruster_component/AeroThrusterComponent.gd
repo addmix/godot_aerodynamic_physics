@@ -23,7 +23,7 @@ func _physics_process(delta : float) -> void:
 	if rigid_body is AeroBody3D and get_throttle_from_aero_body:
 		throttle = rigid_body.throttle_command
 	
-	var force_magnitude : float = get_thrust_magnitude() * delta
+	var force_magnitude : float = get_thrust_magnitude()
 	
 	var force := -global_transform.basis.z * force_magnitude
 	var relative_position := global_position - rigid_body.global_position

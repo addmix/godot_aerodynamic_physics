@@ -17,7 +17,7 @@ class_name AeroJetThrusterComponent
 #@export var fuel_expansion_ratio : float = 10.0
 
 func get_thrust_magnitude() -> float:
-	return calculate_mass_flow_acceleration_force()
+	return calculate_mass_flow_acceleration_force() * get_physics_process_delta_time()
 
 func calculate_mass_flow_acceleration_force() -> float:
 	var altitude : float = 0.0

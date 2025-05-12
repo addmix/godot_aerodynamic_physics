@@ -157,11 +157,15 @@ func test_overrides() -> void:
 		push_warning("_enter_tree() was overriden, but super._enter_tree() was not called. AeroBody3D may not work properly. " + get_script().get_path())
 	if not test_ready_override:
 		push_warning("_ready() was overriden, but super._ready() was not called. AeroBody3D may not work properly." + get_script().get_path())
+	
+	#wait 2 frames for validation
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	
 	if can_process() and not test_physics_process_override:
 		push_warning("_physics_process() was overriden, but super._physics_process() was not called. AeroBody3D may not work properly. " + get_script().get_path())
 	
 	if not Engine.is_editor_hint():
-		await get_tree().physics_frame
 		if can_process() and not test_integrate_forces_override:
 			push_warning("_integrate_forces() was overriden, but super._integrate_forces() was not called. AeroBody3D may not work properly." + get_script().get_path())
 	

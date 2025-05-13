@@ -5,12 +5,12 @@ class_name AeroThrusterComponent
 const AeroNodeUtils = preload("../../utils/node_utils.gd")
 
 @onready var rigid_body : RigidBody3D = AeroNodeUtils.get_first_parent_of_type(self, RigidBody3D)
-## Enables simulation of the JetThrusterComponent.
+##Enables simulation of the JetThrusterComponent.
 @export var enabled : bool = true
 @export_group("Control")
-## If enabled, throttle is automatically read from the ancestor AeroBody3D.
+##If enabled, throttle is automatically read from the ancestor AeroBody3D.
 @export var get_throttle_from_aero_body : bool = true
-## Throttle value used to simulate the JetThrusterComponent
+##Throttle value used to simulate the JetThrusterComponent
 @export var throttle : float = 1.0
 
 @export_group("Simulation Parameters")

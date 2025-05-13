@@ -2,7 +2,7 @@ extends Resource
 class_name AeroInfluencerControlAxisConfig
 
 const AeroMathUtils = preload("../../utils/math_utils.gd")
-## Amount of rotation that throttle commands contribute to this node's rotation.
+##Amount of rotation that throttle commands contribute to this node's rotation.
 @export var contribution := Vector3.ZERO
 @export_exp_easing("inout") var easing : float = 1.0
 

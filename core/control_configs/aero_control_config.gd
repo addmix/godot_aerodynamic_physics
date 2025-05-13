@@ -5,32 +5,32 @@ class_name AeroControlConfig
 const AeroMathUtils = preload("../../utils/math_utils.gd")
 
 
-## If enabled, this AeroControlComponent will read player inputs
+##If enabled, this AeroControlComponent will read player inputs
 @export var use_bindings : bool = true
-## Control input value read from player controls.
+##Control input value read from player controls.
 @export var input : float = 0.0
 var command : float = 0.0
 var cumulative_input : float = 0.0
 var cumulative_command : float = 0.0
 
 @export_category("Limits")
-## Minimum control limit
+##Minimum control limit
 @export var min_limit : float = -1.0
-## Maximum control limit
+##Maximum control limit
 @export var max_limit : float = 1.0
 
-## InputMap action for positive control.
+##InputMap action for positive control.
 @export var positive_event : StringName = ""
-## InputMap action for negative control.
+##InputMap action for negative control.
 @export var negative_event : StringName = ""
-## If enabled, input will change smoothly at `smoothing_rate` per second.
+##If enabled, input will change smoothly at `smoothing_rate` per second.
 @export var enable_smoothing : bool = false
 @export var smoothing_rate : float = 1.0
-## Cumulative inputs don't reset to 0 automatically. This would be similar to trim, or throttle that stays in place when not interacted with.
+##Cumulative inputs don't reset to 0 automatically. This would be similar to trim, or throttle that stays in place when not interacted with.
 @export var cumulative_positive_event : StringName = ""
-## Cumulative inputs don't reset to 0 automatically. This would be similar to trim, or throttle that stays in place when not interacted with.
+##Cumulative inputs don't reset to 0 automatically. This would be similar to trim, or throttle that stays in place when not interacted with.
 @export var cumulative_negative_event : StringName = ""
-## Rate at which cumulative inputs change control value.
+##Rate at which cumulative inputs change control value.
 @export var cumulative_rate : float = 1.0
 @export_exp_easing("inout") var easing := 1.0
 

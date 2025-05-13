@@ -2,9 +2,9 @@
 extends AeroVariablePropeller3D
 class_name AeroCyclicPropeller3D
 
-## Cyclic control value. Control takes place cyclicly, and changes based on a blade's position through the cycle.
+##Cyclic control value. Control takes place cyclicly, and changes based on a blade's position through the cycle.
 @export var cyclic := Vector2.ZERO
-## Maximum rotation angle (degrees) of cyclic control.
+##Maximum rotation angle (degrees) of cyclic control.
 @export var cyclic_pitch : float = 15.0
 
 @export var cyclic_control_config :=  create_cyclic_control_config()

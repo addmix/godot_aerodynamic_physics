@@ -2,10 +2,10 @@
 extends AeroPropeller3D
 class_name AeroVariablePropeller3D
 
-## Pitch angle for propeller blades.
+##Pitch angle for propeller blades.
 @export var propeller_pitch : float = 0.0
 #variable isn't used. Alias for propeller_pitch
-## Pitch angle for propeller blades. Alias for `propeller_pitch`
+##Pitch angle for propeller blades. Alias for `propeller_pitch`
 @export var collective : float = 0.0:
 	set(x):
 		collective = x

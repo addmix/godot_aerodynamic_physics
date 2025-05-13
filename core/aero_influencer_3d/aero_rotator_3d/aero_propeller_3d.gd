@@ -2,16 +2,16 @@
 extends AeroMover3D
 class_name AeroPropeller3D
 
-## If enabled, the AeroPropeller3D will automatically duplicate and arrange `propeller` to form `propeller_amount` of radially symmetric blades.
+##If enabled, the AeroPropeller3D will automatically duplicate and arrange `propeller` to form `propeller_amount` of radially symmetric blades.
 @export var do_propeller_setup : bool = true
 
-## Amount of propeller blades to generate. See `do_propeller_setup`
+##Amount of propeller blades to generate. See `do_propeller_setup`
 @export_range(1, 128) var propeller_amount : int = 2:
 	set(x):
 		update_configuration_warnings()
 		propeller_amount = x
 		update_propeller_amount()
-## Propeller blade that will be duplicated and arranged. See `do_propeller_setup`
+##Propeller blade that will be duplicated and arranged. See `do_propeller_setup`
 @export var propeller_blade : AeroInfluencer3D:
 	set(x):
 		update_configuration_warnings()

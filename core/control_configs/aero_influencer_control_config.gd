@@ -10,7 +10,7 @@ var brake_command : float = 0.0
 var throttle_command : float = 0.0
 var collective_command : float = 0.0
 
-## If enabled, this AeroInfluencer3D node will automatically rotate to accommodate control inputs.
+##If enabled, this AeroInfluencer3D node will automatically rotate to accommodate control inputs.
 @export var enable_control : bool = true
 #X = pitch, Y = yaw, Z = roll
 
@@ -18,7 +18,7 @@ var collective_command : float = 0.0
 var current_value := Vector3.ZERO
 
 #@export var min_value := Vector3.ZERO
-## Maximum rotation (in radians) this AeroInfluencer can rotate for controls.
+##Maximum rotation (in radians) this AeroInfluencer can rotate for controls.
 @export var max_value := Vector3.ZERO
 @export var limit_movement_speed : bool = false
 @export var movement_speed : float = 1.0

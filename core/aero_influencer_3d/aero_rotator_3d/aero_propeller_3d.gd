@@ -110,8 +110,5 @@ func update_propeller_transforms() -> void:
 func _update_control_transform(substep_delta : float) -> void:
 	super._update_control_transform(substep_delta)
 	
-	var propeller_velocity_value := Vector3.ZERO
 	if propeller_speed_control_config:
-		propeller_velocity_value = apply_control_commands_to_config(substep_delta, propeller_speed_control_config)
-	
-	angular_motor = propeller_speed_control_config.update(substep_delta)
+		angular_motor = apply_control_commands_to_config(substep_delta, propeller_speed_control_config)

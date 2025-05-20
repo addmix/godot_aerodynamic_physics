@@ -20,8 +20,13 @@ func _ready() -> void:
 	if not Engine.is_editor_hint():
 		cyclic_control_config = cyclic_control_config.duplicate(true)
 
-func _update_transform_substep(substep_delta : float) -> void:
-	super._update_transform_substep(substep_delta)
+func _update_control_transform(substep_delta : float) -> void:
+	super._update_control_transform(substep_delta)
+	
+	var cyclic_value := Vector3.ZERO
+	if cyclic_control_config:
+		cyclic_value = apply_control_commands_to_config(substep_delta, cyclic_control_config)
+		cyclic = Vector2(cyclic_control_config.current_value.x, cyclic_control_config.current_value.y)
 	
 	var rotor_offset : float = basis.get_euler(EULER_ORDER_XZY).y
 	for influencer : AeroInfluencer3D in propeller_instances:
@@ -31,13 +36,3 @@ func _update_transform_substep(substep_delta : float) -> void:
 		cyclic_effect *= deg_to_rad(cyclic_pitch)
 		
 		influencer.default_transform.basis = Basis.from_euler(Vector3(deg_to_rad(propeller_pitch) + cyclic_effect, influencer.default_transform.basis.get_euler().y, influencer.default_transform.basis.get_euler().z)) 
-
-func _update_control_transform(substep_delta : float) -> void:
-	super._update_control_transform(substep_delta)
-	
-	var cyclic_value := Vector3.ZERO
-	if cyclic_control_config:
-		cyclic_value = apply_control_commands_to_config(substep_delta, cyclic_control_config)
-	
-	cyclic_control_config.update(substep_delta)
-	cyclic = Vector2(cyclic_control_config.current_value.x, cyclic_control_config.current_value.y)

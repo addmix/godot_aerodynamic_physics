@@ -29,20 +29,18 @@ func _ready() -> void:
 			propeller_collective_control_config = propeller_collective_control_config.duplicate(true)
 
 func _update_transform_substep(substep_delta : float) -> void:
-	super._update_transform_substep(substep_delta)
+	### This is redundant logic. it's prefereble to do propeller pitch on the individual blades.
+	#for influencer : AeroInfluencer3D in propeller_instances:
+		#influencer.default_transform.basis = Basis.from_euler(Vector3(propeller_pitch, influencer.default_transform.basis.get_euler().y, influencer.default_transform.basis.get_euler().z)) 
+		#influencer.transform = influencer.default_transform
 	
-	for influencer : AeroInfluencer3D in propeller_instances:
-		influencer.default_transform.basis = Basis.from_euler(Vector3(propeller_pitch, influencer.default_transform.basis.get_euler().y, influencer.default_transform.basis.get_euler().z)) 
-		influencer.transform = influencer.default_transform
+	super._update_transform_substep(substep_delta)
 
 func _update_control_transform(substep_delta : float) -> void:
 	super._update_control_transform(substep_delta)
 	
-	var propeller_velocity_value := Vector3.ZERO
 	if propeller_collective_control_config:
-		propeller_velocity_value = apply_control_commands_to_config(substep_delta, propeller_collective_control_config)
-	
-	collective = propeller_collective_control_config.update(substep_delta).x
+		collective = apply_control_commands_to_config(substep_delta, propeller_collective_control_config).x
 
 
 func is_overriding_body_sleep() -> bool:

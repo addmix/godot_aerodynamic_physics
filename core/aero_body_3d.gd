@@ -6,11 +6,8 @@ const AeroMathUtils = preload("../utils/math_utils.gd")
 const AeroNodeUtils = preload("../utils/node_utils.gd")
 
 ##Overrides the amount of simulation substeps are used when calculating aerodynamic effects on this body.
-@export var substeps_override : int = -1:
-	set(x):
-		substeps_override = x
-		PREDICTION_TIMESTEP_FRACTION = 1.0 / float(SUBSTEPS)
-
+@export var substeps_override : int = -1
+	
 @export_group("Control")
 ##Value used by AeroInfluencers to control the AeroBody3D. Represents rotational axes. 
 ##X = Pitch, Y = Yaw, Z = Roll.
@@ -113,7 +110,9 @@ var SUBSTEPS : int = ProjectSettings.get_setting("physics/3d/aerodynamics/subste
 		if substeps_override > -1:
 			return substeps_override
 		return ProjectSettings.get_setting("physics/3d/aerodynamics/substeps", 1)
-var PREDICTION_TIMESTEP_FRACTION : float = 1.0 / float(SUBSTEPS)
+var PREDICTION_TIMESTEP_FRACTION : float:
+	get:
+		return 1.0 / float(SUBSTEPS)
 
 var aero_influencers : Array[AeroInfluencer3D] = []
 var aero_surfaces : Array[AeroSurface3D] = []

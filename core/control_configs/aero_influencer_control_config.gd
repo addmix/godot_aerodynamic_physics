@@ -14,7 +14,19 @@ var current_value := Vector3.ZERO
 
 #@export var min_value := Vector3.ZERO
 ##Maximum rotation (in radians) this AeroInfluencer can rotate for controls.
-@export var max_value := Vector3.ZERO
+@export var max_value := Vector3.ZERO:
+	set(x):
+		max_value = x
+		if not use_separate_minmax:
+			min_value = max_value
+@export var use_separate_minmax : bool = false
+@export var min_value := Vector3.ZERO:
+	set(x):
+		if use_separate_minmax:
+			min_value = x
+		else:
+			min_value = -max_value
+@export_subgroup("Movement Speed")
 @export var limit_movement_speed : bool = false
 @export var movement_speed : float = 1.0
 @export_subgroup("")
@@ -32,7 +44,8 @@ func update(aero_influencer : AeroInfluencer3D, delta : float) -> Vector3:
 		total_control += get_value_safe(axis_config, aero_influencer, axis_sign)
 	
 	total_control = total_control.clamp(-Vector3.ONE, Vector3.ONE)
-	var desired_control : Vector3 = total_control * max_value
+	var desired_control : Vector3 = total_control * AeroMathUtils.max_magnitude(min_value, max_value)
+	desired_control = clamp(desired_control, min_value, max_value)
 	
 	if limit_movement_speed:
 		current_value = current_value.move_toward(desired_control, movement_speed * delta)

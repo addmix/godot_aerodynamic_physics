@@ -60,6 +60,9 @@ static func sigmoid(x : float, e : float = E) -> float:
 static func v3log_with_base(vector : Vector3, base : float) -> Vector3:
 	return vector.normalized() * log_with_base(vector.length() + 1, base)
 
+static func max_magnitude(v1 : Vector3, v2 : Vector3) -> Vector3:
+	return abs(v1).max(abs(v2))
+
 
 
 #matrix math stuff, very inefficient stuff

@@ -1,6 +1,10 @@
 @tool
 extends AeroPropeller3D
-class_name AeroVariablePropeller3D
+
+## DEPRECATED: Instead, propeller pitch/collective should be adjusted using the control
+## configurations on the blades.
+
+#class_name AeroVariablePropeller3D
 
 ##Pitch angle for propeller blades.
 @export var propeller_pitch : float = 0.0
@@ -18,7 +22,7 @@ class_name AeroVariablePropeller3D
 func create_collective_control_config() -> AeroInfluencerControlConfig:
 	var config := AeroInfluencerControlConfig.new()
 	config.max_value.x = 0.5
-	config.collective_config = AeroInfluencerControlAxisConfig.new(Vector3(1.0, 0.0, 0.0))
+	#config.collective_config = AeroInfluencerControlAxisConfig.new(Vector3(1.0, 0.0, 0.0))
 	return config
 
 func _ready() -> void:
@@ -39,8 +43,8 @@ func _update_transform_substep(substep_delta : float) -> void:
 func _update_control_transform(substep_delta : float) -> void:
 	super._update_control_transform(substep_delta)
 	
-	if propeller_collective_control_config:
-		collective = apply_control_commands_to_config(substep_delta, propeller_collective_control_config).x
+	#if propeller_collective_control_config:
+		#collective = apply_control_commands_to_config(substep_delta, propeller_collective_control_config).x
 
 
 func is_overriding_body_sleep() -> bool:

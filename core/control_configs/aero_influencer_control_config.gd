@@ -3,15 +3,9 @@ class_name AeroInfluencerControlConfig
 
 const AeroMathUtils = preload("../../utils/math_utils.gd")
 
-var pitch_command : float = 0.0
-var yaw_command : float = 0.0
-var roll_command : float = 0.0
-var brake_command : float = 0.0
-var throttle_command : float = 0.0
-var collective_command : float = 0.0
-
 ##If enabled, this AeroInfluencer3D node will automatically rotate to accommodate control inputs.
 @export var enable_control : bool = true
+@export var axis_configs : Array[AeroInfluencerControlAxisConfig] = []
 #X = pitch, Y = yaw, Z = roll
 
 @export_subgroup("Limits")
@@ -22,33 +16,20 @@ var current_value := Vector3.ZERO
 @export var max_value := Vector3.ZERO
 @export var limit_movement_speed : bool = false
 @export var movement_speed : float = 1.0
-
-@export_subgroup("Axis Configs")
-@export var pitch_config : AeroInfluencerControlAxisConfig
-@export var yaw_config : AeroInfluencerControlAxisConfig
-@export var roll_config : AeroInfluencerControlAxisConfig
-@export var brake_config : AeroInfluencerControlAxisConfig
-@export var throttle_config : AeroInfluencerControlAxisConfig
-@export var collective_config : AeroInfluencerControlAxisConfig
+@export_subgroup("")
 
 func update(aero_influencer : AeroInfluencer3D, delta : float) -> Vector3:
 	if not enable_control:
 		return current_value
 	
-	
 	var local_relative_position : Vector3 = aero_influencer.relative_position * aero_influencer.aero_body.global_basis
-	
 	
 	var axis_sign : Vector3 = Vector3(sign(local_relative_position.x), sign(local_relative_position.y), sign(local_relative_position.z))
 	
-	var pitch : Vector3 = get_value_safe(pitch_config, pitch_command, axis_sign)
-	var yaw : Vector3 = get_value_safe(yaw_config, yaw_command, axis_sign)
-	var roll : Vector3 = get_value_safe(roll_config, roll_command, axis_sign)
-	var brake : Vector3 = get_value_safe(brake_config, brake_command, axis_sign)
-	var throttle : Vector3 = get_value_safe(throttle_config, throttle_command, axis_sign)
-	var collective : Vector3 = get_value_safe(collective_config, collective_command, axis_sign)
+	var total_control := Vector3.ZERO
+	for axis_config : AeroInfluencerControlAxisConfig in axis_configs:
+		total_control += get_value_safe(axis_config, aero_influencer, axis_sign)
 	
-	var total_control : Vector3 = pitch + yaw + roll + brake + throttle + collective
 	total_control = total_control.clamp(-Vector3.ONE, Vector3.ONE)
 	var desired_control : Vector3 = total_control * max_value
 	
@@ -59,7 +40,9 @@ func update(aero_influencer : AeroInfluencer3D, delta : float) -> Vector3:
 	
 	return current_value
 
-static func get_value_safe(axis_config : AeroInfluencerControlAxisConfig, command : float = 0.0, axis_sign : Vector3 = Vector3.ONE) -> Vector3:
+static func get_value_safe(axis_config : AeroInfluencerControlAxisConfig, aero_influencer : AeroInfluencer3D, axis_sign : Vector3 = Vector3.ZERO) -> Vector3:
 	if axis_config:
+		var command : float = aero_influencer.get_control_command(axis_config.axis_name)
 		return axis_config.get_value(command, axis_sign)
+	
 	return Vector3.ZERO

@@ -1,5 +1,5 @@
 @tool
-extends AeroVariablePropeller3D
+extends AeroPropeller3D
 class_name AeroCyclicPropeller3D
 
 ##Cyclic control value. Control takes place cyclicly, and changes based on a blade's position through the cycle.
@@ -11,8 +11,8 @@ class_name AeroCyclicPropeller3D
 func create_cyclic_control_config() -> AeroInfluencerControlConfig:
 	var config := AeroInfluencerControlConfig.new()
 	config.max_value = Vector3(1.0, 1.0, 0.0)
-	config.roll_config = AeroInfluencerControlAxisConfig.new(Vector3(1.0, 0.0, 0.0))
-	config.pitch_config = AeroInfluencerControlAxisConfig.new(Vector3(0.0, 1.0, 0.0))
+	config.axis_configs.append(AeroInfluencerControlAxisConfig.new("roll", Vector3(1.0, 0.0, 0.0)))
+	config.axis_configs.append(AeroInfluencerControlAxisConfig.new("pitch", Vector3(0.0, 1.0, 0.0)))
 	return config
 
 func _ready() -> void:
@@ -25,7 +25,8 @@ func _update_control_transform(substep_delta : float) -> void:
 	
 	var cyclic_value := Vector3.ZERO
 	if cyclic_control_config:
-		cyclic_value = apply_control_commands_to_config(substep_delta, cyclic_control_config)
+		cyclic_value = cyclic_control_config.update(self, substep_delta)
+		
 		cyclic = Vector2(cyclic_control_config.current_value.x, cyclic_control_config.current_value.y)
 	
 	var rotor_offset : float = basis.get_euler(EULER_ORDER_XZY).y
@@ -35,4 +36,4 @@ func _update_control_transform(substep_delta : float) -> void:
 		var cyclic_effect : float = cos(angular_position) * cyclic.x + sin(angular_position) * cyclic.y
 		cyclic_effect *= deg_to_rad(cyclic_pitch)
 		
-		influencer.default_transform.basis = Basis.from_euler(Vector3(deg_to_rad(propeller_pitch) + cyclic_effect, influencer.default_transform.basis.get_euler().y, influencer.default_transform.basis.get_euler().z)) 
+		influencer.default_transform.basis = Basis.from_euler(Vector3(cyclic_effect, influencer.default_transform.basis.get_euler().y, influencer.default_transform.basis.get_euler().z)) 

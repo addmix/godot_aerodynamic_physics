@@ -11,11 +11,6 @@ const AeroNodeUtils = preload("../../utils/node_utils.gd")
 ##nodes like AeroMovers or Propellers. Sleep is only interrupted if the AeroInfluencer sub-class triggers it.
 @export var can_override_body_sleep : bool = true
 
-var control_command := Vector3.ZERO
-var throttle_command : float = 0.0
-var brake_command : float = 0.0
-var collective_command : float = 0.0
-
 @export_group("Actuation Control")
 @export var actuation_config : AeroInfluencerControlConfig
 ##Rotation order used when doing control rotations.
@@ -140,15 +135,11 @@ func _update_transform_substep(substep_delta : float) -> void:
 	_update_control_transform(substep_delta)
 
 func _update_control_transform(substep_delta : float) -> void:
-	control_command = get_parent().control_command
-	throttle_command = get_parent().throttle_command
-	brake_command = get_parent().brake_command
-	collective_command = get_parent().collective_command
 	
 	# TODO: Make it easier to manually control AeroInfluencers.
 	var actuation_value := Vector3.ZERO
 	if actuation_config:
-		actuation_value = apply_control_commands_to_config(substep_delta, actuation_config)
+		actuation_value = actuation_config.update(self, substep_delta)
 	
 	basis = default_transform.basis * Basis().from_euler(actuation_value, control_rotation_order)
 
@@ -198,7 +189,8 @@ func get_linear_acceleration() -> Vector3:
 func get_angular_acceleration() -> Vector3:
 	return get_parent().get_angular_acceleration()
 
-
+func get_control_command(axis_name : String = "") -> float:
+	return get_parent().get_control_command(axis_name)
 
 #debug
 
@@ -232,149 +224,142 @@ func update_debug_vectors() -> void:
 	if torque_debug_vector.visible:
 		torque_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(_current_torque, 2.0) * debug_scale
 
-func apply_control_commands_to_config(delta : float, control_config : AeroInfluencerControlConfig) -> Vector3:
-	control_config.pitch_command = control_command.x
-	control_config.yaw_command = control_command.y
-	control_config.roll_command = control_command.z
-	control_config.brake_command = brake_command
-	control_config.throttle_command = throttle_command
-	control_config.collective_command = collective_command
-	
-	return control_config.update(self, delta)
 
-var updated_properties := get_property_conversion_info()
-func get_property_conversion_info() -> Dictionary:
+
+#this was a cool system, but it's pretty unnecessary. Will probably reuse in the future for automatic update conversions.
+#var updated_properties := get_property_conversion_info()
+#func get_property_conversion_info() -> Dictionary:
+	##
 	#
-	
-	#return super.get_property_conversion_info().merged({
-	return {
-	#input
-	"enable_automatic_control" : [TYPE_BOOL, \
-	func(value) -> void:
-		if value and not is_instance_valid(actuation_config):
-			actuation_config = AeroInfluencerControlConfig.new()
-			actuation_config.enable_control = value
-	],
-	"max_actuation" : [TYPE_VECTOR3, \
-	func(value) -> void:
-		if not is_instance_valid(actuation_config):
-			actuation_config = AeroInfluencerControlConfig.new()
-		actuation_config.max_value = value
-	],
-	"limit_actuation_speed" : [TYPE_BOOL, \
-	func(value) -> void:
-		if not is_instance_valid(actuation_config):
-			actuation_config = AeroInfluencerControlConfig.new()
-		actuation_config.limit_movement_speed = value
-	],
-	"actuation_speed" : [TYPE_FLOAT, \
-	func(value) -> void:
-		if not is_instance_valid(actuation_config):
-			actuation_config = AeroInfluencerControlConfig.new()
-		actuation_config.movement_speed = value
-	],
-	"pitch_contribution" : [TYPE_VECTOR3, \
-	func(value) -> void:
-		if not is_instance_valid(actuation_config):
-			actuation_config = AeroInfluencerControlConfig.new()
-		if not is_instance_valid(actuation_config.pitch_config):
-			actuation_config.pitch_config = AeroInfluencerControlAxisConfig.new()
-		actuation_config.pitch_config.contribution = value
-	],
-	"pitch_easing" : [TYPE_FLOAT, \
-	func(value) -> void:
-		if not is_instance_valid(actuation_config):
-			actuation_config = AeroInfluencerControlConfig.new()
-		if not is_instance_valid(actuation_config.pitch_config):
-			actuation_config.pitch_config = AeroInfluencerControlAxisConfig.new()
-		actuation_config.pitch_config.easing = value
-	],
-	"yaw_contribution" : [TYPE_VECTOR3, \
-	func(value) -> void:
-		if not is_instance_valid(actuation_config):
-			actuation_config = AeroInfluencerControlConfig.new()
-		if not is_instance_valid(actuation_config.yaw_config):
-			actuation_config.yaw_config = AeroInfluencerControlAxisConfig.new()
-		actuation_config.yaw_config.contribution = value
-	],
-	"yaw_easing" : [TYPE_FLOAT, \
-	func(value) -> void:
-		if not is_instance_valid(actuation_config):
-			actuation_config = AeroInfluencerControlConfig.new()
-		if not is_instance_valid(actuation_config.yaw_config):
-			actuation_config.yaw_config = AeroInfluencerControlAxisConfig.new()
-		actuation_config.yaw_config.easing = value
-	],
-	"roll_contribution" : [TYPE_VECTOR3, \
-	func(value) -> void:
-		if not is_instance_valid(actuation_config):
-			actuation_config = AeroInfluencerControlConfig.new()
-		if not is_instance_valid(actuation_config.roll_config):
-			actuation_config.roll_config = AeroInfluencerControlAxisConfig.new()
-		actuation_config.roll_config.contribution = value
-	],
-	"roll_easing" : [TYPE_FLOAT, \
-	func(value) -> void:
-		if not is_instance_valid(actuation_config):
-			actuation_config = AeroInfluencerControlConfig.new()
-		if not is_instance_valid(actuation_config.roll_config):
-			actuation_config.roll_config = AeroInfluencerControlAxisConfig.new()
-		actuation_config.roll_config.easing = value
-	],
-	"brake_contribution" : [TYPE_VECTOR3, \
-	func(value) -> void:
-		if not is_instance_valid(actuation_config):
-			actuation_config = AeroInfluencerControlConfig.new()
-		if not is_instance_valid(actuation_config.brake_config):
-			actuation_config.brake_config = AeroInfluencerControlAxisConfig.new()
-		actuation_config.brake_config.contribution = value
-	],
-	"brake_easing" : [TYPE_FLOAT, \
-	func(value) -> void:
-		if not is_instance_valid(actuation_config):
-			actuation_config = AeroInfluencerControlConfig.new()
-		if not is_instance_valid(actuation_config.brake_config):
-			actuation_config.brake_config = AeroInfluencerControlAxisConfig.new()
-		actuation_config.brake_config.easing = value
-	],
-	"throttle_contribution" : [TYPE_VECTOR3, \
-	func(value) -> void:
-		if not is_instance_valid(actuation_config):
-			actuation_config = AeroInfluencerControlConfig.new()
-		if not is_instance_valid(actuation_config.throttle_config):
-			actuation_config.throttle_config = AeroInfluencerControlAxisConfig.new()
-		actuation_config.throttle_config.contribution = value
-	],
-	"throttle_easing" : [TYPE_FLOAT, \
-	func(value) -> void:
-		if not is_instance_valid(actuation_config):
-			actuation_config = AeroInfluencerControlConfig.new()
-		if not is_instance_valid(actuation_config.throttle_config):
-			actuation_config.throttle_config = AeroInfluencerControlAxisConfig.new()
-		actuation_config.throttle_config.easing = value
-	],
-	
-	}#)
-
-func _get_property_list() -> Array[Dictionary]:
-	var array : Array[Dictionary] = []
-	var updated_properties := get_property_conversion_info()
-	for property in updated_properties.keys():
-		var property_info : Array = updated_properties[property]
-		array.append({
-			"name" : property,
-			"type" : property_info[0],
-			"usage" : 0,
-		})
-	
-	return array
-
-func _set(property: StringName, value: Variant) -> bool:
-	if property in updated_properties.keys():
-		var property_info : Array = updated_properties[property]
-		if property_info.size() >= 2:
-			#print("Calling %s with value %s"  %[property, value])
-			property_info[1].call(value)
-		
-		return true
-	return false
+	##return super.get_property_conversion_info().merged({
+	#return {
+	##input
+	#"enable_automatic_control" : [TYPE_BOOL, \
+	#func(value) -> void:
+		#if value and not is_instance_valid(actuation_config):
+			#actuation_config = AeroInfluencerControlConfig.new()
+			#actuation_config.enable_control = value
+	#],
+	#"max_actuation" : [TYPE_VECTOR3, \
+	#func(value) -> void:
+		#if not is_instance_valid(actuation_config):
+			#actuation_config = AeroInfluencerControlConfig.new()
+		#actuation_config.max_value = value
+	#],
+	#"limit_actuation_speed" : [TYPE_BOOL, \
+	#func(value) -> void:
+		#if not is_instance_valid(actuation_config):
+			#actuation_config = AeroInfluencerControlConfig.new()
+		#actuation_config.limit_movement_speed = value
+	#],
+	#"actuation_speed" : [TYPE_FLOAT, \
+	#func(value) -> void:
+		#if not is_instance_valid(actuation_config):
+			#actuation_config = AeroInfluencerControlConfig.new()
+		#actuation_config.movement_speed = value
+	#],
+	#"pitch_contribution" : [TYPE_VECTOR3, \
+	#func(value) -> void:
+		#if not is_instance_valid(actuation_config):
+			#actuation_config = AeroInfluencerControlConfig.new()
+		#if not is_instance_valid(actuation_config.pitch_config):
+			#actuation_config.pitch_config = AeroInfluencerControlAxisConfig.new()
+		#actuation_config.pitch_config.contribution = value
+	#],
+	#"pitch_easing" : [TYPE_FLOAT, \
+	#func(value) -> void:
+		#if not is_instance_valid(actuation_config):
+			#actuation_config = AeroInfluencerControlConfig.new()
+		#if not is_instance_valid(actuation_config.pitch_config):
+			#actuation_config.pitch_config = AeroInfluencerControlAxisConfig.new()
+		#actuation_config.pitch_config.easing = value
+	#],
+	#"yaw_contribution" : [TYPE_VECTOR3, \
+	#func(value) -> void:
+		#if not is_instance_valid(actuation_config):
+			#actuation_config = AeroInfluencerControlConfig.new()
+		#if not is_instance_valid(actuation_config.yaw_config):
+			#actuation_config.yaw_config = AeroInfluencerControlAxisConfig.new()
+		#actuation_config.yaw_config.contribution = value
+	#],
+	#"yaw_easing" : [TYPE_FLOAT, \
+	#func(value) -> void:
+		#if not is_instance_valid(actuation_config):
+			#actuation_config = AeroInfluencerControlConfig.new()
+		#if not is_instance_valid(actuation_config.yaw_config):
+			#actuation_config.yaw_config = AeroInfluencerControlAxisConfig.new()
+		#actuation_config.yaw_config.easing = value
+	#],
+	#"roll_contribution" : [TYPE_VECTOR3, \
+	#func(value) -> void:
+		#if not is_instance_valid(actuation_config):
+			#actuation_config = AeroInfluencerControlConfig.new()
+		#if not is_instance_valid(actuation_config.roll_config):
+			#actuation_config.roll_config = AeroInfluencerControlAxisConfig.new()
+		#actuation_config.roll_config.contribution = value
+	#],
+	#"roll_easing" : [TYPE_FLOAT, \
+	#func(value) -> void:
+		#if not is_instance_valid(actuation_config):
+			#actuation_config = AeroInfluencerControlConfig.new()
+		#if not is_instance_valid(actuation_config.roll_config):
+			#actuation_config.roll_config = AeroInfluencerControlAxisConfig.new()
+		#actuation_config.roll_config.easing = value
+	#],
+	#"brake_contribution" : [TYPE_VECTOR3, \
+	#func(value) -> void:
+		#if not is_instance_valid(actuation_config):
+			#actuation_config = AeroInfluencerControlConfig.new()
+		#if not is_instance_valid(actuation_config.brake_config):
+			#actuation_config.brake_config = AeroInfluencerControlAxisConfig.new()
+		#actuation_config.brake_config.contribution = value
+	#],
+	#"brake_easing" : [TYPE_FLOAT, \
+	#func(value) -> void:
+		#if not is_instance_valid(actuation_config):
+			#actuation_config = AeroInfluencerControlConfig.new()
+		#if not is_instance_valid(actuation_config.brake_config):
+			#actuation_config.brake_config = AeroInfluencerControlAxisConfig.new()
+		#actuation_config.brake_config.easing = value
+	#],
+	#"throttle_contribution" : [TYPE_VECTOR3, \
+	#func(value) -> void:
+		#if not is_instance_valid(actuation_config):
+			#actuation_config = AeroInfluencerControlConfig.new()
+		#if not is_instance_valid(actuation_config.throttle_config):
+			#actuation_config.throttle_config = AeroInfluencerControlAxisConfig.new()
+		#actuation_config.throttle_config.contribution = value
+	#],
+	#"throttle_easing" : [TYPE_FLOAT, \
+	#func(value) -> void:
+		#if not is_instance_valid(actuation_config):
+			#actuation_config = AeroInfluencerControlConfig.new()
+		#if not is_instance_valid(actuation_config.throttle_config):
+			#actuation_config.throttle_config = AeroInfluencerControlAxisConfig.new()
+		#actuation_config.throttle_config.easing = value
+	#],
+	#
+	#}#)
+#
+#func _get_property_list() -> Array[Dictionary]:
+	#var array : Array[Dictionary] = []
+	#var updated_properties := get_property_conversion_info()
+	#for property in updated_properties.keys():
+		#var property_info : Array = updated_properties[property]
+		#array.append({
+			#"name" : property,
+			#"type" : property_info[0],
+			#"usage" : 0,
+		#})
+	#
+	#return array
+#
+#func _set(property: StringName, value: Variant) -> bool:
+	#if property in updated_properties.keys():
+		#var property_info : Array = updated_properties[property]
+		#if property_info.size() >= 2:
+			##print("Calling %s with value %s"  %[property, value])
+			#property_info[1].call(value)
+		#
+		#return true
+	#return false

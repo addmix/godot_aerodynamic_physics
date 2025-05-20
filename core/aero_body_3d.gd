@@ -7,17 +7,6 @@ const AeroNodeUtils = preload("../utils/node_utils.gd")
 
 ##Overrides the amount of simulation substeps are used when calculating aerodynamic effects on this body.
 @export var substeps_override : int = -1
-	
-@export_group("Control")
-##Value used by AeroInfluencers to control the AeroBody3D. Represents rotational axes. 
-##X = Pitch, Y = Yaw, Z = Roll.
-@export var control_command : Vector3 = Vector3.ZERO
-##Value used by AeroInfluencers to control the AeroBody3D.
-@export var throttle_command : float = 0.0
-##Value used by AeroInfluencers to control the AeroBody3D.
-@export var brake_command : float = 0.0
-##Value used by AeroInfluencers to control the AeroBody3D.
-@export var collective_command : float = 0.0
 
 @export_group("Debug")
 
@@ -404,6 +393,15 @@ func get_linear_acceleration() -> Vector3:
 
 func get_angular_acceleration() -> Vector3:
 	return (angular_velocity_prediction - last_angular_velocity) / substep_delta
+
+func get_control_command(axis_name : String = "") -> float:
+	var control_component : AeroControlComponent = AeroNodeUtils.get_first_child_of_type(self, AeroControlComponent)
+	if is_instance_valid(control_component):
+		#if axis_name == "throttle":
+			#print(control_component.get_control_command(axis_name))
+		return control_component.get_control_command(axis_name)
+
+	return 0.0
 
 func is_overriding_body_sleep() -> bool:
 	var overriding : bool = false

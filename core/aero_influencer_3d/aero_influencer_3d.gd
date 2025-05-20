@@ -32,7 +32,7 @@ var show_debug : bool = false
 ##Controls visibility of the AeroInfluencer3D's force debug vector.
 @export var show_force : bool = true
 ##Controls visibility of the AeroInfluencer3D's torque debug vector.
-@export var show_torque : bool = true
+@export var show_torque : bool = false
 
 var aero_body : AeroBody3D
 var aero_influencers : Array[AeroInfluencer3D] = []

@@ -32,6 +32,7 @@ const aero_surface_config = preload("./core/aero_influencer_3d/aero_surface_3d/a
 const manual_aero_surface_3d = preload("./core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd")
 const manual_aero_surface_config = preload("./core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_config.gd")
 const aero_thruster_3d = preload("./core/aero_influencer_3d/aero_thruster_3d/aero_thruster_3d.gd")
+const aero_jet_thruster_3d = preload("./core/aero_influencer_3d/aero_thruster_3d/aero_jet_thruster_3d.gd")
 const flight_assist = preload("./core/flight_assist.gd")
 
 func _enter_tree():
@@ -50,6 +51,7 @@ func _enter_tree():
 	add_custom_type("ManualAeroSurface3D", "Node3D", manual_aero_surface_3d, aerosurface3d_icon)
 	add_custom_type("ManualAeroSurfaceConfig", "Resource", manual_aero_surface_config, object_icon)
 	add_custom_type("AeroThruster3D", "Node3D", aero_thruster_3d, aerothruster3d_icon)
+	add_custom_type("AeroJetThruster3D", "Node3D", aero_jet_thruster_3d, aerothruster3d_icon)
 	add_custom_type("FlightAssist", "Resource", flight_assist, object_icon)
 
 func _exit_tree():
@@ -64,6 +66,7 @@ func _exit_tree():
 	remove_custom_type("ManualAeroSurface3D")
 	remove_custom_type("ManualAeroSurfaceConfig")
 	remove_custom_type("AeroThruster3D")
+	remove_custom_type("AeroJetThruster3D")
 	remove_custom_type("FlightAssist")
 	
 	remove_autoload_singleton("AeroUnits")

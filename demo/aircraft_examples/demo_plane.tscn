@@ -1,4 +1,4 @@
-[gd_scene load_steps=51 format=3 uid="uid://dx0v1i14fyw8c"]
+[gd_scene load_steps=50 format=3 uid="uid://dx0v1i14fyw8c"]
 
 [ext_resource type="Script" uid="uid://3iji867c81k5" path="res://addons/godot_aerodynamic_physics/core/aero_body_3d.gd" id="1_ddp7w"]
 [ext_resource type="Script" uid="uid://cc5dwx5pqkaur" path="res://addons/godot_aerodynamic_physics/components/AeroControlComponent.gd" id="2_x2dhw"]
@@ -9,10 +9,9 @@
 [ext_resource type="Script" uid="uid://crkbhmxpjff4o" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="4_ht3i8"]
 [ext_resource type="Script" uid="uid://dfbhcpt1rr3ai" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_control_config_axis.gd" id="5_hj20f"]
 [ext_resource type="Script" uid="uid://cbgqb7g7mmwtu" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_control_config.gd" id="5_x51t6"]
-[ext_resource type="Script" uid="uid://bjesvxrrkoocs" path="res://addons/godot_aerodynamic_physics/components/aero_thruster_component/AeroJetThrusterComponent.gd" id="8_e4glj"]
 [ext_resource type="Script" uid="uid://c46td0go5kvp6" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_influencer_control_axis_config.gd" id="11_1g5my"]
 [ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_influencer_control_config.gd" id="12_njgyo"]
-[ext_resource type="Script" uid="uid://3kjm0rdymoth" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_thruster_3d/aero_thruster_3d.gd" id="13_qs0nt"]
+[ext_resource type="Script" uid="uid://j11128f5e4xl" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_thruster_3d/aero_jet_thruster_3d.gd" id="13_qs0nt"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_m08mi"]
 friction = 0.0
@@ -270,6 +269,27 @@ size = Vector3(7.3728, 0.215118, 4.76475)
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_6onr1"]
 radius = 0.446985
 
+[sub_resource type="Resource" id="Resource_e07xt"]
+resource_name = "throttle"
+script = ExtResource("11_1g5my")
+axis_name = "throttle"
+contribution = Vector3(1, 1, 1)
+easing = 1.0
+axis_flip_x = 0
+expression_x = ""
+axis_flip_y = 0
+expression_y = ""
+axis_flip_z = 0
+expression_z = ""
+
+[sub_resource type="Resource" id="Resource_0lgyr"]
+script = ExtResource("12_njgyo")
+enable_control = true
+axis_configs = Array[ExtResource("11_1g5my")]([SubResource("Resource_e07xt")])
+max_value = Vector3(0, 0, -1)
+limit_movement_speed = false
+movement_speed = 1.0
+
 [sub_resource type="Curve" id="Curve_v5kpe"]
 _data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.25, 1), 0.0, 0.0, 0, 0, Vector2(0.5, 0), 0.0, 0.0, 0, 0, Vector2(0.75, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
 point_count = 5
@@ -374,27 +394,6 @@ max_value = Vector3(0.1, 0, 0)
 limit_movement_speed = false
 movement_speed = 1.0
 
-[sub_resource type="Resource" id="Resource_0lgyr"]
-resource_name = "throttle"
-script = ExtResource("11_1g5my")
-axis_name = "throttle"
-contribution = Vector3(1, 1, 1)
-easing = 1.0
-axis_flip_x = 0
-expression_x = ""
-axis_flip_y = 0
-expression_y = ""
-axis_flip_z = 0
-expression_z = ""
-
-[sub_resource type="Resource" id="Resource_i3p6j"]
-script = ExtResource("12_njgyo")
-enable_control = true
-axis_configs = Array[ExtResource("11_1g5my")]([SubResource("Resource_0lgyr")])
-max_value = Vector3(0, 0, -1)
-limit_movement_speed = false
-movement_speed = 1.0
-
 [node name="AeroBody3D" type="VehicleBody3D"]
 mass = 850.0
 physics_material_override = SubResource("PhysicsMaterial_m08mi")
@@ -416,6 +415,13 @@ shape = SubResource("BoxShape3D_nchkm")
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="."]
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, -0.434142, -0.220745)
 shape = SubResource("CapsuleShape3D_6onr1")
+
+[node name="AeroThruster3D" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.29881)
+script = ExtResource("13_qs0nt")
+throttle_control_config = SubResource("Resource_0lgyr")
+max_thrust_force = 2000.0
+metadata/_custom_type_script = "uid://3kjm0rdymoth"
 
 [node name="Elevator" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.57628e-07, 2.72025)
@@ -464,12 +470,6 @@ size = Vector3(3.67285, 0.113525, 1.14014)
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55771, 8.71651)
 
-[node name="AeroThrusterComponent" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.339687)
-script = ExtResource("8_e4glj")
-get_throttle_from_aero_body = false
-throttle = 0.0
-
 [node name="Label3D" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 3.133, 5.73031)
 text = "Use arrow keys for pitch and roll.
@@ -478,11 +478,3 @@ Use page up/page down for throttle control."
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.998193, 0.0600904, 0, -0.0600904, 0.998193, 0, -0.155863, 1.06391)
 size = Vector3(0.25, 0.25, 4.2828)
-
-[node name="AeroThruster3D" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.29881)
-script = ExtResource("13_qs0nt")
-thrust_control_config = SubResource("Resource_i3p6j")
-thrust = null
-max_thrust_force = 1000.0
-metadata/_custom_type_script = "uid://3kjm0rdymoth"

@@ -1,6 +1,6 @@
-@icon("../../icons/JetThrusterComponent.svg")
-extends AeroThrusterComponent
-class_name AeroJetThrusterComponent
+@tool
+extends AeroThruster3D
+class_name AeroJetThruster3D
 
 @export_group("Simulation Parameters")
 ##Area (in meters squared) of the JetThrusterComponent's intake.
@@ -16,32 +16,22 @@ class_name AeroJetThrusterComponent
 ##Ratio of fuel volume before, and after combustion. (Unused)
 #@export var fuel_expansion_ratio : float = 10.0
 
-func get_thrust_magnitude() -> float:
-	return calculate_mass_flow_acceleration_force() * get_physics_process_delta_time()
+func get_thrust_force() -> Vector3:
+	return throttle.normalized() * calculate_mass_flow_acceleration_force() * get_physics_process_delta_time()
 
 func calculate_mass_flow_acceleration_force() -> float:
-	var altitude : float = 0.0
-	var air_velocity : Vector3 = rigid_body.linear_velocity
-	if rigid_body is AeroBody3D:
-		altitude = rigid_body.altitude
-		air_velocity = -rigid_body.air_velocity
+	var intake_air_velocity : float = get_linear_velocity().length()
+	#var intake_air_density : float = air_density
+	#var intake_air_pressure : float = 101325.0
+	var intake_mass_flow_rate : float = air_density * intake_air_velocity * intake_area
 	
-	var intake_air_velocity : float = air_velocity.dot(-global_basis.z)
-	var intake_air_density : float = 1.225
-	var intake_air_pressure : float = 101325.0
-	var intake_mass_flow_rate : float = intake_air_density * intake_air_velocity * intake_area
+		#intake_air_pressure = aero_units.get_pressure_at_altitude(altitude)
 	
-	var aero_units : Node = get_node_or_null("/root/AeroUnits")
-	if aero_units:
-		altitude = aero_units.get_altitude(self)
-		intake_air_density = aero_units.get_density_at_altitude(altitude)
-		intake_air_pressure = aero_units.get_pressure_at_altitude(altitude)
-	
-	var fuel_burn_rate : float = max_fuel_flow * throttle
+	var fuel_burn_rate : float = max_fuel_flow * throttle.length()
 	var exhaust_velocity : float = calculate_exhaust_velocity()
 	#https://www.omnicalculator.com/physics/ideal-gas-law
 	#var exhaust_pressure : float = 0.0 #will need to use fuel combustion expansion ratio
-	var exhaust_mass_flow_rate : float = intake_mass_flow_rate + (intake_air_density * intake_fan_max_velocity * throttle * intake_area) + fuel_burn_rate
+	var exhaust_mass_flow_rate : float = intake_mass_flow_rate + (air_density * intake_fan_max_velocity * throttle.length() * intake_area) + fuel_burn_rate
 	
 	#mass_flow_rate = mass/time
 	#mass_flow_rate == density * velocity * area

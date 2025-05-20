@@ -240,7 +240,7 @@ func apply_control_commands_to_config(delta : float, control_config : AeroInflue
 	control_config.throttle_command = throttle_command
 	control_config.collective_command = collective_command
 	
-	return control_config.update(delta)
+	return control_config.update(self, delta)
 
 var updated_properties := get_property_conversion_info()
 func get_property_conversion_info() -> Dictionary:

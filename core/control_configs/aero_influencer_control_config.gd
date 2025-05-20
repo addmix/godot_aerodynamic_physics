@@ -31,16 +31,22 @@ var current_value := Vector3.ZERO
 @export var throttle_config : AeroInfluencerControlAxisConfig
 @export var collective_config : AeroInfluencerControlAxisConfig
 
-func update(delta : float) -> Vector3:
+func update(aero_influencer : AeroInfluencer3D, delta : float) -> Vector3:
 	if not enable_control:
 		return current_value
 	
-	var pitch : Vector3 = get_value_safe(pitch_config, pitch_command)
-	var yaw : Vector3 = get_value_safe(yaw_config, yaw_command)
-	var roll : Vector3 = get_value_safe(roll_config, roll_command)
-	var brake : Vector3 = get_value_safe(brake_config, brake_command)
-	var throttle : Vector3 = get_value_safe(throttle_config, throttle_command)
-	var collective : Vector3 = get_value_safe(collective_config, collective_command)
+	
+	var local_relative_position : Vector3 = aero_influencer.relative_position * aero_influencer.aero_body.global_basis
+	
+	
+	var axis_sign : Vector3 = Vector3(sign(local_relative_position.x), sign(local_relative_position.y), sign(local_relative_position.z))
+	
+	var pitch : Vector3 = get_value_safe(pitch_config, pitch_command, axis_sign)
+	var yaw : Vector3 = get_value_safe(yaw_config, yaw_command, axis_sign)
+	var roll : Vector3 = get_value_safe(roll_config, roll_command, axis_sign)
+	var brake : Vector3 = get_value_safe(brake_config, brake_command, axis_sign)
+	var throttle : Vector3 = get_value_safe(throttle_config, throttle_command, axis_sign)
+	var collective : Vector3 = get_value_safe(collective_config, collective_command, axis_sign)
 	
 	var total_control : Vector3 = pitch + yaw + roll + brake + throttle + collective
 	total_control = total_control.clamp(-Vector3.ONE, Vector3.ONE)
@@ -53,7 +59,7 @@ func update(delta : float) -> Vector3:
 	
 	return current_value
 
-static func get_value_safe(axis_config : AeroInfluencerControlAxisConfig, command : float = 0.0) -> Vector3:
+static func get_value_safe(axis_config : AeroInfluencerControlAxisConfig, command : float = 0.0, axis_sign : Vector3 = Vector3.ONE) -> Vector3:
 	if axis_config:
-		return axis_config.get_value(command)
+		return axis_config.get_value(command, axis_sign)
 	return Vector3.ZERO

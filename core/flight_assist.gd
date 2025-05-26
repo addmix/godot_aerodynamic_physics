@@ -54,7 +54,7 @@ var angular_rate_error := Vector3.ZERO
 @export var aoa_limit_end : float = 25.0
 @export_subgroup("Tuning")
 ##If enabled, the flight assist resource will adjust the control authority in an attempt to maintain a consistent control respsonse, despite changing airspeed or air density.
-@export var enable_control_adjustment : bool = false
+@export var enable_control_adjustment : bool = true
 ##Airspeed that control adjustments are tuned at.
 @export var tuned_airspeed : float = 100.0
 ##Minimum limit for airspeed adjustment. This prevents controls from losing authority at low speeds due to control surface stalls.

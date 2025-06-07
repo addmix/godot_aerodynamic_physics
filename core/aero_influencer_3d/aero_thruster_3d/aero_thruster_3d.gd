@@ -7,6 +7,9 @@ class_name AeroThruster3D
 @export var throttle_control_config := create_throttle_control_config()
 func create_throttle_control_config() -> AeroInfluencerControlConfig:
 	var config := AeroInfluencerControlConfig.new()
+	config.use_separate_minmax = true
+	config.min_value.z = 0.0
+	#this sets the thrust direction
 	config.max_value.z = -1.0
 	config.axis_configs.append(AeroInfluencerControlAxisConfig.new("throttle", Vector3.ONE))
 	return config

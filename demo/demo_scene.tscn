@@ -1,6 +1,38 @@
-[gd_scene load_steps=8 format=3 uid="uid://cpbp7en0cerjl"]
+[gd_scene load_steps=9 format=3 uid="uid://cpbp7en0cerjl"]
 
-[ext_resource type="PackedScene" uid="uid://dx0v1i14fyw8c" path="res://addons/godot_aerodynamic_physics/demo/demo_plane.tscn" id="1_bbdyo"]
+[sub_resource type="GDScript" id="GDScript_2sti6"]
+script/source = "extends Node3D
+
+# This script isn't necessary for aerodynamics to work
+# I just don't want to add these demo-controls to the project settings
+
+func _ready():
+	add_input(\"PitchUp\", KEY_S)
+	add_input(\"PitchDown\", KEY_W)
+	add_input(\"YawLeft\", KEY_Q)
+	add_input(\"YawRight\", KEY_E)
+	add_input(\"RollLeft\", KEY_A)
+	add_input(\"RollRight\", KEY_D)
+	add_input(\"ThrottleUp\", KEY_SHIFT)
+	add_input(\"ThrottleDown\", KEY_CTRL)
+	add_input(\"BrakeUp\", KEY_B)
+	add_input(\"BrakeDown\", -1)
+	add_input(\"TiltUp\", KEY_C)
+	add_input(\"TiltDown\", KEY_V)
+	add_input(\"CollectiveUp\", KEY_T)
+	add_input(\"CollectiveDown\", KEY_G)
+
+func add_input(_name : String, keycode : int) -> void:
+	if InputMap.has_action(_name):
+		return
+	
+	InputMap.add_action(_name)
+	
+	if keycode != -1:
+		var input = InputEventKey.new()
+		input.keycode = keycode
+		InputMap.action_add_event(_name, input)
+"
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_lajrc"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -25,7 +57,44 @@ noise = SubResource("FastNoiseLite_ty4ai")
 albedo_color = Color(0, 0.490196, 0.0823529, 1)
 albedo_texture = SubResource("NoiseTexture2D_rutke")
 
+[sub_resource type="GDScript" id="GDScript_bs15r"]
+script/source = "extends Marker3D
+
+var vehicles := {
+	\"Demo plane\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/demo_plane.tscn\",
+	\"Quadcopter\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/quadcopter.tscn\",
+	\"SU-57 \\\"Felon\\\"\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/su57/su57.tscn\",
+	\"B-2 Spirit\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/b2/b2.tscn\",
+	\"V-22 Osprey\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/tilt_rotor/v22.tscn\",
+}
+
+func _ready() -> void:
+	for key in vehicles.keys():
+		$Control/VBoxContainer/OptionButton.add_item(key)
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.keycode == KEY_F5:
+		get_tree().reload_current_scene()
+
+func _on_button_pressed() -> void:
+	if $Control/VBoxContainer/OptionButton.selected == -1:
+		return
+	$Control.visible = false
+	
+	var vehicle_name : String = $Control/VBoxContainer/OptionButton.get_item_text($Control/VBoxContainer/OptionButton.selected)
+	var vehicle_scene : PackedScene = load(vehicles[vehicle_name])
+	var vehicle_instance : Node = vehicle_scene.instantiate()
+	
+	$\"..\".add_child(vehicle_instance)
+	
+	vehicle_instance.global_position = global_position
+	vehicle_instance.linear_velocity = Vector3(0, 0, -150.0)
+	
+	
+"
+
 [node name="Main" type="Node3D"]
+script = SubResource("GDScript_2sti6")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
@@ -40,5 +109,50 @@ use_collision = true
 size = Vector3(10000, 1, 10000)
 material = SubResource("StandardMaterial3D_1sawy")
 
-[node name="AeroBody3D" parent="." instance=ExtResource("1_bbdyo")]
-show_debug = true
+[node name="VehicleSpawner" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 647.618, 0)
+script = SubResource("GDScript_bs15r")
+
+[node name="Control" type="Control" parent="VehicleSpawner"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -167.0
+offset_top = -44.0
+offset_right = 167.0
+offset_bottom = 44.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VehicleSpawner/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="OptionButton" type="OptionButton" parent="VehicleSpawner/Control/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Button" type="Button" parent="VehicleSpawner/Control/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Spawn"
+
+[node name="Label" type="Label" parent="VehicleSpawner"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -23.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Press F5 to return to vehicle selection"
+horizontal_alignment = 1
+
+[connection signal="pressed" from="VehicleSpawner/Control/VBoxContainer/Button" to="VehicleSpawner" method="_on_button_pressed"]

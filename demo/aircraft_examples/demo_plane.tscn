@@ -1,4 +1,4 @@
-[gd_scene load_steps=50 format=3 uid="uid://dx0v1i14fyw8c"]
+[gd_scene load_steps=52 format=3 uid="uid://dx0v1i14fyw8c"]
 
 [ext_resource type="Script" uid="uid://3iji867c81k5" path="res://addons/godot_aerodynamic_physics/core/aero_body_3d.gd" id="1_ddp7w"]
 [ext_resource type="Script" uid="uid://cc5dwx5pqkaur" path="res://addons/godot_aerodynamic_physics/components/AeroControlComponent.gd" id="2_x2dhw"]
@@ -157,7 +157,7 @@ direction_pitch_pid = SubResource("Resource_6l2fv")
 direction_yaw_pid = SubResource("Resource_wruso")
 direction_roll_pid = SubResource("Resource_wyxpf")
 
-[sub_resource type="Resource" id="Resource_qs0nt"]
+[sub_resource type="Resource" id="Resource_34386"]
 resource_name = "pitch"
 script = ExtResource("5_hj20f")
 axis_name = "pitch"
@@ -165,8 +165,8 @@ use_bindings = true
 input = 0.0
 min_limit = -1.0
 max_limit = 1.0
-positive_event = &"ui_down"
-negative_event = &"ui_up"
+positive_event = &"PitchUp"
+negative_event = &"PitchDown"
 enable_smoothing = false
 smoothing_rate = 1.0
 cumulative_positive_event = &""
@@ -174,7 +174,7 @@ cumulative_negative_event = &""
 cumulative_rate = 1.0
 easing = 1.0
 
-[sub_resource type="Resource" id="Resource_m134i"]
+[sub_resource type="Resource" id="Resource_o6rpv"]
 resource_name = "yaw"
 script = ExtResource("5_hj20f")
 axis_name = "yaw"
@@ -182,8 +182,8 @@ use_bindings = true
 input = 0.0
 min_limit = -1.0
 max_limit = 1.0
-positive_event = &""
-negative_event = &""
+positive_event = &"YawLeft"
+negative_event = &"YawRight"
 enable_smoothing = false
 smoothing_rate = 1.0
 cumulative_positive_event = &""
@@ -191,7 +191,7 @@ cumulative_negative_event = &""
 cumulative_rate = 1.0
 easing = 1.0
 
-[sub_resource type="Resource" id="Resource_rvvp2"]
+[sub_resource type="Resource" id="Resource_wtjbh"]
 resource_name = "roll"
 script = ExtResource("5_hj20f")
 axis_name = "roll"
@@ -199,8 +199,8 @@ use_bindings = true
 input = 0.0
 min_limit = -1.0
 max_limit = 1.0
-positive_event = &"ui_left"
-negative_event = &"ui_right"
+positive_event = &"RollLeft"
+negative_event = &"RollRight"
 enable_smoothing = false
 smoothing_rate = 1.0
 cumulative_positive_event = &""
@@ -208,7 +208,7 @@ cumulative_negative_event = &""
 cumulative_rate = 1.0
 easing = 1.0
 
-[sub_resource type="Resource" id="Resource_blosn"]
+[sub_resource type="Resource" id="Resource_jsx6i"]
 resource_name = "throttle"
 script = ExtResource("5_hj20f")
 axis_name = "throttle"
@@ -220,12 +220,12 @@ positive_event = &""
 negative_event = &""
 enable_smoothing = false
 smoothing_rate = 1.0
-cumulative_positive_event = &"ui_page_up"
-cumulative_negative_event = &"ui_page_down"
+cumulative_positive_event = &"ThrottleUp"
+cumulative_negative_event = &"ThrottleDown"
 cumulative_rate = 1.0
 easing = 1.0
 
-[sub_resource type="Resource" id="Resource_m2vdb"]
+[sub_resource type="Resource" id="Resource_js434"]
 resource_name = "brake"
 script = ExtResource("5_hj20f")
 axis_name = "brake"
@@ -242,7 +242,7 @@ cumulative_negative_event = &""
 cumulative_rate = 1.0
 easing = 1.0
 
-[sub_resource type="Resource" id="Resource_gk5sg"]
+[sub_resource type="Resource" id="Resource_n1yg5"]
 resource_name = "collective"
 script = ExtResource("5_hj20f")
 axis_name = "collective"
@@ -254,14 +254,32 @@ positive_event = &""
 negative_event = &""
 enable_smoothing = false
 smoothing_rate = 1.0
-cumulative_positive_event = &""
-cumulative_negative_event = &""
+cumulative_positive_event = &"CollectiveUp"
+cumulative_negative_event = &"CollectiveDown"
 cumulative_rate = 1.0
 easing = 1.0
 
-[sub_resource type="Resource" id="Resource_8brnm"]
+[sub_resource type="Resource" id="Resource_ot2gc"]
+resource_name = "rotor_tilt"
+script = ExtResource("5_hj20f")
+axis_name = "rotor_tilt"
+use_bindings = true
+input = 0.0
+min_limit = -1.0
+max_limit = 1.0
+positive_event = &""
+negative_event = &""
+enable_smoothing = false
+smoothing_rate = 1.0
+cumulative_positive_event = &"TiltUp"
+cumulative_negative_event = &"TiltDown"
+cumulative_rate = 1.0
+easing = 1.0
+metadata/_custom_type_script = "uid://dfbhcpt1rr3ai"
+
+[sub_resource type="Resource" id="Resource_qs0nt"]
 script = ExtResource("5_x51t6")
-axis_configs = Array[ExtResource("5_hj20f")]([SubResource("Resource_qs0nt"), SubResource("Resource_m134i"), SubResource("Resource_rvvp2"), SubResource("Resource_blosn"), SubResource("Resource_m2vdb"), SubResource("Resource_gk5sg")])
+axis_configs = Array[ExtResource("5_hj20f")]([SubResource("Resource_34386"), SubResource("Resource_o6rpv"), SubResource("Resource_wtjbh"), SubResource("Resource_jsx6i"), SubResource("Resource_js434"), SubResource("Resource_n1yg5"), SubResource("Resource_ot2gc")])
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_nchkm"]
 size = Vector3(7.3728, 0.215118, 4.76475)
@@ -287,6 +305,8 @@ script = ExtResource("12_njgyo")
 enable_control = true
 axis_configs = Array[ExtResource("11_1g5my")]([SubResource("Resource_e07xt")])
 max_value = Vector3(0, 0, -1)
+use_separate_minmax = false
+min_value = Vector3(0, 0, 1)
 limit_movement_speed = false
 movement_speed = 1.0
 
@@ -347,6 +367,8 @@ script = ExtResource("12_njgyo")
 enable_control = true
 axis_configs = Array[ExtResource("11_1g5my")]([SubResource("Resource_uwqen")])
 max_value = Vector3(0.2, 0, 0)
+use_separate_minmax = false
+min_value = Vector3(-0.2, 0, 0)
 limit_movement_speed = false
 movement_speed = 1.0
 
@@ -357,11 +379,27 @@ span = 1.4
 auto_aspect_ratio = true
 aspect_ratio = 1.4
 
+[sub_resource type="Resource" id="Resource_m134i"]
+resource_name = "yaw"
+script = ExtResource("11_1g5my")
+axis_name = "yaw"
+contribution = Vector3(-1, 0, 0)
+easing = 1.0
+axis_flip_x = 0
+expression_x = ""
+axis_flip_y = 0
+expression_y = ""
+axis_flip_z = 0
+expression_z = ""
+metadata/_custom_type_script = "uid://c46td0go5kvp6"
+
 [sub_resource type="Resource" id="Resource_u1ahl"]
 script = ExtResource("12_njgyo")
 enable_control = true
-axis_configs = Array[ExtResource("11_1g5my")]([])
-max_value = Vector3(0.1, 0, 0)
+axis_configs = Array[ExtResource("11_1g5my")]([SubResource("Resource_m134i")])
+max_value = Vector3(0.5, 0, 0)
+use_separate_minmax = false
+min_value = Vector3(-0.5, 0, 0)
 limit_movement_speed = false
 movement_speed = 1.0
 
@@ -391,6 +429,8 @@ script = ExtResource("12_njgyo")
 enable_control = true
 axis_configs = Array[ExtResource("11_1g5my")]([SubResource("Resource_hj20f")])
 max_value = Vector3(0.1, 0, 0)
+use_separate_minmax = false
+min_value = Vector3(-0.1, 0, 0)
 limit_movement_speed = false
 movement_speed = 1.0
 
@@ -406,7 +446,7 @@ show_debug = true
 [node name="AeroControlComponent" type="Node" parent="."]
 script = ExtResource("2_x2dhw")
 flight_assist = SubResource("Resource_qpum4")
-control_config = SubResource("Resource_8brnm")
+control_config = SubResource("Resource_qs0nt")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.00468441, 1.16813)
@@ -435,11 +475,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.57628e-07, 0.29494)
 size = Vector3(2.0332, 0.113525, 1.14014)
 
 [node name="Rudder" type="Node3D" parent="."]
-transform = Transform3D(-4.37114e-08, -1, 3.55271e-15, 0.835693, -3.65293e-08, -0.549198, 0.549198, -2.40062e-08, 0.835693, -2.96035e-17, 0.742918, 2.98506)
+transform = Transform3D(6.12304e-17, -1, 0, 0.835808, 5.11768e-17, -0.549023, 0.549023, 3.36168e-17, 0.835808, -2.96035e-17, 0.742918, 2.98506)
 script = ExtResource("2_ygpq6")
 manual_config = SubResource("Resource_raxm3")
 wing_config = SubResource("Resource_7jeqs")
 actuation_config = SubResource("Resource_u1ahl")
+control_rotation_order = 4
 
 [node name="CSGBox3D3" type="CSGBox3D" parent="Rudder"]
 transform = Transform3D(-4.37114e-08, 0.999742, -0.0227224, -1, -4.37001e-08, 9.93232e-10, 3.55271e-15, 0.0227224, 0.999742, 0.0151641, -6.6283e-10, 0.239923)
@@ -470,10 +511,13 @@ size = Vector3(3.67285, 0.113525, 1.14014)
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55771, 8.71651)
 
-[node name="Label3D" type="Label3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 3.133, 5.73031)
-text = "Use arrow keys for pitch and roll.
-Use page up/page down for throttle control."
+[node name="Label3D" type="Label3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.57529, -2.9862)
+text = "Controls:
+Pitch: W/A
+Yaw: Q/E
+Roll: A/D
+Throttle: Shift/Ctrl"
 
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.998193, 0.0600904, 0, -0.0600904, 0.998193, 0, -0.155863, 1.06391)

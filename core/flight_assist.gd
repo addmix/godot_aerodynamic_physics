@@ -224,10 +224,10 @@ func flight_assist(delta : float) -> void:
 	#if is_equal_approx(air_speed, 0.0):
 		#return
 
-	if air_speed < 0.1:
-		pitch_assist_pid._integral_error = 0.0
-		yaw_assist_pid._integral_error = 0.0
-		roll_assist_pid._integral_error = 0.0
+	#if air_speed < 0.1:
+		#pitch_assist_pid._integral_error = 0.0
+		#yaw_assist_pid._integral_error = 0.0
+		#roll_assist_pid._integral_error = 0.0
 		#return #prevents unnecessary input commands
 
 	var angular_rates := max_angular_rates

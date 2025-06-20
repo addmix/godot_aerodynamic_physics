@@ -8,10 +8,11 @@ class_name AeroThruster3D
 func create_throttle_control_config() -> AeroInfluencerControlConfig:
 	var config := AeroInfluencerControlConfig.new()
 	config.use_separate_minmax = true
-	config.min_value.z = 0.0
 	#this sets the thrust direction
-	config.max_value.z = -1.0
-	config.axis_configs.append(AeroInfluencerControlAxisConfig.new("throttle", Vector3.ONE))
+	config.min_value.z = -1.0
+	config.max_value.z = 0.0
+	
+	config.axis_configs.append(AeroInfluencerControlAxisConfig.new("throttle", -Vector3.ONE))
 	return config
 
 ##Throttle value used to simulate the JetThrusterComponent
@@ -29,7 +30,14 @@ func _ready():
 func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	var force_and_torque : PackedVector3Array = super._calculate_forces(substep_delta)
 	
-	force_and_torque[0] += global_transform.basis.inverse() * get_thrust_force()
+	var force : Vector3 = global_transform.basis * get_thrust_force()
+	var torque : Vector3 = relative_position.cross(force)
+	
+	force_and_torque[0] += force
+	force_and_torque[1] += torque
+	
+	_current_force = force
+	_current_torque = torque
 	
 	return force_and_torque
 
@@ -41,3 +49,6 @@ func _update_control_transform(substep_delta : float) -> void:
 
 func get_thrust_force() -> Vector3:
 	return max_thrust_force * throttle
+
+func is_overriding_body_sleep() -> bool:
+	return throttle.length_squared() > 0.0 or super()

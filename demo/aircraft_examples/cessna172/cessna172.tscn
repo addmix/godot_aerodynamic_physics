@@ -1,10 +1,10 @@
 [gd_scene load_steps=79 format=3 uid="uid://bwpwxnufuujve"]
 
-[ext_resource type="PackedScene" uid="uid://bqmsg5k48c2br" path="res://assets/vehicles/cessna172/cessna172.blend" id="1_7rcro"]
+[ext_resource type="PackedScene" uid="uid://coec3j0jnocu" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/cessna172/cessna172.blend" id="1_7rcro"]
 [ext_resource type="Script" uid="uid://cc5dwx5pqkaur" path="res://addons/godot_aerodynamic_physics/components/AeroControlComponent.gd" id="2_4u4b6"]
 [ext_resource type="Script" uid="uid://d1725od371u4a" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd" id="2_iyyha"]
 [ext_resource type="Script" uid="uid://ctbwb7xlhft6t" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_config.gd" id="3_5fm2q"]
-[ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_control_config_axis.gd" id="3_b1b2v"]
+[ext_resource type="Script" uid="uid://dfbhcpt1rr3ai" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_control_config_axis.gd" id="3_b1b2v"]
 [ext_resource type="Script" uid="uid://cbgqb7g7mmwtu" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_control_config.gd" id="4_5oq5f"]
 [ext_resource type="Script" uid="uid://crkbhmxpjff4o" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="4_o4ret"]
 [ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_influencer_control_config.gd" id="5_5fm2q"]
@@ -582,6 +582,7 @@ roughness = 0.8
 [node name="cessna172" instance=ExtResource("1_7rcro")]
 mass = 1111.0
 center_of_mass = Vector3(0, 0.01, -1.71)
+show_debug = true
 
 [node name="AeroControlComponent" type="Node" parent="." index="0"]
 script = ExtResource("2_4u4b6")
@@ -666,7 +667,7 @@ wing_config = SubResource("Resource_snyt3")
 actuation_config = SubResource("Resource_8ihwy")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="WingR1/FlapR" index="12"]
+[node name="CSGBox3D" type="CSGBox3D" parent="WingR1/FlapR" index="4"]
 transform = Transform3D(1, -5.55112e-16, 0, 5.55112e-16, 1, 0, 0, 0, 1, 0, 8.88178e-16, 0.127996)
 size = Vector3(1.99478, 0.0454879, 0.510548)
 
@@ -704,7 +705,7 @@ wing_config = SubResource("Resource_snyt3")
 actuation_config = SubResource("Resource_rvxpo")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="WingL1/FlapL" index="12"]
+[node name="CSGBox3D" type="CSGBox3D" parent="WingL1/FlapL" index="4"]
 transform = Transform3D(1, -5.55112e-16, 0, 5.55112e-16, 1, 0, 0, 0, 1, 0, 8.88178e-16, 0.127996)
 size = Vector3(1.99478, 0.0454879, 0.510548)
 

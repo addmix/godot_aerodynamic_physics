@@ -13,6 +13,9 @@
 [ext_resource type="Script" uid="uid://cbgqb7g7mmwtu" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_control_config.gd" id="6_1uofs"]
 [ext_resource type="Script" uid="uid://crkbhmxpjff4o" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="7_u36rk"]
 
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_dne2k"]
+friction = 0.0
+
 [sub_resource type="Resource" id="Resource_gdxys"]
 script = ExtResource("3_gdxys")
 p = 0.001
@@ -240,48 +243,16 @@ cumulative_negative_event = &""
 cumulative_rate = 1.0
 easing = 1.0
 
-[sub_resource type="Resource" id="Resource_n1yg5"]
-resource_name = "collective"
-script = ExtResource("5_2cb04")
-axis_name = "collective"
-use_bindings = true
-input = 0.0
-min_limit = -1.0
-max_limit = 1.0
-positive_event = &""
-negative_event = &""
-enable_smoothing = false
-smoothing_rate = 1.0
-cumulative_positive_event = &"CollectiveUp"
-cumulative_negative_event = &"CollectiveDown"
-cumulative_rate = 1.0
-easing = 1.0
-
-[sub_resource type="Resource" id="Resource_ot2gc"]
-resource_name = "rotor_tilt"
-script = ExtResource("5_2cb04")
-axis_name = "rotor_tilt"
-use_bindings = true
-input = 0.0
-min_limit = -1.0
-max_limit = 1.0
-positive_event = &""
-negative_event = &""
-enable_smoothing = false
-smoothing_rate = 1.0
-cumulative_positive_event = &"TiltUp"
-cumulative_negative_event = &"TiltDown"
-cumulative_rate = 1.0
-easing = 1.0
-metadata/_custom_type_script = "uid://dfbhcpt1rr3ai"
-
 [sub_resource type="Resource" id="Resource_fgiqm"]
 script = ExtResource("6_1uofs")
-axis_configs = Array[ExtResource("5_2cb04")]([SubResource("Resource_34386"), SubResource("Resource_o6rpv"), SubResource("Resource_wtjbh"), SubResource("Resource_jsx6i"), SubResource("Resource_js434"), SubResource("Resource_n1yg5"), SubResource("Resource_ot2gc")])
+axis_configs = Array[ExtResource("5_2cb04")]([SubResource("Resource_34386"), SubResource("Resource_o6rpv"), SubResource("Resource_wtjbh"), SubResource("Resource_jsx6i"), SubResource("Resource_js434")])
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_tc445"]
 radius = 0.845685
 height = 6.06128
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_dne2k"]
+height = 3.58321
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1gcqf"]
 radius = 0.516512
@@ -573,6 +544,7 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
 [node name="su57" instance=ExtResource("1_6jmm2")]
 mass = 26700.0
+physics_material_override = SubResource("PhysicsMaterial_dne2k")
 center_of_mass = Vector3(0, 0, 2.5)
 show_debug = true
 
@@ -598,52 +570,56 @@ transform = Transform3D(1, 0, 0, 0, 0.133606, 0.991035, 0, -0.991035, 0.133606, 
 visible = false
 shape = SubResource("CapsuleShape3D_tc445")
 
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="." index="10"]
+[node name="CollisionShape3D11" type="CollisionShape3D" parent="." index="10"]
+transform = Transform3D(6.12303e-17, -1, 0, 1, 6.12303e-17, 0, 0, 0, 1, 0, -1.37836, -2.43463)
+shape = SubResource("CapsuleShape3D_dne2k")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="." index="11"]
 transform = Transform3D(1, 0, 0, 0, -0.0053582, 0.999986, 0, -0.999986, -0.0053582, 0, 0.0623442, -6.59913)
 visible = false
 shape = SubResource("CapsuleShape3D_1gcqf")
 
-[node name="CollisionShape3D3" type="CollisionShape3D" parent="." index="11"]
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="." index="12"]
 transform = Transform3D(1, 0, 0, 0, -0.0432881, 0.999062, 0, -0.999062, -0.0432881, 1.35211, -0.0116499, 3.34535)
 visible = false
 shape = SubResource("CapsuleShape3D_u36rk")
 
-[node name="CollisionShape3D4" type="CollisionShape3D" parent="." index="12"]
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="." index="13"]
 transform = Transform3D(1, 0, 0, 0, -0.0432881, 0.999062, 0, -0.999062, -0.0432881, -1.352, -0.012, 3.345)
 visible = false
 shape = SubResource("CapsuleShape3D_u36rk")
 
-[node name="CollisionShape3D5" type="CollisionShape3D" parent="." index="13"]
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="." index="14"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.137207, 2.64088)
 visible = false
 shape = SubResource("BoxShape3D_6o7h7")
 
-[node name="CollisionShape3D6" type="CollisionShape3D" parent="." index="14"]
+[node name="CollisionShape3D6" type="CollisionShape3D" parent="." index="15"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.137207, 5.40478)
 visible = false
 shape = SubResource("BoxShape3D_n4vvt")
 
-[node name="CollisionShape3D7" type="CollisionShape3D" parent="." index="15"]
+[node name="CollisionShape3D7" type="CollisionShape3D" parent="." index="16"]
 transform = Transform3D(0.654187, 0, -0.756333, 0, 1, 0, 0.756333, 0, 0.654187, 3.24416, 0.137207, 1.93217)
 visible = false
 shape = SubResource("BoxShape3D_x87ek")
 
-[node name="CollisionShape3D8" type="CollisionShape3D" parent="." index="16"]
+[node name="CollisionShape3D8" type="CollisionShape3D" parent="." index="17"]
 transform = Transform3D(0.654741, 0, 0.755853, 0, 1, 0, -0.755853, 0, 0.654741, -3.244, 0.137, 1.932)
 visible = false
 shape = SubResource("BoxShape3D_x87ek")
 
-[node name="CollisionShape3D9" type="CollisionShape3D" parent="." index="17"]
+[node name="CollisionShape3D9" type="CollisionShape3D" parent="." index="18"]
 transform = Transform3D(0.906308, -0.317293, 0.279161, 0.422618, 0.680438, -0.598664, -7.44872e-09, 0.660552, 0.75078, -2.78259, 1.21385, 5.94426)
 visible = false
 shape = SubResource("BoxShape3D_sknif")
 
-[node name="CollisionShape3D10" type="CollisionShape3D" parent="." index="18"]
+[node name="CollisionShape3D10" type="CollisionShape3D" parent="." index="19"]
 transform = Transform3D(0.906619, 0.316446, -0.279113, -0.42195, 0.680536, -0.599024, 0.000387371, 0.660858, 0.750511, 2.783, 1.214, 5.944)
 visible = false
 shape = SubResource("BoxShape3D_sknif")
 
-[node name="AeroThruster3DR" type="Node3D" parent="." index="19"]
+[node name="AeroThruster3DR" type="Node3D" parent="." index="20"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.41904, 0, 8.09758)
 script = ExtResource("2_5b6kh")
 throttle_control_config = SubResource("Resource_vl4uj")
@@ -655,7 +631,7 @@ metadata/_custom_type_script = "uid://3kjm0rdymoth"
 [node name="CSGBox3D" type="CSGBox3D" parent="AeroThruster3DR" index="2"]
 size = Vector3(0.25, 0.25, 3)
 
-[node name="AeroThruster3DL" type="Node3D" parent="." index="20"]
+[node name="AeroThruster3DL" type="Node3D" parent="." index="21"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.419, 0, 8.098)
 script = ExtResource("2_5b6kh")
 throttle_control_config = SubResource("Resource_vl4uj")
@@ -667,7 +643,7 @@ metadata/_custom_type_script = "uid://3kjm0rdymoth"
 [node name="CSGBox3D" type="CSGBox3D" parent="AeroThruster3DL" index="2"]
 size = Vector3(0.25, 0.25, 3)
 
-[node name="WingR" type="Node3D" parent="." index="21"]
+[node name="WingR" type="Node3D" parent="." index="22"]
 transform = Transform3D(0.675204, 0, -0.737631, 0, 1, 0, 0.737631, 0, 0.675204, 3.48524, 0, 2.97831)
 script = ExtResource("5_tc445")
 manual_config = SubResource("Resource_13llr")
@@ -686,7 +662,7 @@ metadata/_custom_type_script = "uid://d1725od371u4a"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.695391)
 size = Vector3(3.19043, 0.25, 1.83203)
 
-[node name="WingL" type="Node3D" parent="." index="22"]
+[node name="WingL" type="Node3D" parent="." index="23"]
 transform = Transform3D(0.67559, 0, 0.737277, 0, 1, 0, -0.737277, 0, 0.67559, -3.485, 0, 2.978)
 script = ExtResource("5_tc445")
 manual_config = SubResource("Resource_13llr")
@@ -705,7 +681,7 @@ metadata/_custom_type_script = "uid://d1725od371u4a"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.695391)
 size = Vector3(3.19043, 0.25, 1.83203)
 
-[node name="ElevonR2" type="Node3D" parent="." index="23"]
+[node name="ElevonR2" type="Node3D" parent="." index="24"]
 transform = Transform3D(0.707107, -3.09086e-08, -0.707107, 1.28028e-08, 1, -3.09086e-08, 0.707107, 1.28027e-08, 0.707107, 3.84164, -8.88178e-16, 7.51748)
 rotation_order = 4
 script = ExtResource("5_tc445")
@@ -718,7 +694,7 @@ metadata/_custom_type_script = "uid://d1725od371u4a"
 transform = Transform3D(1, 1.24345e-14, 0, -1.13687e-13, 1, 8.88178e-16, 0, -2.66454e-13, 1, 1.10441e-29, 1.79399e-15, 1.01986)
 size = Vector3(2.75366, 0.408203, 1.51563)
 
-[node name="ElevonL2" type="Node3D" parent="." index="24"]
+[node name="ElevonL2" type="Node3D" parent="." index="25"]
 transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -3.842, 0, 7.517)
 rotation_order = 4
 script = ExtResource("5_tc445")
@@ -731,14 +707,14 @@ metadata/_custom_type_script = "uid://d1725od371u4a"
 transform = Transform3D(1, 1.24345e-14, 0, -1.13687e-13, 1, 8.88178e-16, 0, -2.66454e-13, 1, 1.10441e-29, 1.79399e-15, 1.01986)
 size = Vector3(2.75366, 0.408203, 1.51563)
 
-[node name="Body" type="Node3D" parent="." index="25"]
+[node name="Body" type="Node3D" parent="." index="26"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.829038)
 script = ExtResource("5_tc445")
 manual_config = SubResource("Resource_1ghes")
 wing_config = SubResource("Resource_dfwn2")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="RudderL2" type="Node3D" parent="." index="26"]
+[node name="RudderL2" type="Node3D" parent="." index="27"]
 transform = Transform3D(0.320158, 0.907044, 0.273441, -0.689722, 0.421036, -0.589078, -0.649448, 0, 0.760406, -2.85341, 1.3384, 6.21621)
 rotation_order = 5
 script = ExtResource("5_tc445")
@@ -751,7 +727,7 @@ metadata/_custom_type_script = "uid://d1725od371u4a"
 transform = Transform3D(1, 1.13705e-07, -1.01328e-06, 7.97294e-08, 0.999999, 3.68959e-07, 4.17233e-07, -2.36298e-06, 0.999999, -4.76837e-07, 0, 0.403564)
 size = Vector3(2.42773, 0.117432, 1.80713)
 
-[node name="RudderR2" type="Node3D" parent="." index="27"]
+[node name="RudderR2" type="Node3D" parent="." index="28"]
 transform = Transform3D(0.320158, -0.907044, -0.273441, 0.689722, 0.421036, -0.589078, 0.649448, 0, 0.760406, 2.853, 1.338, 6.216)
 rotation_order = 5
 script = ExtResource("5_tc445")

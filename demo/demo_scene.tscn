@@ -88,11 +88,6 @@ func _on_button_pressed() -> void:
 	var vehicle_instance : Node = vehicle_scene.instantiate()
 	
 	$\"..\".add_child(vehicle_instance)
-	
-	vehicle_instance.global_position = global_position
-	vehicle_instance.linear_velocity = Vector3(0, 0, -150.0)
-	
-	
 "
 
 [node name="Main" type="Node3D"]

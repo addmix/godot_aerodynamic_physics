@@ -1,4 +1,4 @@
-[gd_scene load_steps=52 format=3 uid="uid://dx0v1i14fyw8c"]
+[gd_scene load_steps=49 format=3 uid="uid://dx0v1i14fyw8c"]
 
 [ext_resource type="Script" uid="uid://3iji867c81k5" path="res://addons/godot_aerodynamic_physics/core/aero_body_3d.gd" id="1_ddp7w"]
 [ext_resource type="Script" uid="uid://cc5dwx5pqkaur" path="res://addons/godot_aerodynamic_physics/components/AeroControlComponent.gd" id="2_x2dhw"]
@@ -225,61 +225,9 @@ cumulative_negative_event = &"ThrottleDown"
 cumulative_rate = 1.0
 easing = 1.0
 
-[sub_resource type="Resource" id="Resource_js434"]
-resource_name = "brake"
-script = ExtResource("5_hj20f")
-axis_name = "brake"
-use_bindings = true
-input = 0.0
-min_limit = 0.0
-max_limit = 1.0
-positive_event = &""
-negative_event = &""
-enable_smoothing = false
-smoothing_rate = 1.0
-cumulative_positive_event = &""
-cumulative_negative_event = &""
-cumulative_rate = 1.0
-easing = 1.0
-
-[sub_resource type="Resource" id="Resource_n1yg5"]
-resource_name = "collective"
-script = ExtResource("5_hj20f")
-axis_name = "collective"
-use_bindings = true
-input = 0.0
-min_limit = -1.0
-max_limit = 1.0
-positive_event = &""
-negative_event = &""
-enable_smoothing = false
-smoothing_rate = 1.0
-cumulative_positive_event = &"CollectiveUp"
-cumulative_negative_event = &"CollectiveDown"
-cumulative_rate = 1.0
-easing = 1.0
-
-[sub_resource type="Resource" id="Resource_ot2gc"]
-resource_name = "rotor_tilt"
-script = ExtResource("5_hj20f")
-axis_name = "rotor_tilt"
-use_bindings = true
-input = 0.0
-min_limit = -1.0
-max_limit = 1.0
-positive_event = &""
-negative_event = &""
-enable_smoothing = false
-smoothing_rate = 1.0
-cumulative_positive_event = &"TiltUp"
-cumulative_negative_event = &"TiltDown"
-cumulative_rate = 1.0
-easing = 1.0
-metadata/_custom_type_script = "uid://dfbhcpt1rr3ai"
-
 [sub_resource type="Resource" id="Resource_qs0nt"]
 script = ExtResource("5_x51t6")
-axis_configs = Array[ExtResource("5_hj20f")]([SubResource("Resource_34386"), SubResource("Resource_o6rpv"), SubResource("Resource_wtjbh"), SubResource("Resource_jsx6i"), SubResource("Resource_js434"), SubResource("Resource_n1yg5"), SubResource("Resource_ot2gc")])
+axis_configs = Array[ExtResource("5_hj20f")]([SubResource("Resource_34386"), SubResource("Resource_o6rpv"), SubResource("Resource_wtjbh"), SubResource("Resource_jsx6i")])
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_nchkm"]
 size = Vector3(7.3728, 0.215118, 4.76475)

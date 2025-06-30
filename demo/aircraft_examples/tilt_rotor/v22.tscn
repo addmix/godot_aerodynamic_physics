@@ -1,4 +1,4 @@
-[gd_scene load_steps=92 format=3 uid="uid://dxigt7t2h5vih"]
+[gd_scene load_steps=90 format=3 uid="uid://dxigt7t2h5vih"]
 
 [ext_resource type="Script" uid="uid://3iji867c81k5" path="res://addons/godot_aerodynamic_physics/core/aero_body_3d.gd" id="1_0oknc"]
 [ext_resource type="Script" uid="uid://cc5dwx5pqkaur" path="res://addons/godot_aerodynamic_physics/components/AeroControlComponent.gd" id="2_gyjyh"]
@@ -7,16 +7,13 @@
 [ext_resource type="Script" uid="uid://c46td0go5kvp6" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_influencer_control_axis_config.gd" id="3_a6dhb"]
 [ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_influencer_control_config.gd" id="4_2yqnu"]
 [ext_resource type="Script" uid="uid://cdp8dc63ytxx1" path="res://addons/godot_aerodynamic_physics/core/flight_assist.gd" id="4_usx2q"]
-[ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_control_config_axis.gd" id="5_0axsk"]
+[ext_resource type="Script" uid="uid://dfbhcpt1rr3ai" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_control_config_axis.gd" id="5_0axsk"]
 [ext_resource type="Script" uid="uid://cbgqb7g7mmwtu" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_control_config.gd" id="5_qgs5q"]
 [ext_resource type="Script" uid="uid://d1725od371u4a" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd" id="5_u35px"]
 [ext_resource type="Script" uid="uid://ctbwb7xlhft6t" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_config.gd" id="6_gyjyh"]
 [ext_resource type="Script" uid="uid://crkbhmxpjff4o" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="7_0axsk"]
 [ext_resource type="Script" uid="uid://c3n4g48jfeemj" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_influencer_3d.gd" id="8_usx2q"]
 [ext_resource type="PackedScene" uid="uid://bmhep0mniktj8" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/tilt_rotor/v22.glb" id="9_qgs5q"]
-
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_n2id5"]
-friction = 0.0
 
 [sub_resource type="Resource" id="Resource_k86yj"]
 script = ExtResource("3_0axsk")
@@ -227,23 +224,6 @@ cumulative_negative_event = &"ThrottleDown"
 cumulative_rate = 1.0
 easing = 1.0
 
-[sub_resource type="Resource" id="Resource_js434"]
-resource_name = "brake"
-script = ExtResource("5_0axsk")
-axis_name = "brake"
-use_bindings = true
-input = 0.0
-min_limit = 0.0
-max_limit = 1.0
-positive_event = &""
-negative_event = &""
-enable_smoothing = false
-smoothing_rate = 1.0
-cumulative_positive_event = &""
-cumulative_negative_event = &""
-cumulative_rate = 1.0
-easing = 1.0
-
 [sub_resource type="Resource" id="Resource_n1yg5"]
 resource_name = "collective"
 script = ExtResource("5_0axsk")
@@ -281,7 +261,7 @@ metadata/_custom_type_script = "uid://dfbhcpt1rr3ai"
 
 [sub_resource type="Resource" id="Resource_c7o86"]
 script = ExtResource("5_qgs5q")
-axis_configs = Array[ExtResource("5_0axsk")]([SubResource("Resource_34386"), SubResource("Resource_o6rpv"), SubResource("Resource_wtjbh"), SubResource("Resource_jsx6i"), SubResource("Resource_js434"), SubResource("Resource_n1yg5"), SubResource("Resource_ot2gc")])
+axis_configs = Array[ExtResource("5_0axsk")]([SubResource("Resource_34386"), SubResource("Resource_o6rpv"), SubResource("Resource_wtjbh"), SubResource("Resource_jsx6i"), SubResource("Resource_n1yg5"), SubResource("Resource_ot2gc")])
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_h1vym"]
 radius = 1.42331
@@ -740,13 +720,13 @@ aspect_ratio = 0.306101
 
 [node name="TiltRotor" type="VehicleBody3D"]
 mass = 18000.0
-physics_material_override = SubResource("PhysicsMaterial_n2id5")
 center_of_mass_mode = 1
 center_of_mass = Vector3(0, -1.57, -0.18)
 can_sleep = false
 linear_damp_mode = 1
 angular_damp_mode = 1
 script = ExtResource("1_0oknc")
+show_debug = true
 debug_scale = 0.5
 debug_width = 0.2
 debug_center_width = 0.5

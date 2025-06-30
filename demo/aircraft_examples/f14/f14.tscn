@@ -14,6 +14,9 @@
 [ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_influencer_control_config.gd" id="12_yuw0c"]
 [ext_resource type="Script" uid="uid://3kjm0rdymoth" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_thruster_3d/aero_thruster_3d.gd" id="13_yuw0c"]
 
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_3wjhu"]
+friction = 0.0
+
 [sub_resource type="Resource" id="Resource_rrmb4"]
 script = ExtResource("3_qedox")
 p = 0.001
@@ -241,41 +244,6 @@ cumulative_negative_event = &""
 cumulative_rate = 1.0
 easing = 1.0
 
-[sub_resource type="Resource" id="Resource_n1yg5"]
-resource_name = "collective"
-script = ExtResource("5_yuw0c")
-axis_name = "collective"
-use_bindings = true
-input = 0.0
-min_limit = -1.0
-max_limit = 1.0
-positive_event = &""
-negative_event = &""
-enable_smoothing = false
-smoothing_rate = 1.0
-cumulative_positive_event = &"CollectiveUp"
-cumulative_negative_event = &"CollectiveDown"
-cumulative_rate = 1.0
-easing = 1.0
-
-[sub_resource type="Resource" id="Resource_ot2gc"]
-resource_name = "rotor_tilt"
-script = ExtResource("5_yuw0c")
-axis_name = "rotor_tilt"
-use_bindings = true
-input = 0.0
-min_limit = -1.0
-max_limit = 1.0
-positive_event = &""
-negative_event = &""
-enable_smoothing = false
-smoothing_rate = 1.0
-cumulative_positive_event = &"TiltUp"
-cumulative_negative_event = &"TiltDown"
-cumulative_rate = 1.0
-easing = 1.0
-metadata/_custom_type_script = "uid://dfbhcpt1rr3ai"
-
 [sub_resource type="Resource" id="Resource_mmush"]
 resource_name = "sweep"
 script = ExtResource("5_yuw0c")
@@ -314,7 +282,7 @@ metadata/_custom_type_script = "uid://dfbhcpt1rr3ai"
 
 [sub_resource type="Resource" id="Resource_i3tvn"]
 script = ExtResource("6_si53m")
-axis_configs = Array[ExtResource("5_yuw0c")]([SubResource("Resource_34386"), SubResource("Resource_o6rpv"), SubResource("Resource_wtjbh"), SubResource("Resource_jsx6i"), SubResource("Resource_js434"), SubResource("Resource_n1yg5"), SubResource("Resource_ot2gc"), SubResource("Resource_mmush"), SubResource("Resource_3wjhu")])
+axis_configs = Array[ExtResource("5_yuw0c")]([SubResource("Resource_34386"), SubResource("Resource_o6rpv"), SubResource("Resource_wtjbh"), SubResource("Resource_jsx6i"), SubResource("Resource_js434"), SubResource("Resource_mmush"), SubResource("Resource_3wjhu")])
 
 [sub_resource type="GDScript" id="GDScript_yuw0c"]
 script/source = "extends MeshInstance3D
@@ -840,6 +808,9 @@ movement_speed = 1.0
 [sub_resource type="BoxShape3D" id="BoxShape3D_tfg1l"]
 size = Vector3(4.24179, 1.58642, 9.1544)
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ckcso"]
+height = 3.99737
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_i3tvn"]
 size = Vector3(0.300925, 2.8613, 1.10752)
 
@@ -855,6 +826,7 @@ height = 7.89659
 
 [node name="f14" instance=ExtResource("1_6mwa3")]
 mass = 27500.0
+physics_material_override = SubResource("PhysicsMaterial_3wjhu")
 center_of_mass = Vector3(0, 0, 1.66)
 show_debug = true
 
@@ -1054,22 +1026,26 @@ metadata/_custom_type_script = "uid://3kjm0rdymoth"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0693562, 4.47218)
 shape = SubResource("BoxShape3D_tfg1l")
 
-[node name="CollisionShape3D5" type="CollisionShape3D" parent="." index="21"]
+[node name="CollisionShape3D7" type="CollisionShape3D" parent="." index="21"]
+transform = Transform3D(6.12303e-17, -1, 0, 1, 6.12303e-17, 0, 0, 0, 1, 0, -1.44027, -1.29229)
+shape = SubResource("CapsuleShape3D_ckcso")
+
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="." index="22"]
 transform = Transform3D(1, 0, 0, 0, 0.974405, -0.224798, 0, 0.224798, 0.974405, 1.76268, 1.90324, 8.62366)
 shape = SubResource("BoxShape3D_i3tvn")
 
-[node name="CollisionShape3D6" type="CollisionShape3D" parent="." index="22"]
+[node name="CollisionShape3D6" type="CollisionShape3D" parent="." index="23"]
 transform = Transform3D(1, 0, 0, 0, 0.717628, -0.696426, 0, 0.696426, 0.717628, 1.76268, 1.59255, 7.55632)
 shape = SubResource("BoxShape3D_qtu5q")
 
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="." index="23"]
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="." index="24"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.248363, -1.11851)
 shape = SubResource("BoxShape3D_esdxw")
 
-[node name="CollisionShape3D3" type="CollisionShape3D" parent="." index="24"]
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="." index="25"]
 transform = Transform3D(1, 0, 0, 0, 0.987203, -0.159468, 0, 0.159468, 0.987203, 0, -0.148713, -1.13808)
 shape = SubResource("BoxShape3D_esdxw")
 
-[node name="CollisionShape3D4" type="CollisionShape3D" parent="." index="25"]
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="." index="26"]
 transform = Transform3D(1, 0, 0, 0, -0.0508718, 0.998705, 0, -0.998705, -0.0508718, -8.88178e-16, -0.0273728, -5.46818)
 shape = SubResource("CapsuleShape3D_u1i2l")

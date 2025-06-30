@@ -1,4 +1,4 @@
-[gd_scene load_steps=53 format=3 uid="uid://bmi1chqhr76vg"]
+[gd_scene load_steps=51 format=3 uid="uid://bmi1chqhr76vg"]
 
 [ext_resource type="Script" uid="uid://3iji867c81k5" path="res://addons/godot_aerodynamic_physics/core/aero_body_3d.gd" id="1_ojlhn"]
 [ext_resource type="Script" uid="uid://cc5dwx5pqkaur" path="res://addons/godot_aerodynamic_physics/components/AeroControlComponent.gd" id="2_o518f"]
@@ -78,7 +78,7 @@ max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_rpmi2"]
 script = ExtResource("3_2v3d0")
-p = 0.1
+p = 0.05
 i = 0.5
 d = 0.0
 clamp_integral = true
@@ -96,8 +96,8 @@ max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_1lpet"]
 script = ExtResource("3_2v3d0")
-p = 2.0
-i = 0.0
+p = 0.1
+i = 0.5
 d = 0.0
 clamp_integral = true
 min_integral = -0.1
@@ -213,43 +213,9 @@ cumulative_negative_event = &"ThrottleDown"
 cumulative_rate = 1.0
 easing = 1.0
 
-[sub_resource type="Resource" id="Resource_dsbw7"]
-resource_name = "brake"
-script = ExtResource("5_5n8sq")
-axis_name = "brake"
-use_bindings = true
-input = 0.0
-min_limit = 0.0
-max_limit = 1.0
-positive_event = &""
-negative_event = &""
-enable_smoothing = false
-smoothing_rate = 1.0
-cumulative_positive_event = &""
-cumulative_negative_event = &""
-cumulative_rate = 1.0
-easing = 1.0
-
-[sub_resource type="Resource" id="Resource_qsfqh"]
-resource_name = "collective"
-script = ExtResource("5_5n8sq")
-axis_name = "collective"
-use_bindings = true
-input = 0.0
-min_limit = -1.0
-max_limit = 1.0
-positive_event = &""
-negative_event = &""
-enable_smoothing = false
-smoothing_rate = 1.0
-cumulative_positive_event = &""
-cumulative_negative_event = &""
-cumulative_rate = 1.0
-easing = 1.0
-
 [sub_resource type="Resource" id="Resource_1roke"]
 script = ExtResource("3_ptmmh")
-axis_configs = Array[ExtResource("5_5n8sq")]([SubResource("Resource_4bu18"), SubResource("Resource_b7dno"), SubResource("Resource_70nub"), SubResource("Resource_lkj7r"), SubResource("Resource_dsbw7"), SubResource("Resource_qsfqh")])
+axis_configs = Array[ExtResource("5_5n8sq")]([SubResource("Resource_4bu18"), SubResource("Resource_b7dno"), SubResource("Resource_70nub"), SubResource("Resource_lkj7r")])
 
 [sub_resource type="GDScript" id="GDScript_5n8sq"]
 script/source = "extends CSGBox3D
@@ -282,7 +248,7 @@ metadata/_custom_type_script = "uid://c46td0go5kvp6"
 resource_name = "yaw"
 script = ExtResource("5_iq2vc")
 axis_name = "yaw"
-contribution = Vector3(0, -0.1, 0)
+contribution = Vector3(0, -0.2, 0)
 easing = 1.0
 axis_flip_x = 0
 expression_x = ""
@@ -296,7 +262,7 @@ metadata/_custom_type_script = "uid://c46td0go5kvp6"
 resource_name = "roll"
 script = ExtResource("5_iq2vc")
 axis_name = "roll"
-contribution = Vector3(0, -0.1, 0)
+contribution = Vector3(0, -0.05, 0)
 easing = 1.0
 axis_flip_x = 0
 expression_x = ""
@@ -324,8 +290,8 @@ metadata/_custom_type_script = "uid://c46td0go5kvp6"
 script = ExtResource("6_a0qle")
 enable_control = true
 axis_configs = Array[ExtResource("5_iq2vc")]([SubResource("Resource_5n8sq"), SubResource("Resource_2p0rh"), SubResource("Resource_51c3v"), SubResource("Resource_ylh6s")])
-max_value = Vector3(0, 1273, 0)
-use_separate_minmax = false
+max_value = Vector3(0, 0, 0)
+use_separate_minmax = true
 min_value = Vector3(0, -1273, 0)
 limit_movement_speed = false
 movement_speed = 1.0
@@ -389,8 +355,8 @@ script = ExtResource("6_a0qle")
 enable_control = true
 axis_configs = Array[ExtResource("5_iq2vc")]([SubResource("Resource_5n8sq"), SubResource("Resource_2p0rh"), SubResource("Resource_51c3v"), SubResource("Resource_im7wy")])
 max_value = Vector3(0, 1273, 0)
-use_separate_minmax = false
-min_value = Vector3(0, -1273, 0)
+use_separate_minmax = true
+min_value = Vector3(0, 0, 0)
 limit_movement_speed = false
 movement_speed = 1.0
 
@@ -442,6 +408,8 @@ can_sleep = false
 linear_damp_mode = 1
 angular_damp_mode = 1
 script = ExtResource("1_ojlhn")
+substeps_override = 16
+show_debug = true
 debug_width = 0.01
 debug_center_width = 0.05
 

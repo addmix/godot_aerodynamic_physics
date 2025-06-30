@@ -1,4 +1,4 @@
-[gd_scene load_steps=83 format=3 uid="uid://bhcf56o8msjwq"]
+[gd_scene load_steps=68 format=3 uid="uid://bhcf56o8msjwq"]
 
 [ext_resource type="PackedScene" uid="uid://bh0obl3q2wyuv" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/su57/su57.glb" id="1_6jmm2"]
 [ext_resource type="Script" uid="uid://3kjm0rdymoth" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_thruster_3d/aero_thruster_3d.gd" id="2_5b6kh"]
@@ -379,38 +379,39 @@ limit_movement_speed = false
 movement_speed = 1.0
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
-[sub_resource type="Curve" id="Curve_6o7h7"]
+[sub_resource type="Curve" id="Curve_1uofs"]
+_limits = [0.0, 1.0, -180.0, 180.0]
 bake_resolution = 21
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.25, 1), 0.0, 0.0, 0, 0, Vector2(0.5, 0), 0.0, 0.0, 0, 0, Vector2(0.75, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-90, 1), 0.0, 0.0, 0, 0, Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(90, 1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
 point_count = 5
 
-[sub_resource type="Curve" id="Curve_n4vvt"]
-_limits = [0.99, 1.69, 0.0, 1.0]
+[sub_resource type="Curve" id="Curve_gdxys"]
+_limits = [1.0, 2.0, 0.0, 2.0]
 bake_resolution = 23
-_data = [Vector2(0.053, 1), 0.0, 0.0, 0, 0, Vector2(0.088, 1.324), 4.057, 4.057, 0, 0, Vector2(0.256, 1), 0.181, 0.0, 0, 0]
+_data = [Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 2), 0.0, 0.0, 0, 0, Vector2(2, 1.2), 0.181, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="Curve" id="Curve_x87ek"]
-_limits = [-1.0, 1.0, 0.0, 1.0]
+[sub_resource type="Curve" id="Curve_dne2k"]
+_limits = [-1.0, 1.0, -180.0, 180.0]
 bake_resolution = 36
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.125, 1), 0.0, 0.0, 0, 0, Vector2(0.25, 1.45519e-11), 0.0, 0.0, 0, 0, Vector2(0.375, -0.4), 0.0, 0.0, 0, 0, Vector2(0.415, -1), 0.0, 0.0, 0, 0, Vector2(0.585, 1), 0.0, 0.0, 0, 0, Vector2(0.625, 0.4), 0.0, 0.0, 0, 0, Vector2(0.75, 1.45519e-11), 0.0, 0.0, 0, 0, Vector2(0.875, -1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-148, 1), 0.0, 0.0, 0, 0, Vector2(-145, 0.7), 0.0, 0.0, 0, 0, Vector2(-35, -0.7), 0.0, 0.0, 0, 0, Vector2(-32, -1), 0.0, 0.0, 0, 0, Vector2(32, 1), 0.0, 0.0, 0, 0, Vector2(35, 0.7), 0.0, 0.0, 0, 0, Vector2(137.426, -0.7), 0.0, 0.0, 0, 0, Vector2(148, -1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
 point_count = 10
 
-[sub_resource type="Curve" id="Curve_sknif"]
+[sub_resource type="Curve" id="Curve_2cb04"]
 bake_resolution = 4
 _data = [Vector2(0, 1), 0.0, -2.09824, 0, 0, Vector2(0.406542, 0.490909), -0.666575, -0.666575, 0, 0, Vector2(1, 0.290909), 0.0, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="Resource" id="Resource_2haft"]
+[sub_resource type="Resource" id="Resource_13llr"]
 script = ExtResource("6_1gcqf")
 min_lift_coefficient = -2.0
 max_lift_coefficient = 2.0
-lift_aoa_curve = SubResource("Curve_x87ek")
+lift_aoa_curve = SubResource("Curve_dne2k")
 min_drag_coefficient = 0.02
 max_drag_coefficient = 1.0
-drag_aoa_curve = SubResource("Curve_6o7h7")
-sweep_drag_multiplier_curve = SubResource("Curve_sknif")
-drag_at_mach_multiplier_curve = SubResource("Curve_n4vvt")
+drag_aoa_curve = SubResource("Curve_1uofs")
+sweep_drag_multiplier_curve = SubResource("Curve_2cb04")
+drag_at_mach_multiplier_curve = SubResource("Curve_gdxys")
 
 [sub_resource type="Resource" id="Resource_ekjou"]
 script = ExtResource("7_u36rk")
@@ -418,39 +419,6 @@ chord = 3.875
 span = 5.155
 auto_aspect_ratio = true
 aspect_ratio = 1.33032
-
-[sub_resource type="Curve" id="Curve_ncvm4"]
-bake_resolution = 21
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.25, 1), 0.0, 0.0, 0, 0, Vector2(0.5, 0), 0.0, 0.0, 0, 0, Vector2(0.75, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
-point_count = 5
-
-[sub_resource type="Curve" id="Curve_6hon5"]
-_limits = [0.99, 1.69, 0.0, 1.0]
-bake_resolution = 23
-_data = [Vector2(0.053, 1), 0.0, 0.0, 0, 0, Vector2(0.088, 1.324), 4.057, 4.057, 0, 0, Vector2(0.256, 1), 0.181, 0.0, 0, 0]
-point_count = 3
-
-[sub_resource type="Curve" id="Curve_jgphy"]
-_limits = [-1.0, 1.0, 0.0, 1.0]
-bake_resolution = 36
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.125, 1), 0.0, 0.0, 0, 0, Vector2(0.25, 1.45519e-11), 0.0, 0.0, 0, 0, Vector2(0.375, -0.4), 0.0, 0.0, 0, 0, Vector2(0.415, -1), 0.0, 0.0, 0, 0, Vector2(0.585, 1), 0.0, 0.0, 0, 0, Vector2(0.625, 0.4), 0.0, 0.0, 0, 0, Vector2(0.75, 1.45519e-11), 0.0, 0.0, 0, 0, Vector2(0.875, -1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
-point_count = 10
-
-[sub_resource type="Curve" id="Curve_q313j"]
-bake_resolution = 4
-_data = [Vector2(0, 1), 0.0, -2.09824, 0, 0, Vector2(0.406542, 0.490909), -0.666575, -0.666575, 0, 0, Vector2(1, 0.290909), 0.0, 0.0, 0, 0]
-point_count = 3
-
-[sub_resource type="Resource" id="Resource_amdot"]
-script = ExtResource("6_1gcqf")
-min_lift_coefficient = -2.0
-max_lift_coefficient = 2.0
-lift_aoa_curve = SubResource("Curve_jgphy")
-min_drag_coefficient = 0.02
-max_drag_coefficient = 1.0
-drag_aoa_curve = SubResource("Curve_ncvm4")
-sweep_drag_multiplier_curve = SubResource("Curve_q313j")
-drag_at_mach_multiplier_curve = SubResource("Curve_6hon5")
 
 [sub_resource type="Resource" id="Resource_qyjay"]
 script = ExtResource("7_u36rk")
@@ -483,39 +451,6 @@ min_value = Vector3(-0.5, 0, 0)
 limit_movement_speed = false
 movement_speed = 1.0
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
-
-[sub_resource type="Curve" id="Curve_tc445"]
-bake_resolution = 21
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.25, 1), 0.0, 0.0, 0, 0, Vector2(0.5, 0), 0.0, 0.0, 0, 0, Vector2(0.75, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
-point_count = 5
-
-[sub_resource type="Curve" id="Curve_1gcqf"]
-_limits = [0.99, 1.69, 0.0, 1.0]
-bake_resolution = 23
-_data = [Vector2(0.053, 1), 0.0, 0.0, 0, 0, Vector2(0.088, 1.324), 4.057, 4.057, 0, 0, Vector2(0.256, 1), 0.181, 0.0, 0, 0]
-point_count = 3
-
-[sub_resource type="Curve" id="Curve_u36rk"]
-_limits = [-1.0, 1.0, 0.0, 1.0]
-bake_resolution = 36
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.125, 1), 0.0, 0.0, 0, 0, Vector2(0.25, 1.45519e-11), 0.0, 0.0, 0, 0, Vector2(0.375, -0.4), 0.0, 0.0, 0, 0, Vector2(0.415, -1), 0.0, 0.0, 0, 0, Vector2(0.585, 1), 0.0, 0.0, 0, 0, Vector2(0.625, 0.4), 0.0, 0.0, 0, 0, Vector2(0.75, 1.45519e-11), 0.0, 0.0, 0, 0, Vector2(0.875, -1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
-point_count = 10
-
-[sub_resource type="Curve" id="Curve_d6oai"]
-bake_resolution = 4
-_data = [Vector2(0, 1), 0.0, -2.09824, 0, 0, Vector2(0.406542, 0.490909), -0.666575, -0.666575, 0, 0, Vector2(1, 0.290909), 0.0, 0.0, 0, 0]
-point_count = 3
-
-[sub_resource type="Resource" id="Resource_ncvm4"]
-script = ExtResource("6_1gcqf")
-min_lift_coefficient = -2.0
-max_lift_coefficient = 2.0
-lift_aoa_curve = SubResource("Curve_u36rk")
-min_drag_coefficient = 0.02
-max_drag_coefficient = 1.0
-drag_aoa_curve = SubResource("Curve_tc445")
-sweep_drag_multiplier_curve = SubResource("Curve_d6oai")
-drag_at_mach_multiplier_curve = SubResource("Curve_1gcqf")
 
 [sub_resource type="Resource" id="Resource_6hon5"]
 script = ExtResource("7_u36rk")
@@ -563,38 +498,39 @@ limit_movement_speed = false
 movement_speed = 1.0
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
-[sub_resource type="Curve" id="Curve_amdot"]
+[sub_resource type="Curve" id="Curve_5f3f6"]
+_limits = [0.0, 1.0, -180.0, 180.0]
 bake_resolution = 21
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.25, 1), 0.0, 0.0, 0, 0, Vector2(0.5, 0), 0.0, 0.0, 0, 0, Vector2(0.75, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-90, 1), 0.0, 0.0, 0, 0, Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(90, 1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
 point_count = 5
 
-[sub_resource type="Curve" id="Curve_qyjay"]
-_limits = [0.99, 1.69, 0.0, 1.0]
+[sub_resource type="Curve" id="Curve_6kdxg"]
+_limits = [1.0, 2.0, 0.0, 2.0]
 bake_resolution = 23
-_data = [Vector2(0.053, 1), 0.0, 0.0, 0, 0, Vector2(0.088, 1.324), 4.057, 4.057, 0, 0, Vector2(0.256, 1), 0.181, 0.0, 0, 0]
+_data = [Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 2), 0.0, 0.0, 0, 0, Vector2(2, 1.2), 0.181, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="Curve" id="Curve_0id17"]
-_limits = [-1.0, 1.0, 0.0, 1.0]
+[sub_resource type="Curve" id="Curve_myln2"]
+_limits = [-1.0, 1.0, -180.0, 180.0]
 bake_resolution = 36
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.125, 1), 0.0, 0.0, 0, 0, Vector2(0.25, 1.45519e-11), 0.0, 0.0, 0, 0, Vector2(0.375, -0.4), 0.0, 0.0, 0, 0, Vector2(0.415, -1), 0.0, 0.0, 0, 0, Vector2(0.585, 1), 0.0, 0.0, 0, 0, Vector2(0.625, 0.4), 0.0, 0.0, 0, 0, Vector2(0.75, 1.45519e-11), 0.0, 0.0, 0, 0, Vector2(0.875, -1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-148, 1), 0.0, 0.0, 0, 0, Vector2(-145, 0.7), 0.0, 0.0, 0, 0, Vector2(-35, -0.7), 0.0, 0.0, 0, 0, Vector2(-32, -1), 0.0, 0.0, 0, 0, Vector2(32, 1), 0.0, 0.0, 0, 0, Vector2(35, 0.7), 0.0, 0.0, 0, 0, Vector2(137.426, -0.7), 0.0, 0.0, 0, 0, Vector2(148, -1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
 point_count = 10
 
-[sub_resource type="Curve" id="Curve_vjbd2"]
+[sub_resource type="Curve" id="Curve_f17xe"]
 bake_resolution = 4
 _data = [Vector2(0, 1), 0.0, -2.09824, 0, 0, Vector2(0.406542, 0.490909), -0.666575, -0.666575, 0, 0, Vector2(1, 0.290909), 0.0, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="Resource" id="Resource_sg4u8"]
+[sub_resource type="Resource" id="Resource_1ghes"]
 script = ExtResource("6_1gcqf")
 min_lift_coefficient = -0.7
 max_lift_coefficient = 0.7
-lift_aoa_curve = SubResource("Curve_0id17")
+lift_aoa_curve = SubResource("Curve_myln2")
 min_drag_coefficient = 0.02
-max_drag_coefficient = 0.8
-drag_aoa_curve = SubResource("Curve_amdot")
-sweep_drag_multiplier_curve = SubResource("Curve_vjbd2")
-drag_at_mach_multiplier_curve = SubResource("Curve_qyjay")
+max_drag_coefficient = 1.0
+drag_aoa_curve = SubResource("Curve_5f3f6")
+sweep_drag_multiplier_curve = SubResource("Curve_f17xe")
+drag_at_mach_multiplier_curve = SubResource("Curve_6kdxg")
 
 [sub_resource type="Resource" id="Resource_dfwn2"]
 script = ExtResource("7_u36rk")
@@ -602,39 +538,6 @@ chord = 8.68
 span = 4.344
 auto_aspect_ratio = true
 aspect_ratio = 0.500461
-
-[sub_resource type="Curve" id="Curve_myln2"]
-bake_resolution = 21
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.25, 1), 0.0, 0.0, 0, 0, Vector2(0.5, 0), 0.0, 0.0, 0, 0, Vector2(0.75, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
-point_count = 5
-
-[sub_resource type="Curve" id="Curve_2cb04"]
-_limits = [0.99, 1.69, 0.0, 1.0]
-bake_resolution = 23
-_data = [Vector2(0.053, 1), 0.0, 0.0, 0, 0, Vector2(0.088, 1.324), 4.057, 4.057, 0, 0, Vector2(0.256, 1), 0.181, 0.0, 0, 0]
-point_count = 3
-
-[sub_resource type="Curve" id="Curve_1uofs"]
-_limits = [-1.0, 1.0, 0.0, 1.0]
-bake_resolution = 36
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.125, 1), 0.0, 0.0, 0, 0, Vector2(0.25, 1.45519e-11), 0.0, 0.0, 0, 0, Vector2(0.375, -0.4), 0.0, 0.0, 0, 0, Vector2(0.415, -1), 0.0, 0.0, 0, 0, Vector2(0.585, 1), 0.0, 0.0, 0, 0, Vector2(0.625, 0.4), 0.0, 0.0, 0, 0, Vector2(0.75, 1.45519e-11), 0.0, 0.0, 0, 0, Vector2(0.875, -1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
-point_count = 10
-
-[sub_resource type="Curve" id="Curve_5f3f6"]
-bake_resolution = 4
-_data = [Vector2(0, 1), 0.0, -2.09824, 0, 0, Vector2(0.406542, 0.490909), -0.666575, -0.666575, 0, 0, Vector2(1, 0.290909), 0.0, 0.0, 0, 0]
-point_count = 3
-
-[sub_resource type="Resource" id="Resource_e5uxm"]
-script = ExtResource("6_1gcqf")
-min_lift_coefficient = -2.0
-max_lift_coefficient = 2.0
-lift_aoa_curve = SubResource("Curve_1uofs")
-min_drag_coefficient = 0.02
-max_drag_coefficient = 0.7
-drag_aoa_curve = SubResource("Curve_myln2")
-sweep_drag_multiplier_curve = SubResource("Curve_5f3f6")
-drag_at_mach_multiplier_curve = SubResource("Curve_2cb04")
 
 [sub_resource type="Resource" id="Resource_uxcik"]
 script = ExtResource("7_u36rk")
@@ -767,14 +670,14 @@ size = Vector3(0.25, 0.25, 3)
 [node name="WingR" type="Node3D" parent="." index="21"]
 transform = Transform3D(0.675204, 0, -0.737631, 0, 1, 0, 0.737631, 0, 0.675204, 3.48524, 0, 2.97831)
 script = ExtResource("5_tc445")
-manual_config = SubResource("Resource_2haft")
+manual_config = SubResource("Resource_13llr")
 wing_config = SubResource("Resource_ekjou")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
 [node name="AileronR" type="Node3D" parent="WingR" index="4"]
 transform = Transform3D(0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, 2.95039, 0, 0.583217)
 script = ExtResource("5_tc445")
-manual_config = SubResource("Resource_amdot")
+manual_config = SubResource("Resource_13llr")
 wing_config = SubResource("Resource_qyjay")
 actuation_config = SubResource("Resource_f02ck")
 metadata/_custom_type_script = "uid://d1725od371u4a"
@@ -786,14 +689,14 @@ size = Vector3(3.19043, 0.25, 1.83203)
 [node name="WingL" type="Node3D" parent="." index="22"]
 transform = Transform3D(0.67559, 0, 0.737277, 0, 1, 0, -0.737277, 0, 0.67559, -3.485, 0, 2.978)
 script = ExtResource("5_tc445")
-manual_config = SubResource("Resource_2haft")
+manual_config = SubResource("Resource_13llr")
 wing_config = SubResource("Resource_ekjou")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
 [node name="AileronL" type="Node3D" parent="WingL" index="4"]
 transform = Transform3D(0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, -2.95, 0, 0.583)
 script = ExtResource("5_tc445")
-manual_config = SubResource("Resource_amdot")
+manual_config = SubResource("Resource_13llr")
 wing_config = SubResource("Resource_qyjay")
 actuation_config = SubResource("Resource_f02ck")
 metadata/_custom_type_script = "uid://d1725od371u4a"
@@ -806,7 +709,7 @@ size = Vector3(3.19043, 0.25, 1.83203)
 transform = Transform3D(0.707107, -3.09086e-08, -0.707107, 1.28028e-08, 1, -3.09086e-08, 0.707107, 1.28027e-08, 0.707107, 3.84164, -8.88178e-16, 7.51748)
 rotation_order = 4
 script = ExtResource("5_tc445")
-manual_config = SubResource("Resource_ncvm4")
+manual_config = SubResource("Resource_13llr")
 wing_config = SubResource("Resource_6hon5")
 actuation_config = SubResource("Resource_dne2k")
 metadata/_custom_type_script = "uid://d1725od371u4a"
@@ -819,7 +722,7 @@ size = Vector3(2.75366, 0.408203, 1.51563)
 transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -3.842, 0, 7.517)
 rotation_order = 4
 script = ExtResource("5_tc445")
-manual_config = SubResource("Resource_ncvm4")
+manual_config = SubResource("Resource_13llr")
 wing_config = SubResource("Resource_6hon5")
 actuation_config = SubResource("Resource_dne2k")
 metadata/_custom_type_script = "uid://d1725od371u4a"
@@ -831,7 +734,7 @@ size = Vector3(2.75366, 0.408203, 1.51563)
 [node name="Body" type="Node3D" parent="." index="25"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.829038)
 script = ExtResource("5_tc445")
-manual_config = SubResource("Resource_sg4u8")
+manual_config = SubResource("Resource_1ghes")
 wing_config = SubResource("Resource_dfwn2")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
@@ -839,7 +742,7 @@ metadata/_custom_type_script = "uid://d1725od371u4a"
 transform = Transform3D(0.320158, 0.907044, 0.273441, -0.689722, 0.421036, -0.589078, -0.649448, 0, 0.760406, -2.85341, 1.3384, 6.21621)
 rotation_order = 5
 script = ExtResource("5_tc445")
-manual_config = SubResource("Resource_e5uxm")
+manual_config = SubResource("Resource_13llr")
 wing_config = SubResource("Resource_uxcik")
 actuation_config = SubResource("Resource_qc6jj")
 metadata/_custom_type_script = "uid://d1725od371u4a"
@@ -852,7 +755,7 @@ size = Vector3(2.42773, 0.117432, 1.80713)
 transform = Transform3D(0.320158, -0.907044, -0.273441, 0.689722, 0.421036, -0.589078, 0.649448, 0, 0.760406, 2.853, 1.338, 6.216)
 rotation_order = 5
 script = ExtResource("5_tc445")
-manual_config = SubResource("Resource_e5uxm")
+manual_config = SubResource("Resource_13llr")
 wing_config = SubResource("Resource_uxcik")
 actuation_config = SubResource("Resource_qc6jj")
 metadata/_custom_type_script = "uid://d1725od371u4a"

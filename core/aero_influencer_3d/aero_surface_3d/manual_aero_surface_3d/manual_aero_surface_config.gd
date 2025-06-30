@@ -12,6 +12,7 @@ class_name ManualAeroSurfaceConfig
 @export_range(0.0, 100.0, 0.001, "or_greater", "exp", "suffix:cD") var min_drag_coefficient : float = 0.02
 ##Drag coefficient used where the drag_aoa_curve has a value of 1.
 @export_range(0.0, 100.0, 0.001, "or_greater", "exp", "suffix:cD") var max_drag_coefficient : float = 1.0
+##Curve that determines the ManualAeroSurface3D's drag coefficient, depending on the ManualAeroSurface3D's angle of attack.
 @export var drag_aoa_curve : Curve = preload("../../../resources/default_drag_aoa_curve.tres").duplicate()
 ##Multiplier curve that modifies drag depending on the sweep angle of the AeroSurface3D.
 @export var sweep_drag_multiplier_curve : Curve = preload("../../../resources/default_sweep_drag_multiplier.tres").duplicate()
@@ -22,7 +23,7 @@ func get_drag_at_sweep_angle(sweep_angle : float) -> float:
 func get_drag_multiplier_at_mach(mach : float) -> float:
 	return drag_at_mach_multiplier_curve.sample_baked(mach / 10.0)
 ##Evaluation curve for turbulent movements based on AeroSurface3D's angle of attack. (Unused)
-@export var buffet_aoa_curve : Curve #unused
+#@export var buffet_aoa_curve : Curve #unused
 
 const MathUtils = preload("../../../../utils/math_utils.gd")
 

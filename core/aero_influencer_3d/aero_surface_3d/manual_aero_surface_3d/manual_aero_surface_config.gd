@@ -17,7 +17,7 @@ class_name ManualAeroSurfaceConfig
 ##Multiplier curve that modifies drag depending on the sweep angle of the AeroSurface3D.
 @export var sweep_drag_multiplier_curve : Curve = preload("../../../resources/default_sweep_drag_multiplier.tres").duplicate()
 func get_drag_at_sweep_angle(sweep_angle : float) -> float:
-	return sweep_drag_multiplier_curve.sample_baked(abs(remap(sweep_angle, -PI, PI, sweep_drag_multiplier_curve.min_domain, sweep_drag_multiplier_curve.max_domain)))
+	return sweep_drag_multiplier_curve.sample_baked(abs(remap(sweep_angle, 0.0, PI, sweep_drag_multiplier_curve.min_domain, sweep_drag_multiplier_curve.max_domain)))
 ##Multiplier curve that modifies drag depending on the AeroBody3D's Mach number.
 @export var drag_at_mach_multiplier_curve : Curve = preload("../../../resources/default_drag_at_mach_curve.tres").duplicate()
 func get_drag_multiplier_at_mach(mach : float) -> float:

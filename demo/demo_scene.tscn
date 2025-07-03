@@ -64,6 +64,7 @@ var vehicles := {
 	\"Demo plane\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/demo_plane.tscn\",
 	\"Cessna 172\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/cessna172/cessna172.tscn\",
 	\"F-14 Tomcat\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/f14/f14.tscn\",
+	\"F-14 Tomcat Mouse Control\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/f14/f14_mouse_control.tscn\",
 	\"AIM-9 Sidewinder\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/missile/aim-9.tscn\",
 	\"Quadcopter\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/quadcopter.tscn\",
 	\"SU-57 \\\"Felon\\\"\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/su57/su57.tscn\",

@@ -1,0 +1,37 @@
+[gd_scene load_steps=3 format=3 uid="uid://bddf1hhmmre47"]
+
+[sub_resource type="SystemFont" id="SystemFont_cck4l"]
+font_names = PackedStringArray("Monospace")
+subpixel_positioning = 0
+
+[sub_resource type="GDScript" id="GDScript_c2l24"]
+script/source = "extends Label3D
+
+const AeroNodeUtils = preload(\"res://addons/godot_aerodynamic_physics/utils/node_utils.gd\")
+@onready var aero_body : AeroBody3D = AeroNodeUtils.get_first_parent_of_type(self, AeroBody3D)
+
+func _physics_process(delta: float) -> void:
+	text = \"
+	IAS: %-.1fm/s
+	ALT:%-1sm
+	M:   %-.2f
+	a:   %-.1f
+	\" % [
+		aero_body.air_speed, 
+		String.num(aero_body.altitude, 0) if sign(aero_body.altitude) == -1 else \" \" + String.num(aero_body.altitude, 0),
+		aero_body.mach, 
+		rad_to_deg(aero_body.angle_of_attack),
+	]
+	#this is using format strings: https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_format_string.html
+"
+
+[node name="FlightInfoLabel" type="Label3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.93949, 1.313, -2.986)
+modulate = Color(0, 1, 0, 1)
+text = "IAS: %-.1fm/s
+ALT: %-dm
+M:   %-.2f
+a:   %-.1f"
+font = SubResource("SystemFont_cck4l")
+horizontal_alignment = 0
+script = SubResource("GDScript_c2l24")

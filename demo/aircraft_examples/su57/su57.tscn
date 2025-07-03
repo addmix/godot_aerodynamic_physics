@@ -1,4 +1,4 @@
-[gd_scene load_steps=68 format=3 uid="uid://bhcf56o8msjwq"]
+[gd_scene load_steps=69 format=3 uid="uid://bhcf56o8msjwq"]
 
 [ext_resource type="PackedScene" uid="uid://bh0obl3q2wyuv" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/su57/su57.glb" id="1_6jmm2"]
 [ext_resource type="Script" uid="uid://3kjm0rdymoth" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_thruster_3d/aero_thruster_3d.gd" id="2_5b6kh"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" uid="uid://d1725od371u4a" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd" id="5_tc445"]
 [ext_resource type="Script" uid="uid://ctbwb7xlhft6t" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_config.gd" id="6_1gcqf"]
 [ext_resource type="Script" uid="uid://cbgqb7g7mmwtu" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_control_config.gd" id="6_1uofs"]
+[ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/flight_info_label.tscn" id="7_gdxys"]
 [ext_resource type="Script" uid="uid://crkbhmxpjff4o" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="7_u36rk"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_dne2k"]
@@ -546,6 +547,7 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 mass = 26700.0
 physics_material_override = SubResource("PhysicsMaterial_dne2k")
 center_of_mass = Vector3(0, 0, 2.5)
+can_sleep = false
 show_debug = true
 
 [node name="AeroControlComponent" type="Node" parent="." index="0"]
@@ -564,6 +566,8 @@ Pitch: W/A
 Yaw: Q/E
 Roll: A/D
 Throttle: Shift/Ctrl"
+
+[node name="FlightInfoLabel" parent="Camera3D" index="1" instance=ExtResource("7_gdxys")]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." index="9"]
 transform = Transform3D(1, 0, 0, 0, 0.133606, 0.991035, 0, -0.991035, 0.133606, 0, 0.353375, -3.73247)

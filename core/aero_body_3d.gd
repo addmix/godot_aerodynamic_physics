@@ -111,6 +111,11 @@ var current_torque := Vector3.ZERO
 var current_gravity := Vector3.ZERO
 @onready var last_linear_velocity : Vector3 = linear_velocity
 @onready var last_angular_velocity : Vector3 = angular_velocity
+@onready var uncommitted_last_linear_velocity : Vector3 = linear_velocity
+@onready var uncommitted_last_angular_velocity : Vector3 = angular_velocity
+var linear_acceleration := Vector3.ZERO
+var angular_acceleration := Vector3.ZERO
+var current_acceleration := Vector3.ZERO #unimplemented
 var wind := Vector3.ZERO:
 	set(x):
 		if not wind == x: interrupt_sleep()
@@ -282,12 +287,21 @@ func _integrate_forces(state : PhysicsDirectBodyState3D) -> void:
 	_integrate_forces_time = float(post_time - pre_time) * 0.001
 
 func integrator(state : PhysicsDirectBodyState3D) -> void:
+	last_linear_velocity = uncommitted_last_linear_velocity
+	last_angular_velocity = uncommitted_last_angular_velocity
+	
 	current_gravity = state.total_gravity
 	var total_force_and_torque := calculate_forces(state)
 	current_force = total_force_and_torque[0]
 	current_torque = total_force_and_torque[1]
 	state.apply_central_force(current_force)
 	state.apply_torque(current_torque)
+	
+	linear_acceleration = (linear_velocity - last_linear_velocity) / state.step
+	angular_acceleration = (angular_velocity - last_angular_velocity) / state.step
+	
+	uncommitted_last_linear_velocity = state.linear_velocity
+	uncommitted_last_angular_velocity = state.angular_velocity
 
 var linear_velocity_prediction : Vector3 = linear_velocity
 var angular_velocity_prediction : Vector3 = angular_velocity
@@ -321,13 +335,7 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	var last_force_and_torque := PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 	var total_force_and_torque := last_force_and_torque
 	
-	linear_velocity_prediction = linear_velocity
-	angular_velocity_prediction = angular_velocity
-	
 	for substep : int in SUBSTEPS:
-		last_linear_velocity = linear_velocity_prediction
-		last_angular_velocity = angular_velocity_prediction
-		
 		#allow aeroinfluencers to update their own transforms before we calculate forces
 		if not Engine.is_editor_hint():
 			for influencer : AeroInfluencer3D in aero_influencers:

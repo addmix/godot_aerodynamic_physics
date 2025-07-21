@@ -611,7 +611,8 @@ text = "Controls:
 Pitch: W/A
 Yaw: Q/E
 Roll: A/D
-Throttle: Shift/Ctrl"
+Throttle: Shift/Ctrl
+Launch Ball: Space"
 
 [node name="FlightInfoLabel" parent="Camera3D" index="1" instance=ExtResource("7_gdxys")]
 

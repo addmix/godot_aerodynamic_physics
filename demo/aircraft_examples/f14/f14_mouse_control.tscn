@@ -28,7 +28,8 @@ Roll: A/D
 Throttle: Shift/Ctrl
 Airbrake: B
 Sweep: T/G (auto)
-Throttle split: C/V"
+Throttle split: C/V
+Launch Ball: Space"
 
 [node name="FlightInfoLabel" parent="CameraWithoutRotation/Camera3D" index="1" instance=ExtResource("7_b85q4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5125, 1.313, -2.986)

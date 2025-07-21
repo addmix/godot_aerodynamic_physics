@@ -740,6 +740,7 @@ control_config = SubResource("Resource_c7o86")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 0, 6.43191, 20.3546)
+far = 100000.0
 
 [node name="Label3D" type="Label3D" parent="Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.57529, -2.9862)

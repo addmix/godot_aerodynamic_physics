@@ -277,7 +277,7 @@ script = ExtResource("3_e24i6")
 min_lift_coefficient = -1.8
 max_lift_coefficient = 1.8
 lift_aoa_curve = SubResource("Curve_uguh3")
-min_drag_coefficient = 0.02
+min_drag_coefficient = 0.01
 max_drag_coefficient = 0.5
 drag_aoa_curve = SubResource("Curve_limry")
 sweep_drag_multiplier_curve = SubResource("Curve_5pvbw")
@@ -523,6 +523,7 @@ metadata/_custom_type_script = "uid://cc5dwx5pqkaur"
 
 [node name="Camera3D" type="Camera3D" parent="." index="1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.0249, 35.9158)
+far = 100000.0
 
 [node name="Label3D" type="Label3D" parent="Camera3D" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.57529, -2.9862)

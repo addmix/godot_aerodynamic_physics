@@ -1,4 +1,4 @@
-[gd_scene load_steps=52 format=3 uid="uid://bmi1chqhr76vg"]
+[gd_scene load_steps=51 format=3 uid="uid://bmi1chqhr76vg"]
 
 [ext_resource type="Script" uid="uid://3iji867c81k5" path="res://addons/godot_aerodynamic_physics/core/aero_body_3d.gd" id="1_ojlhn"]
 [ext_resource type="Script" uid="uid://cc5dwx5pqkaur" path="res://addons/godot_aerodynamic_physics/components/AeroControlComponent.gd" id="2_o518f"]
@@ -218,13 +218,6 @@ easing = 1.0
 script = ExtResource("3_ptmmh")
 axis_configs = Array[ExtResource("5_5n8sq")]([SubResource("Resource_4bu18"), SubResource("Resource_b7dno"), SubResource("Resource_70nub"), SubResource("Resource_lkj7r")])
 
-[sub_resource type="GDScript" id="GDScript_5n8sq"]
-script/source = "extends CSGBox3D
-
-func _physics_process(delta: float) -> void:
-	print(get_parent().local_angular_velocity)
-"
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_xp3u4"]
 size = Vector3(0.1, 0.104741, 0.1)
 
@@ -422,7 +415,7 @@ control_config = SubResource("Resource_1roke")
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.148, 0.362)
 fov = 100.0
-far = 40000.0
+far = 100000.0
 
 [node name="Label3D" type="Label3D" parent="Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.57529, -2.9862)
@@ -437,7 +430,6 @@ Throttle: Shift/Ctrl"
 [node name="CSGBox3D3" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, -2.22045e-16, 0, 1, 0, 2.22045e-16, 0, 1, 0, 0, 0)
 size = Vector3(0.1, 0.05, 0.1)
-script = SubResource("GDScript_5n8sq")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 0, 0, 0)

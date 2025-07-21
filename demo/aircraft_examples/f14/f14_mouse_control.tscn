@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://c1jq0a2ww3rai" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/f14/f14.tscn" id="1_8ue2t"]
 [ext_resource type="Script" uid="uid://dgklknms5ac4a" path="res://addons/godot_aerodynamic_physics/demo/mouse_control.gd" id="2_aggfd"]
-[ext_resource type="PackedScene" uid="uid://bm03tdt5so3wj" path="res://camera without rotation.tscn" id="3_213af"]
+[ext_resource type="PackedScene" uid="uid://bm03tdt5so3wj" path="res://addons/godot_aerodynamic_physics/demo/camera without rotation.tscn" id="3_213af"]
 [ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/flight_info_label.tscn" id="7_b85q4"]
 
 [node name="f14" instance=ExtResource("1_8ue2t")]
@@ -18,7 +18,6 @@ camera_fov = 75.0
 
 [node name="Camera3D" parent="CameraWithoutRotation" index="0"]
 current = true
-far = 40000.0
 
 [node name="Label3D" type="Label3D" parent="CameraWithoutRotation/Camera3D" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.313, -2.986)
@@ -28,9 +27,8 @@ Yaw: Q/E
 Roll: A/D
 Throttle: Shift/Ctrl
 Airbrake: B
-Sweep: T/G
-Throttle split: C/V
-"
+Sweep: T/G (auto)
+Throttle split: C/V"
 
 [node name="FlightInfoLabel" parent="CameraWithoutRotation/Camera3D" index="1" instance=ExtResource("7_b85q4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5125, 1.313, -2.986)

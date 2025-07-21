@@ -1,0 +1,44 @@
+[gd_scene load_steps=2 format=3 uid="uid://bm03tdt5so3wj"]
+
+[sub_resource type="GDScript" id="GDScript_1grwo"]
+script/source = "extends Node3D
+
+@export var right_click_to_move : bool = true
+@export var camera_distance : float = 10.0:
+	get:
+		return $Camera3D.position.z
+	set(x):
+		$Camera3D.position.z = x
+@export var camera_height : float = 2.0:
+	get:
+		return $Camera3D.position.y
+	set(x):
+		$Camera3D.position.y = x
+@export var camera_fov : float = 45.0:
+	get:
+		return $Camera3D.fov
+	set(x):
+		$Camera3D.fov = x
+
+func _ready() -> void:
+	camera_distance = camera_distance
+	camera_height = camera_height
+	camera_fov = camera_fov
+
+func _process(delta: float) -> void:
+	global_position = get_parent().global_position
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouseMotion and (Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) or not right_click_to_move):
+		rotation_degrees.x += -event.relative.y * 0.07
+		rotation_degrees.y += -event.relative.x * 0.07
+		get_viewport().set_input_as_handled()
+"
+
+[node name="CameraWithoutRotation" type="Node3D"]
+top_level = true
+script = SubResource("GDScript_1grwo")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)
+far = 100000.0

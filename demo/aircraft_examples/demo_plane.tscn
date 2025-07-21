@@ -460,6 +460,7 @@ size = Vector3(3.67285, 0.113525, 1.14014)
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55771, 8.71651)
+far = 100000.0
 
 [node name="Label3D" type="Label3D" parent="Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.57529, -2.9862)

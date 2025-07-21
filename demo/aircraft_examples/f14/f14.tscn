@@ -1,4 +1,4 @@
-[gd_scene load_steps=84 format=3 uid="uid://c1jq0a2ww3rai"]
+[gd_scene load_steps=86 format=3 uid="uid://c1jq0a2ww3rai"]
 
 [ext_resource type="PackedScene" uid="uid://cmsb4krxdfnbu" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/f14/f14.blend" id="1_6mwa3"]
 [ext_resource type="Script" uid="uid://cc5dwx5pqkaur" path="res://addons/godot_aerodynamic_physics/components/AeroControlComponent.gd" id="2_2l6s8"]
@@ -14,6 +14,7 @@
 [ext_resource type="Script" uid="uid://c46td0go5kvp6" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_influencer_control_axis_config.gd" id="11_6jy66"]
 [ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_influencer_control_config.gd" id="12_yuw0c"]
 [ext_resource type="Script" uid="uid://3kjm0rdymoth" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_thruster_3d/aero_thruster_3d.gd" id="13_yuw0c"]
+[ext_resource type="Script" uid="uid://cy2j3ls8g16s2" path="res://addons/godot_aerodynamic_physics/demo/ball_launcher.gd" id="15_t486t"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_3wjhu"]
 friction = 0.0
@@ -38,7 +39,7 @@ max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_rv6uo"]
 script = ExtResource("3_qedox")
-p = 1.0
+p = 2.0
 i = 0.0
 d = 0.0
 clamp_integral = false
@@ -56,7 +57,7 @@ max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_kw2nn"]
 script = ExtResource("3_qedox")
-p = 0.3
+p = 1.0
 i = 0.0
 d = 0.0
 clamp_integral = false
@@ -83,8 +84,8 @@ max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_svion"]
 script = ExtResource("3_qedox")
-p = 0.7
-i = 3.0
+p = 2.0
+i = 15.0
 d = 0.0
 clamp_integral = true
 min_integral = -0.3
@@ -128,7 +129,7 @@ yaw_assist_pid = SubResource("Resource_7ibqc")
 enable_flight_assist_z = true
 roll_assist_pid = SubResource("Resource_cn0tc")
 enable_g_limiter = true
-g_limit = 9.0
+g_limit = 6.5
 negative_g_limit = 3.0
 enable_aoa_limiter = true
 aoa_limit_start = 22.0
@@ -285,6 +286,19 @@ metadata/_custom_type_script = "uid://dfbhcpt1rr3ai"
 script = ExtResource("6_si53m")
 axis_configs = Array[ExtResource("5_yuw0c")]([SubResource("Resource_34386"), SubResource("Resource_o6rpv"), SubResource("Resource_wtjbh"), SubResource("Resource_jsx6i"), SubResource("Resource_js434"), SubResource("Resource_mmush"), SubResource("Resource_3wjhu")])
 
+[sub_resource type="GDScript" id="GDScript_ckcso"]
+script/source = "extends Node
+
+@onready var aero_body : AeroBody3D = $\"../..\"
+
+@export var min_speed : float = 225.0
+@export var max_speed : float = 275.0
+
+func _physics_process(delta: float) -> void:
+	var wing_sweep_command : float = clamp(remap(aero_body.air_speed, min_speed, max_speed, 0.0, 1.0), 0.0, 1.0)
+	get_parent().set_control_input(\"sweep\", wing_sweep_command)
+"
+
 [sub_resource type="GDScript" id="GDScript_yuw0c"]
 script/source = "extends MeshInstance3D
 
@@ -351,17 +365,17 @@ min_lift_coefficient = -1.6
 max_lift_coefficient = 1.6
 lift_aoa_curve = SubResource("Curve_tscia")
 min_drag_coefficient = 0.0
-max_drag_coefficient = 0.7
+max_drag_coefficient = 0.5
 drag_aoa_curve = SubResource("Curve_cck4l")
 sweep_drag_multiplier_curve = SubResource("Curve_58hhq")
 drag_at_mach_multiplier_curve = SubResource("Curve_ryexn")
 
 [sub_resource type="Resource" id="Resource_si53m"]
 script = ExtResource("5_pic3w")
-chord = 2.855
-span = 7.005
+chord = 2.925
+span = 7.59
 auto_aspect_ratio = true
-aspect_ratio = 2.45359
+aspect_ratio = 2.59487
 
 [sub_resource type="Resource" id="Resource_2l6s8"]
 script = ExtResource("5_pic3w")
@@ -495,8 +509,8 @@ script = ExtResource("4_2npbo")
 min_lift_coefficient = -0.8
 max_lift_coefficient = 0.8
 lift_aoa_curve = SubResource("Curve_b1qmm")
-min_drag_coefficient = 0.04
-max_drag_coefficient = 0.6
+min_drag_coefficient = 0.03
+max_drag_coefficient = 0.5
 drag_aoa_curve = SubResource("Curve_ckcso")
 sweep_drag_multiplier_curve = SubResource("Curve_y8hps")
 drag_at_mach_multiplier_curve = SubResource("Curve_t486t")
@@ -712,8 +726,12 @@ flight_assist = SubResource("Resource_tfg1l")
 control_config = SubResource("Resource_i3tvn")
 metadata/_custom_type_script = "uid://cc5dwx5pqkaur"
 
+[node name="WingSweeper" type="Node" parent="AeroControlComponent" index="0"]
+script = SubResource("GDScript_ckcso")
+
 [node name="Camera3D" type="Camera3D" parent="." index="1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.645, 20.996)
+far = 100000.0
 
 [node name="Label3D" type="Label3D" parent="Camera3D" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.313, -2.986)
@@ -723,7 +741,7 @@ Yaw: Q/E
 Roll: A/D
 Throttle: Shift/Ctrl
 Airbrake: B
-Sweep: T/G
+Sweep: T/G (auto)
 Throttle split: C/V
 "
 
@@ -740,7 +758,7 @@ actuation_config = SubResource("Resource_43vyb")
 metadata/_custom_type_script = "uid://c3n4g48jfeemj"
 
 [node name="WingR" type="Node3D" parent="SwingR" index="2"]
-transform = Transform3D(0.942641, 0, -0.333807, 0, 1, 0, 0.333807, 0, 0.942641, 1.92, 0, 0.654)
+transform = Transform3D(0.942641, 0, -0.333807, 0, 1, 0, 0.333807, 0, 0.942641, 2.95452, 0, 0.654)
 script = ExtResource("3_8ljqo")
 manual_config = SubResource("Resource_yuw0c")
 wing_config = SubResource("Resource_si53m")
@@ -765,7 +783,7 @@ actuation_config = SubResource("Resource_r6ft1")
 metadata/_custom_type_script = "uid://c3n4g48jfeemj"
 
 [node name="WingL" type="Node3D" parent="SwingL" index="2"]
-transform = Transform3D(0.942641, 0, 0.333807, 0, 1, 0, -0.333807, 0, 0.942641, -1.92008, 0, 0.654001)
+transform = Transform3D(0.942641, 0, 0.333807, 0, 1, 0, -0.333807, 0, 0.942641, -2.9545, 0, 0.654)
 script = ExtResource("3_8ljqo")
 manual_config = SubResource("Resource_yuw0c")
 wing_config = SubResource("Resource_si53m")
@@ -928,3 +946,7 @@ shape = SubResource("BoxShape3D_esdxw")
 [node name="CollisionShape3D4" type="CollisionShape3D" parent="." index="26"]
 transform = Transform3D(1, 0, 0, 0, -0.0508718, 0.998705, 0, -0.998705, -0.0508718, -8.88178e-16, -0.0273728, -5.46818)
 shape = SubResource("CapsuleShape3D_u1i2l")
+
+[node name="BallLauncher" type="Marker3D" parent="." index="27"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.93934, -7.60912)
+script = ExtResource("15_t486t")

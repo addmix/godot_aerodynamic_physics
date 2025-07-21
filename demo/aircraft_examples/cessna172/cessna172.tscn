@@ -79,17 +79,17 @@ max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_ttdts"]
 script = ExtResource("3_4yv37")
-p = 0.5
-i = 5.0
+p = 1.0
+i = 10.0
 d = 0.0
 clamp_integral = true
-min_integral = -0.1
-max_integral = 0.1
+min_integral = -0.2
+max_integral = 0.2
 
 [sub_resource type="Resource" id="Resource_sl5fq"]
 script = ExtResource("3_4yv37")
-p = 0.2
-i = 0.5
+p = 1.0
+i = 2.0
 d = 0.0
 clamp_integral = true
 min_integral = -0.1
@@ -116,7 +116,7 @@ max_integral = 1.0
 [sub_resource type="Resource" id="Resource_t1hlr"]
 script = ExtResource("4_ey0gl")
 enable_flight_assist = true
-max_angular_rates = Vector3(1.5, 1, 5)
+max_angular_rates = Vector3(1, 1, 2)
 enable_flight_assist_x = true
 pitch_assist_pid = SubResource("Resource_ttdts")
 enable_flight_assist_y = true
@@ -130,7 +130,7 @@ enable_aoa_limiter = true
 aoa_limit_start = 22.0
 aoa_limit_end = 25.0
 enable_control_adjustment = true
-tuned_airspeed = 100.0
+tuned_airspeed = 40.0
 min_accounted_airspeed = 75.0
 tuned_density = 1.222
 min_accounted_air_density = 0.1
@@ -606,6 +606,7 @@ metadata/_custom_type_script = "uid://cc5dwx5pqkaur"
 
 [node name="Camera3D" type="Camera3D" parent="." index="1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.52, 8.221)
+far = 100000.0
 
 [node name="Label3D" type="Label3D" parent="Camera3D" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.57529, -2.9862)
@@ -658,7 +659,7 @@ propeller_speed_control_config = SubResource("Resource_sgq0w")
 metadata/_custom_type_script = "uid://bsu5rdrtiqph7"
 
 [node name="ManualAeroSurface3D" type="Node3D" parent="AeroPropeller3D" index="2"]
-transform = Transform3D(1, 0, 0, 0, 0.642787, -0.766044, 0, 0.766044, 0.642787, 0.555826, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 0.766044, -0.642787, 0, 0.642787, 0.766044, 0.555826, 0, 0)
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_5oq5f")
 wing_config = SubResource("Resource_fnaxt")

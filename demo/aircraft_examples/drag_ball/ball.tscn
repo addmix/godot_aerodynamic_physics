@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://cj8k2c0i2doc4"]
+
+[ext_resource type="Script" uid="uid://3iji867c81k5" path="res://addons/godot_aerodynamic_physics/core/aero_body_3d.gd" id="1_1e00s"]
+[ext_resource type="Script" uid="uid://7scpeqlmo40t" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/drag_ball/drag_influencer.gd" id="2_bawn3"]
+[ext_resource type="PackedScene" uid="uid://bm03tdt5so3wj" path="res://addons/godot_aerodynamic_physics/demo/camera without rotation.tscn" id="3_nguxe"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_x8fbi"]
+
+[node name="Ball" type="VehicleBody3D"]
+center_of_mass_mode = 1
+linear_damp_mode = 1
+angular_damp_mode = 1
+script = ExtResource("1_1e00s")
+show_debug = true
+metadata/_custom_type_script = "uid://3iji867c81k5"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_x8fbi")
+
+[node name="CSGSphere3D" type="CSGSphere3D" parent="."]
+radial_segments = 32
+rings = 16
+
+[node name="AeroInfluencer3D" type="Node3D" parent="."]
+script = ExtResource("2_bawn3")
+radius = 0.2
+metadata/_custom_type_script = "uid://c3n4g48jfeemj"
+
+[node name="CameraWithoutRotation" parent="." instance=ExtResource("3_nguxe")]

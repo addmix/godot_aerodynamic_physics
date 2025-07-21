@@ -40,7 +40,7 @@ var angular_velocity := Vector3.ZERO:
 	get = get_angular_velocity
 @onready var last_linear_velocity : Vector3 = linear_velocity
 @onready var last_angular_velocity : Vector3 = angular_velocity
-var air_density := 0.0
+var air_density := 1.225
 var relative_position := Vector3.ZERO
 var altitude := 0.0
 
@@ -49,6 +49,7 @@ var local_air_velocity := Vector3.ZERO
 var air_speed := 0.0
 
 var mach : float = 0.0
+#this represents the mass of air that affects the AeroInfluencer per square meter of area.
 var dynamic_pressure : float = 0.0
 
 var _current_force : Vector3 = Vector3.ZERO
@@ -105,11 +106,11 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	air_speed = world_air_velocity.length()
 	air_density = aero_body.air_density
 	altitude = aero_body.altitude
+	dynamic_pressure = 0.5 * air_density * air_speed * air_speed
 	local_air_velocity = global_transform.basis.inverse() * world_air_velocity
 	if has_node("/root/AeroUnits"):
 		var _AeroUnits : Node = $"/root/AeroUnits"
 		mach = _AeroUnits.speed_to_mach_at_altitude(world_air_velocity.length(), altitude)
-		dynamic_pressure = 0.5 * _AeroUnits.get_density_at_altitude(altitude) * (air_speed * air_speed)
 	
 	var force : Vector3 = Vector3.ZERO
 	var torque : Vector3 = Vector3.ZERO

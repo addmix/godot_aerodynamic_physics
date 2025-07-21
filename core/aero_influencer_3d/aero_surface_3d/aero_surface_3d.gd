@@ -26,7 +26,6 @@ var projected_wing_area : float = 0.0
 
 var lift_direction := Vector3.ZERO
 var lift_force : float = 0.0
-var drag_direction := Vector3.ZERO
 var drag_force : float = 0.0
 
 var _current_lift : Vector3
@@ -66,7 +65,6 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	area = wing_config.chord * wing_config.span
 	projected_wing_area = abs(wing_config.span * wing_config.chord * sin(angle_of_attack))
 	
-	drag_direction = world_air_velocity.normalized()
 	var right_facing_air_vector : Vector3 = world_air_velocity.cross(-global_transform.basis.y).normalized()
 	lift_direction = drag_direction.cross(right_facing_air_vector).normalized()
 	

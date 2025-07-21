@@ -46,6 +46,8 @@ var altitude := 0.0
 
 #Calculating air velocity relative to the surface's coordinate system.
 var local_air_velocity := Vector3.ZERO
+#The direction which drag force will be applied. This is equal to [code]world_air_velocity.normalized()[/code]
+var drag_direction := Vector3.ZERO
 var air_speed := 0.0
 
 var mach : float = 0.0
@@ -107,6 +109,7 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	air_density = aero_body.air_density
 	altitude = aero_body.altitude
 	dynamic_pressure = 0.5 * air_density * air_speed * air_speed
+	drag_direction = world_air_velocity.normalized()
 	local_air_velocity = global_transform.basis.inverse() * world_air_velocity
 	if has_node("/root/AeroUnits"):
 		var _AeroUnits : Node = $"/root/AeroUnits"

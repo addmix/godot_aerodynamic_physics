@@ -1,10 +1,13 @@
 #ifndef AERO_BODY_3D
 #define AERO_BODY_3D
 
+#include <godot_cpp/variant/utility_functions.hpp>
+#include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/classes/vehicle_body3d.hpp>
 #include <godot_cpp/classes/project_settings.hpp>
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/classes/physics_direct_body_state3d.hpp>
+#include <godot_cpp/classes/resource_loader.hpp>
 #include "aero_influencer_3d.h"
 
 namespace godot {

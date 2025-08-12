@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://cpbp7en0cerjl"]
 
-[ext_resource type="PackedScene" uid="uid://dx0v1i14fyw8c" path="res://addons/godot_aerodynamic_physics/demo/demo_plane.tscn" id="1_bbdyo"]
+[ext_resource type="PackedScene" uid="uid://dehqqkf20re7y" path="res://addons/godot_aerodynamic_physics/demo/demo_plane.tscn" id="1_bbdyo"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_lajrc"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -27,6 +27,10 @@ albedo_texture = SubResource("NoiseTexture2D_rutke")
 
 [node name="Main" type="Node3D"]
 
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 200, 1000)
+current = true
+
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
 shadow_enabled = true
@@ -41,5 +45,801 @@ size = Vector3(10000, 1, 10000)
 material = SubResource("StandardMaterial3D_1sawy")
 
 [node name="AeroBody3D" parent="." instance=ExtResource("1_bbdyo")]
-show_debug = true
-update_debug = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D2" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D3" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D4" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D5" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D6" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D7" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D8" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D9" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D10" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D11" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D12" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D13" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D14" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D15" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D16" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D17" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D18" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D19" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D20" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D21" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D22" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D23" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D24" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D25" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D26" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D27" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D28" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D29" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D30" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D31" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D32" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D33" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D34" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D35" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D36" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D37" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D38" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D39" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D40" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D41" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D42" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D43" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D44" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D45" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D46" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D47" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D48" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D49" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D50" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D51" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D52" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D53" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D54" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D55" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D56" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D57" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D58" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D59" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D60" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D61" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D62" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D63" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D64" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D65" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D66" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D67" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D68" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D69" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D70" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D71" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D72" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D73" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D74" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D75" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D76" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D77" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D78" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D79" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D80" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D81" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D82" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D83" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D84" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D85" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D86" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D87" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D88" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D89" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D90" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D91" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D92" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D93" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D94" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D95" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D96" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D97" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D98" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D99" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D100" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D101" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D102" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D103" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D104" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D105" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D106" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D107" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D108" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D109" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D110" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D111" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D112" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D113" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D114" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D115" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D116" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D117" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D118" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D119" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D120" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D121" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D122" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D123" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D124" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D125" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D126" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D127" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D128" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D129" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D130" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D131" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D132" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D133" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D134" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D135" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D136" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D137" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D138" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D139" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D140" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D141" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D142" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D143" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D144" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D145" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D146" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D147" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D148" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D149" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D150" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D151" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D152" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D153" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D154" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D155" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D156" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D157" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D158" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D159" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D160" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D161" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D162" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D163" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D164" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D165" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D166" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D167" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D168" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D169" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D170" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D171" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D172" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D173" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D174" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D175" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D176" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D177" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D178" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D179" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D180" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D181" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D182" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D183" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D184" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D185" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D186" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D187" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D188" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D189" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D190" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D191" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D192" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D193" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D194" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D195" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D196" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D197" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D198" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D199" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)
+
+[node name="AeroBody3D200" parent="." instance=ExtResource("1_bbdyo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 545.883, 284.744)
+linear_velocity = Vector3(0, 0, -100)

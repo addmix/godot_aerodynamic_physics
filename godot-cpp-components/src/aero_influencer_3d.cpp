@@ -1,6 +1,4 @@
 #include "aero_influencer_3d.h"
-#include <godot_cpp/variant/utility_functions.hpp>
-#include <godot_cpp/core/class_db.hpp>
 
 using namespace godot;
 
@@ -45,7 +43,21 @@ void AeroInfluencer3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_brake_contribution"), &AeroInfluencer3D::get_brake_contribution);
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "brake_contribution"), "set_brake_contribution", "get_brake_contribution");
 
+	ClassDB::bind_method(D_METHOD("set_void", "unused_value"), &AeroInfluencer3D::set_void);
 
+	ClassDB::bind_method(D_METHOD("get_world_air_velocity"), &AeroInfluencer3D::get_world_air_velocity);
+	//these cause godot to crash from some reason
+	//ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "world_air_velocity"), "", "get_world_air_velocity");
+	//ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "world_air_velocity"), "set_void", "get_world_air_velocity");
+	ClassDB::bind_method(D_METHOD("get_dynamic_pressure"), &AeroInfluencer3D::get_dynamic_pressure);
+	ClassDB::bind_method(D_METHOD("get_mach"), &AeroInfluencer3D::get_mach);
+	ClassDB::bind_method(D_METHOD("get_air_speed"), &AeroInfluencer3D::get_air_speed);
+	ClassDB::bind_method(D_METHOD("get_relative_position"), &AeroInfluencer3D::get_relative_position);
+
+	ClassDB::bind_method(D_METHOD("get_current_force"), &AeroInfluencer3D::get_current_force);
+	ClassDB::bind_method(D_METHOD("set_current_force", "force"), &AeroInfluencer3D::set_current_force);
+	ClassDB::bind_method(D_METHOD("get_current_torque"), &AeroInfluencer3D::get_current_torque);
+	ClassDB::bind_method(D_METHOD("set_current_torque", "torque"), &AeroInfluencer3D::set_current_torque);
 
 	ClassDB::bind_method(D_METHOD("set_array", "in_arr"), &AeroInfluencer3D::set_aero_influencers);
 	ClassDB::bind_method(D_METHOD("get_array"), &AeroInfluencer3D::get_aero_influencers);
@@ -54,6 +66,10 @@ void AeroInfluencer3D::_bind_methods() {
 	//register function so we can use it with a signal.
 	ClassDB::bind_method(D_METHOD("on_child_entered_tree", "node"), &AeroInfluencer3D::on_child_entered_tree);
 	ClassDB::bind_method(D_METHOD("on_child_exiting_tree", "node"), &AeroInfluencer3D::on_child_exiting_tree);
+
+	ClassDB::bind_method(D_METHOD("default_calculate_forces", "substep_delta"), &AeroInfluencer3D::calculate_forces);
+	//ClassDB::bind_virtual_method("AeroInfluencer3D", "_calculate_forces");
+	GDVIRTUAL_BIND(_calculate_forces, "substep_delta");
 }
 
 AeroInfluencer3D::AeroInfluencer3D() {
@@ -115,22 +131,36 @@ void AeroInfluencer3D::on_physics_process(double delta) {
 	}
 }
 
-//must be virtual
-PackedVector3Array AeroInfluencer3D::_calculate_forces(double substep_delta) {
+PackedVector3Array AeroInfluencer3D::calculate_forces_with_override(double substep_delta) {
+	if (GDVIRTUAL_IS_OVERRIDDEN(_calculate_forces)) {
+		PackedVector3Array result;
+		GDVIRTUAL_CALL(_calculate_forces, substep_delta, result);
+		return result;
+	}
+	
+	return calculate_forces(substep_delta);
+}
+
+PackedVector3Array AeroInfluencer3D::calculate_forces(double substep_delta) {
 	linear_velocity = get_linear_velocity();
 	angular_velocity = get_angular_velocity();
 
 	relative_position = get_relative_position();
 	world_air_velocity = get_world_air_velocity();
 	air_speed = world_air_velocity.length();
+	//UtilityFunctions::print(world_air_velocity);
 	air_density = aero_body->get_air_density();
 	altitude = aero_body->get_altitude();
 	local_air_velocity = get_global_basis().xform_inv(world_air_velocity);
 
 	if (has_node("/root/AeroUnits")) {
+		
 		Node AeroUnits = *get_node_or_null("/root/AeroUnits");
 		mach = AeroUnits.call("speed_to_mach_at_altitude", air_speed, altitude);
 		dynamic_pressure = 0.5 * (double) AeroUnits.call("get_density_at_altitude", altitude) * (air_speed * air_speed);
+	}
+	else {
+		UtilityFunctions::print("AeroUnits not available");
 	}
 	//error if AeroUnits isn't available
 
@@ -140,7 +170,7 @@ PackedVector3Array AeroInfluencer3D::_calculate_forces(double substep_delta) {
 	for (int i = 0; i < aero_influencers.size(); i++) {
 		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
 
-		PackedVector3Array force_and_torque = influencer->_calculate_forces(substep_delta);
+		PackedVector3Array force_and_torque = influencer->calculate_forces_with_override(substep_delta);
 		force += force_and_torque[0];
 		torque += force_and_torque[1];
 	}
@@ -197,6 +227,9 @@ bool AeroInfluencer3D::is_overriding_body_sleep() {
 	
 	return overriding;
 };
+void AeroInfluencer3D::set_void(Vector3 value) {
+	return;
+}
 Vector3 AeroInfluencer3D::get_relative_position() {
 	if (get_parent()->is_class("AeroInfluencer3D") or get_parent()->is_class("AeroBody3D")){
 		AeroInfluencer3D* parent = (AeroInfluencer3D*) get_parent();
@@ -205,9 +238,13 @@ Vector3 AeroInfluencer3D::get_relative_position() {
 	return Vector3();
 }
 Vector3 AeroInfluencer3D::get_world_air_velocity() {
-	if (get_parent()->is_class("AeroInfluencer3D") or get_parent()->is_class("AeroBody3D")){
+	if (get_parent()->is_class("AeroInfluencer3D")){
 		AeroInfluencer3D* parent = (AeroInfluencer3D*) get_parent();
-		return -(parent)->get_linear_velocity();
+		return -(parent->get_linear_velocity());
+	}
+	else if (get_parent()->is_class("AeroBody3D")) {
+		AeroBody3D* parent = (AeroBody3D*) get_parent();
+		return -(parent->get_linear_velocity());
 	}
 	return Vector3();
 }
@@ -240,7 +277,27 @@ Vector3 AeroInfluencer3D::get_angular_acceleration() {
 	}
 	return Vector3();
 }
-
+double AeroInfluencer3D::get_dynamic_pressure() {
+	return dynamic_pressure;
+}
+double AeroInfluencer3D::get_mach() {
+	return mach;
+}
+double AeroInfluencer3D::get_air_speed() {
+	return air_speed;
+}
+Vector3 AeroInfluencer3D::get_current_force() {
+	return _current_force;
+}
+void AeroInfluencer3D::set_current_force(Vector3 force) {
+	_current_force = force;
+}
+Vector3 AeroInfluencer3D::get_current_torque() {
+	return _current_torque;
+}
+void AeroInfluencer3D::set_current_torque(Vector3 torque) {
+	_current_torque = torque;
+}
 
 
 

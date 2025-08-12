@@ -1,6 +1,4 @@
 #include "aero_body_3d.h"
-#include <godot_cpp/variant/utility_functions.hpp>
-#include <godot_cpp/core/class_db.hpp>
 
 using namespace godot;
 
@@ -45,8 +43,10 @@ AeroBody3D::AeroBody3D() {
 	set_substeps_override(-1);
 	set_substeps(1);
 
-	linear_velocity_prediction = get_linear_velocity();
-	angular_velocity_prediction = get_angular_velocity();
+	linear_velocity_prediction = RigidBody3D::get_linear_velocity();
+	angular_velocity_prediction = RigidBody3D::get_angular_velocity();
+
+	//ResourceLoader::get_singleton()->load("");
 }
 
 AeroBody3D::~AeroBody3D() {
@@ -77,7 +77,7 @@ void AeroBody3D::on_child_entered_tree(Node *p_node) {
 	//UtilityFunctions::print("child added ", typed_node->get_name());
 
 	if (p_node->is_class("AeroInfluencer3D")) {
-		AeroInfluencer3D *influencer = (AeroInfluencer3D*) p_node;
+		AeroInfluencer3D* influencer = (AeroInfluencer3D*) p_node;
 
 		aero_influencers.append(influencer);
 		influencer->set_aero_body(this);
@@ -87,7 +87,7 @@ void AeroBody3D::on_child_exiting_tree(Node *p_node) {
 	//UtilityFunctions::print("child removed ", typed_node->get_name());
 
 	if (p_node->is_class("AeroInfluencer3D")) {
-		AeroInfluencer3D *influencer = (AeroInfluencer3D*) p_node;
+		AeroInfluencer3D* influencer = (AeroInfluencer3D*) p_node;
 
 		aero_influencers.erase(p_node);
 		influencer->set_aero_body(nullptr);
@@ -113,8 +113,6 @@ void AeroBody3D::integrate_forces(PhysicsDirectBodyState3D *body_state) {
 	//start timing
 	//PhysicsDirectBodyState3D* body_state = (PhysicsDirectBodyState3D*) (Object*) p_variant;
 
-
-	UtilityFunctions::print("running integarte forces");
 	if (body_state->is_sleeping() or substeps == 0) return;
 
 	current_gravity = body_state->get_total_gravity();
@@ -122,7 +120,7 @@ void AeroBody3D::integrate_forces(PhysicsDirectBodyState3D *body_state) {
 	PackedVector3Array total_force_and_torque = calculate_forces(body_state);
 	current_force = total_force_and_torque[0];
 	current_torque = total_force_and_torque[1];
-
+	
 	body_state->apply_central_force(current_force);
 	body_state->apply_torque(current_torque);
 
@@ -131,7 +129,7 @@ void AeroBody3D::integrate_forces(PhysicsDirectBodyState3D *body_state) {
 
 PackedVector3Array AeroBody3D::calculate_forces(PhysicsDirectBodyState3D *body_state) {
 	wind = Vector3();
-	air_velocity = -get_linear_velocity() + wind;
+	air_velocity = -body_state->get_linear_velocity() + wind;
 	air_speed = air_velocity.length();
 
 	if (has_node("/root/AeroUnits")) {
@@ -141,9 +139,9 @@ PackedVector3Array AeroBody3D::calculate_forces(PhysicsDirectBodyState3D *body_s
 		air_density = AeroUnits.call("get_density_at_altitude", altitude);
 		air_pressure = AeroUnits.call("get_pressure_at_altitude", altitude);
 	}
-
+	
 	local_air_velocity = get_global_transform().get_basis().xform_inv(air_velocity);
-	local_angular_velocity = get_global_transform().get_basis().xform_inv(get_angular_velocity());
+	local_angular_velocity = get_global_transform().get_basis().xform_inv(body_state->get_angular_velocity());
 	angle_of_attack = get_global_basis().get_column(1).angle_to(-air_velocity) - (Math_PI / 2.0);
 	sideslip_angle = get_global_basis().get_column(0).angle_to(air_velocity) - (Math_PI / 2.0);
 	bank_angle = get_rotation().z;
@@ -161,8 +159,8 @@ PackedVector3Array AeroBody3D::calculate_forces(PhysicsDirectBodyState3D *body_s
 	last_force_and_torque.append(Vector3());
 	PackedVector3Array total_force_and_torque = last_force_and_torque;
 
-	linear_velocity_prediction = get_linear_velocity();
-	angular_velocity_prediction = get_angular_velocity();
+	linear_velocity_prediction = body_state->get_linear_velocity();
+	angular_velocity_prediction = body_state->get_angular_velocity();
 
 	for (int substep = 0; substep < substeps; substep++) {
 		last_linear_velocity = linear_velocity_prediction;
@@ -170,10 +168,10 @@ PackedVector3Array AeroBody3D::calculate_forces(PhysicsDirectBodyState3D *body_s
 
 		if (not Engine::get_singleton()->is_editor_hint()) {
 			for (int i = 0; i < aero_influencers.size(); i++) {
-				AeroInfluencer3D influencer = *(AeroInfluencer3D*) (Object*) aero_influencers[i];
-				if (influencer.is_disabled()) continue;
+				AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
+				if (influencer->is_disabled()) continue;
 
-				influencer._update_transform_substep(substep_delta);
+				influencer->_update_transform_substep(substep_delta);
 			}
 		}
 
@@ -206,7 +204,7 @@ PackedVector3Array AeroBody3D::calculate_aerodynamic_forces(Vector3 linear_veloc
 		}
 
 		Vector3 relative_position = get_global_basis().xform(influencer->get_position() - get_center_of_mass());
-		PackedVector3Array force_and_torque = influencer->_calculate_forces(substep_delta);
+		PackedVector3Array force_and_torque = influencer->calculate_forces_with_override(substep_delta);
 		
 		force += force_and_torque[0];
 		torque += force_and_torque[1];
@@ -260,14 +258,14 @@ void AeroBody3D::set_substeps(const int p_substeps) {
 }
 int AeroBody3D::get_substeps() const {
 	if (substeps_override > -1){
-		return substeps;
+		return substeps_override;
 	}
 	
 	return (int) ProjectSettings::get_singleton()->get_setting("physics/3d/aerodynamics/substeps", 1);
 }
 
 void AeroBody3D::set_aero_influencers(const TypedArray<AeroInfluencer3D> new_arr) {
-	UtilityFunctions::print("set aero influencer array ", new_arr);
+	//UtilityFunctions::print("set aero influencer array ", new_arr);
 	//uf::print("set array ", new_arr);
 	aero_influencers.assign(new_arr);
 	

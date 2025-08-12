@@ -1,7 +1,10 @@
 #ifndef AERO_INFLUENCER_3D
 #define AERO_INFLUENCER_3D
 
+#include <godot_cpp/variant/utility_functions.hpp>
+#include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/classes/node3d.hpp>
+#include <godot_cpp/core/gdvirtual.gen.inc>
 #include "aero_body_3d.h"
 
 namespace godot {
@@ -62,9 +65,13 @@ private:
 	void on_ready();
 	void on_process(double delta);
 	void on_physics_process(double delta);
+
+	
 protected:
 	static void _bind_methods();
 	void _notification(int p_notification);
+
+	GDVIRTUAL1R(PackedVector3Array, _calculate_forces, double);
 public:
 	AeroInfluencer3D();
 	~AeroInfluencer3D();
@@ -74,11 +81,13 @@ public:
 	void on_child_enter_tree(const Node node);
 	void on_child_exit_tree(const Node node);
 	//void _physics_process(const double delta);
-	PackedVector3Array _calculate_forces(double substep_delta);
+	PackedVector3Array calculate_forces_with_override(double substep_delta);
+	PackedVector3Array calculate_forces(double substep_delta);
 	void _update_transform_substep(double substep_delta);
 	void _update_control_transform(double substep_delta);
 	void set_overriding_body_sleep(bool override);
 	bool is_overriding_body_sleep();
+	void set_void(Vector3 value);
 	Vector3 get_relative_position();
 	Vector3 get_world_air_velocity();
 	Vector3 get_linear_velocity();
@@ -96,6 +105,10 @@ public:
 	bool get_enable_automatic_control() const;
 	void set_control_command(const Vector3 p_control_command);
 	Vector3 get_control_command() const;
+	Vector3 get_current_force();
+	void set_current_force(Vector3 force);
+	Vector3 get_current_torque();
+	void set_current_torque(Vector3 torque);
 	
 	void set_throttle_command(const double p_throttle_command);
 	double get_throttle_command() const;
@@ -114,6 +127,9 @@ public:
 	void set_aero_body(AeroBody3D *new_body);
 	void set_aero_influencers(const TypedArray<AeroInfluencer3D> new_arr);
 	TypedArray<AeroInfluencer3D> get_aero_influencers() const;
+	double get_dynamic_pressure();
+	double get_mach();
+	double get_air_speed();
 
 	void on_child_entered_tree(const Variant &node);
 	void on_child_exiting_tree(const Variant &node);

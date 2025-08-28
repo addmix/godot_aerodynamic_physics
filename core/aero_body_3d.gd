@@ -425,9 +425,6 @@ func interrupt_sleep() -> void:
 
 
 func _update_debug() -> void:
-	for influencer : AeroInfluencer3D in aero_influencers:
-		influencer.update_debug_vectors()
-	
 	aero_surfaces = []
 	for i : AeroInfluencer3D in aero_influencers:
 		if i is AeroSurface3D:

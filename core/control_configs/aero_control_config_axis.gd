@@ -12,6 +12,7 @@ const AeroMathUtils = preload("../../utils/math_utils.gd")
 @export var use_bindings : bool = true
 ## Control input value read from player controls.
 @export var input : float = 0.0
+var smoothed_input : float = 0.0
 var command : float = 0.0
 var cumulative_input : float = 0.0
 var cumulative_command : float = 0.0
@@ -54,15 +55,10 @@ func update(delta : float) -> float:
 	cumulative_command = update_cumulative_control(delta, total_cumulative_input, cumulative_command, cumulative_rate, min_limit, max_limit)
 	var total_desired_command : float = clamp(total_input + cumulative_command, min_limit, max_limit)
 	
-	#undo easing
-	command = AeroMathUtils.improved_ease(command, 1.0 / easing)
 	#input smoothing
-	command = calculate_smoothing(command, total_desired_command, enable_smoothing, smoothing_rate, delta)
-	#add easing
-	command = AeroMathUtils.improved_ease(command, easing)
+	smoothed_input = calculate_smoothing(smoothed_input, total_desired_command, enable_smoothing, smoothing_rate, delta)
 	
-	#if axis_name == "throttle":
-		#print(command)
+	command = AeroMathUtils.improved_ease(smoothed_input, easing) #used to separate input/command value used for processing (smoothed input), and final output value (command)
 	
 	return command
 

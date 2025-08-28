@@ -28,8 +28,6 @@ func set_control_command(axis_name : String = "", value : float = 0.0) -> void:
 func get_control_command(axis_name : String = "") -> float:
 	var axis := get_axis_config_with_name(axis_name)
 	if axis:
-		#if axis_name == "throttle":
-			#print(axis.command)
 		return axis.command
 	return 0.0
 

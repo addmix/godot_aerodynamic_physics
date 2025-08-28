@@ -1,85 +1,109 @@
 @tool
 extends VehicleBody3D
 class_name AeroBody3D
+## AeroBody3D is the base node for simulating aerodynamic forces.[br]
+##
+## Aerodynamic forces are calculated from child [AeroInfluencer3D] nodes.[br]
+## [br]
+## Steps to retain all functionality when extending this script:[br]
+## 1. Add [code]@tool[/code] to the top of the script.[br]
+##     - This allows the script to run in the editor, so that the debug vectors can update.[br]
+## 2. call [code]super()[/code] when extending functions.[br]
+## [br]
+## examples:
+## [codeblock lang=gdscript]
+## func _enter_tree():
+##     super()
+##     (...)
+##
+## func _ready():
+##     super()
+##     (...)
+##
+## func _physics_process(delta):
+##     super(delta)
+##     (...)
+##
+## [/codeblock]
 
 const AeroMathUtils = preload("../utils/math_utils.gd")
 const AeroNodeUtils = preload("../utils/node_utils.gd")
 
-##Overrides the amount of simulation substeps are used when calculating aerodynamic effects on this body.
+## Overrides the amount of simulation substeps that are used when calculating aerodynamics.
 @export var substeps_override : int = -1
 
 @export_group("Debug")
 
 @export_subgroup("Visibility")
-##Enables visibility of debug components.
+## Enables visibility of debug components.
 @export var show_debug : bool = false:
 	set(x):
 		show_debug = x
 		_update_debug_visibility()
-##Enables update of debug components. Debug is only updated when show_debug and update_debug are true.
+## Enables update of debug components. Debug is only updated when show_debug and update_debug are true.
 @export var update_debug : bool = true
-##Enables visibility of wing debug components.
+## Enables visibility of wing debug components.
 @export var show_wing_debug_vectors : bool = true:
 	set(x):
 		show_wing_debug_vectors = x
 		_update_debug_visibility()
-##Controls visibility of total lift vector.
+## Controls visibility of total lift vector.
 @export var show_lift_vectors : bool = true:
 	set(x):
 		show_lift_vectors = x
 		_update_debug_visibility()
-##Controls visibility of total drag vector.
+## Controls visibility of total drag vector.
 @export var show_drag_vectors : bool = true:
 	set(x):
 		show_drag_vectors = x
 		_update_debug_visibility()
-##Controls visibility of linear velocity vector.
+## Controls visibility of linear velocity vector.
 @export var show_linear_velocity : bool = true:
 	set(x):
 		show_linear_velocity = x
 		_update_debug_visibility()
-##Controls visibility of angular velocity vector.
+## Controls visibility of angular velocity vector.
 @export var show_angular_velocity : bool = true:
 	set(x):
 		show_angular_velocity = x
 		_update_debug_visibility()
 
-##Controls visibility of the center of lift vector.
+## Controls visibility of the center of lift vector.
 @export var show_center_of_lift : bool = true:
 	set(x):
 		show_center_of_lift = x
 		_update_debug_visibility()
-##Controls visibility of the center of drag vector.
+## Controls visibility of the center of drag vector.
 @export var show_center_of_drag : bool = true:
 	set(x):
 		show_center_of_drag = x
 		_update_debug_visibility()
-##Controls visibility of the center of mass marker.
+## Controls visibility of the center of mass marker.
 @export var show_center_of_mass : bool = true:
 	set(x):
 		show_center_of_mass = x
 		_update_debug_visibility()
-##Controls visibility of the center of lift marker. (Unused)
+## Controls visibility of the center of lift marker. (Unused)
 @export var show_center_of_thrust : bool = true:
 	set(x):
 		show_center_of_thrust = x
 
 @export_subgroup("Options")
-##Linear velocity used for debug components calculations in the editor.
+## Linear velocity used for debug components calculations in the editor.
 @export var debug_linear_velocity := Vector3(0, -10, -100)
-##Angular velocity used for debug components calculations in the editor.
+## Angular velocity used for debug components calculations in the editor.
 @export var debug_angular_velocity := Vector3.ZERO
-##Controls the scale of debug components.
+## Controls the scale of debug components.
 @export var debug_scale : float = 0.1:
 	set(x):
 		debug_scale = x
 		_update_debug_scale()
-##Controls the width/thickness of debug vectors.
+## Controls the width/thickness of debug vectors.
 @export var debug_width : float = 0.05:
 	set(x):
 		debug_width = x
 		_update_debug_scale()
-##Controls the width/thickness of debug center markers.
+## Controls the width/thickness of debug center markers.
 @export var debug_center_width : float = 0.2:
 	set(x):
 		debug_center_width = x
@@ -91,6 +115,9 @@ const AeroNodeUtils = preload("../utils/node_utils.gd")
 @export_group("")
 @export_category("")
 
+## The total amount of substeps used when calculating aerodynamics. [br]
+## For example, when SUBSTEPS is set to 4, the physics update is broken down into 4 sub-iterations. [br]
+## The initial physics update does NOT count as an extra substep. [br]
 var SUBSTEPS : int = ProjectSettings.get_setting("physics/3d/aerodynamics/substeps", 1):
 	set(x):
 		SUBSTEPS = x
@@ -99,39 +126,70 @@ var SUBSTEPS : int = ProjectSettings.get_setting("physics/3d/aerodynamics/subste
 		if substeps_override > -1:
 			return substeps_override
 		return ProjectSettings.get_setting("physics/3d/aerodynamics/substeps", 1)
+## Used to calculate [code]substep_delta[/code].
 var PREDICTION_TIMESTEP_FRACTION : float:
 	get:
 		return 1.0 / float(SUBSTEPS)
 
+## List of [AeroInfluencer3D] nodes that affect this [AeroBody3D]
 var aero_influencers : Array[AeroInfluencer3D] = []
+## Subset of [member AeroBody3D.aero_influencers] which only contains [AeroSurface3D]s
 var aero_surfaces : Array[AeroSurface3D] = []
 
+## The current force caused by aerodynamics. (excludes gravity)
 var current_force := Vector3.ZERO
+## The current torque caused by aerodynamics.
 var current_torque := Vector3.ZERO
+## The current gravity acting on the [AeroBody3D]
 var current_gravity := Vector3.ZERO
 @onready var last_linear_velocity : Vector3 = linear_velocity
 @onready var last_angular_velocity : Vector3 = angular_velocity
 @onready var uncommitted_last_linear_velocity : Vector3 = linear_velocity
 @onready var uncommitted_last_angular_velocity : Vector3 = angular_velocity
+## This [AeroBody3D]'s linear acceleration since the last frame. [br]
+## Meters per second squared
 var linear_acceleration := Vector3.ZERO
+## This [AeroBody3D]'s angular acceleration since the last frame. [br]
+## Radians per second squared
 var angular_acceleration := Vector3.ZERO
 ## Wind velocity in meters per second.
 var wind := Vector3.ZERO:
 	set(x):
 		if not wind == x: interrupt_sleep()
 		wind = x
+## The velocity of air passing the aircraft.[br]
+## Equivalent to [code]-linear_velocity + wind[/code].
 var air_velocity := Vector3.ZERO
+## [member AeroBody3D.air_velocity] in the [AeroBody3D]'s local coordinate space.
 var local_air_velocity := Vector3.ZERO
+## [member RigidBody3D.angular_velocity] in the [AeroBody3D]'s local coordinate space.
 var local_angular_velocity := Vector3.ZERO
+## Air speed in meters per second.[br]
+## Equivalent to [code]linear_velocity.length()[/code].
 var air_speed := 0.0
+## Current mach-speed of the [AeroBody3D].[br]
+## Mach 1.0 is the speed of sound.[br]
+## Adjusted for atmospheric changes.
 var mach := 0.0
+## The denisty of the air in kg/m^3.
 var air_density : float = 1.225
+## The pressure of air in pascals (Pa).
 var air_pressure : float = 101325.0
+## The angle-of-attack relative to the [member AeroBody3D.air_velocity] in radians.[br]
 var angle_of_attack := 0.0
+## The sideslip angle relative to the [member AeroBody3D.air_velocity] in radians.[br]
+## Similar to [member AeroBody3D.angle_of_attack], but measured on the lateral axis, instead of vertical.
 var sideslip_angle := 0.0
+## Altitude of the AeroBody3D in meters.
 var altitude := 0.0
+## Bank angle (roll) of the AeroBody3D in radians.
+## Alias for [code]global_rotation.z[/code]
 var bank_angle := 0.0
+## Heading angle in radians (compass angle). 0.0 is the global -Z direction. Left is the positive direction.[br]
+## Alias for [code]global_rotation.y[/code]
 var heading := 0.0
+## Inclination angle (pitch) of the AeroBody3D in radians.
+## Alias for [code]global_rotation.x[/code]
 var inclination := 0.0
 
 

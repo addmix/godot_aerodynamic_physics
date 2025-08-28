@@ -1,32 +1,50 @@
 @tool
 extends Node3D
 class_name AeroInfluencer3D
+## Base class for all aerodynamic nodes.
+##
+## This class does not directly apply any forces to a body, requiring an [AeroBody3D] parent to 
+## manage the simulation.[br]
+## [br]
+## [AeroInfluencer3D]s can also be arranged hierarchically, as long as they have a single 
+## [AeroBody3D] as an ancestor node, and all other ancestors are [AeroInfluencer3D]s.[br]
+## [br]
+## Example node hierarchy:
+## [codeblock]
+## v AeroBody3D
+## | v ManualAeroSurface3D
+## | | > ManualAeroSurface3D
+## | | # this node works, because it has an an ancestor AeroBody3D, and all other ancestor nodes
+## | | # are AerInfluencer3D derived classes
+## [/codeblock]
+
 
 const AeroMathUtils = preload("../../utils/math_utils.gd")
 const AeroNodeUtils = preload("../../utils/node_utils.gd")
 
-##If true, this AeroInfluencer3D will not have any effect on the simulation.
+## If true, this AeroInfluencer3D will not have any effect on the simulation.
 @export var disabled : bool = false
-##Allows the current AeroInfluencer to prevent/interrupt the AeroBody's sleep. This is useful for thrust-providing
-##nodes like AeroMovers or Propellers. Sleep is only interrupted if the AeroInfluencer sub-class triggers it.
+## Allows the current AeroInfluencer to prevent/interrupt the AeroBody's sleep. This is useful for thrust-providing
+## nodes like AeroMovers or Propellers. Sleep is only interrupted if the AeroInfluencer sub-class triggers it.
 @export var can_override_body_sleep : bool = true
 
 @export_group("Actuation Control")
+## Config that controls how this [AeroInfluencer3D] will rotate in response to control commands.
 @export var actuation_config : AeroInfluencerControlConfig
-##Rotation order used when doing control rotations.
+## Rotation order used when doing control rotations.
 @export_enum("XYZ", "XZY", "YXZ", "YZX", "ZXY", "ZYX") var control_rotation_order : int = 0
 @export_subgroup("")
 
 @export_group("Debug")
-##If enabled, this AeroInfluencer3D is omitted from AeroBody3D debug calculations.
+## If enabled, this AeroInfluencer3D is omitted from AeroBody3D debug calculations.
 @export var omit_from_debug : bool = false
 var debug_scale : float = 0.1
 var debug_width : float = 0.05
 var show_debug : bool = false
 
-##Controls visibility of the AeroInfluencer3D's force debug vector.
+## Controls visibility of the AeroInfluencer3D's force debug vector.
 @export var show_force : bool = true
-##Controls visibility of the AeroInfluencer3D's torque debug vector.
+## Controls visibility of the AeroInfluencer3D's torque debug vector.
 @export var show_torque : bool = false
 
 var aero_body : AeroBody3D
@@ -99,6 +117,7 @@ func _physics_process(delta : float) -> void:
 		aero_body.interrupt_sleep()
 	last_transform = transform
 
+##
 func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	linear_velocity = get_linear_velocity()
 	angular_velocity = get_angular_velocity()
@@ -131,23 +150,43 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	
 	return PackedVector3Array([force, torque])
 
-#virtual
+## Intended to be overridden.[br]
+## [br]
+## This function runs during the aerodynamic update, before any forces are calculated.[br]
+## [br]
+## Be sure to call [code]super(substep_delta)[/code] at the end of the overridden function to retain 
+## existing functionality.
 func _update_transform_substep(substep_delta : float) -> void:
 	for influencer : AeroInfluencer3D in aero_influencers:
 		influencer._update_transform_substep(substep_delta)
 	
 	_update_control_transform(substep_delta)
-
+## Intended to be overridden.[br]
+## [br]
+## This function runs during the aerodynamic update, before any forces are calculated, at the end of
+## [method AeroInfluencer._update_transform_substep].[br]
+## [br]
+## This function is where control-related movements should be applied in extended classes.[br]
+## [br]
+## Be sure to call [code]super(substep_delta)[/code] at the end of the overridden function to retain 
+## existing functionality.
 func _update_control_transform(substep_delta : float) -> void:
-	
-	# TODO: Make it easier to manually control AeroInfluencers.
 	var actuation_value := Vector3.ZERO
 	if actuation_config:
 		actuation_value = actuation_config.update(self, substep_delta)
 	
 	basis = default_transform.basis * Basis().from_euler(actuation_value, control_rotation_order)
 
-#override
+## Intended to be overridden.[br]
+## [br]
+## This function should be extended for AeroInfluencer3D derived classes that produce forces that
+## might cause the [AeroBody3D] to move when sitting still.[br]
+## [br]
+## For example, a propeller would override body sleep, as it can create forces when the [AeroBody3D]
+## is sitting still.[br]
+## [br]
+## Ensure that overridden functions end with [code]return custom_criteria or super()[/code] to
+## retaun existing functionality.
 func is_overriding_body_sleep() -> bool:
 	if not can_override_body_sleep:
 		return false
@@ -171,7 +210,6 @@ func get_linear_velocity() -> Vector3:
 func get_angular_velocity() -> Vector3:
 	return get_parent().angular_velocity
 
-#virtual
 func get_centrifugal_offset() -> Vector3:
 	return position
 
@@ -193,6 +231,9 @@ func get_linear_acceleration() -> Vector3:
 func get_angular_acceleration() -> Vector3:
 	return get_parent().get_angular_acceleration()
 
+
+
+## Used for input propagation.
 func get_control_command(axis_name : String = "") -> float:
 	return get_parent().get_control_command(axis_name)
 

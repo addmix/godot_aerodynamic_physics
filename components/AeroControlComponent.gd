@@ -1,11 +1,17 @@
 @tool
 extends Node
 class_name AeroControlComponent
+## Component that provides high-level input and control mapping features for the [AeroBody3D].
 
+
+## Include for the AeroMathUtils library.
 const AeroMathUtils = preload("../utils/math_utils.gd")
 
+## Reference to the parent [AeroBody3D].
 @onready var aero_body : AeroBody3D = get_parent()
+## FlightAssist resource used to configure flight assist features.
 @export var flight_assist : FlightAssist
+## Control configuration resource used to define control axes and key bindings.
 @export var control_config : AeroControlConfig = AeroControlConfig.new()
 
 func _ready() -> void:
@@ -25,6 +31,7 @@ func _physics_process(delta : float) -> void:
 	control_config.update(delta)
 	update_flight_assist(delta)
 
+## Used internally to update the FlightAssist resource, and receive the resulting control command.
 func update_flight_assist(delta : float) -> void:
 	if not flight_assist:
 		return
@@ -49,15 +56,24 @@ func update_flight_assist(delta : float) -> void:
 	set_control_command("roll", flight_assist.control_command.z)
 	set_control_command("throttle", flight_assist.throttle_command)
 
+## Can be used to inject inputs into the control system. Any value set here will go through the
+## input system where smoothing, easing, and other effects are applied.[br]
+## In-game control methods (like in-game throttle or control sticks) should use this function
+## to interface with the control system, while retaining features such as FlightAssist.
 func set_control_input(axis_name : String = "", value : float = 0.0) -> void:
 	control_config.set_control_input(axis_name, value)
 
+## Returns the control input of the given axis before any modifications have been applied.
 func get_control_input(axis_name : String = "") -> float:
 	return control_config.get_control_input(axis_name)
 
+## Used to set the final control value. This is used for systems like FlightAssist that might need 
+## to modify the controls.
 func set_control_command(axis_name : String = "", value : float = 0.0) -> void:
 	control_config.set_control_command(axis_name, value)
 
+## Used to get the final control value, after modifications have been applied. This is the value 
+## used by AeroInfluencer3Ds for controls.
 func get_control_command(axis_name : String = "") -> float:
 	if control_config:
 		#if axis_name == "throttle":

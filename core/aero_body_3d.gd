@@ -324,9 +324,9 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	local_angular_velocity = angular_velocity * global_transform.basis
 	angle_of_attack = global_basis.y.angle_to(-air_velocity) - (PI / 2.0)
 	sideslip_angle = global_basis.x.angle_to(air_velocity) - (PI / 2.0)
-	bank_angle = rotation.z
-	heading = rotation.y
-	inclination = rotation.x
+	bank_angle = global_rotation.z
+	heading = global_rotation.y
+	inclination = global_rotation.x
 	if not Engine.is_editor_hint():
 		center_of_mass = state.center_of_mass_local
 	

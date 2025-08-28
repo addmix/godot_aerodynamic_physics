@@ -115,7 +115,7 @@ var current_gravity := Vector3.ZERO
 @onready var uncommitted_last_angular_velocity : Vector3 = angular_velocity
 var linear_acceleration := Vector3.ZERO
 var angular_acceleration := Vector3.ZERO
-var current_acceleration := Vector3.ZERO #unimplemented
+## Wind velocity in meters per second.
 var wind := Vector3.ZERO:
 	set(x):
 		if not wind == x: interrupt_sleep()
@@ -345,7 +345,7 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 		
 		linear_velocity_prediction = predict_linear_velocity(last_force_and_torque[0]) + state.total_gravity * PREDICTION_TIMESTEP_FRACTION
 		angular_velocity_prediction = predict_angular_velocity(last_force_and_torque[1])
-		last_force_and_torque = calculate_aerodynamic_forces(linear_velocity_prediction, angular_velocity_prediction, air_density, substep_delta)
+		last_force_and_torque = calculate_aerodynamic_forces(substep_delta)
 		
 		#add to total forces
 		total_force_and_torque[0] += last_force_and_torque[0]
@@ -355,7 +355,7 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	total_force_and_torque[1] = total_force_and_torque[1] / SUBSTEPS
 	return total_force_and_torque
 
-func calculate_aerodynamic_forces(_velocity : Vector3, _angular_velocity : Vector3, air_density : float, substep_delta : float = 0.0) -> PackedVector3Array:
+func calculate_aerodynamic_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	var force : Vector3
 	var torque : Vector3
 	
@@ -456,7 +456,7 @@ func _update_debug() -> void:
 		var original_angular_velocity := angular_velocity
 		linear_velocity = debug_linear_velocity
 		angular_velocity = debug_angular_velocity
-		var last_force_and_torque := calculate_aerodynamic_forces(linear_velocity_to_use, angular_velocity_to_use, air_density)
+		var last_force_and_torque := calculate_aerodynamic_forces(substep_delta)
 		linear_velocity = original_linear_velocity
 		angular_velocity = original_angular_velocity
 	
@@ -506,7 +506,7 @@ func _update_debug() -> void:
 			if is_equal_approx(drag_sum, 0.0):
 				drag_sum = 1.0
 			drag_debug_vector.position = drag_position_sum / amount_of_aero_surfaces / (drag_sum / amount_of_aero_surfaces)
-	
+
 	for influencer : AeroInfluencer3D in aero_influencers:
 		influencer.update_debug_vectors()
 

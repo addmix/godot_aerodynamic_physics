@@ -14,6 +14,7 @@
 [ext_resource type="Script" uid="uid://ctbwb7xlhft6t" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_config.gd" id="8_48ovc"]
 [ext_resource type="Script" uid="uid://crkbhmxpjff4o" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="9_cenmu"]
 
+
 [sub_resource type="Resource" id="Resource_bstvm"]
 script = ExtResource("3_2v3d0")
 p = 0.001

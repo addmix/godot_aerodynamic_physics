@@ -1,6 +1,6 @@
 [gd_scene load_steps=86 format=3 uid="uid://c1jq0a2ww3rai"]
 
-[ext_resource type="PackedScene" uid="uid://cmsb4krxdfnbu" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/f14/f14.blend" id="1_6mwa3"]
+[ext_resource type="PackedScene" uid="uid://7sy37erdrln" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/f14/f14.glb" id="1_6mwa3"]
 [ext_resource type="Script" uid="uid://cc5dwx5pqkaur" path="res://addons/godot_aerodynamic_physics/components/AeroControlComponent.gd" id="2_2l6s8"]
 [ext_resource type="Script" uid="uid://c3n4g48jfeemj" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_influencer_3d.gd" id="2_u0svr"]
 [ext_resource type="Script" uid="uid://d1725od371u4a" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd" id="3_8ljqo"]
@@ -15,6 +15,7 @@
 [ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_influencer_control_config.gd" id="12_yuw0c"]
 [ext_resource type="Script" uid="uid://3kjm0rdymoth" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_thruster_3d/aero_thruster_3d.gd" id="13_yuw0c"]
 [ext_resource type="Script" uid="uid://cy2j3ls8g16s2" path="res://addons/godot_aerodynamic_physics/demo/ball_launcher.gd" id="15_t486t"]
+
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_3wjhu"]
 friction = 0.0

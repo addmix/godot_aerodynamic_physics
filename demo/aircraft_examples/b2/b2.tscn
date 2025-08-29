@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/flight_info_label.tscn" id="7_limry"]
 [ext_resource type="Script" uid="uid://3kjm0rdymoth" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_thruster_3d/aero_thruster_3d.gd" id="7_xy21m"]
 
+
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_y4kyt"]
 friction = 0.0
 

@@ -15,6 +15,7 @@
 [ext_resource type="Script" uid="uid://crkbhmxpjff4o" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="7_u36rk"]
 [ext_resource type="Script" uid="uid://cy2j3ls8g16s2" path="res://addons/godot_aerodynamic_physics/demo/ball_launcher.gd" id="14_myln2"]
 
+
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_dne2k"]
 friction = 0.0
 

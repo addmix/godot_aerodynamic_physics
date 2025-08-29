@@ -1,6 +1,6 @@
 [gd_scene load_steps=49 format=3 uid="uid://c0siq8jp4uosk"]
 
-[ext_resource type="PackedScene" uid="uid://ddgrs0qfngisb" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/missile/aim-9.blend" id="1_4ptsi"]
+[ext_resource type="PackedScene" uid="uid://c20ixeymwlf0" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/missile/aim-9.glb" id="1_4ptsi"]
 [ext_resource type="Script" uid="uid://d1725od371u4a" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd" id="2_d8vsk"]
 [ext_resource type="Script" uid="uid://b4xqlunpiyivk" path="res://addons/godot_aerodynamic_physics/utils/pid.gd" id="3_egaj7"]
 [ext_resource type="Script" uid="uid://ctbwb7xlhft6t" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_config.gd" id="3_jfvgg"]
@@ -15,6 +15,7 @@
 [ext_resource type="Script" uid="uid://c46td0go5kvp6" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_influencer_control_axis_config.gd" id="12_157nr"]
 [ext_resource type="Script" uid="uid://3kjm0rdymoth" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_thruster_3d/aero_thruster_3d.gd" id="12_dsv8w"]
 [ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_influencer_control_config.gd" id="13_j4104"]
+
 
 [sub_resource type="Resource" id="Resource_00mgn"]
 script = ExtResource("3_egaj7")

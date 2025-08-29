@@ -16,6 +16,7 @@
 [ext_resource type="Script" uid="uid://c3n4g48jfeemj" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_influencer_3d.gd" id="8_usx2q"]
 [ext_resource type="PackedScene" uid="uid://bmhep0mniktj8" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/tilt_rotor/v22.glb" id="9_qgs5q"]
 
+
 [sub_resource type="Resource" id="Resource_k86yj"]
 script = ExtResource("3_0axsk")
 p = 0.001

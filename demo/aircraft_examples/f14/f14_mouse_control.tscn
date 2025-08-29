@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://bm03tdt5so3wj" path="res://addons/godot_aerodynamic_physics/demo/camera without rotation.tscn" id="3_213af"]
 [ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/flight_info_label.tscn" id="7_b85q4"]
 
+
 [node name="f14" instance=ExtResource("1_8ue2t")]
 
 [node name="MouseControl" type="Node" parent="AeroControlComponent" index="0"]

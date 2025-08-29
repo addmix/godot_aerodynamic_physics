@@ -1,6 +1,6 @@
 [gd_scene load_steps=74 format=3 uid="uid://bwpwxnufuujve"]
 
-[ext_resource type="PackedScene" uid="uid://coec3j0jnocu" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/cessna172/cessna172.blend" id="1_7rcro"]
+[ext_resource type="PackedScene" uid="uid://bxxwpa0sowfbh" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/cessna172/cessna172.glb" id="1_7rcro"]
 [ext_resource type="Script" uid="uid://cc5dwx5pqkaur" path="res://addons/godot_aerodynamic_physics/components/AeroControlComponent.gd" id="2_4u4b6"]
 [ext_resource type="Script" uid="uid://d1725od371u4a" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd" id="2_iyyha"]
 [ext_resource type="Script" uid="uid://b4xqlunpiyivk" path="res://addons/godot_aerodynamic_physics/utils/pid.gd" id="3_4yv37"]
@@ -13,6 +13,7 @@
 [ext_resource type="Script" uid="uid://bsu5rdrtiqph7" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_rotator_3d/aero_propeller_3d.gd" id="5_keinb"]
 [ext_resource type="Script" uid="uid://c46td0go5kvp6" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_influencer_control_axis_config.gd" id="5_o4ret"]
 [ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/flight_info_label.tscn" id="7_ey0gl"]
+
 
 [sub_resource type="Resource" id="Resource_scrto"]
 script = ExtResource("3_4yv37")

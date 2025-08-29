@@ -204,6 +204,9 @@ func target_direction(delta : float) -> void:
 	var local_desired_acceleration : Vector3 = local_direction_target * linear_velocity.length() - local_velocity_direction * linear_velocity.length() + Vector3(0, 9.8, 0) * global_transform.basis
 	var roll_error : float = -local_desired_acceleration.x
 	
+	if abs(error.x) >= deg_to_rad(90.0):
+		error.y = 0.0 #disable yaw when pointing backwards, stops an annoying oscillation
+	
 	error.z = roll_error
 	
 	direction_pitch_pid.update(delta, error.x)

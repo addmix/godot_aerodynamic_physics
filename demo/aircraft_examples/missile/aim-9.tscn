@@ -387,6 +387,7 @@ show_debug = true
 debug_scale = 0.02
 debug_width = 0.01
 debug_center_width = 0.1
+mass = 85.0
 
 [node name="AeroControlComponent" type="Node" parent="." index="0"]
 script = ExtResource("4_1b4mt")

@@ -15,18 +15,6 @@ var _angular_velocity : Vector3 = Vector3.ZERO
 @onready var last_position : Vector3 = position
 @onready var last_rotation : Basis = basis
 
-func _get_configuration_warnings() -> PackedStringArray:
-	var warnings := PackedStringArray([])
-	
-	var influencers_have_automatic_control_enabled : bool = false
-	for influencer : AeroInfluencer3D in aero_influencers:
-		influencers_have_automatic_control_enabled = influencers_have_automatic_control_enabled or is_instance_valid(influencer.actuation_config)
-	
-	if influencers_have_automatic_control_enabled:
-		warnings.append("1 or more child AeroInfluencer3D nodes have `enable_automatic_control` enabled. AeroMover3D may not be able to move them as needed.")
-	
-	return warnings
-
 func _update_transform_substep(substep_delta : float) -> void:
 	_linear_velocity = Vector3.ZERO
 	_angular_velocity = Vector3.ZERO

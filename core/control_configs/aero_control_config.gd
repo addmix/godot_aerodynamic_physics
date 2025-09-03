@@ -8,7 +8,7 @@ const AeroMathUtils = preload("../../utils/math_utils.gd")
 
 func _init() -> void:
 	axis_configs = [
-		AeroControlConfigAxis.new("pitch", -1.0, 1.0, "ui_down", "ui_up"),
+		AeroControlConfigAxis.new("pitch", -1.0, 1.0, "ui_up", "ui_down"),
 		AeroControlConfigAxis.new("yaw"),
 		AeroControlConfigAxis.new("roll", -1.0, 1.0, "ui_left", "ui_right"),
 		AeroControlConfigAxis.new("throttle", 0.0, 1.0),

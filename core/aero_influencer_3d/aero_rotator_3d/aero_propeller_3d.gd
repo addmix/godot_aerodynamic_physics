@@ -39,7 +39,9 @@ var propeller_instances : Array[AeroInfluencer3D] = []
 @export var propeller_speed_control_config := create_speed_control_config()
 func create_speed_control_config() -> AeroInfluencerControlConfig:
 	var config := AeroInfluencerControlConfig.new()
-	config.max_value.y = 100.0
+	config.use_separate_minmax = true
+	config.max_value = Vector3(0, 200.0, 0)
+	config.min_value = Vector3.ZERO
 	config.axis_configs.append(AeroInfluencerControlAxisConfig.new("throttle", Vector3.ONE))
 	return config
 
@@ -54,11 +56,17 @@ func _ready():
 			propeller_speed_control_config = propeller_speed_control_config.duplicate(true)
 
 func _get_configuration_warnings() -> PackedStringArray:
-	var arr : PackedStringArray = super._get_configuration_warnings()
+	var arr : PackedStringArray = PackedStringArray()#super._get_configuration_warnings()
 	if not propeller_blade:
 		arr.append("Propeller has not been assigned, or is not a valid instance. Make sure you have assigned an AeroInfluencer3D as a propeller.")
 	
 	return arr
+
+func on_child_enter_tree(node : Node) -> void:
+	super(node)
+	
+	if not propeller_blade and node is AeroInfluencer3D:
+		propeller_blade = node
 
 func update_propeller_amount() -> void:
 	if not do_propeller_setup:

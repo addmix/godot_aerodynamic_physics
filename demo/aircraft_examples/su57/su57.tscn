@@ -11,10 +11,9 @@
 [ext_resource type="Script" uid="uid://d1725od371u4a" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd" id="5_tc445"]
 [ext_resource type="Script" uid="uid://ctbwb7xlhft6t" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_config.gd" id="6_1gcqf"]
 [ext_resource type="Script" uid="uid://cbgqb7g7mmwtu" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_control_config.gd" id="6_1uofs"]
-[ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/flight_info_label.tscn" id="7_gdxys"]
+[ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/flight_info_label.tscn" id="7_gdxys"]
 [ext_resource type="Script" uid="uid://crkbhmxpjff4o" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="7_u36rk"]
-[ext_resource type="Script" uid="uid://cy2j3ls8g16s2" path="res://addons/godot_aerodynamic_physics/demo/ball_launcher.gd" id="14_myln2"]
-
+[ext_resource type="Script" uid="uid://cy2j3ls8g16s2" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/ball_launcher.gd" id="14_myln2"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_dne2k"]
 friction = 0.0
@@ -169,8 +168,8 @@ use_bindings = true
 input = 0.0
 min_limit = -1.0
 max_limit = 1.0
-positive_event = &"PitchUp"
-negative_event = &"PitchDown"
+positive_event = &"pitch_up"
+negative_event = &"pitch_down"
 enable_smoothing = false
 smoothing_rate = 1.0
 cumulative_positive_event = &""
@@ -186,8 +185,8 @@ use_bindings = true
 input = 0.0
 min_limit = -1.0
 max_limit = 1.0
-positive_event = &"YawLeft"
-negative_event = &"YawRight"
+positive_event = &"yaw_left"
+negative_event = &"yaw_right"
 enable_smoothing = false
 smoothing_rate = 1.0
 cumulative_positive_event = &""
@@ -203,8 +202,8 @@ use_bindings = true
 input = 0.0
 min_limit = -1.0
 max_limit = 1.0
-positive_event = &"RollLeft"
-negative_event = &"RollRight"
+positive_event = &"roll_left"
+negative_event = &"roll_right"
 enable_smoothing = false
 smoothing_rate = 1.0
 cumulative_positive_event = &""
@@ -224,31 +223,32 @@ positive_event = &""
 negative_event = &""
 enable_smoothing = false
 smoothing_rate = 1.0
-cumulative_positive_event = &"ThrottleUp"
-cumulative_negative_event = &"ThrottleDown"
+cumulative_positive_event = &"throttle_up"
+cumulative_negative_event = &"throttle_down"
 cumulative_rate = 1.0
 easing = 1.0
 
-[sub_resource type="Resource" id="Resource_js434"]
+[sub_resource type="Resource" id="Resource_b1qmm"]
 resource_name = "brake"
 script = ExtResource("5_2cb04")
 axis_name = "brake"
 use_bindings = true
 input = 0.0
-min_limit = 0.0
+min_limit = -1.0
 max_limit = 1.0
-positive_event = &""
-negative_event = &""
+positive_event = &"brake_up"
+negative_event = &"brake_down"
 enable_smoothing = false
 smoothing_rate = 1.0
 cumulative_positive_event = &""
 cumulative_negative_event = &""
 cumulative_rate = 1.0
 easing = 1.0
+metadata/_custom_type_script = "uid://dfbhcpt1rr3ai"
 
-[sub_resource type="Resource" id="Resource_fgiqm"]
+[sub_resource type="Resource" id="Resource_hd44f"]
 script = ExtResource("6_1uofs")
-axis_configs = Array[ExtResource("5_2cb04")]([SubResource("Resource_34386"), SubResource("Resource_o6rpv"), SubResource("Resource_wtjbh"), SubResource("Resource_jsx6i"), SubResource("Resource_js434")])
+axis_configs = Array[ExtResource("5_2cb04")]([SubResource("Resource_34386"), SubResource("Resource_o6rpv"), SubResource("Resource_wtjbh"), SubResource("Resource_jsx6i"), SubResource("Resource_b1qmm")])
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_tc445"]
 radius = 0.845685
@@ -599,7 +599,7 @@ show_debug = true
 [node name="AeroControlComponent" type="Node" parent="." index="0"]
 script = ExtResource("2_dne2k")
 flight_assist = SubResource("Resource_f17xe")
-control_config = SubResource("Resource_fgiqm")
+control_config = SubResource("Resource_hd44f")
 metadata/_custom_type_script = "uid://cc5dwx5pqkaur"
 
 [node name="Camera3D" type="Camera3D" parent="." index="1"]

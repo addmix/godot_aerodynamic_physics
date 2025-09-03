@@ -12,10 +12,9 @@
 [ext_resource type="Script" uid="uid://d1725od371u4a" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd" id="5_u35px"]
 [ext_resource type="Script" uid="uid://ctbwb7xlhft6t" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_config.gd" id="6_gyjyh"]
 [ext_resource type="Script" uid="uid://crkbhmxpjff4o" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="7_0axsk"]
-[ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/flight_info_label.tscn" id="7_c3u4x"]
+[ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/flight_info_label.tscn" id="7_c3u4x"]
 [ext_resource type="Script" uid="uid://c3n4g48jfeemj" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_influencer_3d.gd" id="8_usx2q"]
 [ext_resource type="PackedScene" uid="uid://bmhep0mniktj8" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/tilt_rotor/v22.glb" id="9_qgs5q"]
-
 
 [sub_resource type="Resource" id="Resource_k86yj"]
 script = ExtResource("3_0axsk")
@@ -166,8 +165,8 @@ use_bindings = true
 input = 0.0
 min_limit = -1.0
 max_limit = 1.0
-positive_event = &"PitchUp"
-negative_event = &"PitchDown"
+positive_event = &"pitch_up"
+negative_event = &"pitch_down"
 enable_smoothing = false
 smoothing_rate = 1.0
 cumulative_positive_event = &""
@@ -183,8 +182,8 @@ use_bindings = true
 input = 0.0
 min_limit = -1.0
 max_limit = 1.0
-positive_event = &"YawLeft"
-negative_event = &"YawRight"
+positive_event = &"yaw_left"
+negative_event = &"yaw_right"
 enable_smoothing = false
 smoothing_rate = 1.0
 cumulative_positive_event = &""
@@ -200,8 +199,8 @@ use_bindings = true
 input = 0.0
 min_limit = -1.0
 max_limit = 1.0
-positive_event = &"RollLeft"
-negative_event = &"RollRight"
+positive_event = &"roll_left"
+negative_event = &"roll_right"
 enable_smoothing = false
 smoothing_rate = 1.0
 cumulative_positive_event = &""
@@ -221,8 +220,8 @@ positive_event = &""
 negative_event = &""
 enable_smoothing = false
 smoothing_rate = 1.0
-cumulative_positive_event = &"ThrottleUp"
-cumulative_negative_event = &"ThrottleDown"
+cumulative_positive_event = &"throttle_up"
+cumulative_negative_event = &"throttle_down"
 cumulative_rate = 1.0
 easing = 1.0
 
@@ -238,8 +237,8 @@ positive_event = &""
 negative_event = &""
 enable_smoothing = false
 smoothing_rate = 1.0
-cumulative_positive_event = &"CollectiveUp"
-cumulative_negative_event = &"CollectiveDown"
+cumulative_positive_event = &"collective_up"
+cumulative_negative_event = &"collective_down"
 cumulative_rate = 1.0
 easing = 1.0
 
@@ -255,13 +254,13 @@ positive_event = &""
 negative_event = &""
 enable_smoothing = false
 smoothing_rate = 1.0
-cumulative_positive_event = &"TiltUp"
-cumulative_negative_event = &"TiltDown"
+cumulative_positive_event = &"tilt_up"
+cumulative_negative_event = &"tilt_down"
 cumulative_rate = 1.0
 easing = 1.0
 metadata/_custom_type_script = "uid://dfbhcpt1rr3ai"
 
-[sub_resource type="Resource" id="Resource_c7o86"]
+[sub_resource type="Resource" id="Resource_c3u4x"]
 script = ExtResource("5_qgs5q")
 axis_configs = Array[ExtResource("5_0axsk")]([SubResource("Resource_34386"), SubResource("Resource_o6rpv"), SubResource("Resource_wtjbh"), SubResource("Resource_jsx6i"), SubResource("Resource_n1yg5"), SubResource("Resource_ot2gc")])
 
@@ -737,7 +736,7 @@ metadata/_custom_type_script = "uid://3iji867c81k5"
 [node name="AeroControlComponent" type="Node" parent="."]
 script = ExtResource("2_gyjyh")
 flight_assist = SubResource("Resource_u3ev6")
-control_config = SubResource("Resource_c7o86")
+control_config = SubResource("Resource_c3u4x")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 0, 6.43191, 20.3546)

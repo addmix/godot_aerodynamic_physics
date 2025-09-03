@@ -21,7 +21,7 @@ script/source = "extends Node3D
 		$Camera3D.fov = x
 
 func _ready() -> void:
-	camera_distance = camera_distance
+	$Camera3D.position.z = camera_distance
 	camera_height = camera_height
 	camera_fov = camera_fov
 
@@ -40,5 +40,5 @@ top_level = true
 script = SubResource("GDScript_1grwo")
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10)
 far = 100000.0

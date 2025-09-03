@@ -11,9 +11,8 @@
 [ext_resource type="Script" uid="uid://dfbhcpt1rr3ai" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_control_config_axis.gd" id="5_uguh3"]
 [ext_resource type="Script" uid="uid://cbgqb7g7mmwtu" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_control_config.gd" id="6_5pvbw"]
 [ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_influencer_control_config.gd" id="6_xy21m"]
-[ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/flight_info_label.tscn" id="7_limry"]
+[ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/flight_info_label.tscn" id="7_limry"]
 [ext_resource type="Script" uid="uid://3kjm0rdymoth" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_thruster_3d/aero_thruster_3d.gd" id="7_xy21m"]
-
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_y4kyt"]
 friction = 0.0
@@ -168,8 +167,8 @@ use_bindings = true
 input = 0.0
 min_limit = -1.0
 max_limit = 1.0
-positive_event = &"PitchUp"
-negative_event = &"PitchDown"
+positive_event = &"pitch_up"
+negative_event = &"pitch_down"
 enable_smoothing = false
 smoothing_rate = 1.0
 cumulative_positive_event = &""
@@ -185,8 +184,8 @@ use_bindings = true
 input = 0.0
 min_limit = -1.0
 max_limit = 1.0
-positive_event = &"YawLeft"
-negative_event = &"YawRight"
+positive_event = &"yaw_left"
+negative_event = &"yaw_right"
 enable_smoothing = false
 smoothing_rate = 1.0
 cumulative_positive_event = &""
@@ -202,8 +201,8 @@ use_bindings = true
 input = 0.0
 min_limit = -1.0
 max_limit = 1.0
-positive_event = &"RollLeft"
-negative_event = &"RollRight"
+positive_event = &"roll_left"
+negative_event = &"roll_right"
 enable_smoothing = false
 smoothing_rate = 1.0
 cumulative_positive_event = &""
@@ -223,31 +222,32 @@ positive_event = &""
 negative_event = &""
 enable_smoothing = false
 smoothing_rate = 1.0
-cumulative_positive_event = &"ThrottleUp"
-cumulative_negative_event = &"ThrottleDown"
+cumulative_positive_event = &"throttle_up"
+cumulative_negative_event = &"throttle_down"
 cumulative_rate = 1.0
 easing = 1.0
 
-[sub_resource type="Resource" id="Resource_js434"]
+[sub_resource type="Resource" id="Resource_b1qmm"]
 resource_name = "brake"
 script = ExtResource("5_uguh3")
 axis_name = "brake"
 use_bindings = true
 input = 0.0
-min_limit = 0.0
+min_limit = -1.0
 max_limit = 1.0
-positive_event = &"BrakeUp"
-negative_event = &"BrakeDown"
+positive_event = &"brake_up"
+negative_event = &"brake_down"
 enable_smoothing = false
 smoothing_rate = 1.0
 cumulative_positive_event = &""
 cumulative_negative_event = &""
 cumulative_rate = 1.0
 easing = 1.0
+metadata/_custom_type_script = "uid://dfbhcpt1rr3ai"
 
-[sub_resource type="Resource" id="Resource_fw0sr"]
+[sub_resource type="Resource" id="Resource_uguh3"]
 script = ExtResource("6_5pvbw")
-axis_configs = Array[ExtResource("5_uguh3")]([SubResource("Resource_34386"), SubResource("Resource_o6rpv"), SubResource("Resource_wtjbh"), SubResource("Resource_jsx6i"), SubResource("Resource_js434")])
+axis_configs = Array[ExtResource("5_uguh3")]([SubResource("Resource_34386"), SubResource("Resource_o6rpv"), SubResource("Resource_wtjbh"), SubResource("Resource_jsx6i"), SubResource("Resource_b1qmm")])
 
 [sub_resource type="Curve" id="Curve_limry"]
 _limits = [0.0, 1.0, -180.0, 180.0]
@@ -519,7 +519,7 @@ show_debug = true
 [node name="AeroControlComponent" type="Node" parent="." index="0"]
 script = ExtResource("2_y4kyt")
 flight_assist = SubResource("Resource_ch55q")
-control_config = SubResource("Resource_fw0sr")
+control_config = SubResource("Resource_uguh3")
 metadata/_custom_type_script = "uid://cc5dwx5pqkaur"
 
 [node name="Camera3D" type="Camera3D" parent="." index="1"]

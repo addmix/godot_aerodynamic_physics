@@ -9,11 +9,10 @@
 [ext_resource type="Script" uid="uid://dfbhcpt1rr3ai" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_control_config_axis.gd" id="5_5n8sq"]
 [ext_resource type="Script" uid="uid://c46td0go5kvp6" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_influencer_control_axis_config.gd" id="5_iq2vc"]
 [ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_influencer_control_config.gd" id="6_a0qle"]
-[ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/flight_info_label.tscn" id="7_4bu18"]
+[ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/flight_info_label.tscn" id="7_4bu18"]
 [ext_resource type="Script" uid="uid://d1725od371u4a" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd" id="7_rbnrl"]
 [ext_resource type="Script" uid="uid://ctbwb7xlhft6t" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_config.gd" id="8_48ovc"]
 [ext_resource type="Script" uid="uid://crkbhmxpjff4o" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="9_cenmu"]
-
 
 [sub_resource type="Resource" id="Resource_bstvm"]
 script = ExtResource("3_2v3d0")
@@ -147,7 +146,7 @@ direction_pitch_pid = SubResource("Resource_ar8hq")
 direction_yaw_pid = SubResource("Resource_vlo1y")
 direction_roll_pid = SubResource("Resource_a573d")
 
-[sub_resource type="Resource" id="Resource_4bu18"]
+[sub_resource type="Resource" id="Resource_34386"]
 resource_name = "pitch"
 script = ExtResource("5_5n8sq")
 axis_name = "pitch"
@@ -155,8 +154,8 @@ use_bindings = true
 input = 0.0
 min_limit = -1.0
 max_limit = 1.0
-positive_event = &"PitchUp"
-negative_event = &"PitchDown"
+positive_event = &"pitch_up"
+negative_event = &"pitch_down"
 enable_smoothing = false
 smoothing_rate = 1.0
 cumulative_positive_event = &""
@@ -164,7 +163,7 @@ cumulative_negative_event = &""
 cumulative_rate = 1.0
 easing = 1.0
 
-[sub_resource type="Resource" id="Resource_b7dno"]
+[sub_resource type="Resource" id="Resource_o6rpv"]
 resource_name = "yaw"
 script = ExtResource("5_5n8sq")
 axis_name = "yaw"
@@ -172,8 +171,8 @@ use_bindings = true
 input = 0.0
 min_limit = -1.0
 max_limit = 1.0
-positive_event = &"YawLeft"
-negative_event = &"YawRight"
+positive_event = &"yaw_left"
+negative_event = &"yaw_right"
 enable_smoothing = false
 smoothing_rate = 1.0
 cumulative_positive_event = &""
@@ -181,7 +180,7 @@ cumulative_negative_event = &""
 cumulative_rate = 1.0
 easing = 1.0
 
-[sub_resource type="Resource" id="Resource_70nub"]
+[sub_resource type="Resource" id="Resource_wtjbh"]
 resource_name = "roll"
 script = ExtResource("5_5n8sq")
 axis_name = "roll"
@@ -189,8 +188,8 @@ use_bindings = true
 input = 0.0
 min_limit = -1.0
 max_limit = 1.0
-positive_event = &"RollLeft"
-negative_event = &"RollRight"
+positive_event = &"roll_left"
+negative_event = &"roll_right"
 enable_smoothing = false
 smoothing_rate = 1.0
 cumulative_positive_event = &""
@@ -198,7 +197,7 @@ cumulative_negative_event = &""
 cumulative_rate = 1.0
 easing = 1.0
 
-[sub_resource type="Resource" id="Resource_lkj7r"]
+[sub_resource type="Resource" id="Resource_jsx6i"]
 resource_name = "throttle"
 script = ExtResource("5_5n8sq")
 axis_name = "throttle"
@@ -210,14 +209,14 @@ positive_event = &""
 negative_event = &""
 enable_smoothing = false
 smoothing_rate = 1.0
-cumulative_positive_event = &"ThrottleUp"
-cumulative_negative_event = &"ThrottleDown"
+cumulative_positive_event = &"throttle_up"
+cumulative_negative_event = &"throttle_down"
 cumulative_rate = 1.0
 easing = 1.0
 
-[sub_resource type="Resource" id="Resource_1roke"]
+[sub_resource type="Resource" id="Resource_4bu18"]
 script = ExtResource("3_ptmmh")
-axis_configs = Array[ExtResource("5_5n8sq")]([SubResource("Resource_4bu18"), SubResource("Resource_b7dno"), SubResource("Resource_70nub"), SubResource("Resource_lkj7r")])
+axis_configs = Array[ExtResource("5_5n8sq")]([SubResource("Resource_34386"), SubResource("Resource_o6rpv"), SubResource("Resource_wtjbh"), SubResource("Resource_jsx6i")])
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_xp3u4"]
 size = Vector3(0.1, 0.104741, 0.1)
@@ -411,7 +410,7 @@ debug_center_width = 0.05
 [node name="AeroControlComponent" type="Node" parent="."]
 script = ExtResource("2_o518f")
 flight_assist = SubResource("Resource_fitu8")
-control_config = SubResource("Resource_1roke")
+control_config = SubResource("Resource_4bu18")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.148, 0.362)

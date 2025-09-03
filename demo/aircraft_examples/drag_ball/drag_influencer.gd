@@ -16,6 +16,7 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	#torque must be calculated manually because some influencers calculate torque differently.
 	var torque : Vector3 = relative_position.cross(force)
 	
+	#we want to add to force_and_torque, instead of replacing the value
 	force_and_torque[0] += force
 	force_and_torque[1] += torque
 	

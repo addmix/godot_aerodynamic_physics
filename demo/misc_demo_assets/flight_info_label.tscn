@@ -17,14 +17,12 @@ ALT:%-1sm
 M:   %-.2f
 a:   %-.1f
 G:   %-.1f
-	\" % [
-		aero_body.air_speed, 
-		String.num(aero_body.altitude, 0) if sign(aero_body.altitude) == -1 else \" \" + String.num(aero_body.altitude, 0),
+\" % [
+		aero_body.air_speed, #(-aero_body.linear_velocity + wind_velocity).length()
+		String.num(aero_body.altitude, 0) if sign(aero_body.altitude) == -1 else \" \" + String.num(aero_body.altitude, 0), #global_position.y
 		aero_body.mach, 
 		rad_to_deg(aero_body.angle_of_attack),
-		((aero_body.linear_acceleration - aero_body.current_gravity) * aero_body.global_transform.basis).y / 9.81
-		#var acceleration : Vector3 = (HUD.aero_body.linear_velocity - HUD.aero_body.last_linear_velocity) / delta - HUD.aero_body.current_gravity
-		#var g := UnitUtils.convert_standard_to((HUD.aero_body.global_transform.basis.inverse() * acceleration).y, UnitUtils.Conversions.gravity)
+		((aero_body.linear_acceleration - aero_body.current_gravity) * aero_body.global_basis).y / 9.81
 	]
 	#this is using format strings: https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_format_string.html
 "

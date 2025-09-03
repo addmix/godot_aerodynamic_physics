@@ -7,20 +7,20 @@ script/source = "extends Node3D
 # I just don't want to add these demo-controls to the project settings
 
 func _ready():
-	add_input(\"PitchUp\", KEY_S)
-	add_input(\"PitchDown\", KEY_W)
-	add_input(\"YawLeft\", KEY_Q)
-	add_input(\"YawRight\", KEY_E)
-	add_input(\"RollLeft\", KEY_A)
-	add_input(\"RollRight\", KEY_D)
-	add_input(\"ThrottleUp\", KEY_SHIFT)
-	add_input(\"ThrottleDown\", KEY_CTRL)
-	add_input(\"BrakeUp\", KEY_B)
-	add_input(\"BrakeDown\", -1)
-	add_input(\"TiltUp\", KEY_C)
-	add_input(\"TiltDown\", KEY_V)
-	add_input(\"CollectiveUp\", KEY_T)
-	add_input(\"CollectiveDown\", KEY_G)
+	add_input(\"pitch_up\", KEY_S)
+	add_input(\"pitch_down\", KEY_W)
+	add_input(\"yaw_left\", KEY_Q)
+	add_input(\"yaw_right\", KEY_E)
+	add_input(\"roll_left\", KEY_A)
+	add_input(\"roll_right\", KEY_D)
+	add_input(\"throttle_up\", KEY_SHIFT)
+	add_input(\"throttle_down\", KEY_CTRL)
+	add_input(\"brake_up\", KEY_B)
+	add_input(\"brake_down\", -1)
+	add_input(\"tilt_up\", KEY_C)
+	add_input(\"tilt_down\", KEY_V)
+	add_input(\"collective_up\", KEY_T)
+	add_input(\"collective_down\", KEY_G)
 
 func add_input(_name : String, keycode : int) -> void:
 	if InputMap.has_action(_name):
@@ -67,9 +67,11 @@ var vehicles := {
 	\"F-14 Tomcat Mouse Control\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/f14/f14_mouse_control.tscn\",
 	\"AIM-9 Sidewinder\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/missile/aim-9.tscn\",
 	\"Quadcopter\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/quadcopter.tscn\",
-	\"SU-57 \\\"Felon\\\"\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/su57/su57.tscn\",
+	\"Su-57 \\\"Felon\\\"\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/su57/su57.tscn\",
+	\"Su-47 \\\"Berkut\\\" \" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/berkut/berkut.tscn\",
 	\"B-2 Spirit\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/b2/b2.tscn\",
 	\"V-22 Osprey\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/tilt_rotor/v22.tscn\",
+	\"speed built\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/speed_build.tscn\",
 }
 
 func _ready() -> void:

@@ -71,6 +71,7 @@ var vehicles := {
 	\"Su-47 \\\"Berkut\\\" \" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/berkut/berkut.tscn\",
 	\"B-2 Spirit\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/b2/b2.tscn\",
 	\"V-22 Osprey\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/tilt_rotor/v22.tscn\",
+	\"UH-60 \\\"Blackhawk\\\"\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/blackhawk/blackhawk.tscn\",
 	\"speed built\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/speed_build.tscn\",
 }
 

@@ -16,7 +16,7 @@
 [ext_resource type="Script" uid="uid://c3n4g48jfeemj" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_influencer_3d.gd" id="8_usx2q"]
 [ext_resource type="PackedScene" uid="uid://bmhep0mniktj8" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/tilt_rotor/v22.glb" id="9_qgs5q"]
 
-[sub_resource type="Resource" id="Resource_k86yj"]
+[sub_resource type="Resource" id="Resource_683lg"]
 script = ExtResource("3_0axsk")
 p = 0.001
 i = 0.0
@@ -25,7 +25,7 @@ clamp_integral = false
 min_integral = -1.0
 max_integral = 1.0
 
-[sub_resource type="Resource" id="Resource_qwn45"]
+[sub_resource type="Resource" id="Resource_gf6bv"]
 script = ExtResource("3_0axsk")
 p = 1.0
 i = 0.05
@@ -34,7 +34,7 @@ clamp_integral = false
 min_integral = -1.0
 max_integral = 1.0
 
-[sub_resource type="Resource" id="Resource_pr5q5"]
+[sub_resource type="Resource" id="Resource_6u1lw"]
 script = ExtResource("3_0axsk")
 p = 10.0
 i = 0.3
@@ -43,7 +43,7 @@ clamp_integral = false
 min_integral = -1.0
 max_integral = 1.0
 
-[sub_resource type="Resource" id="Resource_n2ujq"]
+[sub_resource type="Resource" id="Resource_ymo5k"]
 script = ExtResource("3_0axsk")
 p = 0.8
 i = 0.0
@@ -52,7 +52,7 @@ clamp_integral = false
 min_integral = -1.0
 max_integral = 1.0
 
-[sub_resource type="Resource" id="Resource_0sgwi"]
+[sub_resource type="Resource" id="Resource_1br3c"]
 script = ExtResource("3_0axsk")
 p = 25.0
 i = 0.0
@@ -61,7 +61,7 @@ clamp_integral = false
 min_integral = -1.0
 max_integral = 1.0
 
-[sub_resource type="Resource" id="Resource_rcx78"]
+[sub_resource type="Resource" id="Resource_5e68j"]
 script = ExtResource("3_0axsk")
 p = 10.0
 i = 0.0
@@ -70,7 +70,7 @@ clamp_integral = false
 min_integral = -1.0
 max_integral = 1.0
 
-[sub_resource type="Resource" id="Resource_pehpk"]
+[sub_resource type="Resource" id="Resource_cu1h0"]
 script = ExtResource("3_0axsk")
 p = 10.0
 i = 0.0
@@ -79,7 +79,7 @@ clamp_integral = false
 min_integral = -1.0
 max_integral = 1.0
 
-[sub_resource type="Resource" id="Resource_gsu8f"]
+[sub_resource type="Resource" id="Resource_yytx3"]
 script = ExtResource("3_0axsk")
 p = 1.0
 i = 3.0
@@ -88,7 +88,7 @@ clamp_integral = true
 min_integral = -0.2
 max_integral = 0.2
 
-[sub_resource type="Resource" id="Resource_2hxup"]
+[sub_resource type="Resource" id="Resource_x4q61"]
 script = ExtResource("3_0axsk")
 p = 1.0
 i = 0.0
@@ -97,7 +97,7 @@ clamp_integral = false
 min_integral = -1.0
 max_integral = 1.0
 
-[sub_resource type="Resource" id="Resource_cpn7g"]
+[sub_resource type="Resource" id="Resource_meoa5"]
 script = ExtResource("3_0axsk")
 p = 0.0
 i = 0.4
@@ -106,7 +106,7 @@ clamp_integral = false
 min_integral = -1.0
 max_integral = 1.0
 
-[sub_resource type="Resource" id="Resource_4j28p"]
+[sub_resource type="Resource" id="Resource_lmqx6"]
 script = ExtResource("3_0axsk")
 p = 2.0
 i = 0.0
@@ -120,11 +120,11 @@ script = ExtResource("4_usx2q")
 enable_flight_assist = true
 max_angular_rates = Vector3(0.5, 0.5, 1.5)
 enable_flight_assist_x = true
-pitch_assist_pid = SubResource("Resource_gsu8f")
+pitch_assist_pid = SubResource("Resource_yytx3")
 enable_flight_assist_y = true
-yaw_assist_pid = SubResource("Resource_4j28p")
+yaw_assist_pid = SubResource("Resource_lmqx6")
 enable_flight_assist_z = true
-roll_assist_pid = SubResource("Resource_2hxup")
+roll_assist_pid = SubResource("Resource_x4q61")
 enable_g_limiter = false
 g_limit = 9.0
 negative_g_limit = 3.0
@@ -138,24 +138,24 @@ tuned_density = 1.222
 min_accounted_air_density = 0.1
 enable_bank_angle_assist = false
 bank_angle_target = 0.0
-bank_angle_pid = SubResource("Resource_qwn45")
+bank_angle_pid = SubResource("Resource_gf6bv")
 enable_heading_hold = false
 heading_target = 0.0
-heading_pid = SubResource("Resource_rcx78")
+heading_pid = SubResource("Resource_5e68j")
 enable_inclination_hold = false
 inclination_target = 0.0
-inclination_pid = SubResource("Resource_pehpk")
+inclination_pid = SubResource("Resource_cu1h0")
 enable_speed_hold = false
 speed_target = 0.0
-speed_pid = SubResource("Resource_cpn7g")
+speed_pid = SubResource("Resource_meoa5")
 enable_altitude_hold = false
 altitude_target = 0.0
-altitude_pid = SubResource("Resource_k86yj")
+altitude_pid = SubResource("Resource_683lg")
 enable_target_direction = false
 direction_target = Vector3(0, 0, 0)
-direction_pitch_pid = SubResource("Resource_pr5q5")
-direction_yaw_pid = SubResource("Resource_0sgwi")
-direction_roll_pid = SubResource("Resource_n2ujq")
+direction_pitch_pid = SubResource("Resource_6u1lw")
+direction_yaw_pid = SubResource("Resource_1br3c")
+direction_roll_pid = SubResource("Resource_ymo5k")
 
 [sub_resource type="Resource" id="Resource_34386"]
 resource_name = "pitch"

@@ -711,6 +711,7 @@ mass = 27500.0
 physics_material_override = SubResource("PhysicsMaterial_3wjhu")
 center_of_mass = Vector3(0, 0, 1.66)
 can_sleep = false
+show_debug = true
 
 [node name="AeroControlComponent" type="Node" parent="." index="0"]
 script = ExtResource("2_2l6s8")

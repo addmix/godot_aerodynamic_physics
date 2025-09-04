@@ -9,6 +9,8 @@ const AeroTransformUtils = preload("../../../utils/transform_utils.gd")
 ##Rate (in radians per second) the AeroMover3D will rotate.
 @export var angular_motor : Vector3 = Vector3.ZERO
 
+@export var disable_lift_dissymmetry : bool = false
+
 var _linear_velocity : Vector3 = Vector3.ZERO
 var _angular_velocity : Vector3 = Vector3.ZERO
 
@@ -44,7 +46,12 @@ func _update_transform_substep(substep_delta : float) -> void:
 
 
 func get_linear_velocity() -> Vector3:
-	return super.get_linear_velocity() + (_linear_velocity * global_basis.inverse())
+	var velocity : Vector3 = super.get_linear_velocity() + (_linear_velocity * global_basis.inverse())
+	
+	if disable_lift_dissymmetry:
+		velocity = global_basis.y.normalized() * velocity.dot(global_basis.y)
+	
+	return velocity
 
 func get_angular_velocity() -> Vector3:
 	return super.get_angular_velocity() + (_angular_velocity * global_basis.inverse())

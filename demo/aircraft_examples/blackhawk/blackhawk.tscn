@@ -151,7 +151,8 @@ enable_altitude_hold = false
 altitude_target = 0.0
 altitude_pid = SubResource("Resource_lhn4s")
 enable_target_direction = false
-use_velocity_vector_for_targetting = null
+use_velocity_vector_for_targetting = false
+disable_yaw_on_immelmann = true
 direction_target = Vector3(0, 0, 0)
 direction_pitch_pid = SubResource("Resource_3di6l")
 direction_yaw_pid = SubResource("Resource_v0and")
@@ -623,35 +624,35 @@ transform = Transform3D(1, 0, 0, 0, 1, 2.08167e-15, 0, -2.08167e-15, 1, 0, 6.661
 material_overlay = SubResource("StandardMaterial3D_o32yo")
 size = Vector3(7.0351, 0.1, 0.5179)
 
-[node name="ManualAeroSurface3D" type="Node3D" parent="." index="11"]
+[node name="ManualAeroSurface3D" type="Node3D" parent="." index="7"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.82663, -0.352099)
 script = ExtResource("5_wecnn")
 manual_config = SubResource("Resource_4y6qq")
 wing_config = SubResource("Resource_lml3a")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="ManualAeroSurface3D2" type="Node3D" parent="." index="12"]
+[node name="ManualAeroSurface3D2" type="Node3D" parent="." index="8"]
 transform = Transform3D(1, 0, 0, 0, 0.973532, -0.228551, 0, 0.228551, 0.973532, 0, -0.212944, 8.94837)
 script = ExtResource("5_wecnn")
 manual_config = SubResource("Resource_htcr8")
 wing_config = SubResource("Resource_oml6j")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="ManualAeroSurface3D3" type="Node3D" parent="." index="13"]
+[node name="ManualAeroSurface3D3" type="Node3D" parent="." index="9"]
 transform = Transform3D(6.12303e-17, 1, 0, -0.707107, 4.32964e-17, -0.707107, -0.707107, 4.32964e-17, 0.707107, 0, 0.378618, 9.09511)
 script = ExtResource("5_wecnn")
 manual_config = SubResource("Resource_103ye")
 wing_config = SubResource("Resource_6tp0p")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="ManualAeroSurface3D4" type="Node3D" parent="." index="14"]
+[node name="ManualAeroSurface3D4" type="Node3D" parent="." index="10"]
 transform = Transform3D(6.12303e-17, 1, 0, -1, 6.12303e-17, 0, 0, 0, 1, 0, -0.282207, 1.27538)
 script = ExtResource("5_wecnn")
 manual_config = SubResource("Resource_ajjy4")
 wing_config = SubResource("Resource_x88qx")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="AeroPropeller3D" type="Node3D" parent="." index="15" node_paths=PackedStringArray("propeller_blade")]
+[node name="AeroPropeller3D" type="Node3D" parent="." index="11" node_paths=PackedStringArray("propeller_blade")]
 transform = Transform3D(0.34202, 0.939693, 0, -0.939693, 0.34202, 0, 0, 0, 1, 0.216564, 1.91582, 9.89796)
 script = ExtResource("11_wecnn")
 propeller_amount = 4

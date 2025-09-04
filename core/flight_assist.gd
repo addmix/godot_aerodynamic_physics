@@ -122,6 +122,8 @@ var angular_rate_error := Vector3.ZERO
 @export var enable_target_direction : bool = false
 ##If enabled, the direction target will try to steer the velocity vector to match the given direction target.
 @export var use_velocity_vector_for_targetting : bool = false
+##If enabled, yaw will be selectively disabled when the direction target is more than 90 degrees from the current direction.
+@export var disable_yaw_on_immelmann : bool = true
 ##Target direction that direction PIDs will attempt to maintain.
 @export var direction_target : Vector3 = Vector3.ZERO
 ##PID controller used to evaluate appropriate control response.
@@ -211,7 +213,7 @@ func target_direction(delta : float) -> void:
 	var local_desired_acceleration : Vector3 = local_direction_target * linear_velocity.length() - local_velocity_direction * linear_velocity.length() + Vector3(0, 9.8, 0) * global_transform.basis
 	var roll_error : float = -local_desired_acceleration.x
 	
-	if abs(error.x) >= deg_to_rad(90.0):
+	if disable_yaw_on_immelmann and abs(error.x) >= deg_to_rad(90.0):
 		error.y = 0.0 #disable yaw when pointing backwards, stops an annoying oscillation
 	
 	error.z = roll_error

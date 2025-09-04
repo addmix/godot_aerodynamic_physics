@@ -280,7 +280,7 @@ script = ExtResource("3_e24i6")
 min_lift_coefficient = -1.8
 max_lift_coefficient = 1.8
 lift_aoa_curve = SubResource("Curve_uguh3")
-min_drag_coefficient = 0.01
+min_drag_coefficient = 0.005
 max_drag_coefficient = 0.5
 drag_aoa_curve = SubResource("Curve_limry")
 sweep_drag_multiplier_curve = SubResource("Curve_5pvbw")
@@ -432,7 +432,7 @@ min_lift_coefficient = -1.6
 max_lift_coefficient = 0.0
 lift_aoa_curve = SubResource("Curve_fw0sr")
 min_drag_coefficient = 0.0
-max_drag_coefficient = 1.5
+max_drag_coefficient = 1.2
 drag_aoa_curve = SubResource("Curve_cuqnb")
 sweep_drag_multiplier_curve = SubResource("Curve_rv6uo")
 drag_at_mach_multiplier_curve = SubResource("Curve_eo8u4")
@@ -514,7 +514,7 @@ size = Vector3(13.9041, 1, 10.9709)
 [node name="B2" instance=ExtResource("1_nswbj")]
 mass = 152200.0
 physics_material_override = SubResource("PhysicsMaterial_y4kyt")
-center_of_mass = Vector3(0, 0, -0.79)
+center_of_mass = Vector3(0, 0, 0.3)
 can_sleep = false
 show_debug = true
 
@@ -540,7 +540,7 @@ Airbrake: B"
 [node name="FlightInfoLabel" parent="Camera3D" index="1" instance=ExtResource("7_limry")]
 
 [node name="WingR" type="Node3D" parent="." index="3"]
-transform = Transform3D(0.818029, -0.052336, -0.57279, 0.0428711, 0.99863, -0.0300187, 0.573576, 0, 0.819152, 6.09659, 0, -2.00059)
+transform = Transform3D(0.818029, -0.052336, -0.57279, 0.0428711, 0.99863, -0.0300187, 0.573576, 0, 0.819152, 6.09659, 0, -0.385974)
 rotation_order = 5
 script = ExtResource("2_pw2a8")
 manual_config = SubResource("Resource_eqt1k")
@@ -548,7 +548,7 @@ wing_config = SubResource("Resource_v517k")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
 [node name="WingL" type="Node3D" parent="." index="4"]
-transform = Transform3D(0.818029, 0.052336, 0.57279, -0.0428711, 0.99863, -0.0300187, -0.573576, 0, 0.819152, -6.09668, 0, -2.00065)
+transform = Transform3D(0.818029, 0.052336, 0.57279, -0.0428711, 0.99863, -0.0300187, -0.573576, 0, 0.819152, -6.09668, 0, -0.386034)
 rotation_order = 5
 script = ExtResource("2_pw2a8")
 manual_config = SubResource("Resource_eqt1k")

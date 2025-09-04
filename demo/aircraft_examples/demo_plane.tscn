@@ -153,6 +153,7 @@ enable_altitude_hold = false
 altitude_target = 0.0
 altitude_pid = SubResource("Resource_6l1yh")
 enable_target_direction = false
+use_velocity_vector_for_targetting = false
 direction_target = Vector3(0, 0, 0)
 direction_pitch_pid = SubResource("Resource_6l2fv")
 direction_yaw_pid = SubResource("Resource_wruso")

@@ -152,6 +152,7 @@ enable_altitude_hold = false
 altitude_target = 0.0
 altitude_pid = SubResource("Resource_m1kth")
 enable_target_direction = false
+use_velocity_vector_for_targetting = false
 direction_target = Vector3(0, 0, 0)
 direction_pitch_pid = SubResource("Resource_3vcci")
 direction_yaw_pid = SubResource("Resource_hq5d7")
@@ -664,9 +665,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.146579, 0)
 radius = 0.118776
 height = 0.211716
 
-[node name="AeroPropeller3D" type="Node3D" parent="AeroPropeller3D" node_paths=PackedStringArray("propeller_blade")]
+[node name="AeroPropeller3D" type="Node3D" parent="AeroPropeller3D"]
 script = ExtResource("10_hq5d7")
-propeller_blade = NodePath("")
 propeller_speed_control_config = SubResource("Resource_e4fh7")
 metadata/_custom_type_script = "uid://bsu5rdrtiqph7"
 

@@ -118,8 +118,10 @@ var angular_rate_error := Vector3.ZERO
 @export var altitude_pid : aero_PID = aero_PID.new(0.001, 0, 0.01)
 
 @export_subgroup("Target Direction")
-##If enabled, the flight assist resource will attempt to maintain linear_velocity pointing in the direction of [code]direction_target[/code].
+##If enabled, the flight assist resource will attempt to point the -Z axis of the aircraft towards the given direction target.
 @export var enable_target_direction : bool = false
+##If enabled, the direction target will try to steer the velocity vector to match the given direction target.
+@export var use_velocity_vector_for_targetting : bool = false
 ##Target direction that direction PIDs will attempt to maintain.
 @export var direction_target : Vector3 = Vector3.ZERO
 ##PID controller used to evaluate appropriate control response.
@@ -183,23 +185,28 @@ func altitude_hold(delta : float) -> void:
 func target_direction(delta : float) -> void:
 	if not enable_target_direction:
 		return
-	if linear_velocity.is_equal_approx(Vector3.ZERO):
-		return
-	var local_velocity_direction : Vector3 = linear_velocity.normalized() * global_transform.basis
-	var angles_to_local_velocity_direction := Vector3(
-			atan2(local_velocity_direction.y, -local_velocity_direction.z),
-			atan2(-local_velocity_direction.x, -local_velocity_direction.z),
-			0.0
-		)
+	
+	
 	
 	var local_direction_target : Vector3 = direction_target * global_transform.basis
 	var angles_to_local_direction_target := Vector3(
-			atan2(local_direction_target.y, -local_direction_target.z),
-			atan2(-local_direction_target.x, -local_direction_target.z),
-			0.0#atan2(-local_direction_target.x, local_direction_target.y)
-		)
+		atan2(local_direction_target.y, -local_direction_target.z),
+		atan2(-local_direction_target.x, -local_direction_target.z),
+		0.0#atan2(-local_direction_target.x, local_direction_target.y)
+	)
+	var error := angles_to_local_direction_target
 	
-	var error := angles_to_local_direction_target - angles_to_local_velocity_direction
+	var local_velocity_direction : Vector3 = linear_velocity.normalized() * global_transform.basis
+	if use_velocity_vector_for_targetting:
+		if linear_velocity.is_equal_approx(Vector3.ZERO):
+			return
+		var angles_to_local_velocity_direction := Vector3(
+				atan2(local_velocity_direction.y, -local_velocity_direction.z),
+				atan2(-local_velocity_direction.x, -local_velocity_direction.z),
+				0.0
+			)
+		
+		error = angles_to_local_direction_target - angles_to_local_velocity_direction
 	
 	var local_desired_acceleration : Vector3 = local_direction_target * linear_velocity.length() - local_velocity_direction * linear_velocity.length() + Vector3(0, 9.8, 0) * global_transform.basis
 	var roll_error : float = -local_desired_acceleration.x

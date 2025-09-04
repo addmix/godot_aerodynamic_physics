@@ -6,7 +6,13 @@ const AeroMathUtils = preload("../../utils/math_utils.gd")
 
 ##If enabled, this AeroInfluencer3D node will automatically rotate to accommodate control inputs.
 @export var enable_control : bool = true
-@export var axis_configs : Array[AeroInfluencerControlAxisConfig] = []
+@export var axis_configs : Array[AeroInfluencerControlAxisConfig] = []:
+	set(x):
+		# When a new element is added to the axis_configs array, automatically set it as 
+		# an AeroInfluencerControlAxisConfig, for convenience
+		if x.size() > 0 and x[-1] == null:
+			x[-1] = AeroInfluencerControlAxisConfig.new()
+		axis_configs = x
 #X = pitch, Y = yaw, Z = roll
 
 @export_subgroup("Limits")

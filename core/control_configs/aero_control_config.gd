@@ -4,7 +4,13 @@ class_name AeroControlConfig
 
 const AeroMathUtils = preload("../../utils/math_utils.gd")
 
-@export var axis_configs : Array[AeroControlConfigAxis] = []
+@export var axis_configs : Array[AeroControlConfigAxis] = []:
+	set(x):
+		# When a new element is added to the axis_configs array, automatically set it as 
+		# an AeroControlConfigAxis, for convenience
+		if x[-1] == null:
+			x[-1] = AeroControlConfigAxis.new()
+		axis_configs = x
 
 func _init() -> void:
 	axis_configs = [

@@ -1,4 +1,4 @@
-[gd_scene load_steps=67 format=3 uid="uid://d5f8c4g1t134"]
+[gd_scene load_steps=68 format=3 uid="uid://d5f8c4g1t134"]
 
 [ext_resource type="Script" uid="uid://3iji867c81k5" path="res://addons/godot_aerodynamic_physics/core/aero_body_3d.gd" id="1_ny2y0"]
 [ext_resource type="Script" uid="uid://cc5dwx5pqkaur" path="res://addons/godot_aerodynamic_physics/components/AeroControlComponent.gd" id="2_skvh6"]
@@ -12,6 +12,7 @@
 [ext_resource type="Script" uid="uid://c46td0go5kvp6" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_influencer_control_axis_config.gd" id="8_3vcci"]
 [ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/control_configs/aero_influencer_control_config.gd" id="9_av1y7"]
 [ext_resource type="Script" uid="uid://bsu5rdrtiqph7" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_mover_3d/aero_propeller_3d.gd" id="10_hq5d7"]
+[ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/flight_info_label.tscn" id="13_e4fh7"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ny2y0"]
 friction = 0.0
@@ -672,5 +673,16 @@ propeller_speed_control_config = SubResource("Resource_e4fh7")
 metadata/_custom_type_script = "uid://bsu5rdrtiqph7"
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.08662, 8.44253)
-far = 40000.0
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.52, 8.221)
+far = 100000.0
+
+[node name="Label3D" type="Label3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.57529, -2.9862)
+text = "Controls:
+Pitch: W/A
+Yaw: Q/E
+Roll: A/D
+Throttle: Shift/Ctrl
+Propeller Pitch: T/G"
+
+[node name="FlightInfoLabel" parent="Camera3D" instance=ExtResource("13_e4fh7")]

@@ -35,8 +35,9 @@ jobs:
 
       - name: Move and Zip
         run: |
-          mkdir -p ../godot_aerodynamic_physics/addons/godot_aerodynamic_physics
-          mv * ../godot_aerodynamic_physics/addons/godot_aerodynamic_physics
+          mkdir -p ../godot_aerodynamic_physics_temp/addons/godot_aerodynamic_physics
+          mv {.,}* ../godot_aerodynamic_physics_temp/addons/godot_aerodynamic_physics
+          mv ../godot_aerodynamic_physics_temp/addons ../godot_aerodynamic_physics
           cd ..
           zip -r godot_aerodynamic_physics.zip godot_aerodynamic_physics
     

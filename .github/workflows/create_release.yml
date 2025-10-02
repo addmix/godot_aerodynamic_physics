@@ -35,8 +35,11 @@ jobs:
 
       - name: Move and Zip
         run: |
-          rm -r docs
           rm -r .git/
+          rm -r docs 
+          find . -name "*.blend" -type f -delete
+          find . -name "*.blend.import" -type f -delete
+
           mkdir -p ../godot_aerodynamic_physics_temp/addons/godot_aerodynamic_physics
           mv {.,}* ../godot_aerodynamic_physics_temp/addons/godot_aerodynamic_physics
           mv ../godot_aerodynamic_physics_temp/addons ../godot_aerodynamic_physics

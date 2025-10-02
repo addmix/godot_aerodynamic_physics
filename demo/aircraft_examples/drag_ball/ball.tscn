@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://cj8k2c0i2doc4"]
 
 [ext_resource type="Script" uid="uid://3iji867c81k5" path="res://addons/godot_aerodynamic_physics/core/aero_body_3d.gd" id="1_1e00s"]
-[ext_resource type="Script" uid="uid://7scpeqlmo40t" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/drag_ball/drag_influencer.gd" id="2_bawn3"]
+[ext_resource type="Script" uid="uid://7scpeqlmo40t" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/drag_influencer/aero_drag_influencer.gd" id="2_bawn3"]
 [ext_resource type="PackedScene" uid="uid://bm03tdt5so3wj" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/camera without rotation.tscn" id="3_nguxe"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_x8fbi"]

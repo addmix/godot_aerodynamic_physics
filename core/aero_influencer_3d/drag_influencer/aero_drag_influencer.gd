@@ -1,6 +1,6 @@
 @tool
 extends AeroInfluencer3D
-#class_name DragInfluencer3D
+class_name AeroDragInfluencer3D
 
 @export var radius : float = 0.5
 @export var drag_coefficient : float = 0.5

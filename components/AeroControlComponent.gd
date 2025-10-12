@@ -33,6 +33,7 @@ func _physics_process(delta : float) -> void:
 
 ## Used internally to update the FlightAssist resource, and receive the resulting control command.
 func update_flight_assist(delta : float) -> void:
+	return
 	if not flight_assist:
 		return
 	

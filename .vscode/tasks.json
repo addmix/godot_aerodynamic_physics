@@ -1,0 +1,18 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "group": "build",
+            "type": "shell",
+            "command": "D:/User/Documents/Godot/versions/Godot_v4.2.2-stable_win64.exe/projects/godot_aero_cpp/addons/godot_aerodynamic_physics/godot-cpp-components/compile_double_debug.bat",
+            //"cwd": "D:/User/Documents/Godot/versions/Godot_v4.2.2-stable_win64.exe/projects/godot_aero_cpp/addons/godot_aerodynamic_physics/godot-cpp-components/",
+            "args": [
+            ],
+            "problemMatcher": "$msCompile"
+        }
+    ]
+
+    
+}
+

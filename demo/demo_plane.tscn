@@ -1,9 +1,8 @@
-[gd_scene load_steps=27 format=3 uid="uid://dehqqkf20re7y"]
+[gd_scene load_steps=26 format=3 uid="uid://dit3bahsbdstx"]
 
-[ext_resource type="Script" uid="uid://b2fo3i8leh5j4" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd" id="2_ygpq6"]
-[ext_resource type="Script" uid="uid://dvt8pm7dfnkb6" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_config.gd" id="3_dhflf"]
-[ext_resource type="Script" uid="uid://dcvshl1nkbmru" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="4_ht3i8"]
-[ext_resource type="Script" uid="uid://b61vn2gp2ga86" path="res://addons/godot_aerodynamic_physics/components/AeroThrusterComponent.gd" id="8_e4glj"]
+[ext_resource type="Script" uid="uid://r2xb7xq0n117" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd" id="2_ygpq6"]
+[ext_resource type="Script" uid="uid://cil8pkwaqi3rk" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_config.gd" id="3_dhflf"]
+[ext_resource type="Script" uid="uid://c1g87pwnhie2m" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="4_ht3i8"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_m08mi"]
 friction = 0.0
@@ -11,8 +10,8 @@ friction = 0.0
 [sub_resource type="GDScript" id="GDScript_yym7i"]
 script/source = "extends AeroBody3D
 
-func _ready() -> void:
-	global_position = Vector3(randf_range(-1000, 1000), 200, randf_range(-1000, 1000))
+#func _ready() -> void:
+	#global_position = Vector3(randf_range(-1000, 1000), 200, randf_range(-1000, 1000))
 "
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_nchkm"]
@@ -56,10 +55,6 @@ drag_at_mach_multiplier_curve = SubResource("Curve_nljr1")
 
 [sub_resource type="Resource" id="Resource_n4pj1"]
 script = ExtResource("4_ht3i8")
-chord = 1.0
-span = 2.0
-auto_aspect_ratio = true
-aspect_ratio = 2.0
 
 [sub_resource type="Curve" id="Curve_rrksc"]
 bake_resolution = 21
@@ -96,10 +91,6 @@ drag_at_mach_multiplier_curve = SubResource("Curve_oqfja")
 
 [sub_resource type="Resource" id="Resource_muxoe"]
 script = ExtResource("4_ht3i8")
-chord = 1.0
-span = 2.0
-auto_aspect_ratio = true
-aspect_ratio = 2.0
 
 [sub_resource type="Curve" id="Curve_flkyw"]
 bake_resolution = 21
@@ -125,8 +116,6 @@ point_count = 3
 
 [sub_resource type="Resource" id="Resource_f304u"]
 script = ExtResource("3_dhflf")
-min_lift_coefficient = -1.6
-max_lift_coefficient = 1.6
 lift_aoa_curve = SubResource("Curve_8gjnn")
 min_drag_coefficient = 0.0
 max_drag_coefficient = 0.2
@@ -138,13 +127,12 @@ drag_at_mach_multiplier_curve = SubResource("Curve_ccupl")
 script = ExtResource("4_ht3i8")
 chord = 1.114
 span = 3.7295
-auto_aspect_ratio = true
 aspect_ratio = 3.34785
 
 [node name="AeroBody3D" type="AeroBody3D"]
 mass = 850.0
 physics_material_override = SubResource("PhysicsMaterial_m08mi")
-center_of_mass_mode = 1
+can_sleep = false
 linear_damp_mode = 1
 angular_damp_mode = 1
 script = SubResource("GDScript_yym7i")
@@ -162,7 +150,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.57628e-07, 3.05994)
 script = ExtResource("2_ygpq6")
 manual_config = SubResource("Resource_r1cc4")
 wing_config = SubResource("Resource_n4pj1")
-metadata/_custom_type_script = "uid://b2fo3i8leh5j4"
 
 [node name="CSGBox3D2" type="CSGBox3D" parent="Elevator"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.57628e-07, 0.29494)
@@ -173,29 +160,26 @@ transform = Transform3D(-4.37114e-08, -1, 3.55271e-15, 0.835693, -3.65293e-08, -
 script = ExtResource("2_ygpq6")
 manual_config = SubResource("Resource_ph3da")
 wing_config = SubResource("Resource_muxoe")
-metadata/_custom_type_script = "uid://b2fo3i8leh5j4"
 
 [node name="CSGBox3D3" type="CSGBox3D" parent="Rudder"]
 transform = Transform3D(-4.37114e-08, 0.999742, -0.0227224, -1, -4.37001e-08, 9.93232e-10, 3.55271e-15, 0.0227224, 0.999742, 0.0151641, -6.6283e-10, 0.239923)
 size = Vector3(0.141602, 1.41797, 1.14014)
 
 [node name="WingL" type="AeroInfluencer3D" parent="."]
-transform = Transform3D(0.996195, 0.0871557, -1.06182e-09, -0.0870363, 0.994829, -0.052336, -0.00456138, 0.0521368, 0.99863, -1.90776, 0, -0.418417)
+transform = Transform3D(0.9961949978119151, 0.08715570357975964, 0, -0.08715576896977524, 0.9961942504006169, 0, 0, 0, 1.000000466897891, -1.90776, 0, -0.418417)
 script = ExtResource("2_ygpq6")
 manual_config = SubResource("Resource_f304u")
 wing_config = SubResource("Resource_ds2n2")
-metadata/_custom_type_script = "uid://b2fo3i8leh5j4"
 
 [node name="CSGBox3D4" type="CSGBox3D" parent="WingL"]
 transform = Transform3D(1, 0, 5.96046e-08, 0, 1, 0, -5.96046e-08, 0, 1, 0.0698701, 0, 0.269345)
 size = Vector3(3.67285, 0.113525, 1.14014)
 
 [node name="WingR" type="AeroInfluencer3D" parent="."]
-transform = Transform3D(0.996195, -0.0871557, 1.06182e-09, 0.0870363, 0.994829, -0.052336, 0.00456138, 0.0521368, 0.99863, 1.908, 0, -0.418417)
+transform = Transform3D(0.9961949978119151, -0.08715570357975964, 0, 0.08715576896977524, 0.9961942504006169, 0, 0, 0, 1.000000466897891, 1.908, 0, -0.418417)
 script = ExtResource("2_ygpq6")
 manual_config = SubResource("Resource_f304u")
 wing_config = SubResource("Resource_ds2n2")
-metadata/_custom_type_script = "uid://b2fo3i8leh5j4"
 
 [node name="CSGBox3D5" type="CSGBox3D" parent="WingR"]
 transform = Transform3D(1, 0, -5.96046e-08, 0, 1, 0, 5.96046e-08, 0, 1, -0.0699999, 0, 0.269945)
@@ -204,10 +188,6 @@ size = Vector3(3.67285, 0.113525, 1.14014)
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.01356, 46.1522)
 current = true
-
-[node name="AeroThrusterComponent" type="Marker3D" parent="."]
-script = ExtResource("8_e4glj")
-max_fuel_flow = 0.05
 
 [node name="Label3D" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 3.133, 6.07)

@@ -46,6 +46,8 @@ void AeroInfluencer3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_void", "unused_value"), &AeroInfluencer3D::set_void);
 
 	ClassDB::bind_method(D_METHOD("get_world_air_velocity"), &AeroInfluencer3D::get_world_air_velocity);
+	ClassDB::bind_method(D_METHOD("get_linear_velocity"), &AeroInfluencer3D::get_linear_velocity);
+	
 	//these cause godot to crash from some reason
 	//ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "world_air_velocity"), "", "get_world_air_velocity");
 	//ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "world_air_velocity"), "set_void", "get_world_air_velocity");
@@ -53,6 +55,7 @@ void AeroInfluencer3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_mach"), &AeroInfluencer3D::get_mach);
 	ClassDB::bind_method(D_METHOD("get_air_speed"), &AeroInfluencer3D::get_air_speed);
 	ClassDB::bind_method(D_METHOD("get_relative_position"), &AeroInfluencer3D::get_relative_position);
+	ClassDB::bind_method(D_METHOD("get_drag_direction"), &AeroInfluencer3D::get_drag_direction);
 
 	ClassDB::bind_method(D_METHOD("get_current_force"), &AeroInfluencer3D::get_current_force);
 	ClassDB::bind_method(D_METHOD("set_current_force", "force"), &AeroInfluencer3D::set_current_force);
@@ -73,30 +76,17 @@ void AeroInfluencer3D::_bind_methods() {
 }
 
 AeroInfluencer3D::AeroInfluencer3D() {
-	// Initialize any variables here.
-	disabled = false;
-	enable_automatic_control = true;
-	control_command = Vector3(0.0, 0.0, 0.0);
+	//vector_3d_script = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/utils/vector_3d/vector_3d.gd");
+	//point_3d_script = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/utils/point_3d/point_3d.gd");
 }
 
 AeroInfluencer3D::~AeroInfluencer3D() {
 	// Add your cleanup here.
 }
 
-void AeroInfluencer3D::_notification(int p_notification) {
-	switch (p_notification) {
-	case NOTIFICATION_ENTER_TREE:
-		on_enter_tree();
-	case NOTIFICATION_READY:
-		on_ready();
-	case NOTIFICATION_PROCESS:
-		on_process(get_process_delta_time());
-	case NOTIFICATION_PHYSICS_PROCESS:
-		on_physics_process(get_physics_process_delta_time());
-	}
-}
-void AeroInfluencer3D::on_enter_tree() {}
-void AeroInfluencer3D::on_ready() {
+
+void AeroInfluencer3D::_enter_tree() {}
+void AeroInfluencer3D::_ready() {
 	this->connect("child_entered_tree", Callable(this, "on_child_entered_tree"));
 	this->connect("child_exiting_tree", Callable(this, "on_child_exiting_tree"));
 }
@@ -122,10 +112,8 @@ void AeroInfluencer3D::on_child_exiting_tree(const Variant &node) {
 		influencer->set_aero_body(nullptr);
 	}
 }
-void AeroInfluencer3D::on_process(double delta) {}
-void AeroInfluencer3D::on_physics_process(double delta) {
-	//update_debug_vectors();
-
+void AeroInfluencer3D::_process(double delta) {}
+void AeroInfluencer3D::_physics_process(double delta) {
 	if (is_overriding_body_sleep() and ObjectDB::get_instance(aero_body->get_instance_id()) != NULL) {
 		aero_body->set_sleeping(false);
 	}
@@ -148,16 +136,16 @@ PackedVector3Array AeroInfluencer3D::calculate_forces(double substep_delta) {
 	relative_position = get_relative_position();
 	world_air_velocity = get_world_air_velocity();
 	air_speed = world_air_velocity.length();
-	//UtilityFunctions::print(world_air_velocity);
 	air_density = aero_body->get_air_density();
 	altitude = aero_body->get_altitude();
+	dynamic_pressure = 0.5 * aero_body->get_air_density() * aero_body->get_air_speed() * aero_body->get_air_speed();
+	drag_direction = world_air_velocity.normalized();
 	local_air_velocity = get_global_basis().xform_inv(world_air_velocity);
 
 	if (has_node("/root/AeroUnits")) {
-		
 		Node AeroUnits = *get_node_or_null("/root/AeroUnits");
+		//seems like this could cause a problem, there's no check to ensure this isn't null
 		mach = AeroUnits.call("speed_to_mach_at_altitude", air_speed, altitude);
-		dynamic_pressure = 0.5 * (double) AeroUnits.call("get_density_at_altitude", altitude) * (air_speed * air_speed);
 	}
 	else {
 		UtilityFunctions::print("AeroUnits not available");
@@ -233,7 +221,7 @@ void AeroInfluencer3D::set_void(Vector3 value) {
 Vector3 AeroInfluencer3D::get_relative_position() {
 	if (get_parent()->is_class("AeroInfluencer3D") or get_parent()->is_class("AeroBody3D")){
 		AeroInfluencer3D* parent = (AeroInfluencer3D*) get_parent();
-		return (parent)->get_relative_position() + (parent->get_global_basis().xform(get_position()));
+		return parent->get_relative_position() + (parent->get_global_basis().xform(get_position()));
 	}
 	return Vector3();
 }
@@ -255,10 +243,10 @@ Vector3 AeroInfluencer3D::get_linear_velocity() {
 	}
 	return Vector3();
 }
-Vector3 AeroInfluencer3D::get_angular_velocity() {
+Vector3 AeroInfluencer3D::get_angular_velocity() const {
 	if (get_parent()->is_class("AeroInfluencer3D") or get_parent()->is_class("AeroBody3D")){
 		AeroInfluencer3D* parent = (AeroInfluencer3D*) get_parent();
-		parent->get_angular_velocity();
+		return parent->get_angular_velocity();
 	}
 	return Vector3();
 }
@@ -268,7 +256,7 @@ Vector3 AeroInfluencer3D::get_centrifugal_offset() {
 	
 }
 Vector3 AeroInfluencer3D::get_linear_acceleration() {
-
+	return Vector3();
 }
 Vector3 AeroInfluencer3D::get_angular_acceleration() {
 	if (get_parent()->is_class("AeroInfluencer3D") or get_parent()->is_class("AeroBody3D")){
@@ -286,6 +274,10 @@ double AeroInfluencer3D::get_mach() {
 double AeroInfluencer3D::get_air_speed() {
 	return air_speed;
 }
+Vector3 AeroInfluencer3D::get_drag_direction() {
+	return drag_direction;
+}
+
 Vector3 AeroInfluencer3D::get_current_force() {
 	return _current_force;
 }
@@ -371,4 +363,80 @@ void AeroInfluencer3D::set_aero_influencers(const TypedArray<AeroInfluencer3D> n
 }
 TypedArray<AeroInfluencer3D> AeroInfluencer3D::get_aero_influencers() const { return aero_influencers; }
 
+void AeroInfluencer3D::update_debug(){
+	for (int i = 0; i < aero_influencers.size(); i++) {
+		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
+		influencer->update_debug();
+	}
 
+	/*if (not is_inside_tree()) return;
+
+	if (force_debug_vector) {
+		force_debug_vector->set("value", get_global_basis().xform_inv(get_current_force()));
+	}
+	if (torque_debug_vector) {
+		torque_debug_vector->set("value", get_global_basis().xform_inv(get_current_torque()));
+	}*/
+}
+
+void AeroInfluencer3D::set_show_debug(const bool value) {
+	show_debug = value;
+
+	for (int i = 0; i < aero_influencers.size(); i++) {
+		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
+		influencer->set_show_debug(show_debug);
+	}
+
+	if (show_debug) {
+		/*
+		if (not force_debug_vector) {
+			force_debug_vector = memnew(MeshInstance3D);
+			force_debug_vector->set_script(vector_3d_script);
+			add_child(force_debug_vector, INTERNAL_MODE_FRONT);
+		}
+		if (not torque_debug_vector) {
+			torque_debug_vector = memnew(MeshInstance3D);
+			torque_debug_vector->set_script(vector_3d_script);
+			add_child(torque_debug_vector, INTERNAL_MODE_FRONT);
+		}
+	} else {
+		if (force_debug_vector) {
+			force_debug_vector->queue_free();
+			force_debug_vector = nullptr;
+		}
+		if (torque_debug_vector) {
+			torque_debug_vector->queue_free();
+			torque_debug_vector = nullptr;
+		}
+		*/
+	}
+}
+void AeroInfluencer3D::set_debug_scale(const double value) {
+	debug_scale = value;
+
+	for (int i = 0; i < aero_influencers.size(); i++) {
+		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
+		influencer->set_debug_scale(debug_scale);
+	}
+}
+void AeroInfluencer3D::set_debug_width(const double value) {
+	debug_width = value;
+
+	for (int i = 0; i < aero_influencers.size(); i++) {
+		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
+		influencer->set_debug_width(debug_width);
+	}
+
+	/*
+	if (not is_inside_tree()) return;
+	if (force_debug_vector) {
+		force_debug_vector->set("width", debug_width);
+	}
+	if (torque_debug_vector) {
+		torque_debug_vector->set("width", debug_width);
+	}*/
+}
+
+
+void AeroInfluencer3D::set_actuation_config(const Ref<Resource> &p_config) {actuation_config = p_config;};
+Ref<Resource> AeroInfluencer3D::get_actuation_config() const {return actuation_config;};

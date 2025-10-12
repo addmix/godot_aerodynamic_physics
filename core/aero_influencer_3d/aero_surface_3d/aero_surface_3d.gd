@@ -56,44 +56,47 @@ func _enter_tree() -> void:
 			update_gizmos()
 
 func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
-	var force_and_torque : PackedVector3Array = super._calculate_forces(substep_delta)
+	var force_and_torque : PackedVector3Array = default_calculate_forces(substep_delta) #super._calculate_forces(substep_delta)
 	#calculate some common values, some necessary for debugging
 	#air velocity in local space
-	angle_of_attack = global_basis.y.angle_to(-world_air_velocity) - (PI / 2.0)
-	sweep_angle = global_basis.x.angle_to(-world_air_velocity) - (PI / 2.0)
+	angle_of_attack = global_basis.y.angle_to(-get_world_air_velocity()) - (PI / 2.0)
+	sweep_angle = global_basis.x.angle_to(-get_world_air_velocity()) - (PI / 2.0)
 	
 	area = wing_config.chord * wing_config.span
 	projected_wing_area = abs(wing_config.span * wing_config.chord * sin(angle_of_attack))
 	
-	var right_facing_air_vector : Vector3 = world_air_velocity.cross(-global_transform.basis.y).normalized()
-	lift_direction = drag_direction.cross(right_facing_air_vector).normalized()
+	var right_facing_air_vector : Vector3 = get_world_air_velocity().cross(-global_transform.basis.y).normalized()
+	lift_direction = get_drag_direction().cross(right_facing_air_vector).normalized()
 	
 	return force_and_torque
 
 func update_debug_visibility(_show_debug : bool = false) -> void:
-	super.update_debug_visibility(_show_debug)
-	#check that debug vectors exist
-	if lift_debug_vector and drag_debug_vector:
-		lift_debug_vector.visible = show_debug and show_lift
-		drag_debug_vector.visible = show_debug and show_drag
+	return
+	#super.update_debug_visibility(_show_debug)
+	##check that debug vectors exist
+	#if lift_debug_vector and drag_debug_vector:
+		#lift_debug_vector.visible = show_debug and show_lift
+		#drag_debug_vector.visible = show_debug and show_drag
 
 func update_debug_scale(_scale : float, _width : float) -> void:
-	super.update_debug_scale(_scale, _width)
-	
-	if lift_debug_vector:
-		lift_debug_vector.width = debug_width
-	if drag_debug_vector:
-		drag_debug_vector.width = debug_width
+	return
+	#super.update_debug_scale(_scale, _width)
+	#
+	#if lift_debug_vector:
+		#lift_debug_vector.width = debug_width
+	#if drag_debug_vector:
+		#drag_debug_vector.width = debug_width
 
 func update_debug_vectors() -> void:
-	super.update_debug_vectors()
-	
-	#check that debug vectors exist
-	if !lift_debug_vector or !drag_debug_vector:
-		return
-	
-	#don't update invisible vectors
-	if lift_debug_vector.visible:
-		lift_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(_current_lift, 2.0) * debug_scale
-	if drag_debug_vector.visible:
-		drag_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(_current_drag, 2.0) * debug_scale
+	return
+	#super.update_debug_vectors()
+	#
+	##check that debug vectors exist
+	#if !lift_debug_vector or !drag_debug_vector:
+		#return
+	#
+	##don't update invisible vectors
+	#if lift_debug_vector.visible:
+		#lift_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(_current_lift, 2.0) * debug_scale
+	#if drag_debug_vector.visible:
+		#drag_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(_current_drag, 2.0) * debug_scale

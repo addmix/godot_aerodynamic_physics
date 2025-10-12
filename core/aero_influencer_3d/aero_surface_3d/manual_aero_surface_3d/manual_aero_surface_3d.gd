@@ -38,10 +38,4 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	#resultant torque from linear forces
 	torque += relative_position.cross(force)
 	
-	#current values for debug
-	_current_lift = lift_vector
-	_current_drag = drag_vector
-	_current_force = force
-	_current_torque = torque
-	
 	return PackedVector3Array([force_and_torque[0] + force, force_and_torque[1] + torque])

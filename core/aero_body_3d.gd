@@ -47,6 +47,7 @@ const AeroNodeUtils = preload("../utils/node_utils.gd")
 	set(x):
 		show_wing_debug_vectors = x
 		_update_debug_visibility()
+@export var show_torque : bool = false
 ## Controls visibility of total lift vector.
 @export var show_lift_vectors : bool = true:
 	set(x):
@@ -98,13 +99,22 @@ const AeroNodeUtils = preload("../utils/node_utils.gd")
 	set(x):
 		debug_scale = x
 		_update_debug_scale()
+## Controls the logarithmic base used to "compress" debug vector lengths.
+@export var debug_scaling_factor : float = 2.0:
+	set(x):
+		debug_scaling_factor = x
+		_update_debug_scale()
 ## Controls the width/thickness of debug vectors.
-@export var debug_width : float = 0.05:
+@export var debug_width : float = 0.3:
 	set(x):
 		debug_width = x
 		_update_debug_scale()
+@export var influencer_debug_width : float = 0.1:
+	set(x):
+		influencer_debug_width = x
+		_update_debug_scale()
 ## Controls the width/thickness of debug center markers.
-@export var debug_center_width : float = 0.2:
+@export var debug_center_width : float = 0.4:
 	set(x):
 		debug_center_width = x
 		_update_debug_scale()
@@ -226,6 +236,8 @@ func test_overrides() -> void:
 var linear_velocity_vector : AeroDebugVector3D
 var angular_velocity_vector : AeroDebugVector3D
 
+var force_debug_vector : AeroDebugVector3D
+var torque_debug_vector : AeroDebugVector3D
 var lift_debug_vector : AeroDebugVector3D
 var drag_debug_vector : AeroDebugVector3D
 
@@ -233,35 +245,29 @@ var mass_debug_point : AeroDebugPoint3D
 var thrust_debug_vector : AeroDebugVector3D
 
 func _init():
-	mass_debug_point = AeroDebugPoint3D.new(Color(1, 1, 0), debug_center_width, true)
+	mass_debug_point = AeroDebugPoint3D.new(Color(1, 1, 0), debug_center_width, true, 5)
 	mass_debug_point.name = "MassDebugPoint"
-	mass_debug_point.visible = false
-	mass_debug_point.sorting_offset = 0.0
 	
-	lift_debug_vector = AeroDebugVector3D.new(Color(0, 1, 1), debug_center_width, true)
+	force_debug_vector = AeroDebugVector3D.new(Color(1.0, 1.0, 1.0), debug_width, true, 1)
+	force_debug_vector.name = "ForceDebugVector"
+	
+	torque_debug_vector = AeroDebugVector3D.new(Color(0.0, 0.0, 0.0), debug_width, true)
+	torque_debug_vector.name = "TorqueDebugVector"
+	
+	lift_debug_vector = AeroDebugVector3D.new(Color(0, 1, 1), debug_width, true, 2)
 	lift_debug_vector.name = "LiftDebugVector"
-	lift_debug_vector.visible = false
-	lift_debug_vector.sorting_offset = 0.0
 	
-	drag_debug_vector = AeroDebugVector3D.new(Color(1, 0, 0), debug_width, true)
+	drag_debug_vector = AeroDebugVector3D.new(Color(1, 0, 0), debug_width, true, 1)
 	drag_debug_vector.name = "DragDebugVector"
-	drag_debug_vector.visible = false
-	drag_debug_vector.sorting_offset = -0.01
 	
 	thrust_debug_vector = AeroDebugVector3D.new(Color(1, 0, 1), debug_width, true)
 	thrust_debug_vector.name = "ThrustDebugVector"
-	thrust_debug_vector.visible = false
-	thrust_debug_vector.sorting_offset = -0.02
 	
 	linear_velocity_vector = AeroDebugVector3D.new(Color(0, 0.5, 0.5), debug_width, false)
 	linear_velocity_vector.name = "LinearVelocityVector"
-	linear_velocity_vector.visible = false
-	linear_velocity_vector.sorting_offset = -0.03
 	
 	angular_velocity_vector = AeroDebugVector3D.new(Color(0, 0.333, 0), debug_width, false)
 	angular_velocity_vector.name = "AngularVelocityVector"
-	angular_velocity_vector.visible = false
-	angular_velocity_vector.sorting_offset = -0.04
 	
 	linear_damp_mode = RigidBody3D.DAMP_MODE_REPLACE
 	angular_damp_mode = RigidBody3D.DAMP_MODE_REPLACE
@@ -294,9 +300,11 @@ func _ready() -> void:
 	test_ready_override = true
 	
 	add_child(mass_debug_point, INTERNAL_MODE_FRONT)
-	add_child(lift_debug_vector, INTERNAL_MODE_FRONT)
-	add_child(drag_debug_vector, INTERNAL_MODE_FRONT)
+	mass_debug_point.add_child(lift_debug_vector, INTERNAL_MODE_FRONT)
+	mass_debug_point.add_child(drag_debug_vector, INTERNAL_MODE_FRONT)
 	add_child(thrust_debug_vector, INTERNAL_MODE_FRONT)
+	mass_debug_point.add_child(force_debug_vector, INTERNAL_MODE_FRONT)
+	mass_debug_point.add_child(torque_debug_vector, INTERNAL_MODE_FRONT)
 	mass_debug_point.add_child(linear_velocity_vector, INTERNAL_MODE_FRONT)
 	mass_debug_point.add_child(angular_velocity_vector, INTERNAL_MODE_FRONT)
 	
@@ -350,8 +358,6 @@ func integrator(state : PhysicsDirectBodyState3D) -> void:
 	
 	current_gravity = state.total_gravity
 	var total_force_and_torque := calculate_forces(state)
-	current_force = total_force_and_torque[0]
-	current_torque = total_force_and_torque[1]
 	state.apply_central_force(current_force)
 	state.apply_torque(current_torque)
 	
@@ -389,6 +395,8 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 		center_of_mass = state.center_of_mass_local
 	
 	substep_delta = state.step / SUBSTEPS
+	if Engine.is_editor_hint():
+		substep_delta = 1.0 / float(ProjectSettings.get_setting("physics/common/physics_ticks_per_second")) / SUBSTEPS
 	
 	var last_force_and_torque := PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 	var total_force_and_torque := last_force_and_torque
@@ -397,8 +405,6 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 		#allow aeroinfluencers to update their own transforms before we calculate forces
 		if not Engine.is_editor_hint():
 			for influencer : AeroInfluencer3D in aero_influencers:
-				if influencer.disabled:
-					continue
 				influencer._update_transform_substep(substep_delta)
 		
 		linear_velocity_prediction = predict_linear_velocity(last_force_and_torque[0]) + state.total_gravity * PREDICTION_TIMESTEP_FRACTION
@@ -411,6 +417,10 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	
 	total_force_and_torque[0] = total_force_and_torque[0] / SUBSTEPS
 	total_force_and_torque[1] = total_force_and_torque[1] / SUBSTEPS
+	
+	current_force = total_force_and_torque[0]
+	current_torque = total_force_and_torque[1]
+	
 	return total_force_and_torque
 
 func calculate_aerodynamic_forces(substep_delta : float = 0.0) -> PackedVector3Array:
@@ -425,6 +435,9 @@ func calculate_aerodynamic_forces(substep_delta : float = 0.0) -> PackedVector3A
 		#relative_position is the position of the surface, centered on the AeroBody's origin, with the global rotation
 		var relative_position : Vector3 = global_basis * (influencer.transform.origin - center_of_mass)
 		var force_and_torque : PackedVector3Array = influencer._calculate_forces(substep_delta)
+		
+		influencer._current_force = force_and_torque[0]
+		influencer._current_torque = force_and_torque[1]
 		
 		force += force_and_torque[0]
 		torque += force_and_torque[1]
@@ -448,6 +461,9 @@ func get_amount_of_active_influencers() -> int:
 func get_relative_position() -> Vector3:
 	return global_basis * -center_of_mass
 
+func get_drag_direction() -> Vector3:
+	return air_velocity.normalized()
+
 func get_linear_velocity() -> Vector3:
 	return linear_velocity_prediction
 
@@ -463,8 +479,6 @@ func get_angular_acceleration() -> Vector3:
 func get_control_command(axis_name : String = "") -> float:
 	var control_component : AeroControlComponent = AeroNodeUtils.get_first_child_of_type(self, AeroControlComponent)
 	if is_instance_valid(control_component):
-		#if axis_name == "throttle":
-			#print(control_component.get_control_command(axis_name))
 		return control_component.get_control_command(axis_name)
 
 	return 0.0
@@ -483,88 +497,92 @@ func interrupt_sleep() -> void:
 
 
 func _update_debug() -> void:
-	aero_surfaces = []
-	for i : AeroInfluencer3D in aero_influencers:
-		if i is AeroSurface3D:
-			aero_surfaces.append(i)
-	
 	_update_debug_visibility()
 	_update_debug_scale()
 	
 	mass_debug_point.position = center_of_mass
-	#thrust_debug_vector.position = center of thrust
-	
 	
 	var linear_velocity_to_use := linear_velocity
 	var angular_velocity_to_use := angular_velocity
+	
 	if Engine.is_editor_hint():
 		linear_velocity_to_use = debug_linear_velocity
 		angular_velocity_to_use = debug_angular_velocity
-	
-	linear_velocity_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(linear_velocity_to_use, 2.0)
-	angular_velocity_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(angular_velocity_to_use, 2.0)
-	
-	#Godot doesn't run physics engine in-editor.
-	#A consequence of this is that get_linear_velocity doesn't work.
-	#Instead, we must access linear_velocity directly.
-	#We don't want to overwrite user configured linear velocity, so we must use this workaround.
-	
-	if Engine.is_editor_hint():
+		
 		var original_linear_velocity := linear_velocity
 		var original_angular_velocity := angular_velocity
 		linear_velocity = debug_linear_velocity
 		angular_velocity = debug_angular_velocity
-		var last_force_and_torque := calculate_aerodynamic_forces(substep_delta)
+		
+		var body_state = PhysicsDirectBodyState3DExtension.new()
+		var last_force_and_torque := calculate_forces(body_state)
+		
 		linear_velocity = original_linear_velocity
 		angular_velocity = original_angular_velocity
+	
+	
+	force_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(current_force, 2.0)
+	torque_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(current_torque, 2.0)
+	
+	linear_velocity_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(linear_velocity_to_use, 2.0)
+	angular_velocity_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(angular_velocity_to_use, 2.0)
 	
 	#force and torque debug
 	if aero_influencers.size() > 0:
 		var amount_of_aero_influencers : int = aero_influencers.size()
 		var force_sum := 0.0
 		var force_vector_sum := Vector3.ZERO
+		var force_position_sum := Vector3.ZERO
+		var lift_sum := 0.0
+		var lift_vector_sum := Vector3.ZERO
+		var lift_position_sum := Vector3.ZERO
+		var drag_sum := 0.0
+		var drag_vector_sum := Vector3.ZERO
+		var drag_position_sum := Vector3.ZERO
+		var thrust_sum := 0.0
+		var thrust_vector_sum := Vector3.ZERO
+		var thrust_position_sum := Vector3.ZERO
 		
 		for influencer : AeroInfluencer3D in aero_influencers:
+			#skip omitted or disabled influencers, and don't add them to the debug vectors
 			if influencer.omit_from_debug or influencer.disabled:
 				amount_of_aero_influencers -= 1
 				continue
-			force_vector_sum += influencer._current_force
-	
-	#lift and drag debug
-	var amount_of_aero_surfaces : int = aero_surfaces.size()
-	for surface : AeroSurface3D in aero_surfaces:
-		if surface.omit_from_debug or surface.disabled:
-			amount_of_aero_surfaces -= 1
-	
-	if amount_of_aero_surfaces > 0:
-		var lift_sum := 0.0
-		var lift_sum_vector := Vector3.ZERO
-		var drag_sum := 0.0
-		var drag_sum_vector := Vector3.ZERO
-		var lift_position_sum := Vector3.ZERO
-		var drag_position_sum := Vector3.ZERO
-		for surface : AeroSurface3D in aero_surfaces:
-			if surface.omit_from_debug:
-				continue
 			
-			lift_sum += surface.lift_force
-			lift_sum_vector += surface._current_lift
-			drag_sum += surface.drag_force
-			drag_sum_vector += surface._current_drag
-			lift_position_sum += surface.transform.origin * surface.lift_force
-			drag_position_sum += surface.transform.origin * surface.drag_force
-		
-		if lift_sum_vector.is_finite() and drag_sum_vector.is_finite():
-			lift_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(lift_sum_vector / amount_of_aero_surfaces, 2.0)
-			drag_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(drag_sum_vector / amount_of_aero_surfaces, 2.0)
+			var force_vector := influencer._current_force
+			var force := force_vector.length()
+			force_sum += force
+			force_vector_sum += force_vector
+			force_position_sum += influencer.relative_position * force
+			force_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(force_vector_sum, debug_scaling_factor) * debug_scale
+			force_debug_vector.position = global_transform.basis.inverse() * force_position_sum / amount_of_aero_influencers / (force_sum / amount_of_aero_influencers)
 			
-			if is_equal_approx(lift_sum, 0.0):
-				lift_sum = 1.0
-			lift_debug_vector.position = lift_position_sum / amount_of_aero_surfaces / (lift_sum / amount_of_aero_surfaces) 
-			if is_equal_approx(drag_sum, 0.0):
-				drag_sum = 1.0
-			drag_debug_vector.position = drag_position_sum / amount_of_aero_surfaces / (drag_sum / amount_of_aero_surfaces)
-
+			var drag_vector : Vector3 = max(force_vector.dot(get_drag_direction()), 0.0) * get_drag_direction()
+			var drag := drag_vector.length()
+			drag_sum += drag
+			drag_vector_sum += drag_vector
+			drag_position_sum += influencer.relative_position * drag
+			drag_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(drag_vector_sum, debug_scaling_factor) * debug_scale
+			drag_debug_vector.position = global_transform.basis.inverse() * drag_position_sum / amount_of_aero_influencers / (drag_sum / amount_of_aero_influencers)
+			
+			var lift_vector := force_vector - drag_vector
+			var lift := lift_vector.length()
+			lift_sum += lift
+			lift_vector_sum += lift_vector
+			lift_position_sum += influencer.relative_position * lift
+			lift_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(lift_vector_sum, debug_scaling_factor) * debug_scale
+			lift_debug_vector.position = global_transform.basis.inverse() * lift_position_sum / amount_of_aero_influencers / (lift_sum / amount_of_aero_influencers)
+			
+			#var thrust_vector : Vector3 = min(force_vector.dot(get_drag_direction()), 0.0) * get_drag_direction()
+			#var thrust := thrust_vector.length()
+			#thrust_sum += thrust
+			#thrust_vector_sum += thrust_vector
+			#thrust_position_sum += influencer.relative_position * drag
+			#thrust_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(thrust_vector_sum, debug_scaling_factor) * debug_scale
+			#thrust_debug_vector.position = global_transform.basis.inverse() * thrust_position_sum / amount_of_aero_influencers / (thrust_sum / amount_of_aero_influencers)
+			#
+	
+	
 	for influencer : AeroInfluencer3D in aero_influencers:
 		influencer.update_debug_vectors()
 
@@ -575,24 +593,31 @@ func _update_debug_visibility() -> void:
 		influencer.update_debug_visibility(show_debug and show_wing_debug_vectors)
 	
 	#update self visibility
+	force_debug_vector.visible = show_debug
+	torque_debug_vector.visible = show_debug and show_torque
+	
 	linear_velocity_vector.visible = show_debug and show_linear_velocity
 	angular_velocity_vector.visible = show_debug and show_angular_velocity
 
-	lift_debug_vector.visible = show_debug and show_lift_vectors
-	drag_debug_vector.visible = show_debug and show_drag_vectors
+	lift_debug_vector.visible = show_debug and show_center_of_lift
+	drag_debug_vector.visible = show_debug and show_center_of_drag
 
 	mass_debug_point.visible = show_debug and show_center_of_mass
 	thrust_debug_vector.visible = show_debug and show_center_of_thrust
 
+
+
 func _update_debug_scale() -> void:
 	for influencer : AeroInfluencer3D in aero_influencers:
-		influencer.update_debug_scale(debug_scale, debug_width)
-	
-	lift_debug_vector.width = debug_center_width
-	mass_debug_point.width = debug_center_width
-	thrust_debug_vector.width = debug_width
+		influencer.update_debug_scale(debug_scale, influencer_debug_width, debug_scaling_factor)
 	
 	linear_velocity_vector.width = debug_width
 	angular_velocity_vector.width = debug_width
+	
+	force_debug_vector.width = debug_width
+	torque_debug_vector.width = debug_width
+	lift_debug_vector.width = debug_width
 	drag_debug_vector.width = debug_width
+	
+	mass_debug_point.width = debug_center_width
 	thrust_debug_vector.width = debug_width

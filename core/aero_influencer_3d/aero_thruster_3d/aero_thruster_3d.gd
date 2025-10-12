@@ -36,10 +36,6 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	force_and_torque[0] += force
 	force_and_torque[1] += torque
 	
-	#this is for debug vectors
-	_current_force = force
-	_current_torque = torque
-	
 	return force_and_torque
 
 func _update_control_transform(substep_delta : float) -> void:
@@ -49,6 +45,8 @@ func _update_control_transform(substep_delta : float) -> void:
 		throttle = throttle_control_config.update(self, substep_delta)
 
 func get_thrust_force() -> Vector3:
+	if Engine.is_editor_hint() and throttle_control_config:
+		return max_thrust_force * throttle_control_config.min_value
 	return max_thrust_force * throttle
 
 func is_overriding_body_sleep() -> bool:

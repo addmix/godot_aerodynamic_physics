@@ -110,7 +110,7 @@ func _update_control_transform(substep_delta : float) -> void:
 		angular_motor = propeller_speed_control_config.update(self, substep_delta)
 
 func get_angular_velocity() -> Vector3:
-	if Engine.is_editor_hint():
+	if Engine.is_editor_hint() and propeller_speed_control_config:
 			return super() + propeller_speed_control_config.max_value * global_basis.inverse()
 	
 	return super()

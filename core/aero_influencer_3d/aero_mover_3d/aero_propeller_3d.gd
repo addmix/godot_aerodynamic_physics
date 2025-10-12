@@ -2,16 +2,13 @@
 extends AeroMover3D
 class_name AeroPropeller3D
 
-##If enabled, the AeroPropeller3D will automatically duplicate and arrange `propeller` to form `propeller_amount` of radially symmetric blades.
-@export var do_propeller_setup : bool = true
-
-##Amount of propeller blades to generate. See `do_propeller_setup`
-@export_range(1, 128) var propeller_amount : int = 2:
+##Amount of propeller blades to generate.
+@export_range(1, 8, 1, "or_greater") var propeller_amount : int = 2:
 	set(x):
 		update_configuration_warnings()
 		propeller_amount = x
 		update_propeller_amount()
-##Propeller blade that will be duplicated and arranged. See `do_propeller_setup`
+##Propeller blade that will be duplicated and arranged.
 @export var propeller_blade : AeroInfluencer3D:
 	set(x):
 		update_configuration_warnings()
@@ -19,9 +16,6 @@ class_name AeroPropeller3D
 			return
 		
 		propeller_blade = x
-		
-		if Engine.is_editor_hint():
-			return
 		
 		if is_node_ready():
 			#remove all propellers
@@ -45,13 +39,20 @@ func create_speed_control_config() -> AeroInfluencerControlConfig:
 	config.axis_configs.append(AeroInfluencerControlAxisConfig.new("throttle", Vector3.ONE))
 	return config
 
+func _init():
+	super()
+	
+	show_torque = true
+	show_thrust = true
+	show_lift = false
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	super._ready()
 	update_configuration_warnings()
+	update_propeller_amount()
+	
 	if not Engine.is_editor_hint():
-		update_propeller_amount()
-		
 		if propeller_speed_control_config:
 			propeller_speed_control_config = propeller_speed_control_config.duplicate(true)
 
@@ -69,37 +70,24 @@ func on_child_enter_tree(node : Node) -> void:
 		propeller_blade = node
 
 func update_propeller_amount() -> void:
-	if not do_propeller_setup:
-		for wing in get_children():
-			if wing is AeroInfluencer3D:
-				propeller_instances.append(wing)
+	if not is_node_ready():
 		return
-	if Engine.is_editor_hint() or not is_node_ready():
-		return
-	if not propeller_blade:
+	if not is_instance_valid(propeller_blade):
 		push_warning("No propeller defined. Aborting...")
+		return
 	
 	var change_in_amount : int = propeller_amount - propeller_instances.size()
 	
-	if not is_instance_valid(propeller_blade):
-		push_warning("Propeller blade not assigned.")
-		return
-	
-	#return early
-	if change_in_amount == 0:
-		return
-	
+	#remove propellers
+	if change_in_amount < 0:
+		for i : int in abs(change_in_amount):
+			propeller_instances.pop_back().queue_free()
 	#instance new propellers
 	elif change_in_amount > 0:
 		for i : int in change_in_amount:
 			var new_prop : AeroInfluencer3D = propeller_blade.duplicate()
 			add_child(new_prop)
 			propeller_instances.append(new_prop)
-	
-	#remove propellers
-	elif change_in_amount < 0:
-		for i : int in abs(change_in_amount):
-			propeller_instances.pop_back().queue_free()
 	
 	update_propeller_transforms()
 
@@ -120,3 +108,9 @@ func _update_control_transform(substep_delta : float) -> void:
 	
 	if propeller_speed_control_config:
 		angular_motor = propeller_speed_control_config.update(self, substep_delta)
+
+func get_angular_velocity() -> Vector3:
+	if Engine.is_editor_hint():
+			return super() + propeller_speed_control_config.max_value * global_basis.inverse()
+	
+	return super()

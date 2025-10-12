@@ -36,10 +36,6 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	force_and_torque[0] += force
 	force_and_torque[1] += torque
 	
-	#this is for debug vectors
-	_current_force = force
-	_current_torque = torque
-	
 	return force_and_torque
 
 func _update_control_transform(substep_delta : float) -> void:

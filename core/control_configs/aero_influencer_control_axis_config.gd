@@ -79,6 +79,5 @@ static func get_axis_flip_axis(axis_sign : Vector3 = Vector3.ONE, axis : int = 0
 			return axis_sign.y
 		3:
 			return axis_sign.z
-		
 		_:
 			return 1.0

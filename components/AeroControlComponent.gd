@@ -19,10 +19,10 @@ func _ready() -> void:
 	if not Engine.is_editor_hint():
 		#if proportional_navigation: proportional_navigation = proportional_navigation.duplicate(true)
 		if flight_assist:
-			flight_assist = flight_assist.duplicate(true)
+			flight_assist = flight_assist.duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
 		
 		if control_config:
-			control_config = control_config.duplicate(true)
+			control_config = control_config.duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
 
 func _physics_process(delta : float) -> void:
 	if Engine.is_editor_hint():

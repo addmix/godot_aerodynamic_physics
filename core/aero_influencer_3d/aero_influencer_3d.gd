@@ -182,13 +182,10 @@ func _update_transform_substep(substep_delta : float) -> void:
 	if disabled:
 		return
 	
-	var before_transform : Transform3D = transform
 	for influencer : AeroInfluencer3D in aero_influencers:
 		influencer._update_transform_substep(substep_delta)
 	
 	_update_control_transform(substep_delta)
-	if Engine.is_editor_hint():
-		transform = before_transform
 ## Intended to be overridden.[br]
 ## [br]
 ## This function runs during the aerodynamic update, before any forces are calculated, at the end of

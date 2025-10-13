@@ -468,7 +468,6 @@ mass = 27500.0
 physics_material_override = SubResource("PhysicsMaterial_3wjhu")
 center_of_mass = Vector3(0, 0, 1.66)
 can_sleep = false
-linear_velocity = Vector3(0, -10, -100)
 show_debug = true
 show_center_of_thrust = false
 debug_scale = 0.2

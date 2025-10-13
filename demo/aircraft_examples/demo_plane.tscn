@@ -22,69 +22,42 @@ script = ExtResource("3_hyo05")
 p = 0.001
 i = 0.0
 d = 0.01
-clamp_integral = false
-min_integral = -1.0
-max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_rsy8r"]
 script = ExtResource("3_hyo05")
-p = 1.0
 i = 0.05
 d = 0.1
-clamp_integral = false
-min_integral = -1.0
-max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_6l2fv"]
 script = ExtResource("3_hyo05")
 p = 10.0
 i = 0.3
 d = 4.0
-clamp_integral = false
-min_integral = -1.0
-max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_wyxpf"]
 script = ExtResource("3_hyo05")
 p = 0.8
 i = 0.0
-d = 0.0
-clamp_integral = false
-min_integral = -1.0
-max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_wruso"]
 script = ExtResource("3_hyo05")
 p = 25.0
 i = 0.0
-d = 0.0
-clamp_integral = false
-min_integral = -1.0
-max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_x3iit"]
 script = ExtResource("3_hyo05")
 p = 10.0
 i = 0.0
-d = 0.0
-clamp_integral = false
-min_integral = -1.0
-max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_n4pj1"]
 script = ExtResource("3_hyo05")
 p = 10.0
 i = 0.0
-d = 0.0
-clamp_integral = false
-min_integral = -1.0
-max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_piqeh"]
 script = ExtResource("3_hyo05")
 p = 0.5
 i = 5.0
-d = 0.0
 clamp_integral = true
 min_integral = -0.1
 max_integral = 0.1
@@ -93,69 +66,27 @@ max_integral = 0.1
 script = ExtResource("3_hyo05")
 p = 0.2
 i = 0.0
-d = 0.0
-clamp_integral = false
-min_integral = -1.0
-max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_1qfso"]
 script = ExtResource("3_hyo05")
 p = 0.0
 i = 0.4
-d = 0.0
-clamp_integral = false
-min_integral = -1.0
-max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_bvmql"]
 script = ExtResource("3_hyo05")
-p = 1.0
 i = 0.0
-d = 0.0
-clamp_integral = false
-min_integral = -1.0
-max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_qpum4"]
 script = ExtResource("4_a0mgf")
-enable_flight_assist = true
-max_angular_rates = Vector3(2, 1, 5)
-enable_flight_assist_x = true
 pitch_assist_pid = SubResource("Resource_piqeh")
-enable_flight_assist_y = true
 yaw_assist_pid = SubResource("Resource_bvmql")
-enable_flight_assist_z = true
 roll_assist_pid = SubResource("Resource_t6xgy")
-enable_g_limiter = true
-g_limit = 9.0
-negative_g_limit = 3.0
-enable_aoa_limiter = true
-aoa_limit_start = 22.0
-aoa_limit_end = 25.0
 enable_control_adjustment = false
-tuned_airspeed = 100.0
-min_accounted_airspeed = 75.0
-tuned_density = 1.222
-min_accounted_air_density = 0.1
-enable_bank_angle_assist = false
-bank_angle_target = 0.0
 bank_angle_pid = SubResource("Resource_rsy8r")
-enable_heading_hold = false
-heading_target = 0.0
 heading_pid = SubResource("Resource_x3iit")
-enable_inclination_hold = false
-inclination_target = 0.0
 inclination_pid = SubResource("Resource_n4pj1")
-enable_speed_hold = false
-speed_target = 0.0
 speed_pid = SubResource("Resource_1qfso")
-enable_altitude_hold = false
-altitude_target = 0.0
 altitude_pid = SubResource("Resource_6l1yh")
-enable_target_direction = false
-use_velocity_vector_for_targetting = false
-disable_yaw_on_immelmann = true
-direction_target = Vector3(0, 0, 0)
 direction_pitch_pid = SubResource("Resource_6l2fv")
 direction_yaw_pid = SubResource("Resource_wruso")
 direction_roll_pid = SubResource("Resource_wyxpf")
@@ -164,69 +95,30 @@ direction_roll_pid = SubResource("Resource_wyxpf")
 resource_name = "pitch"
 script = ExtResource("5_hj20f")
 axis_name = "pitch"
-use_bindings = true
-input = 0.0
-min_limit = -1.0
-max_limit = 1.0
 positive_event = &"pitch_up"
 negative_event = &"pitch_down"
-enable_smoothing = false
-smoothing_rate = 1.0
-cumulative_positive_event = &""
-cumulative_negative_event = &""
-cumulative_rate = 1.0
-easing = 1.0
 
 [sub_resource type="Resource" id="Resource_o6rpv"]
 resource_name = "yaw"
 script = ExtResource("5_hj20f")
 axis_name = "yaw"
-use_bindings = true
-input = 0.0
-min_limit = -1.0
-max_limit = 1.0
 positive_event = &"yaw_left"
 negative_event = &"yaw_right"
-enable_smoothing = false
-smoothing_rate = 1.0
-cumulative_positive_event = &""
-cumulative_negative_event = &""
-cumulative_rate = 1.0
-easing = 1.0
 
 [sub_resource type="Resource" id="Resource_wtjbh"]
 resource_name = "roll"
 script = ExtResource("5_hj20f")
 axis_name = "roll"
-use_bindings = true
-input = 0.0
-min_limit = -1.0
-max_limit = 1.0
 positive_event = &"roll_left"
 negative_event = &"roll_right"
-enable_smoothing = false
-smoothing_rate = 1.0
-cumulative_positive_event = &""
-cumulative_negative_event = &""
-cumulative_rate = 1.0
-easing = 1.0
 
 [sub_resource type="Resource" id="Resource_jsx6i"]
 resource_name = "throttle"
 script = ExtResource("5_hj20f")
 axis_name = "throttle"
-use_bindings = true
-input = 0.0
 min_limit = 0.0
-max_limit = 1.0
-positive_event = &""
-negative_event = &""
-enable_smoothing = false
-smoothing_rate = 1.0
 cumulative_positive_event = &"throttle_up"
 cumulative_negative_event = &"throttle_down"
-cumulative_rate = 1.0
-easing = 1.0
 
 [sub_resource type="Resource" id="Resource_qs0nt"]
 script = ExtResource("5_x51t6")
@@ -243,23 +135,12 @@ resource_name = "throttle"
 script = ExtResource("11_1g5my")
 axis_name = "throttle"
 contribution = Vector3(1, 1, 1)
-easing = 1.0
-axis_flip_x = 0
-expression_x = ""
-axis_flip_y = 0
-expression_y = ""
-axis_flip_z = 0
-expression_z = ""
 
 [sub_resource type="Resource" id="Resource_0lgyr"]
 script = ExtResource("12_njgyo")
-enable_control = true
 axis_configs = Array[ExtResource("11_1g5my")]([SubResource("Resource_e07xt")])
 max_value = Vector3(0, 0, -1)
-use_separate_minmax = false
 min_value = Vector3(0, 0, 1)
-limit_movement_speed = false
-movement_speed = 1.0
 
 [sub_resource type="Curve" id="Curve_v5kpe"]
 _data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.25, 1), 0.0, 0.0, 0, 0, Vector2(0.5, 0), 0.0, 0.0, 0, 0, Vector2(0.75, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
@@ -286,7 +167,6 @@ script = ExtResource("3_dhflf")
 min_lift_coefficient = -1.5
 max_lift_coefficient = 1.5
 lift_aoa_curve = SubResource("Curve_cmcrd")
-min_drag_coefficient = 0.02
 max_drag_coefficient = 0.5
 drag_aoa_curve = SubResource("Curve_v5kpe")
 sweep_drag_multiplier_curve = SubResource("Curve_l1ihd")
@@ -294,40 +174,25 @@ drag_at_mach_multiplier_curve = SubResource("Curve_ob7c7")
 
 [sub_resource type="Resource" id="Resource_b87jk"]
 script = ExtResource("4_ht3i8")
-chord = 1.0
 span = 3.0
-auto_aspect_ratio = true
-aspect_ratio = 2.0
+aspect_ratio = 3.0
 
 [sub_resource type="Resource" id="Resource_uwqen"]
 resource_name = "pitch"
 script = ExtResource("11_1g5my")
 axis_name = "pitch"
 contribution = Vector3(-1, 0, 0)
-easing = 1.0
-axis_flip_x = 0
-expression_x = ""
-axis_flip_y = 0
-expression_y = ""
-axis_flip_z = 0
-expression_z = ""
 metadata/_custom_type_script = "uid://c46td0go5kvp6"
 
 [sub_resource type="Resource" id="Resource_11wlp"]
 script = ExtResource("12_njgyo")
-enable_control = true
 axis_configs = Array[ExtResource("11_1g5my")]([SubResource("Resource_uwqen")])
 max_value = Vector3(0.2, 0, 0)
-use_separate_minmax = false
 min_value = Vector3(-0.2, 0, 0)
-limit_movement_speed = false
-movement_speed = 1.0
 
 [sub_resource type="Resource" id="Resource_7jeqs"]
 script = ExtResource("4_ht3i8")
-chord = 1.0
 span = 1.4
-auto_aspect_ratio = true
 aspect_ratio = 1.4
 
 [sub_resource type="Resource" id="Resource_m134i"]
@@ -335,30 +200,17 @@ resource_name = "yaw"
 script = ExtResource("11_1g5my")
 axis_name = "yaw"
 contribution = Vector3(-1, 0, 0)
-easing = 1.0
-axis_flip_x = 0
-expression_x = ""
-axis_flip_y = 0
-expression_y = ""
-axis_flip_z = 0
-expression_z = ""
 metadata/_custom_type_script = "uid://c46td0go5kvp6"
 
 [sub_resource type="Resource" id="Resource_u1ahl"]
 script = ExtResource("12_njgyo")
-enable_control = true
 axis_configs = Array[ExtResource("11_1g5my")]([SubResource("Resource_m134i")])
 max_value = Vector3(0.5, 0, 0)
-use_separate_minmax = false
 min_value = Vector3(-0.5, 0, 0)
-limit_movement_speed = false
-movement_speed = 1.0
 
 [sub_resource type="Resource" id="Resource_658jb"]
 script = ExtResource("4_ht3i8")
-chord = 1.0
 span = 3.55
-auto_aspect_ratio = true
 aspect_ratio = 3.55
 
 [sub_resource type="Resource" id="Resource_hj20f"]
@@ -366,24 +218,14 @@ resource_name = "roll"
 script = ExtResource("11_1g5my")
 axis_name = "roll"
 contribution = Vector3(1, 0, 0)
-easing = 1.0
 axis_flip_x = 1
-expression_x = ""
-axis_flip_y = 0
-expression_y = ""
-axis_flip_z = 0
-expression_z = ""
 metadata/_custom_type_script = "uid://c46td0go5kvp6"
 
 [sub_resource type="Resource" id="Resource_hl3vl"]
 script = ExtResource("12_njgyo")
-enable_control = true
 axis_configs = Array[ExtResource("11_1g5my")]([SubResource("Resource_hj20f")])
 max_value = Vector3(0.1, 0, 0)
-use_separate_minmax = false
 min_value = Vector3(-0.1, 0, 0)
-limit_movement_speed = false
-movement_speed = 1.0
 
 [node name="AeroBody3D" type="VehicleBody3D"]
 mass = 850.0

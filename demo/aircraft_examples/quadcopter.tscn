@@ -227,7 +227,9 @@ angular_damp_mode = 1
 script = ExtResource("1_ojlhn")
 substeps_override = 4
 show_debug = true
+debug_scale = 0.01
 debug_width = 0.01
+influencer_debug_width = 0.005
 debug_center_width = 0.02
 
 [node name="AeroControlComponent" type="Node" parent="."]
@@ -281,6 +283,8 @@ propeller_blade = NodePath("ManualAeroSurface3D")
 propeller_speed_control_config = SubResource("Resource_fy07o")
 disable_lift_dissymmetry = true
 show_torque = true
+show_lift = false
+show_thrust = true
 
 [node name="ManualAeroSurface3D" type="Node3D" parent="PropellerFL"]
 transform = Transform3D(1, 0, 0, 0, 0.965926, -0.258819, 0, 0.258819, 0.965926, -0.06, 0, 0)
@@ -299,6 +303,8 @@ propeller_blade = NodePath("ManualAeroSurface3D")
 propeller_speed_control_config = SubResource("Resource_fy07o")
 disable_lift_dissymmetry = true
 show_torque = true
+show_lift = false
+show_thrust = true
 
 [node name="ManualAeroSurface3D" type="Node3D" parent="PropellerRR"]
 transform = Transform3D(1, 0, 0, 0, 0.965926, -0.258819, 0, 0.258819, 0.965926, -0.06, 0, 0)
@@ -317,6 +323,8 @@ propeller_blade = NodePath("ManualAeroSurface3D")
 propeller_speed_control_config = SubResource("Resource_3a861")
 disable_lift_dissymmetry = true
 show_torque = true
+show_lift = false
+show_thrust = true
 
 [node name="ManualAeroSurface3D" type="Node3D" parent="PropellerFR"]
 transform = Transform3D(1, 0, 0, 0, 0.965926, -0.258819, 0, 0.258819, 0.965926, 0.06, 0, 0)
@@ -335,6 +343,8 @@ propeller_blade = NodePath("ManualAeroSurface3D")
 propeller_speed_control_config = SubResource("Resource_3a861")
 disable_lift_dissymmetry = true
 show_torque = true
+show_lift = false
+show_thrust = true
 
 [node name="ManualAeroSurface3D" type="Node3D" parent="PropellerRL"]
 transform = Transform3D(1, 0, 0, 0, 0.965926, -0.258819, 0, 0.258819, 0.965926, 0.06, 0, 0)

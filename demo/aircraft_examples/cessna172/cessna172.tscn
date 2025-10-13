@@ -1,4 +1,4 @@
-[gd_scene load_steps=74 format=3 uid="uid://bwpwxnufuujve"]
+[gd_scene load_steps=73 format=3 uid="uid://bwpwxnufuujve"]
 
 [ext_resource type="PackedScene" uid="uid://bxxwpa0sowfbh" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/cessna172/cessna172.glb" id="1_7rcro"]
 [ext_resource type="Script" uid="uid://cc5dwx5pqkaur" path="res://addons/godot_aerodynamic_physics/components/AeroControlComponent.gd" id="2_4u4b6"]
@@ -19,78 +19,48 @@ script = ExtResource("3_4yv37")
 p = 0.001
 i = 0.0
 d = 0.01
-clamp_integral = false
-min_integral = -1.0
-max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_iyp87"]
 script = ExtResource("3_4yv37")
-p = 1.0
 i = 0.05
 d = 0.1
-clamp_integral = false
-min_integral = -1.0
-max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_kv3eg"]
 script = ExtResource("3_4yv37")
 p = 10.0
 i = 0.3
 d = 4.0
-clamp_integral = false
-min_integral = -1.0
-max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_nx8vk"]
 script = ExtResource("3_4yv37")
 p = 0.8
 i = 0.0
-d = 0.0
-clamp_integral = false
-min_integral = -1.0
-max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_h62yl"]
 script = ExtResource("3_4yv37")
 p = 25.0
 i = 0.0
-d = 0.0
-clamp_integral = false
-min_integral = -1.0
-max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_xyg42"]
 script = ExtResource("3_4yv37")
 p = 10.0
 i = 0.0
-d = 0.0
-clamp_integral = false
-min_integral = -1.0
-max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_ow3dm"]
 script = ExtResource("3_4yv37")
 p = 10.0
 i = 0.0
-d = 0.0
-clamp_integral = false
-min_integral = -1.0
-max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_ttdts"]
 script = ExtResource("3_4yv37")
-p = 1.0
 i = 10.0
-d = 0.0
 clamp_integral = true
 min_integral = -0.2
 max_integral = 0.2
 
 [sub_resource type="Resource" id="Resource_sl5fq"]
 script = ExtResource("3_4yv37")
-p = 1.0
 i = 2.0
-d = 0.0
 clamp_integral = true
 min_integral = -0.1
 max_integral = 0.1
@@ -99,60 +69,24 @@ max_integral = 0.1
 script = ExtResource("3_4yv37")
 p = 0.0
 i = 0.4
-d = 0.0
-clamp_integral = false
-min_integral = -1.0
-max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_5m4dg"]
 script = ExtResource("3_4yv37")
-p = 1.0
 i = 0.0
-d = 0.0
-clamp_integral = false
-min_integral = -1.0
-max_integral = 1.0
 
 [sub_resource type="Resource" id="Resource_t1hlr"]
 script = ExtResource("4_ey0gl")
-enable_flight_assist = true
 max_angular_rates = Vector3(1, 1, 2)
-enable_flight_assist_x = true
 pitch_assist_pid = SubResource("Resource_ttdts")
-enable_flight_assist_y = true
 yaw_assist_pid = SubResource("Resource_5m4dg")
-enable_flight_assist_z = true
 roll_assist_pid = SubResource("Resource_sl5fq")
 enable_g_limiter = false
-g_limit = 9.0
-negative_g_limit = 3.0
-enable_aoa_limiter = true
-aoa_limit_start = 22.0
-aoa_limit_end = 25.0
-enable_control_adjustment = true
 tuned_airspeed = 40.0
-min_accounted_airspeed = 75.0
-tuned_density = 1.222
-min_accounted_air_density = 0.1
-enable_bank_angle_assist = false
-bank_angle_target = 0.0
 bank_angle_pid = SubResource("Resource_iyp87")
-enable_heading_hold = false
-heading_target = 0.0
 heading_pid = SubResource("Resource_xyg42")
-enable_inclination_hold = false
-inclination_target = 0.0
 inclination_pid = SubResource("Resource_ow3dm")
-enable_speed_hold = false
-speed_target = 0.0
 speed_pid = SubResource("Resource_731wl")
-enable_altitude_hold = false
-altitude_target = 0.0
 altitude_pid = SubResource("Resource_scrto")
-enable_target_direction = false
-use_velocity_vector_for_targetting = false
-disable_yaw_on_immelmann = true
-direction_target = Vector3(0, 0, 0)
 direction_pitch_pid = SubResource("Resource_kv3eg")
 direction_yaw_pid = SubResource("Resource_h62yl")
 direction_roll_pid = SubResource("Resource_nx8vk")
@@ -162,104 +96,46 @@ metadata/_custom_type_script = "uid://cdp8dc63ytxx1"
 resource_name = "pitch"
 script = ExtResource("3_b1b2v")
 axis_name = "pitch"
-use_bindings = true
-input = 0.0
-min_limit = -1.0
-max_limit = 1.0
 positive_event = &"pitch_up"
 negative_event = &"pitch_down"
-enable_smoothing = false
-smoothing_rate = 1.0
-cumulative_positive_event = &""
-cumulative_negative_event = &""
-cumulative_rate = 1.0
-easing = 1.0
 
 [sub_resource type="Resource" id="Resource_o6rpv"]
 resource_name = "yaw"
 script = ExtResource("3_b1b2v")
 axis_name = "yaw"
-use_bindings = true
-input = 0.0
-min_limit = -1.0
-max_limit = 1.0
 positive_event = &"yaw_left"
 negative_event = &"yaw_right"
-enable_smoothing = false
-smoothing_rate = 1.0
-cumulative_positive_event = &""
-cumulative_negative_event = &""
-cumulative_rate = 1.0
-easing = 1.0
 
 [sub_resource type="Resource" id="Resource_wtjbh"]
 resource_name = "roll"
 script = ExtResource("3_b1b2v")
 axis_name = "roll"
-use_bindings = true
-input = 0.0
-min_limit = -1.0
-max_limit = 1.0
 positive_event = &"roll_left"
 negative_event = &"roll_right"
-enable_smoothing = false
-smoothing_rate = 1.0
-cumulative_positive_event = &""
-cumulative_negative_event = &""
-cumulative_rate = 1.0
-easing = 1.0
 
 [sub_resource type="Resource" id="Resource_jsx6i"]
 resource_name = "throttle"
 script = ExtResource("3_b1b2v")
 axis_name = "throttle"
-use_bindings = true
-input = 0.0
 min_limit = 0.0
-max_limit = 1.0
-positive_event = &""
-negative_event = &""
-enable_smoothing = false
-smoothing_rate = 1.0
 cumulative_positive_event = &"throttle_up"
 cumulative_negative_event = &"throttle_down"
-cumulative_rate = 1.0
-easing = 1.0
 
 [sub_resource type="Resource" id="Resource_b1qmm"]
 resource_name = "brake"
 script = ExtResource("3_b1b2v")
 axis_name = "brake"
-use_bindings = true
-input = 0.0
 min_limit = 0.0
-max_limit = 1.0
 positive_event = &"brake_up"
-negative_event = &""
-enable_smoothing = false
-smoothing_rate = 1.0
-cumulative_positive_event = &""
-cumulative_negative_event = &""
-cumulative_rate = 1.0
-easing = 1.0
 metadata/_custom_type_script = "uid://dfbhcpt1rr3ai"
 
 [sub_resource type="Resource" id="Resource_ey0gl"]
 resource_name = "flaps"
 script = ExtResource("3_b1b2v")
 axis_name = "flaps"
-use_bindings = true
-input = 0.0
 min_limit = 0.0
-max_limit = 1.0
-positive_event = &""
-negative_event = &""
-enable_smoothing = false
-smoothing_rate = 1.0
 cumulative_positive_event = &"collective_up"
 cumulative_negative_event = &"collective_down"
-cumulative_rate = 1.0
-easing = 1.0
 metadata/_custom_type_script = "uid://dfbhcpt1rr3ai"
 
 [sub_resource type="Resource" id="Resource_lo3t1"]
@@ -291,23 +167,12 @@ resource_name = "throttle"
 script = ExtResource("5_o4ret")
 axis_name = "throttle"
 contribution = Vector3(1, 1, 1)
-easing = 1.0
-axis_flip_x = 0
-expression_x = ""
-axis_flip_y = 0
-expression_y = ""
-axis_flip_z = 0
-expression_z = ""
 
 [sub_resource type="Resource" id="Resource_sgq0w"]
 script = ExtResource("5_5fm2q")
-enable_control = true
 axis_configs = Array[ExtResource("5_o4ret")]([SubResource("Resource_afw6h")])
 max_value = Vector3(0, 240, 0)
 use_separate_minmax = true
-min_value = Vector3(0, 0, 0)
-limit_movement_speed = false
-movement_speed = 1.0
 
 [sub_resource type="Curve" id="Curve_scrto"]
 bake_resolution = 21
@@ -333,8 +198,6 @@ point_count = 3
 
 [sub_resource type="Resource" id="Resource_5oq5f"]
 script = ExtResource("3_5fm2q")
-min_lift_coefficient = -1.6
-max_lift_coefficient = 1.6
 lift_aoa_curve = SubResource("Curve_4yv37")
 min_drag_coefficient = 0.03
 max_drag_coefficient = 1.0
@@ -346,46 +209,27 @@ drag_at_mach_multiplier_curve = SubResource("Curve_iyp87")
 script = ExtResource("4_o4ret")
 chord = 0.15
 span = 1.1
-auto_aspect_ratio = true
 aspect_ratio = 7.33333
 
 [sub_resource type="Resource" id="Resource_gsj65"]
 resource_name = "collective"
 script = ExtResource("5_o4ret")
 axis_name = "collective"
-contribution = Vector3(0, 0, 0)
-easing = 1.0
-axis_flip_x = 0
-expression_x = ""
-axis_flip_y = 0
-expression_y = ""
-axis_flip_z = 0
-expression_z = ""
 metadata/_custom_type_script = "uid://c46td0go5kvp6"
 
 [sub_resource type="Resource" id="Resource_03obi"]
 script = ExtResource("5_5fm2q")
-enable_control = true
 axis_configs = Array[ExtResource("5_o4ret")]([SubResource("Resource_gsj65")])
-max_value = Vector3(0, 0, 0)
-use_separate_minmax = false
-min_value = Vector3(0, 0, 0)
-limit_movement_speed = false
-movement_speed = 1.0
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
 [sub_resource type="Resource" id="Resource_4u4b6"]
 script = ExtResource("4_o4ret")
 chord = 1.195
-span = 2.0
-auto_aspect_ratio = true
 aspect_ratio = 1.67364
 
 [sub_resource type="Resource" id="Resource_snyt3"]
 script = ExtResource("4_o4ret")
 chord = 0.5
-span = 2.0
-auto_aspect_ratio = true
 aspect_ratio = 4.0
 
 [sub_resource type="Resource" id="Resource_op60t"]
@@ -393,38 +237,25 @@ resource_name = "flaps"
 script = ExtResource("5_o4ret")
 axis_name = "flaps"
 contribution = Vector3(1, 0, 0)
-easing = 1.0
-axis_flip_x = 0
-expression_x = ""
-axis_flip_y = 0
-expression_y = ""
-axis_flip_z = 0
-expression_z = ""
 metadata/_custom_type_script = "uid://c46td0go5kvp6"
 
-[sub_resource type="Resource" id="Resource_i32vb"]
+[sub_resource type="Resource" id="Resource_cp2h5"]
 script = ExtResource("5_5fm2q")
-enable_control = true
 axis_configs = Array[ExtResource("5_o4ret")]([SubResource("Resource_op60t")])
 max_value = Vector3(0.7, 0, 0)
 use_separate_minmax = true
-min_value = Vector3(0, 0, 0)
-limit_movement_speed = false
-movement_speed = 1.0
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
 [sub_resource type="Resource" id="Resource_i3e03"]
 script = ExtResource("4_o4ret")
 chord = 1.197
 span = 2.86
-auto_aspect_ratio = true
 aspect_ratio = 2.38931
 
 [sub_resource type="Resource" id="Resource_keinb"]
 script = ExtResource("4_o4ret")
 chord = 0.4
 span = 2.87
-auto_aspect_ratio = true
 aspect_ratio = 7.175
 
 [sub_resource type="Resource" id="Resource_1hx5l"]
@@ -432,49 +263,26 @@ resource_name = "roll"
 script = ExtResource("5_o4ret")
 axis_name = "roll"
 contribution = Vector3(1, 0, 0)
-easing = 1.0
 axis_flip_x = 1
-expression_x = ""
-axis_flip_y = 0
-expression_y = ""
-axis_flip_z = 0
-expression_z = ""
 metadata/_custom_type_script = "uid://c46td0go5kvp6"
 
 [sub_resource type="Resource" id="Resource_4mn0n"]
 script = ExtResource("5_5fm2q")
-enable_control = true
 axis_configs = Array[ExtResource("5_o4ret")]([SubResource("Resource_1hx5l")])
 max_value = Vector3(0.4, 0, 0)
-use_separate_minmax = false
 min_value = Vector3(-0.4, 0, 0)
-limit_movement_speed = false
-movement_speed = 1.0
-metadata/_custom_type_script = "uid://cblxodmmwvpt6"
-
-[sub_resource type="Resource" id="Resource_cp2h5"]
-script = ExtResource("5_5fm2q")
-enable_control = true
-axis_configs = Array[ExtResource("5_o4ret")]([SubResource("Resource_op60t")])
-max_value = Vector3(0.7, 0, 0)
-use_separate_minmax = true
-min_value = Vector3(0, 0, 0)
-limit_movement_speed = false
-movement_speed = 1.0
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
 [sub_resource type="Resource" id="Resource_g185g"]
 script = ExtResource("4_o4ret")
 chord = 0.669
 span = 3.429
-auto_aspect_ratio = true
 aspect_ratio = 5.12556
 
 [sub_resource type="Resource" id="Resource_2trr8"]
 script = ExtResource("4_o4ret")
 chord = 0.447
 span = 3.429
-auto_aspect_ratio = true
 aspect_ratio = 7.67114
 
 [sub_resource type="Resource" id="Resource_3s2tp"]
@@ -482,38 +290,25 @@ resource_name = "pitch"
 script = ExtResource("5_o4ret")
 axis_name = "pitch"
 contribution = Vector3(-1, 0, 0)
-easing = 1.0
-axis_flip_x = 0
-expression_x = ""
-axis_flip_y = 0
-expression_y = ""
-axis_flip_z = 0
-expression_z = ""
 metadata/_custom_type_script = "uid://c46td0go5kvp6"
 
 [sub_resource type="Resource" id="Resource_qhb2b"]
 script = ExtResource("5_5fm2q")
-enable_control = true
 axis_configs = Array[ExtResource("5_o4ret")]([SubResource("Resource_3s2tp")])
 max_value = Vector3(0.4, 0, 0)
-use_separate_minmax = false
 min_value = Vector3(-0.4, 0, 0)
-limit_movement_speed = false
-movement_speed = 1.0
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
 [sub_resource type="Resource" id="Resource_3wa4j"]
 script = ExtResource("4_o4ret")
 chord = 0.767
 span = 1.808
-auto_aspect_ratio = true
 aspect_ratio = 2.35724
 
 [sub_resource type="Resource" id="Resource_uei0l"]
 script = ExtResource("4_o4ret")
 chord = 0.352
 span = 1.583
-auto_aspect_ratio = true
 aspect_ratio = 4.49716
 
 [sub_resource type="Resource" id="Resource_f4i16"]
@@ -521,24 +316,13 @@ resource_name = "yaw"
 script = ExtResource("5_o4ret")
 axis_name = "yaw"
 contribution = Vector3(1, 0, 0)
-easing = 1.0
-axis_flip_x = 0
-expression_x = ""
-axis_flip_y = 0
-expression_y = ""
-axis_flip_z = 0
-expression_z = ""
 metadata/_custom_type_script = "uid://c46td0go5kvp6"
 
 [sub_resource type="Resource" id="Resource_dufvg"]
 script = ExtResource("5_5fm2q")
-enable_control = true
 axis_configs = Array[ExtResource("5_o4ret")]([SubResource("Resource_f4i16")])
 max_value = Vector3(0.5, 0, 0)
-use_separate_minmax = false
 min_value = Vector3(-0.5, 0, 0)
-limit_movement_speed = false
-movement_speed = 1.0
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
 [sub_resource type="Curve" id="Curve_ey0gl"]
@@ -578,18 +362,10 @@ drag_at_mach_multiplier_curve = SubResource("Curve_lo3t1")
 script = ExtResource("4_o4ret")
 chord = 2.43
 span = 0.83
-auto_aspect_ratio = true
 aspect_ratio = 0.341564
 
 [sub_resource type="Resource" id="Resource_o4ret"]
 script = ExtResource("5_5fm2q")
-enable_control = true
-axis_configs = Array[ExtResource("5_o4ret")]([])
-max_value = Vector3(0, 0, 0)
-use_separate_minmax = false
-min_value = Vector3(0, 0, 0)
-limit_movement_speed = false
-movement_speed = 1.0
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4tt3o"]
@@ -656,21 +432,26 @@ transform = Transform3D(5.69823e-17, 1, 2.24092e-17, -0.930622, 6.12303e-17, -0.
 shape = SubResource("BoxShape3D_3cn7l")
 
 [node name="AeroPropeller3D" type="Node3D" parent="." index="18" node_paths=PackedStringArray("propeller_blade")]
-transform = Transform3D(1, 0, 0, 0, 6.12303e-17, 1, 0, -1, 6.12303e-17, 0, 0, -3.82947)
+transform = Transform3D(0.999999999999777, 0, 6.12303176911052e-17, -6.12303176911052e-17, 3.7491518045553436e-33, 0.999999999999777, 0, -1, 3.749151804554507e-33, 0, 0, -3.82947)
 script = ExtResource("5_keinb")
 propeller_blade = NodePath("ManualAeroSurface3D")
 propeller_speed_control_config = SubResource("Resource_sgq0w")
+show_torque = true
+show_lift = false
+show_thrust = true
 metadata/_custom_type_script = "uid://bsu5rdrtiqph7"
 
-[node name="ManualAeroSurface3D" type="Node3D" parent="AeroPropeller3D" index="2"]
+[node name="ManualAeroSurface3D" type="Node3D" parent="AeroPropeller3D" index="0"]
 transform = Transform3D(1, 0, 0, 0, 0.766044, -0.642787, 0, 0.642787, 0.766044, 0.555826, 0, 0)
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_5oq5f")
 wing_config = SubResource("Resource_fnaxt")
 actuation_config = SubResource("Resource_03obi")
+show_force = false
+show_lift = false
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="AeroPropeller3D/ManualAeroSurface3D" index="4"]
+[node name="CSGBox3D" type="CSGBox3D" parent="AeroPropeller3D/ManualAeroSurface3D" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.88178e-16, 0.034494)
 size = Vector3(1.09857, 0.0454879, 0.144012)
 
@@ -681,15 +462,15 @@ manual_config = SubResource("Resource_5oq5f")
 wing_config = SubResource("Resource_4u4b6")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="FlapR" type="Node3D" parent="WingR1" index="4"]
+[node name="FlapR" type="Node3D" parent="WingR1" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.01053)
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_5oq5f")
 wing_config = SubResource("Resource_snyt3")
-actuation_config = SubResource("Resource_i32vb")
+actuation_config = SubResource("Resource_cp2h5")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="WingR1/FlapR" index="4"]
+[node name="CSGBox3D" type="CSGBox3D" parent="WingR1/FlapR" index="0"]
 transform = Transform3D(1, -5.55112e-16, 0, 5.55112e-16, 1, 0, 0, 0, 1, 0, 8.88178e-16, 0.127996)
 size = Vector3(1.99478, 0.0454879, 0.510548)
 
@@ -700,15 +481,14 @@ manual_config = SubResource("Resource_5oq5f")
 wing_config = SubResource("Resource_i3e03")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="AileronR" type="Node3D" parent="WingR2" index="4"]
+[node name="AileronR" type="Node3D" parent="WingR2" index="0"]
 transform = Transform3D(0.989364, 0, 0.145461, 0, 1, 0, -0.145461, 0, 0.989364, -0.0750582, -2.1684e-19, 0.775168)
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_5oq5f")
 wing_config = SubResource("Resource_keinb")
-actuation_config = SubResource("Resource_4mn0n")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="WingR2/AileronR" index="4"]
+[node name="CSGBox3D" type="CSGBox3D" parent="WingR2/AileronR" index="0"]
 transform = Transform3D(1, 5.50469e-16, 2.38698e-15, -2.47025e-15, 1, -7.1991e-16, 1.58207e-15, 1.69806e-17, 1, 0, 0, 0.0906042)
 size = Vector3(2.83724, 0.146557, 0.400159)
 
@@ -719,7 +499,7 @@ manual_config = SubResource("Resource_5oq5f")
 wing_config = SubResource("Resource_4u4b6")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="FlapL" type="Node3D" parent="WingL1" index="4"]
+[node name="FlapL" type="Node3D" parent="WingL1" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.01053)
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_5oq5f")
@@ -727,7 +507,7 @@ wing_config = SubResource("Resource_snyt3")
 actuation_config = SubResource("Resource_cp2h5")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="WingL1/FlapL" index="4"]
+[node name="CSGBox3D" type="CSGBox3D" parent="WingL1/FlapL" index="0"]
 transform = Transform3D(1, -5.55112e-16, 0, 5.55112e-16, 1, 0, 0, 0, 1, 0, 8.88178e-16, 0.127996)
 size = Vector3(1.99478, 0.0454879, 0.510548)
 
@@ -738,7 +518,7 @@ manual_config = SubResource("Resource_5oq5f")
 wing_config = SubResource("Resource_i3e03")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="AileronL" type="Node3D" parent="WingL2" index="4"]
+[node name="AileronL" type="Node3D" parent="WingL2" index="0"]
 transform = Transform3D(0.989272, 0, -0.146083, 0, 1, 0, 0.146083, 0, 0.989272, 0.075, 0, 0.775)
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_5oq5f")
@@ -746,7 +526,7 @@ wing_config = SubResource("Resource_keinb")
 actuation_config = SubResource("Resource_4mn0n")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="WingL2/AileronL" index="4"]
+[node name="CSGBox3D" type="CSGBox3D" parent="WingL2/AileronL" index="0"]
 transform = Transform3D(1, 5.50469e-16, 2.38698e-15, -2.47025e-15, 1, -7.1991e-16, 1.58207e-15, 1.69806e-17, 1, 0, 0, 0.0906042)
 size = Vector3(2.83724, 0.146557, 0.400159)
 
@@ -765,7 +545,7 @@ wing_config = SubResource("Resource_2trr8")
 actuation_config = SubResource("Resource_qhb2b")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="Elevator2" index="4"]
+[node name="CSGBox3D" type="CSGBox3D" parent="Elevator2" index="0"]
 transform = Transform3D(1, -5.55112e-16, 0, 5.55112e-16, 1, -4.92661e-16, 0, 4.92661e-16, 1, 0, 8.88178e-16, 0.127996)
 size = Vector3(3.43267, 0.0454879, 0.510548)
 
@@ -776,16 +556,16 @@ manual_config = SubResource("Resource_5oq5f")
 wing_config = SubResource("Resource_3wa4j")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="Rudder" type="Node3D" parent="VerticalStab" index="4"]
-transform = Transform3D(0.908829, 1.54074e-33, -0.417169, 4.24757e-33, 1, 1.69407e-33, 0.417169, 3.08149e-33, 0.908829, -0.52477, -2.95013e-19, 0.499497)
+[node name="Rudder" type="Node3D" parent="VerticalStab" index="0"]
+transform = Transform3D(0.908829, 1.54074e-33, -0.417169, 4.24757e-33, 1, 1.6940700000000002e-33, 0.417169, 3.08149e-33, 0.908829, -0.52477, -2.9501300000000003e-19, 0.499497)
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_5oq5f")
 wing_config = SubResource("Resource_uei0l")
 actuation_config = SubResource("Resource_dufvg")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="VerticalStab/Rudder" index="4"]
-transform = Transform3D(1, -5.55112e-16, 0, 5.55112e-16, 1, -2.42667e-31, -3.88578e-16, 8.13513e-31, 1, -2.22045e-16, 8.88178e-16, 0.0855698)
+[node name="CSGBox3D" type="CSGBox3D" parent="VerticalStab/Rudder" index="0"]
+transform = Transform3D(1, -5.55112e-16, 0, 5.55112e-16, 1, -2.4266699999999997e-31, -3.88578e-16, 8.13513e-31, 1, -2.22045e-16, 8.88178e-16, 0.0855698)
 size = Vector3(1.57572, 0.0454879, 0.389499)
 
 [node name="Body" type="Node3D" parent="." index="26"]

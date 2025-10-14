@@ -33,7 +33,7 @@ private:
 	TypedArray<AeroInfluencer3D> aero_influencers;
 
 	Transform3D default_transform;
-	Vector3 world_air_velocity;
+	
 	Vector3 linear_velocity;
 	Vector3 angular_velocity;
 	Vector3 last_linear_velocity;
@@ -68,7 +68,8 @@ private:
 protected:
 	static void _bind_methods();
 	//void _notification(int p_notification);
-
+	Vector3 world_air_velocity;
+	
 	GDVIRTUAL1R(PackedVector3Array, _calculate_forces, double);
 public:
 	AeroInfluencer3D();
@@ -84,7 +85,7 @@ public:
 	void on_child_exit_tree(const Node node);
 
 	PackedVector3Array calculate_forces_with_override(double substep_delta);
-	PackedVector3Array calculate_forces(double substep_delta);
+	virtual PackedVector3Array calculate_forces(double substep_delta);
 	void _update_transform_substep(double substep_delta);
 	void _update_control_transform(double substep_delta);
 	void set_overriding_body_sleep(bool override);

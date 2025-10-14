@@ -36,3 +36,5 @@ windows.debug.double.x86_64 = "windows/gdexample.windows.template_debug.dev.doub
 [icons]
 AeroBody3D = "res://addons/godot_aerodynamic_physics/icons/AeroBody3D.svg"
 AeroInfluencer3D = "res://addons/godot_aerodynamic_physics/icons/AeroInfluencer3D.svg"
+AeroSurface3D = "res://addons/godot_aerodynamic_physics/icons/AeroSurface3D.svg"
+ManualAeroSurface3D = "res://addons/godot_aerodynamic_physics/icons/AeroSurface3D.svg"

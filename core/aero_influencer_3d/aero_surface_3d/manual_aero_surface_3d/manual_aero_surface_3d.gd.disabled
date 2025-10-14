@@ -6,17 +6,17 @@ class_name ManualAeroSurface3D
 @export var manual_config := ManualAeroSurfaceConfig.new()
 
 func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
-	var force_and_torque : PackedVector3Array = super._calculate_forces(substep_delta)
+	var force_and_torque : PackedVector3Array = default_calculate_forces(substep_delta)
 	
 	var force := Vector3.ZERO
 	var torque := Vector3.ZERO
 	
-	var aero_reference := get_dynamic_pressure() * area
+	var aero_reference := get_dynamic_pressure() * get_area()
 	
 	if not manual_config:
 		return force_and_torque
 
-	lift_force = aero_reference * manual_config.get_lift_coefficient(angle_of_attack)
+	lift_force = aero_reference * manual_config.get_lift_coefficient(get_angle_of_attack())
 	var drag_coefficient : float = manual_config.get_drag_coefficient(angle_of_attack) * manual_config.get_drag_at_sweep_angle(sweep_angle) * manual_config.get_drag_multiplier_at_mach(get_mach())
 	var form_drag : float = aero_reference * drag_coefficient
 	var induced_drag : float = (lift_force * lift_force) / (get_dynamic_pressure() * PI * wing_config.span * wing_config.span)

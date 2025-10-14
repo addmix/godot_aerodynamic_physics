@@ -7,6 +7,10 @@ void AeroInfluencer3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("is_disabled"), &AeroInfluencer3D::is_disabled);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "disabled"), "set_disabled", "is_disabled");
 
+	ClassDB::bind_method(D_METHOD("set_actuation_config", "p_config"), &AeroInfluencer3D::set_actuation_config);
+	ClassDB::bind_method(D_METHOD("get_actuation_config"), &AeroInfluencer3D::get_actuation_config);
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "actuation_config", PROPERTY_HINT_RESOURCE_TYPE, "AeroInfluencerControlConfig"), "set_actuation_config", "get_actuation_config");
+
 	ClassDB::bind_method(D_METHOD("set_enable_automatic_control", "p_enable_automatic_control"), &AeroInfluencer3D::set_enable_automatic_control);
 	ClassDB::bind_method(D_METHOD("get_enable_automatic_control"), &AeroInfluencer3D::get_enable_automatic_control);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "enable_automatic_control"), "set_enable_automatic_control", "get_enable_automatic_control");
@@ -123,10 +127,11 @@ PackedVector3Array AeroInfluencer3D::calculate_forces_with_override(double subst
 	if (GDVIRTUAL_IS_OVERRIDDEN(_calculate_forces)) {
 		PackedVector3Array result;
 		GDVIRTUAL_CALL(_calculate_forces, substep_delta, result);
+		UtilityFunctions::print("running gdscript override");
 		return result;
 	}
 	
-	return calculate_forces(substep_delta);
+	return this->calculate_forces(substep_delta);
 }
 
 PackedVector3Array AeroInfluencer3D::calculate_forces(double substep_delta) {
@@ -141,7 +146,7 @@ PackedVector3Array AeroInfluencer3D::calculate_forces(double substep_delta) {
 	dynamic_pressure = 0.5 * aero_body->get_air_density() * aero_body->get_air_speed() * aero_body->get_air_speed();
 	drag_direction = world_air_velocity.normalized();
 	local_air_velocity = get_global_basis().xform_inv(world_air_velocity);
-
+	
 	if (has_node("/root/AeroUnits")) {
 		Node AeroUnits = *get_node_or_null("/root/AeroUnits");
 		//seems like this could cause a problem, there's no check to ensure this isn't null

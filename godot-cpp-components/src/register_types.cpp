@@ -4,7 +4,8 @@
 
 #include "aero_influencer_3d.h"
 #include "aero_body_3d.h"
-
+#include "aero_surface_3d.h"
+#include "manual_aero_surface.h"
 
 #include <gdextension_interface.h>
 #include <godot_cpp/core/class_db.hpp>
@@ -21,7 +22,8 @@ void initialize_gdextension_types(ModuleInitializationLevel p_level)
 	GDREGISTER_CLASS(GDExample);
 	GDREGISTER_CLASS(AeroBody3D);
 	GDREGISTER_CLASS(AeroInfluencer3D);
-
+	GDREGISTER_CLASS(AeroSurface3D);
+	GDREGISTER_CLASS(ManualAeroSurface3D);
 }
 
 void uninitialize_gdextension_types(ModuleInitializationLevel p_level) {

@@ -159,6 +159,7 @@ PackedVector3Array AeroBody3D::calculate_forces(PhysicsDirectBodyState3D *body_s
 	air_velocity = -body_state->get_linear_velocity() + wind;
 	air_speed = air_velocity.length();
 
+	
 	if (has_node("/root/AeroUnits")) {
 		Node AeroUnits = *get_node_or_null("/root/AeroUnits");
 		altitude = AeroUnits.call("get_altitude", this);

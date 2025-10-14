@@ -25,10 +25,14 @@ func _redraw(gizmo : EditorNode3DGizmo) -> void:
 
 	var st := SurfaceTool.new()
 
+	if not spatial.get_wing_config(): 
+		print("can't get wing config")
+		return
+	
 	#origin
-	var half_chord : float = spatial.wing_config.chord / 2.0
-	var quater_chord : float = spatial.wing_config.chord / 4.0
-	var half_span : float = spatial.wing_config.span / 2.0
+	var half_chord : float = spatial.get_wing_config().chord / 2.0
+	var quater_chord : float = spatial.get_wing_config().chord / 4.0
+	var half_span : float = spatial.get_wing_config().span / 2.0
 
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	#flap section

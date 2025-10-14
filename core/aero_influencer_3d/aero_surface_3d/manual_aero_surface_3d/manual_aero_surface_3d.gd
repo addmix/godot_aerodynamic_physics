@@ -11,7 +11,7 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	var force := Vector3.ZERO
 	var torque := Vector3.ZERO
 	
-	var aero_reference := dynamic_pressure * area
+	
 	
 	lift_force = aero_reference * manual_config.get_lift_coefficient(angle_of_attack)
 	var drag_coefficient : float = manual_config.get_drag_coefficient(angle_of_attack) * manual_config.get_drag_at_sweep_angle(sweep_angle) * manual_config.get_drag_multiplier_at_mach(mach)

@@ -3,6 +3,7 @@
 using namespace godot;
 
 void AeroBody3D::_bind_methods() {
+	
 	// substep override
 	ClassDB::bind_method(D_METHOD("set_substeps_override", "p_substeps"), &AeroBody3D::set_substeps_override);
 	ClassDB::bind_method(D_METHOD("get_substeps_override"), &AeroBody3D::get_substeps_override);
@@ -11,7 +12,7 @@ void AeroBody3D::_bind_methods() {
 	//register function so we can use it with a signal.
 	ClassDB::bind_method(D_METHOD("on_child_entered_tree", "node"), &AeroBody3D::on_child_entered_tree);
 	ClassDB::bind_method(D_METHOD("on_child_exiting_tree", "node"), &AeroBody3D::on_child_exiting_tree);
-
+	
 	ClassDB::bind_method(D_METHOD("get_substeps"), &AeroBody3D::get_substeps);
 	ClassDB::bind_method(D_METHOD("get_aero_influencers"), &AeroBody3D::get_aero_influencers);
 	ClassDB::bind_method(D_METHOD("get_prediction_timestep_fraction"), &AeroBody3D::get_prediction_timestep_fraction);
@@ -77,7 +78,7 @@ AeroBody3D::AeroBody3D() {
 	set_substeps_override(-1);
 	set_substeps(1);
 	set_center_of_mass_mode(CENTER_OF_MASS_MODE_CUSTOM);
-
+	
 	
 	linear_velocity_prediction = RigidBody3D::get_linear_velocity();
 	angular_velocity_prediction = RigidBody3D::get_angular_velocity();
@@ -92,8 +93,8 @@ AeroBody3D::AeroBody3D() {
 
 	PhysicsServer3D::get_singleton()->body_set_force_integration_callback(get_rid(), Callable(this, "integrate_forces_callback"));
 
-	//vector_3d_script = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/utils/vector_3d/vector_3d.gd");
-	//point_3d_script = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/utils/point_3d/point_3d.gd");
+	vector_3d_script = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/utils/vector_3d/vector_3d.gd");
+	point_3d_script = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/utils/point_3d/point_3d.gd");
 }
 
 AeroBody3D::~AeroBody3D() {
@@ -101,10 +102,10 @@ AeroBody3D::~AeroBody3D() {
 }
 
 void AeroBody3D::_enter_tree() {
-	//update_configuration_warnings();
+	update_configuration_warnings();
 }
 void AeroBody3D::_ready() {
-	//set_show_debug(show_debug);
+	set_show_debug(show_debug);
 }
 void AeroBody3D::on_child_entered_tree(Node *p_node) {
 	if (p_node->is_class("AeroInfluencer3D")) {
@@ -112,12 +113,16 @@ void AeroBody3D::on_child_entered_tree(Node *p_node) {
 
 		aero_influencers.append(influencer);
 		influencer->set_aero_body(this);
+
+		influencer->set_show_debug(get_show_debug());
+		influencer->set_debug_scale(get_debug_scale());
+		influencer->set_debug_width(get_debug_width());
 	}
 }
 void AeroBody3D::on_child_exiting_tree(Node *p_node) {
 	if (p_node->is_class("AeroInfluencer3D")) {
 		AeroInfluencer3D* influencer = (AeroInfluencer3D*) p_node;
-
+		
 		aero_influencers.erase(p_node);
 		influencer->set_aero_body(nullptr);
 	}
@@ -125,12 +130,11 @@ void AeroBody3D::on_child_exiting_tree(Node *p_node) {
 
 //PackedStringArray AeroBody3D::_get_configuration_warnings() const {}
 void AeroBody3D::_process(double delta) {}
-void AeroBody3D::_physics_process(double delta) {}
-/*
-	if (show_debug and update_debug) {
+void AeroBody3D::_physics_process(double delta) {
+	if (show_debug /*and update_debug*/) {
 		_update_debug();
 	}
-}*/
+}
 
 void AeroBody3D::integrate_forces(PhysicsDirectBodyState3D *body_state) {
 	//start timing
@@ -333,20 +337,16 @@ int AeroBody3D::get_amount_of_active_influencers() {
 }
 //debug
 void AeroBody3D::_update_debug() {
-	if (not is_inside_tree()) return;
 	/*
 	aero_surfaces = []
 	for i : AeroInfluencer3D in aero_influencers:
 		if i is AeroSurface3D:
 			aero_surfaces.append(i)
-	
-	mass_debug_point.position = center_of_mass
-	#thrust_debug_vector.position = center of thrust
 	*/
 	
 	Vector3 linear_velocity_to_use = RigidBody3D::get_linear_velocity();
 	Vector3 angular_velocity_to_use = RigidBody3D::get_angular_velocity();
-
+	
 	if (Engine::get_singleton()->is_editor_hint()) {
 		//Godot doesn't run physics engine in-editor.
 		//A consequence of this is that get_linear_velocity doesn't work.
@@ -364,35 +364,33 @@ void AeroBody3D::_update_debug() {
 		angular_velocity_to_use = debug_angular_velocity;
 	}
 	
-	if (is_inside_tree()) {
-		if (linear_velocity_vector) {
-			//linear_velocity_vector->set_deferred("value", get_global_basis().xform_inv(linear_velocity_to_use));
-		}
-		if (angular_velocity_vector) {
-			//angular_velocity_vector->set_deferred("value", get_global_basis().xform_inv(angular_velocity_to_use));
-		}
+	if (center_of_mass_debug_point) {
+		center_of_mass_debug_point->set_position(get_center_of_mass());
 	}
-
-	//linear_velocity_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(linear_velocity_to_use, 2.0)
-	//angular_velocity_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(angular_velocity_to_use, 2.0)
+	if (linear_velocity_vector) {
+		linear_velocity_vector->set("value", get_global_basis().xform_inv(linear_velocity_to_use) * debug_scale);
+	}
+	if (angular_velocity_vector) {
+		angular_velocity_vector->set_deferred("value", get_global_basis().xform_inv(angular_velocity_to_use) * debug_scale);
+	}
+	//thrust_debug_vector.position = center of thrust
 	
 
-	if (aero_influencers.size() > 0) {
-		int amount_of_aero_influencers = aero_influencers.size();
-		double force_sum = 0.0;
-		Vector3 force_vector_sum = Vector3();
-		
-		for (int i = 0; i < aero_influencers.size(); i++) {
-			AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
+	int amount_of_aero_influencers = aero_influencers.size();
+	double force_sum = 0.0;
+	Vector3 force_vector_sum = Vector3();
+	
+	for (int i = 0; i < aero_influencers.size(); i++) {
+		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
 
-			if (/*influencer.omit_from_debug or */influencer->is_disabled()) {
-				amount_of_aero_influencers -= 1;
-				continue;
-			}
-				
-			force_vector_sum += influencer->get_current_force();
+		if (/*influencer.omit_from_debug or */influencer->is_disabled()) {
+			amount_of_aero_influencers -= 1;
+			continue;
 		}
+			
+		force_vector_sum += influencer->get_current_force();
 	}
+	
 	/*
 	#lift and drag debug
 	var amount_of_aero_surfaces : int = aero_surfaces.size()
@@ -429,8 +427,10 @@ void AeroBody3D::_update_debug() {
 				drag_sum = 1.0
 			drag_debug_vector.position = drag_position_sum / amount_of_aero_surfaces / (drag_sum / amount_of_aero_surfaces)
 		*/
-	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
+
+
+	for (int x = 0; x < aero_influencers.size(); x++) {
+		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[x];
 		influencer->update_debug();
 	}
 }
@@ -443,13 +443,23 @@ void AeroBody3D::set_show_debug(const bool value) {
 		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
 		influencer->set_show_debug(show_debug);
 	}
-
-	/*
+	
 	if (show_debug) {
-		
+
+		if (not center_of_mass_debug_point) {
+			center_of_mass_debug_point = memnew(MeshInstance3D);
+			center_of_mass_debug_point->set_script(point_3d_script);
+			center_of_mass_debug_point->set_name("CenterOfMassDebug");
+
+			center_of_mass_debug_point->set("width", debug_center_width);
+			center_of_mass_debug_point->set("color", Color(1.0, 1.0, 0.0));
+			center_of_mass_debug_point->set("checker", true);
+			add_child(center_of_mass_debug_point, INTERNAL_MODE_FRONT);
+		}
 		if (not linear_velocity_vector) {
 			linear_velocity_vector = memnew(MeshInstance3D);
 			linear_velocity_vector->set_script(vector_3d_script);
+			linear_velocity_vector->set_name("LinearVelocityDebug");
 
 			linear_velocity_vector->set("width", debug_width);
 			linear_velocity_vector->set("color", Color(0, 0.5, 0.5));
@@ -459,24 +469,28 @@ void AeroBody3D::set_show_debug(const bool value) {
 			angular_velocity_vector = memnew(MeshInstance3D);
 			angular_velocity_vector->set_script(vector_3d_script);
 			
+			angular_velocity_vector->set_visible(false); //angular velocity vector isn't very useful, so it's hidden for my sanity
 			angular_velocity_vector->set("width", debug_width);
 			angular_velocity_vector->set("color", Color(0, 0.333, 0));
 			add_child(angular_velocity_vector, INTERNAL_MODE_FRONT);
-
-			angular_velocity_vector->set_visible(false); //angular velocity vector isn't very useful, so it's hidden for my sanity
 		}
-
+		
 		_update_debug();
 	} else {
-		if (linear_velocity_vector) {
+		if (center_of_mass_debug_point != nullptr) {
+			center_of_mass_debug_point->queue_free();
+			center_of_mass_debug_point = nullptr;
+		}
+		if (linear_velocity_vector != nullptr) {
 			linear_velocity_vector->queue_free();
 			linear_velocity_vector = nullptr;
 		}
-		if (angular_velocity_vector) {
+		if (angular_velocity_vector != nullptr) {
 			angular_velocity_vector->queue_free();
 			angular_velocity_vector = nullptr;
 		}
-	}*/
+		
+	}
 }
 bool AeroBody3D::get_show_debug() const {return show_debug;}
 
@@ -531,21 +545,16 @@ double AeroBody3D::get_debug_scale() const {return debug_scale;}
 void AeroBody3D::set_debug_width(const double value) {
 	debug_width = value;
 
-	
 	for (int i = 0; i < aero_influencers.size(); i++) {
 		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
 		influencer->set_debug_width(debug_width);
 	}
 
-	/*
-	if (not is_inside_tree()) return;
-	if (linear_velocity_vector) {
+	if (show_debug) {
+		center_of_mass_debug_point->set("width", debug_center_width);
 		linear_velocity_vector->set("width", debug_width);
-	}
-	if (angular_velocity_vector) {
 		angular_velocity_vector->set("width", debug_width);
 	}
-	*/
 }
 double AeroBody3D::get_debug_width() const {return debug_width;}
 

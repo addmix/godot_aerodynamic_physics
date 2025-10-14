@@ -76,8 +76,8 @@ void AeroInfluencer3D::_bind_methods() {
 }
 
 AeroInfluencer3D::AeroInfluencer3D() {
-	//vector_3d_script = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/utils/vector_3d/vector_3d.gd");
-	//point_3d_script = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/utils/point_3d/point_3d.gd");
+	vector_3d_script = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/utils/vector_3d/vector_3d.gd");
+	point_3d_script = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/utils/point_3d/point_3d.gd");
 }
 
 AeroInfluencer3D::~AeroInfluencer3D() {
@@ -364,39 +364,39 @@ void AeroInfluencer3D::set_aero_influencers(const TypedArray<AeroInfluencer3D> n
 TypedArray<AeroInfluencer3D> AeroInfluencer3D::get_aero_influencers() const { return aero_influencers; }
 
 void AeroInfluencer3D::update_debug(){
+	if (not is_inside_tree()) return;
+
+	if (force_debug_vector) {
+		force_debug_vector->set("value", get_global_basis().xform_inv(get_current_force()) * debug_scale);
+	}
+	if (torque_debug_vector) {
+		torque_debug_vector->set("value", get_global_basis().xform_inv(get_current_torque()) * debug_scale);
+	}
+
 	for (int i = 0; i < aero_influencers.size(); i++) {
 		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
 		influencer->update_debug();
 	}
-
-	/*if (not is_inside_tree()) return;
-
-	if (force_debug_vector) {
-		force_debug_vector->set("value", get_global_basis().xform_inv(get_current_force()));
-	}
-	if (torque_debug_vector) {
-		torque_debug_vector->set("value", get_global_basis().xform_inv(get_current_torque()));
-	}*/
 }
 
 void AeroInfluencer3D::set_show_debug(const bool value) {
 	show_debug = value;
-
-	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
-		influencer->set_show_debug(show_debug);
-	}
-
 	if (show_debug) {
-		/*
 		if (not force_debug_vector) {
 			force_debug_vector = memnew(MeshInstance3D);
 			force_debug_vector->set_script(vector_3d_script);
+			force_debug_vector->set_name("ForceDebug");
+
+			force_debug_vector->set("color", Color(1.0, 1.0, 1.0));
+			force_debug_vector->set("checker", true);
 			add_child(force_debug_vector, INTERNAL_MODE_FRONT);
 		}
 		if (not torque_debug_vector) {
 			torque_debug_vector = memnew(MeshInstance3D);
 			torque_debug_vector->set_script(vector_3d_script);
+			torque_debug_vector->set_name("ForceDebug");
+
+			torque_debug_vector->set("color", Color(0.0, 0.5, 0.0));
 			add_child(torque_debug_vector, INTERNAL_MODE_FRONT);
 		}
 	} else {
@@ -408,7 +408,11 @@ void AeroInfluencer3D::set_show_debug(const bool value) {
 			torque_debug_vector->queue_free();
 			torque_debug_vector = nullptr;
 		}
-		*/
+	}
+
+	for (int i = 0; i < aero_influencers.size(); i++) {
+		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
+		influencer->set_show_debug(show_debug);
 	}
 }
 void AeroInfluencer3D::set_debug_scale(const double value) {
@@ -426,15 +430,12 @@ void AeroInfluencer3D::set_debug_width(const double value) {
 		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
 		influencer->set_debug_width(debug_width);
 	}
-
-	/*
-	if (not is_inside_tree()) return;
 	if (force_debug_vector) {
 		force_debug_vector->set("width", debug_width);
 	}
 	if (torque_debug_vector) {
 		torque_debug_vector->set("width", debug_width);
-	}*/
+	}
 }
 
 

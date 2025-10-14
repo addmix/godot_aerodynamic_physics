@@ -50,6 +50,9 @@ env.Alias("compiledb", compilation_db)
 
 env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
 
+#this forces MSVC to respect standard keywords such as `and`, `or`, and `not`
+env.Append(CXXFLAGS=['/std:c++17', '/permissive-', '/Zc:preprocessor'])
+
 env.Append(CPPPATH=["src/"])
 sources = Glob("src/*.cpp")
 

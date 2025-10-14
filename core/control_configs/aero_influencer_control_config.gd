@@ -62,7 +62,7 @@ func update(aero_influencer : AeroInfluencer3D, delta : float) -> Vector3:
 
 static func get_value_safe(axis_config : AeroInfluencerControlAxisConfig, aero_influencer : AeroInfluencer3D, axis_sign : Vector3 = Vector3.ZERO) -> Vector3:
 	if axis_config:
-		var command : float = aero_influencer.get_control_command(axis_config.axis_name)
+		var command : float = 0.0 #aero_influencer.get_control_command(axis_config.axis_name)
 		return axis_config.get_value(command, aero_influencer, axis_sign)
 	
 	return Vector3.ZERO

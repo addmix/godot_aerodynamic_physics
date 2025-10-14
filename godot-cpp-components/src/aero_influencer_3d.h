@@ -52,12 +52,6 @@ private:
 	Vector3 _current_force;
 	Vector3 _current_torque;
 
-
-	void on_enter_tree();
-	void on_ready();
-	void on_process(double delta);
-	void on_physics_process(double delta);
-
 	bool show_debug;
 	bool omit_from_debug;
 	double debug_scale;
@@ -68,8 +62,8 @@ private:
 
 	Ref<GDScript> point_3d_script;
 	Ref<GDScript> vector_3d_script;
-	Node3D *force_debug_vector;//force_debug_vector : AeroDebugVector3D
-	Node3D *torque_debug_vector;//torque_debug_vector : AeroDebugVector3D
+	Node3D *force_debug_vector = nullptr;//force_debug_vector : AeroDebugVector3D
+	Node3D *torque_debug_vector = nullptr;//torque_debug_vector : AeroDebugVector3D
 
 protected:
 	static void _bind_methods();

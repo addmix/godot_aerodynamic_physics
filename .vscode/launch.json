@@ -5,38 +5,30 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "editor (gdb)",
-      "type": "cppdbg",
+      "name": "editor (vsdbg | windows)",
+      "type": "cppvsdbg",
       "request": "launch",
-      "MIMode": "gdb",
-      //"windows": {
-        "program": "D:/User/Documents/Godot/repos/godot-vr/godot/bin/godot.windows.editor.double.x86_64.console.exe",
-        "miDebuggerPath": "gdb",
+      //"requireExactSource": true,
+      //"symbolOptions": {
+        //"searchPaths": [
+        //  "D:/User/Documents/Godot/repos/godot-vr/godot/bin/",
+        //  "${workspaceFolder}"
+        //],
+        //"searchMicrosoftSymbolServer": true
       //},
+      "program": "D:/User/Documents/Godot/repos/godot-vr/godot/bin/godot.windows.editor.dev.double.x86_64.exe",
       "args": [
         "--editor",
         "--debug",
-        "--verbose",
+        //"--verbose",
         "--path",
-        "D:/User/Documents/Godot/versions/Godot_v4.2.2-stable_win64.exe/projects/godot_aero_cpp"
+        "../.."
       ],
       "cwd": "${workspaceFolder}",
-      "stopAtEntry": false,
-      //"preLaunchTask": "build",
-      //"visualizerFile": "${workspaceFolder}/extern/godot-engine/platform/windows/godot.natvis",
+      //"visualizerFile": "D:/User/Documents/Godot/repos/godot-vr/godot/platform/windows/godot.natvis",
       //"internalConsoleOptions": "openOnSessionStart",
-      //"launchCompleteCommand": "exec-run",
-      /*"symbolLoadInfo": {
-        "loadAll": true,
-        "exceptionList": ""
-      },
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing for gdb",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        }
-      ]*/
-    }
+      //"console": "internalConsole",
+      "preLaunchTask": "build"
+    },
   ]
 }

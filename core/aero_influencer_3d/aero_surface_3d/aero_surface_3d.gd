@@ -62,8 +62,9 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	angle_of_attack = global_basis.y.angle_to(-get_world_air_velocity()) - (PI / 2.0)
 	sweep_angle = global_basis.x.angle_to(-get_world_air_velocity()) - (PI / 2.0)
 	
-	area = wing_config.chord * wing_config.span
-	projected_wing_area = abs(wing_config.span * wing_config.chord * sin(angle_of_attack))
+	if wing_config:
+		area = wing_config.chord * wing_config.span
+		projected_wing_area = abs(wing_config.span * wing_config.chord * sin(angle_of_attack))
 	
 	var right_facing_air_vector : Vector3 = get_world_air_velocity().cross(-global_transform.basis.y).normalized()
 	lift_direction = get_drag_direction().cross(right_facing_air_vector).normalized()

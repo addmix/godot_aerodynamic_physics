@@ -51,7 +51,7 @@ private:
 	//debug //unimplemented
 	
 	//debug visibility
-	bool show_debug;
+	bool show_debug = false;
 	bool update_debug;
 	bool show_wing_debug_vectors;
 	bool show_lift_vectors;
@@ -72,8 +72,9 @@ private:
 
 	Ref<GDScript> point_3d_script;
 	Ref<GDScript> vector_3d_script;
-	Node3D *linear_velocity_vector;
-	Node3D *angular_velocity_vector;
+	Node3D *center_of_mass_debug_point = nullptr;
+	Node3D *linear_velocity_vector = nullptr;
+	Node3D *angular_velocity_vector = nullptr;
 
 protected:
 	static void _bind_methods();

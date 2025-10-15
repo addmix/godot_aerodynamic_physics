@@ -300,13 +300,19 @@ func _ready() -> void:
 	test_ready_override = true
 	
 	add_child(mass_debug_point, INTERNAL_MODE_FRONT)
+	
 	mass_debug_point.add_child(lift_debug_vector, INTERNAL_MODE_FRONT)
 	mass_debug_point.add_child(drag_debug_vector, INTERNAL_MODE_FRONT)
+	
 	add_child(thrust_debug_vector, INTERNAL_MODE_FRONT)
+	
 	mass_debug_point.add_child(force_debug_vector, INTERNAL_MODE_FRONT)
+	
 	mass_debug_point.add_child(torque_debug_vector, INTERNAL_MODE_FRONT)
 	mass_debug_point.add_child(linear_velocity_vector, INTERNAL_MODE_FRONT)
 	mass_debug_point.add_child(angular_velocity_vector, INTERNAL_MODE_FRONT)
+	
+	_update_debug_visibility()
 	
 	if Engine.is_editor_hint():
 		update_configuration_warnings()
@@ -555,7 +561,8 @@ func _update_debug() -> void:
 			force_vector_sum += force_vector
 			force_position_sum += influencer.relative_position * force
 			force_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(force_vector_sum, debug_scaling_factor) * debug_scale
-			force_debug_vector.position = global_transform.basis.inverse() * force_position_sum / amount_of_aero_influencers / (force_sum / amount_of_aero_influencers)
+			if not is_equal_approx(force_sum, 0.0):
+				force_debug_vector.position = global_transform.basis.inverse() * force_position_sum / amount_of_aero_influencers / (force_sum / amount_of_aero_influencers)
 			
 			var drag_vector : Vector3 = max(force_vector.dot(get_drag_direction()), 0.0) * get_drag_direction()
 			var drag := drag_vector.length()
@@ -563,7 +570,8 @@ func _update_debug() -> void:
 			drag_vector_sum += drag_vector
 			drag_position_sum += influencer.relative_position * drag
 			drag_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(drag_vector_sum, debug_scaling_factor) * debug_scale
-			drag_debug_vector.position = global_transform.basis.inverse() * drag_position_sum / amount_of_aero_influencers / (drag_sum / amount_of_aero_influencers)
+			if not is_equal_approx(drag_sum, 0.0):
+				drag_debug_vector.position = global_transform.basis.inverse() * drag_position_sum / amount_of_aero_influencers / (drag_sum / amount_of_aero_influencers)
 			
 			var lift_vector := force_vector - drag_vector
 			var lift := lift_vector.length()
@@ -571,7 +579,8 @@ func _update_debug() -> void:
 			lift_vector_sum += lift_vector
 			lift_position_sum += influencer.relative_position * lift
 			lift_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(lift_vector_sum, debug_scaling_factor) * debug_scale
-			lift_debug_vector.position = global_transform.basis.inverse() * lift_position_sum / amount_of_aero_influencers / (lift_sum / amount_of_aero_influencers)
+			if not is_equal_approx(lift_sum, 0.0):
+				lift_debug_vector.position = global_transform.basis.inverse() * lift_position_sum / amount_of_aero_influencers / (lift_sum / amount_of_aero_influencers)
 			
 			#var thrust_vector : Vector3 = min(force_vector.dot(get_drag_direction()), 0.0) * get_drag_direction()
 			#var thrust := thrust_vector.length()

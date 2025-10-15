@@ -54,7 +54,20 @@ env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
 env.Append(CXXFLAGS=['/std:c++17', '/permissive-', '/Zc:preprocessor'])
 
 env.Append(CPPPATH=["src/"])
-sources = Glob("src/*.cpp")
+
+#this is changed from default to include all *.cpp files in subfolders
+#this is modified from the godot template's version so that *.cpp files in subfolders will also be compiled
+def recursive_glob(env, base_dir, pattern):
+    sources = []
+    for root, dirs, files in os.walk(base_dir):
+        for file in Glob(os.path.join(root, pattern)):
+            sources.append(file)
+    return sources
+
+sources = recursive_glob(env, 'src', '*.cpp')
+
+for file in sources:
+    print(file)
 
 file = "{}{}{}".format(libname, env["suffix"], env["SHLIBSUFFIX"])
 

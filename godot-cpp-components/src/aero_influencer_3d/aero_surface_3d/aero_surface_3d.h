@@ -3,14 +3,15 @@
 
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/core/class_db.hpp>
-#include "aero_influencer_3d.h"
+#include "aero_influencer_3d/aero_influencer_3d.h"
+#include "aero_influencer_3d/aero_surface_3d/aero_surface_config.h"
 
 namespace godot {
 
 class AeroSurface3D : public AeroInfluencer3D {
 	GDCLASS(AeroSurface3D, AeroInfluencer3D);
 private:
-    Ref<Resource> wing_config = nullptr;
+    Ref<AeroSurfaceConfig> wing_config = Ref(memnew(AeroSurfaceConfig));
     double angle_of_attack = 0.0;
     double sweep_angle = 0.0;
     double area = 0.0;
@@ -31,8 +32,8 @@ public:
     void _enter_tree() override;
     PackedVector3Array calculate_forces(double substep_delta);
 
-    void set_wing_config(const Ref<Resource> &p_config);
-	Ref<Resource> get_wing_config() const;
+    void set_wing_config(const Ref<AeroSurfaceConfig> &p_config);
+	Ref<AeroSurfaceConfig> get_wing_config() const;
     
     double get_angle_of_attack();
     double get_sweep_angle();

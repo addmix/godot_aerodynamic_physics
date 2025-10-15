@@ -1,10 +1,9 @@
-#include "aero_surface_3d.h"
+#include "aero_influencer_3d/aero_surface_3d/aero_surface_3d.h"
+#include "aero_influencer_3d/aero_surface_3d/aero_surface_config.h"
 
 using namespace godot;
 
 void AeroSurface3D::_bind_methods() {
-    //AeroInfluencer3D::_bind_methods();
-
     ClassDB::bind_method(D_METHOD("set_wing_config", "p_config"), &AeroSurface3D::set_wing_config);
 	ClassDB::bind_method(D_METHOD("get_wing_config"), &AeroSurface3D::get_wing_config);
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "wing_config", PROPERTY_HINT_RESOURCE_TYPE, "AeroSurfaceConfig"), "set_wing_config", "get_wing_config");
@@ -18,14 +17,7 @@ void AeroSurface3D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_drag_force"), &AeroSurface3D::get_drag_force);
 }
 
-AeroSurface3D::AeroSurface3D() {
-    Ref<GDScript> wing_config_script = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd");
-
-    Ref<Resource> config = memnew(Resource);
-    config->set_script(wing_config_script);
-
-    wing_config = config;
-}
+AeroSurface3D::AeroSurface3D() {}
 AeroSurface3D::~AeroSurface3D() {}
 
 void AeroSurface3D::_enter_tree() {
@@ -51,7 +43,7 @@ PackedVector3Array AeroSurface3D::calculate_forces(double substep_delta) {
 }
 
 
-void AeroSurface3D::set_wing_config(const Ref<Resource> &p_config) {
+void AeroSurface3D::set_wing_config(const Ref<AeroSurfaceConfig> &p_config) {
     wing_config = p_config;
 
     if (wing_config == nullptr) return;
@@ -61,7 +53,7 @@ void AeroSurface3D::set_wing_config(const Ref<Resource> &p_config) {
         update_gizmos();
     }
 };
-Ref<Resource> AeroSurface3D::get_wing_config() const {return wing_config;};
+Ref<AeroSurfaceConfig> AeroSurface3D::get_wing_config() const {return wing_config;};
 
 double AeroSurface3D::get_angle_of_attack() {
     return angle_of_attack;

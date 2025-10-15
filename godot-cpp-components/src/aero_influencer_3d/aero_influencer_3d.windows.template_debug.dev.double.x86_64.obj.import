@@ -3,12 +3,12 @@
 importer="wavefront_obj"
 importer_version=1
 type="Mesh"
-uid="uid://cq4hgyfhpfs27"
+uid="uid://q50t8d6fhnxq"
 valid=false
 
 [deps]
 
-source_file="res://addons/godot_aerodynamic_physics/godot-cpp-components/src/register_types.windows.template_debug.dev.double.x86_64.obj"
+source_file="res://addons/godot_aerodynamic_physics/godot-cpp-components/src/aero_influencer_3d/aero_influencer_3d.windows.template_debug.dev.double.x86_64.obj"
 
 [params]
 

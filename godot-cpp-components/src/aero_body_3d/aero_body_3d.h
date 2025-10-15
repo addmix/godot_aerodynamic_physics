@@ -10,7 +10,8 @@
 #include <godot_cpp/classes/physics_direct_body_state3d.hpp>
 #include <godot_cpp/classes/resource_loader.hpp>
 #include <godot_cpp/classes/mesh_instance3d.hpp>
-#include "aero_influencer_3d.h"
+#include "aero_influencer_3d/aero_influencer_3d.h"
+#include "aero_units/aero_units.h"
 
 namespace godot {
 
@@ -19,31 +20,31 @@ class AeroInfluencer3D;//forward declaration
 class AeroBody3D : public VehicleBody3D {
 	GDCLASS(AeroBody3D, VehicleBody3D)
 private:
-	int substeps_override;
-	int substeps;
-	double prediction_timestep_fraction;
+	int substeps_override = -1;
+	int substeps = 1;
+	double prediction_timestep_fraction = 1;
 	TypedArray<AeroInfluencer3D> aero_influencers;
-	Vector3 current_force;
-	Vector3 current_torque;
-	Vector3 current_gravity;
-	Vector3 last_linear_velocity;
-	Vector3 last_angular_velocity;
-	Vector3 linear_velocity_prediction;
-	Vector3 angular_velocity_prediction;
-	Vector3 wind;
-	Vector3 air_velocity;
-	Vector3 local_air_velocity;
-	Vector3 local_angular_velocity;
-	double air_speed;
-	double mach;
-	double air_density;
-	double air_pressure;
-	double angle_of_attack;
-	double sideslip_angle;
-	double altitude;
-	double bank_angle;
-	double heading;
-	double inclination;
+	Vector3 current_force = Vector3(0, 0, 0);
+	Vector3 current_torque = Vector3(0, 0, 0);
+	Vector3 current_gravity = Vector3(0, 0, 0);
+	Vector3 last_linear_velocity = Vector3(0, 0, 0);
+	Vector3 last_angular_velocity = Vector3(0, 0, 0);
+	Vector3 linear_velocity_prediction = Vector3(0, 0, 0);
+	Vector3 angular_velocity_prediction = Vector3(0, 0, 0);
+	Vector3 wind = Vector3(0, 0, 0);
+	Vector3 air_velocity = Vector3(0, 0, 0);
+	Vector3 local_air_velocity = Vector3(0, 0, 0);
+	Vector3 local_angular_velocity = Vector3(0, 0, 0);
+	double air_speed = 0;
+	double mach = 0;
+	double air_density = 1.225;
+	double air_pressure = 101325.0;
+	double angle_of_attack = 0;
+	double sideslip_angle = 0;
+	double altitude = 0;
+	double bank_angle = 0;
+	double heading = 0;
+	double inclination = 0;
 
 	void integrate_forces(PhysicsDirectBodyState3D *body_state);
 	
@@ -52,16 +53,16 @@ private:
 	
 	//debug visibility
 	bool show_debug = false;
-	bool update_debug;
-	bool show_wing_debug_vectors;
-	bool show_lift_vectors;
-	bool show_drag_vectors;
-	bool show_linear_velocity;
-	bool show_angular_velocity;
-	bool show_center_of_lift;
-	bool show_center_of_drag;
-	bool show_center_of_mass;
-	bool show_center_of_thrust;
+	bool update_debug = true;
+	bool show_wing_debug_vectors = true;
+	bool show_lift_vectors = true;
+	bool show_drag_vectors = true;
+	bool show_linear_velocity = true;
+	bool show_angular_velocity = false;
+	bool show_center_of_lift = true;
+	bool show_center_of_drag = true;
+	bool show_center_of_mass = true;
+	bool show_center_of_thrust = true;
 	
 	//debug options
 	Vector3 debug_linear_velocity = Vector3(0, -10, -100);
@@ -70,8 +71,8 @@ private:
 	double debug_width = 0.1;
 	double debug_center_width = 0.2;
 
-	Ref<GDScript> point_3d_script;
-	Ref<GDScript> vector_3d_script;
+	Ref<GDScript> point_3d_script = nullptr;
+	Ref<GDScript> vector_3d_script = nullptr;
 	Node3D *center_of_mass_debug_point = nullptr;
 	Node3D *linear_velocity_vector = nullptr;
 	Node3D *angular_velocity_vector = nullptr;

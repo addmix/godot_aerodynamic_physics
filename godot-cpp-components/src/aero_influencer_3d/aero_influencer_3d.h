@@ -5,7 +5,7 @@
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/classes/node3d.hpp>
 #include <godot_cpp/core/gdvirtual.gen.inc>
-#include "aero_body_3d.h"
+#include "aero_body_3d/aero_body_3d.h"
 
 namespace godot {
 

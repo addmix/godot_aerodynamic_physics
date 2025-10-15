@@ -5,18 +5,44 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "editor (vsdbg | windows)",
+      "name": "editor-debug (vsdbg | windows)",
       "type": "cppvsdbg",
       "request": "launch",
-      //"requireExactSource": true,
-      //"symbolOptions": {
-        //"searchPaths": [
-        //  "D:/User/Documents/Godot/repos/godot-vr/godot/bin/",
-        //  "${workspaceFolder}"
-        //],
-        //"searchMicrosoftSymbolServer": true
-      //},
       "program": "D:/User/Documents/Godot/repos/godot-vr/godot/bin/godot.windows.editor.dev.double.x86_64.exe",
+      "args": [
+        "--editor",
+        "--debug",
+        "--verbose",
+        "--path",
+        "../.."
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart",
+      "preLaunchTask": "build-debug",
+    },
+    {
+      "name": "project-debug (vsdbg | windows)",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "D:/User/Documents/Godot/repos/godot-vr/godot/bin/godot.windows.editor.dev.double.x86_64.exe",
+      "args": [
+        //"--editor",
+        //"--debug",
+        //"--verbose",
+        "--path",
+        "../.."
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart",
+      "preLaunchTask": "build-debug",
+    },
+    {
+      "name": "editor-release (vsdbg | windows)",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "D:/User/Documents/Godot/repos/godot-vr/godot/bin/godot.windows.editor.double.x86_64.exe",
       "args": [
         "--editor",
         "--debug",
@@ -25,10 +51,26 @@
         "../.."
       ],
       "cwd": "${workspaceFolder}",
-      //"visualizerFile": "D:/User/Documents/Godot/repos/godot-vr/godot/platform/windows/godot.natvis",
-      //"internalConsoleOptions": "openOnSessionStart",
-      //"console": "internalConsole",
-      "preLaunchTask": "build"
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart",
+      "preLaunchTask": "build-debug",
+    },
+    {
+      "name": "project-release (vsdbg | windows)",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "D:/User/Documents/Godot/repos/godot-vr/godot/bin/godot.windows.editor.double.x86_64.exe",
+      "args": [
+        //"--editor",
+        //"--debug",
+        //"--verbose",
+        "--path",
+        "../.."
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart",
+      "preLaunchTask": "build-debug",
     },
   ]
 }

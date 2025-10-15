@@ -1,11 +1,13 @@
 #include "register_types.h"
 
-#include "gdexample.h"
+#include "aero_units/aero_units.h"
 
-#include "aero_influencer_3d.h"
-#include "aero_body_3d.h"
-#include "aero_surface_3d.h"
-#include "manual_aero_surface.h"
+#include "aero_body_3d/aero_body_3d.h"
+#include "aero_influencer_3d/aero_influencer_3d.h"
+#include "aero_influencer_3d/aero_surface_3d/aero_surface_config.h"
+#include "aero_influencer_3d/aero_surface_3d/aero_surface_3d.h"
+#include "aero_influencer_3d/aero_surface_3d/manual_aero_surface_config.h"
+#include "aero_influencer_3d/aero_surface_3d/manual_aero_surface.h"
 
 #include <gdextension_interface.h>
 #include <godot_cpp/core/class_db.hpp>
@@ -14,15 +16,23 @@
 
 using namespace godot;
 
+static AeroUnits *aero_units;
+
 void initialize_gdextension_types(ModuleInitializationLevel p_level)
 {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
-	GDREGISTER_CLASS(GDExample);
+
+	GDREGISTER_ABSTRACT_CLASS(AeroUnits);
+	aero_units = memnew(AeroUnits);
+	Engine::get_singleton()->register_singleton("AeroUnits", AeroUnits::get_singleton());
+
 	GDREGISTER_CLASS(AeroBody3D);
 	GDREGISTER_CLASS(AeroInfluencer3D);
+	GDREGISTER_CLASS(AeroSurfaceConfig);
 	GDREGISTER_CLASS(AeroSurface3D);
+	GDREGISTER_CLASS(ManualAeroSurfaceConfig);
 	GDREGISTER_CLASS(ManualAeroSurface3D);
 }
 

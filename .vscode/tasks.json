@@ -2,15 +2,35 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build",
+            "label": "build-debug",
             "group": "build",
             "type": "shell",
-            "command": "${workspaceFolder}/godot-cpp-components/compile_double_debug.bat",
+            "command": "scons target=template_debug arch=x86_64 platform=windows precision=double debug_symbols=yes dev_build=yes custom_api_file=extension_api_double.json build_profile=build_profile.json",
             "options": {
                 "cwd": "${workspaceFolder}/godot-cpp-components/",
             },
             "problemMatcher": "$msCompile"
-        }
+        },
+        {
+            "label": "build-release",
+            "group": "build",
+            "type": "shell",
+            "command": "scons target=template_release arch=x86_64 platform=windows precision=double custom_api_file=extension_api_double.json build_profile=build_profile.json",
+            "options": {
+                "cwd": "${workspaceFolder}/godot-cpp-components/",
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build-godot-cpp",
+            "group": "build",
+            "type": "shell",
+            "command": "scons platform=windows precision=double debug_symbols=yes dev_build=yes custom_api_file=../extension_api_double.json build_profile=../build_profile.json",
+            "options": {
+                "cwd": "${workspaceFolder}/godot-cpp-components/godot-cpp",
+            },
+            "problemMatcher": "$msCompile"
+        },
     ]
 }
 

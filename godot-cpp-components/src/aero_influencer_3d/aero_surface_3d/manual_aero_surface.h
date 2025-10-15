@@ -3,14 +3,14 @@
 
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/core/class_db.hpp>
-#include "aero_surface_3d.h"
-
+#include "aero_influencer_3d/aero_surface_3d/aero_surface_3d.h"
+#include "aero_influencer_3d/aero_surface_3d/manual_aero_surface_config.h"
 namespace godot {
 
 class ManualAeroSurface3D : public AeroSurface3D {
 	GDCLASS(ManualAeroSurface3D, AeroSurface3D);
 private:
-    Ref<Resource> manual_config = nullptr;
+    Ref<ManualAeroSurfaceConfig> manual_config = Ref(memnew(ManualAeroSurfaceConfig));
 protected:
 	static void _bind_methods();
 public:
@@ -20,8 +20,8 @@ public:
 
     PackedVector3Array calculate_forces(double substep_delta);
 
-    void set_manual_config(const Ref<Resource> &p_config);
-	Ref<Resource> get_manual_config() const;
+    void set_manual_config(const Ref<ManualAeroSurfaceConfig> &p_config);
+	Ref<ManualAeroSurfaceConfig> get_manual_config() const;
 };
 
 }

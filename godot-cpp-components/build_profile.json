@@ -12,6 +12,7 @@
         "MeshInstance3D",
         "Node3D",
         "Sprite2D",
-        "PhysicsServer3D"
+        "PhysicsServer3D",
+        "Curve"
 	]
 }

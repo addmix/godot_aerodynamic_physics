@@ -66,9 +66,9 @@ void AeroInfluencer3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_current_torque"), &AeroInfluencer3D::get_current_torque);
 	ClassDB::bind_method(D_METHOD("set_current_torque", "torque"), &AeroInfluencer3D::set_current_torque);
 
-	ClassDB::bind_method(D_METHOD("set_array", "in_arr"), &AeroInfluencer3D::set_aero_influencers);
-	ClassDB::bind_method(D_METHOD("get_array"), &AeroInfluencer3D::get_aero_influencers);
-    ClassDB::add_property(get_class_static(), PropertyInfo(Variant::ARRAY, "node2DArray", PROPERTY_HINT_TYPE_STRING, vformat("%s/%s:%s", Variant::OBJECT, PROPERTY_HINT_NODE_TYPE, "Node")), "set_array", "get_array");
+	ClassDB::bind_method(D_METHOD("set_aero_influencers", "in_arr"), &AeroInfluencer3D::set_aero_influencers);
+	ClassDB::bind_method(D_METHOD("get_aero_influencers"), &AeroInfluencer3D::get_aero_influencers);
+    ClassDB::add_property(get_class_static(), PropertyInfo(Variant::ARRAY, "aero_influencer_array", PROPERTY_HINT_TYPE_STRING, vformat("%s/%s:%s", Variant::OBJECT, PROPERTY_HINT_NODE_TYPE, "Node")), "set_aero_influencers", "get_aero_influencers");
 
 	//register function so we can use it with a signal.
 	ClassDB::bind_method(D_METHOD("on_child_entered_tree", "node"), &AeroInfluencer3D::on_child_entered_tree);
@@ -147,16 +147,8 @@ PackedVector3Array AeroInfluencer3D::calculate_forces(double substep_delta) {
 	drag_direction = world_air_velocity.normalized();
 	local_air_velocity = get_global_basis().xform_inv(world_air_velocity);
 	
-	if (has_node("/root/AeroUnits")) {
-		Node AeroUnits = *get_node_or_null("/root/AeroUnits");
-		//seems like this could cause a problem, there's no check to ensure this isn't null
-		mach = AeroUnits.call("speed_to_mach_at_altitude", air_speed, altitude);
-	}
-	else {
-		UtilityFunctions::print("AeroUnits not available");
-	}
-	//error if AeroUnits isn't available
-
+	mach = AeroUnits::get_singleton()->speed_to_mach_at_altitude(air_speed, altitude);
+	
 	Vector3 force = Vector3();
 	Vector3 torque = Vector3();
 

@@ -75,8 +75,8 @@ void AeroBody3D::_bind_methods() {
 
 AeroBody3D::AeroBody3D() {
 	// Initialize any variables here.
-	set_substeps_override(-1);
-	set_substeps(1);
+	//set_substeps_override(-1);
+	set_substeps(get_substeps());
 	set_center_of_mass_mode(CENTER_OF_MASS_MODE_CUSTOM);
 	
 	
@@ -119,6 +119,8 @@ void AeroBody3D::on_child_entered_tree(Node *p_node) {
 		influencer->set_debug_width(get_debug_width());
 	}
 }
+
+
 void AeroBody3D::on_child_exiting_tree(Node *p_node) {
 	if (p_node->is_class("AeroInfluencer3D")) {
 		AeroInfluencer3D* influencer = (AeroInfluencer3D*) p_node;
@@ -133,12 +135,14 @@ void AeroBody3D::_process(double delta) {}
 void AeroBody3D::_physics_process(double delta) {
 	if (show_debug /*and update_debug*/) {
 		_update_debug();
-	}
+	}	
 }
 
 void AeroBody3D::integrate_forces(PhysicsDirectBodyState3D *body_state) {
 	//start timing
 	//PhysicsDirectBodyState3D* body_state = (PhysicsDirectBodyState3D*) (Object*) p_variant;
+
+	set_substeps(get_substeps());
 
 	if (body_state->is_sleeping() or substeps == 0) return;
 
@@ -147,11 +151,9 @@ void AeroBody3D::integrate_forces(PhysicsDirectBodyState3D *body_state) {
 	PackedVector3Array total_force_and_torque = calculate_forces(body_state);
 	current_force = total_force_and_torque[0];
 	current_torque = total_force_and_torque[1];
-	
+
 	body_state->apply_central_force(current_force);
 	body_state->apply_torque(current_torque);
-
-	//end timing
 }
 
 PackedVector3Array AeroBody3D::calculate_forces(PhysicsDirectBodyState3D *body_state) {
@@ -159,14 +161,10 @@ PackedVector3Array AeroBody3D::calculate_forces(PhysicsDirectBodyState3D *body_s
 	air_velocity = -body_state->get_linear_velocity() + wind;
 	air_speed = air_velocity.length();
 
-	
-	if (has_node("/root/AeroUnits")) {
-		Node AeroUnits = *get_node_or_null("/root/AeroUnits");
-		altitude = AeroUnits.call("get_altitude", this);
-		mach = AeroUnits.call("speed_to_mach_at_altitude", air_speed, altitude);
-		air_density = AeroUnits.call("get_density_at_altitude", altitude);
-		air_pressure = AeroUnits.call("get_pressure_at_altitude", altitude);
-	}
+	altitude = AeroUnits::get_singleton()->get_altitude(this);
+	mach = AeroUnits::get_singleton()->speed_to_mach_at_altitude(air_speed, altitude);
+	air_density = AeroUnits::get_singleton()->get_density_at_altitude(altitude);
+	air_pressure = AeroUnits::get_singleton()->get_pressure_at_altitude(altitude);
 	
 	local_air_velocity = get_global_transform().get_basis().xform_inv(air_velocity);
 	local_angular_velocity = get_global_transform().get_basis().xform_inv(body_state->get_angular_velocity());

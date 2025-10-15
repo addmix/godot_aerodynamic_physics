@@ -19,13 +19,13 @@ const AeroMathUtils = preload("../../utils/math_utils.gd")
 var current_value := Vector3.ZERO
 
 #@export var min_value := Vector3.ZERO
+@export var use_separate_minmax : bool = false
 ##Maximum rotation (in radians) this AeroInfluencer can rotate for controls.
 @export var max_value := Vector3.ZERO:
 	set(x):
 		max_value = x
 		if not use_separate_minmax:
-			min_value = max_value
-@export var use_separate_minmax : bool = false
+			min_value = -max_value
 @export var min_value := Vector3.ZERO:
 	set(x):
 		if use_separate_minmax:

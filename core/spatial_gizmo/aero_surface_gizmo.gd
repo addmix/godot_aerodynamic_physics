@@ -22,14 +22,14 @@ func _has_gizmo(for_node_3d : Node3D) -> bool:
 func _redraw(gizmo : EditorNode3DGizmo) -> void:
 	gizmo.clear()
 	var spatial = gizmo.get_node_3d()
-
+	
 	var st := SurfaceTool.new()
-
+	
 	#origin
 	var half_chord : float = spatial.wing_config.chord / 2.0
 	var quater_chord : float = spatial.wing_config.chord / 4.0
 	var half_span : float = spatial.wing_config.span / 2.0
-
+	
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	#flap section
 	var tl := Vector3(-half_span, 0, half_chord)#.rotated(Vector3(-1, 0, 0), flap_angle)
@@ -38,7 +38,7 @@ func _redraw(gizmo : EditorNode3DGizmo) -> void:
 	tr.z += quater_chord
 	var bl := Vector3(-half_span, 0, quater_chord)
 	var br := Vector3(half_span, 0, quater_chord)
-
+	
 	#first triangle
 	st.set_color(flap_color)
 	st.add_vertex(tl)

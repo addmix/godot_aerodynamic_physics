@@ -175,6 +175,7 @@ drag_at_mach_multiplier_curve = SubResource("Curve_ob7c7")
 [sub_resource type="Resource" id="Resource_b87jk"]
 script = ExtResource("4_ht3i8")
 span = 3.0
+area = 3.0
 aspect_ratio = 3.0
 
 [sub_resource type="Resource" id="Resource_uwqen"]
@@ -193,6 +194,7 @@ min_value = Vector3(-0.2, 0, 0)
 [sub_resource type="Resource" id="Resource_7jeqs"]
 script = ExtResource("4_ht3i8")
 span = 1.4
+area = 1.4
 aspect_ratio = 1.4
 
 [sub_resource type="Resource" id="Resource_m134i"]
@@ -211,6 +213,7 @@ min_value = Vector3(-0.5, 0, 0)
 [sub_resource type="Resource" id="Resource_658jb"]
 script = ExtResource("4_ht3i8")
 span = 3.55
+area = 3.55
 aspect_ratio = 3.55
 
 [sub_resource type="Resource" id="Resource_hj20f"]

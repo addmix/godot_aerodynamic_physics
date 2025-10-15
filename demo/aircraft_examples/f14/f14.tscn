@@ -231,13 +231,15 @@ drag_at_mach_multiplier_curve = SubResource("Curve_ryexn")
 script = ExtResource("5_pic3w")
 chord = 2.925
 span = 7.59
-aspect_ratio = 2.59487
+area = 22.20075
+aspect_ratio = 2.594871794871795
 
 [sub_resource type="Resource" id="Resource_2l6s8"]
 script = ExtResource("5_pic3w")
 chord = 0.575
 span = 3.83
-aspect_ratio = 6.66087
+area = 2.20225
+aspect_ratio = 6.660869565217392
 
 [sub_resource type="Resource" id="Resource_08xei"]
 resource_name = "roll"
@@ -280,7 +282,8 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 script = ExtResource("5_pic3w")
 chord = 2.31
 span = 3.315
-aspect_ratio = 1.43506
+area = 7.65765
+aspect_ratio = 1.435064935064935
 
 [sub_resource type="Curve" id="Curve_ckcso"]
 _limits = [0.0, 1.0, -180.0, 180.0]
@@ -321,25 +324,29 @@ drag_at_mach_multiplier_curve = SubResource("Curve_t486t")
 script = ExtResource("5_pic3w")
 chord = 8.1
 span = 3.36
-aspect_ratio = 0.414815
+area = 27.215999999999998
+aspect_ratio = 0.4148148148148148
 
 [sub_resource type="Resource" id="Resource_bx165"]
 script = ExtResource("5_pic3w")
 chord = 8.875
 span = 1.185
-aspect_ratio = 0.133521
+area = 10.516875
+aspect_ratio = 0.13352112676056338
 
 [sub_resource type="Resource" id="Resource_3mhq1"]
 script = ExtResource("5_pic3w")
 chord = 1.38
 span = 2.57
-aspect_ratio = 1.86232
+area = 3.5465999999999993
+aspect_ratio = 1.8623188405797102
 
 [sub_resource type="Resource" id="Resource_hny3t"]
 script = ExtResource("5_pic3w")
 chord = 0.56
 span = 2.49
-aspect_ratio = 4.44643
+area = 1.3944000000000003
+aspect_ratio = 4.446428571428571
 
 [sub_resource type="Resource" id="Resource_xvduk"]
 resource_name = "yaw"
@@ -401,7 +408,8 @@ drag_at_mach_multiplier_curve = SubResource("Curve_rj6ac")
 script = ExtResource("5_pic3w")
 chord = 2.735
 span = 1.5
-aspect_ratio = 0.548446
+area = 4.1025
+aspect_ratio = 0.5484460694698355
 
 [sub_resource type="Resource" id="Resource_u1i2l"]
 resource_name = "brake"

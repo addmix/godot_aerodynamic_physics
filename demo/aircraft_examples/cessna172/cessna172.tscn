@@ -171,8 +171,9 @@ contribution = Vector3(1, 1, 1)
 [sub_resource type="Resource" id="Resource_sgq0w"]
 script = ExtResource("5_5fm2q")
 axis_configs = Array[ExtResource("5_o4ret")]([SubResource("Resource_afw6h")])
-max_value = Vector3(0, 240, 0)
 use_separate_minmax = true
+max_value = Vector3(0, 240, 0)
+min_value = Vector3(0, -240, 0)
 
 [sub_resource type="Curve" id="Curve_scrto"]
 bake_resolution = 21
@@ -207,9 +208,10 @@ drag_at_mach_multiplier_curve = SubResource("Curve_iyp87")
 
 [sub_resource type="Resource" id="Resource_fnaxt"]
 script = ExtResource("4_o4ret")
-chord = 0.15
-span = 1.1
-aspect_ratio = 7.33333
+chord = 0.1500000340909207
+span = 1.0999997499999716
+area = 0.16499999999999998
+aspect_ratio = 7.333330000000001
 
 [sub_resource type="Resource" id="Resource_gsj65"]
 resource_name = "collective"
@@ -224,12 +226,15 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
 [sub_resource type="Resource" id="Resource_4u4b6"]
 script = ExtResource("4_o4ret")
-chord = 1.195
-aspect_ratio = 1.67364
+chord = 1.1950000597500046
+span = 1.9999998999999975
+area = 2.39
+aspect_ratio = 1.6736399999999998
 
 [sub_resource type="Resource" id="Resource_snyt3"]
 script = ExtResource("4_o4ret")
 chord = 0.5
+area = 1.0
 aspect_ratio = 4.0
 
 [sub_resource type="Resource" id="Resource_op60t"]
@@ -242,21 +247,24 @@ metadata/_custom_type_script = "uid://c46td0go5kvp6"
 [sub_resource type="Resource" id="Resource_cp2h5"]
 script = ExtResource("5_5fm2q")
 axis_configs = Array[ExtResource("5_o4ret")]([SubResource("Resource_op60t")])
-max_value = Vector3(0.7, 0, 0)
 use_separate_minmax = true
+max_value = Vector3(0.7, 0, 0)
+min_value = Vector3(-0.7, 0, 0)
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
 [sub_resource type="Resource" id="Resource_i3e03"]
 script = ExtResource("4_o4ret")
-chord = 1.197
-span = 2.86
+chord = 1.1969991482893705
+span = 2.860002034999276
+area = 3.4234199999999997
 aspect_ratio = 2.38931
 
 [sub_resource type="Resource" id="Resource_keinb"]
 script = ExtResource("4_o4ret")
-chord = 0.4
-span = 2.87
-aspect_ratio = 7.175
+chord = 0.39999999999999997
+span = 2.869999999999999
+area = 1.1479999999999997
+aspect_ratio = 7.174999999999999
 
 [sub_resource type="Resource" id="Resource_1hx5l"]
 resource_name = "roll"
@@ -275,15 +283,17 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
 [sub_resource type="Resource" id="Resource_g185g"]
 script = ExtResource("4_o4ret")
-chord = 0.669
-span = 3.429
+chord = 0.669000035118113
+span = 3.4289998199999956
+area = 2.294001
 aspect_ratio = 5.12556
 
 [sub_resource type="Resource" id="Resource_2trr8"]
 script = ExtResource("4_o4ret")
-chord = 0.447
-span = 3.429
-aspect_ratio = 7.67114
+chord = 0.4470000273753307
+span = 3.428999789999994
+area = 1.5327630000000005
+aspect_ratio = 7.671139999999999
 
 [sub_resource type="Resource" id="Resource_3s2tp"]
 resource_name = "pitch"
@@ -301,14 +311,16 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
 [sub_resource type="Resource" id="Resource_3wa4j"]
 script = ExtResource("4_o4ret")
-chord = 0.767
-span = 1.808
+chord = 0.7669993466933126
+span = 1.8080015399993443
+area = 1.3867360000000002
 aspect_ratio = 2.35724
 
 [sub_resource type="Resource" id="Resource_uei0l"]
 script = ExtResource("4_o4ret")
-chord = 0.352
-span = 1.583
+chord = 0.3519999644219889
+span = 1.5830001599999917
+area = 0.5572159999999998
 aspect_ratio = 4.49716
 
 [sub_resource type="Resource" id="Resource_f4i16"]
@@ -360,8 +372,9 @@ drag_at_mach_multiplier_curve = SubResource("Curve_lo3t1")
 
 [sub_resource type="Resource" id="Resource_k8v0t"]
 script = ExtResource("4_o4ret")
-chord = 2.43
-span = 0.83
+chord = 2.4299992387955385
+span = 0.8300002599999593
+area = 2.0169
 aspect_ratio = 0.341564
 
 [sub_resource type="Resource" id="Resource_o4ret"]
@@ -482,7 +495,7 @@ wing_config = SubResource("Resource_i3e03")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
 [node name="AileronR" type="Node3D" parent="WingR2" index="0"]
-transform = Transform3D(0.989364, 0, 0.145461, 0, 1, 0, -0.145461, 0, 0.989364, -0.0750582, -2.1684e-19, 0.775168)
+transform = Transform3D(0.989364, 0, 0.145461, 0, 1, 0, -0.145461, 0, 0.989364, -0.0750582, -2.1684000000000002e-19, 0.775168)
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_5oq5f")
 wing_config = SubResource("Resource_keinb")
@@ -557,7 +570,7 @@ wing_config = SubResource("Resource_3wa4j")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
 [node name="Rudder" type="Node3D" parent="VerticalStab" index="0"]
-transform = Transform3D(0.908829, 1.54074e-33, -0.417169, 4.24757e-33, 1, 1.6940700000000002e-33, 0.417169, 3.08149e-33, 0.908829, -0.52477, -2.9501300000000003e-19, 0.499497)
+transform = Transform3D(0.908829, 1.5407400000000001e-33, -0.417169, 4.24757e-33, 1, 1.6940700000000002e-33, 0.417169, 3.08149e-33, 0.908829, -0.52477, -2.9501300000000003e-19, 0.499497)
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_5oq5f")
 wing_config = SubResource("Resource_uei0l")

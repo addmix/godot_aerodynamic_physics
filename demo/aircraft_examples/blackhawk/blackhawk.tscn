@@ -172,8 +172,9 @@ contribution = Vector3(1, 1, 1)
 [sub_resource type="Resource" id="Resource_k52rn"]
 script = ExtResource("4_u6cg8")
 axis_configs = Array[ExtResource("3_51nj3")]([SubResource("Resource_4sgxs")])
-max_value = Vector3(0, 27, 0)
 use_separate_minmax = true
+max_value = Vector3(0, 27, 0)
+min_value = Vector3(0, -27, 0)
 
 [sub_resource type="Curve" id="Curve_htcr8"]
 _limits = [0.0, 1.0, -180.0, 180.0]
@@ -214,6 +215,7 @@ drag_at_mach_multiplier_curve = SubResource("Curve_oml6j")
 script = ExtResource("7_lml3a")
 chord = 0.5
 span = 7.0
+area = 3.5
 aspect_ratio = 14.0
 
 [sub_resource type="Resource" id="Resource_u6cg8"]
@@ -269,7 +271,8 @@ drag_at_mach_multiplier_curve = SubResource("Curve_51nj3")
 [sub_resource type="Resource" id="Resource_lml3a"]
 script = ExtResource("7_lml3a")
 chord = 4.29
-aspect_ratio = 0.4662
+area = 8.58
+aspect_ratio = 0.4662004662004662
 
 [sub_resource type="Curve" id="Curve_6i8qa"]
 _limits = [0.0, 1.0, -180.0, 180.0]
@@ -305,6 +308,7 @@ drag_at_mach_multiplier_curve = SubResource("Curve_3hujt")
 [sub_resource type="Resource" id="Resource_oml6j"]
 script = ExtResource("7_lml3a")
 span = 4.43
+area = 4.43
 aspect_ratio = 4.43
 
 [sub_resource type="Resource" id="Resource_103ye"]
@@ -330,7 +334,8 @@ drag_at_mach_multiplier_curve = SubResource("Curve_51nj3")
 script = ExtResource("7_lml3a")
 chord = 7.935
 span = 1.67
-aspect_ratio = 0.21046
+area = 13.251449999999998
+aspect_ratio = 0.21045998739760555
 
 [sub_resource type="Resource" id="Resource_o801b"]
 resource_name = "throttle"
@@ -341,14 +346,16 @@ contribution = Vector3(1, 1, 1)
 [sub_resource type="Resource" id="Resource_gd3qx"]
 script = ExtResource("4_u6cg8")
 axis_configs = Array[ExtResource("3_51nj3")]([SubResource("Resource_o801b")])
-max_value = Vector3(0, 150, 0)
 use_separate_minmax = true
+max_value = Vector3(0, 150, 0)
+min_value = Vector3(0, -150, 0)
 
 [sub_resource type="Resource" id="Resource_3x6k4"]
 script = ExtResource("7_lml3a")
 chord = 0.4
 span = 1.65
-aspect_ratio = 4.125
+area = 0.66
+aspect_ratio = 4.124999999999999
 
 [sub_resource type="Resource" id="Resource_8u3u3"]
 resource_name = "yaw"
@@ -409,6 +416,8 @@ propeller_amount = 4
 propeller_blade = NodePath("ManualAeroSurface3D")
 propeller_speed_control_config = SubResource("Resource_k52rn")
 disable_lift_dissymmetry = true
+show_torque = true
+show_lift = false
 show_thrust = true
 metadata/_custom_type_script = "uid://xcgguqyfcrni"
 
@@ -459,6 +468,8 @@ script = ExtResource("11_wecnn")
 propeller_amount = 4
 propeller_blade = NodePath("ManualAeroSurface3D")
 propeller_speed_control_config = SubResource("Resource_gd3qx")
+show_torque = true
+show_lift = false
 show_thrust = true
 metadata/_custom_type_script = "uid://bsu5rdrtiqph7"
 

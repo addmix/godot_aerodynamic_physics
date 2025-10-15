@@ -194,14 +194,16 @@ drag_at_mach_multiplier_curve = SubResource("Curve_u35px")
 
 [sub_resource type="Resource" id="Resource_qgs5q"]
 script = ExtResource("7_0axsk")
-chord = 2.076
-span = 5.065
+chord = 2.0759991720597255
+span = 5.065002019999597
+area = 10.514940000000001
 aspect_ratio = 2.43979
 
 [sub_resource type="Resource" id="Resource_h1vym"]
 script = ExtResource("7_0axsk")
-chord = 1.5
-span = 3.12
+chord = 1.4999999999999998
+span = 3.1199999999999997
+area = 4.679999999999999
 aspect_ratio = 2.08
 
 [sub_resource type="Resource" id="Resource_0axsk"]
@@ -246,8 +248,8 @@ metadata/_custom_type_script = "uid://c46td0go5kvp6"
 [sub_resource type="Resource" id="Resource_2e80p"]
 script = ExtResource("4_2yqnu")
 axis_configs = Array[ExtResource("3_a6dhb")]([SubResource("Resource_2ld10"), SubResource("Resource_67hk7"), SubResource("Resource_457hp")])
-max_value = Vector3(0.2, 0, 0)
 use_separate_minmax = true
+max_value = Vector3(0.2, 0, 0)
 min_value = Vector3(-1.57, 0, 0)
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
@@ -322,8 +324,9 @@ drag_at_mach_multiplier_curve = SubResource("Curve_dnftb")
 
 [sub_resource type="Resource" id="Resource_6nj64"]
 script = ExtResource("7_0axsk")
-chord = 0.7
-span = 6.0
+chord = 0.6999999416666739
+span = 6.000000499999978
+area = 4.199999999999999
 aspect_ratio = 8.57143
 
 [sub_resource type="Resource" id="Resource_lerq6"]
@@ -374,14 +377,16 @@ drag_at_mach_multiplier_curve = SubResource("Curve_js434")
 
 [sub_resource type="Resource" id="Resource_dnftb"]
 script = ExtResource("7_0axsk")
-chord = 1.73
-span = 4.825
+chord = 1.7299991753373773
+span = 4.8250022999994515
+area = 8.34725
 aspect_ratio = 2.78902
 
 [sub_resource type="Resource" id="Resource_a32fe"]
 script = ExtResource("7_0axsk")
-chord = 0.895
-span = 4.825
+chord = 0.8950001205699727
+span = 4.824999349999957
+area = 4.318375000000001
 aspect_ratio = 5.39106
 
 [sub_resource type="Resource" id="Resource_m5xgb"]
@@ -432,15 +437,17 @@ drag_at_mach_multiplier_curve = SubResource("Curve_m5xgb")
 
 [sub_resource type="Resource" id="Resource_tmk6a"]
 script = ExtResource("7_0axsk")
-chord = 1.224
-span = 3.535
-aspect_ratio = 2.88807
+chord = 1.2240004016522488
+span = 3.5349988399998096
+area = 4.326840000000001
+aspect_ratio = 2.8880699999999995
 
 [sub_resource type="Resource" id="Resource_5jc2h"]
 script = ExtResource("7_0axsk")
-chord = 1.301
-span = 3.535
-aspect_ratio = 2.71714
+chord = 1.3010001582546256
+span = 3.534999569999974
+area = 4.599035
+aspect_ratio = 2.7171400000000006
 
 [sub_resource type="Resource" id="Resource_y7f6g"]
 resource_name = "yaw"
@@ -491,9 +498,10 @@ drag_at_mach_multiplier_curve = SubResource("Curve_8p347")
 
 [sub_resource type="Resource" id="Resource_lum0h"]
 script = ExtResource("7_0axsk")
-chord = 9.67
-span = 2.96
-aspect_ratio = 0.306101
+chord = 9.670005439379588
+span = 2.959998334999532
+area = 28.623199999999997
+aspect_ratio = 0.30610100000000007
 
 [node name="TiltRotor" type="VehicleBody3D"]
 mass = 18000.0

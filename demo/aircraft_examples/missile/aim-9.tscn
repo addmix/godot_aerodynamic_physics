@@ -166,7 +166,8 @@ drag_at_mach_multiplier_curve = SubResource("Curve_egaj7")
 script = ExtResource("4_8uh5b")
 chord = 0.155
 span = 0.525
-aspect_ratio = 3.3871
+area = 0.081375
+aspect_ratio = 3.3870967741935485
 
 [sub_resource type="Resource" id="Resource_h7w54"]
 resource_name = "pitch"
@@ -216,7 +217,8 @@ movement_speed = 0.5
 script = ExtResource("4_8uh5b")
 chord = 0.514
 span = 0.679
-aspect_ratio = 1.32101
+area = 0.34900600000000004
+aspect_ratio = 1.321011673151751
 
 [sub_resource type="Resource" id="Resource_28v4o"]
 resource_name = "throttle"
@@ -285,7 +287,7 @@ rotation_order = 3
 rotation_order = 3
 
 [node name="CanardR" type="Node3D" parent="." index="10"]
-transform = Transform3D(0.7071072188135197, 0.7071072188135202, -3.0908627355157625e-08, -0.7071072188135169, 0.7071072188135196, 7.462002735515751e-08, 7.462007353734321e-08, -3.090864648444529e-08, 0.9999999999999967, 0, 0, -0.9999999999999999)
+transform = Transform3D(0.7071072188135197, 0.7071072188135202, -3.0908627355157625e-08, -0.7071072188135169, 0.7071072188135196, 7.462002735515752e-08, 7.462007353734321e-08, -3.090864648444529e-08, 0.9999999999999968, 0, 0, -1)
 rotation_order = 4
 script = ExtResource("2_d8vsk")
 manual_config = SubResource("Resource_renod")

@@ -202,13 +202,15 @@ drag_at_mach_multiplier_curve = SubResource("Curve_435wi")
 script = ExtResource("9_iktab")
 chord = 2.745
 span = 6.43
-aspect_ratio = 2.34244
+area = 17.65035
+aspect_ratio = 2.3424408014571947
 
 [sub_resource type="Resource" id="Resource_kx8cy"]
 script = ExtResource("9_iktab")
 chord = 0.81
 span = 3.29
-aspect_ratio = 4.06173
+area = 2.6649000000000003
+aspect_ratio = 4.061728395061728
 
 [sub_resource type="Resource" id="Resource_lwu5l"]
 resource_name = "roll"
@@ -258,19 +260,22 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 script = ExtResource("9_iktab")
 chord = 1.72
 span = 2.225
-aspect_ratio = 1.2936
+area = 3.827
+aspect_ratio = 1.2936046511627908
 
 [sub_resource type="Resource" id="Resource_f8ilg"]
 script = ExtResource("9_iktab")
 chord = 1.92
 span = 3.75
-aspect_ratio = 1.95313
+area = 7.199999999999999
+aspect_ratio = 1.953125
 
 [sub_resource type="Resource" id="Resource_n8r76"]
 script = ExtResource("9_iktab")
 chord = 0.74
 span = 2.56
-aspect_ratio = 3.45946
+area = 1.8944
+aspect_ratio = 3.4594594594594597
 
 [sub_resource type="Resource" id="Resource_va5xg"]
 resource_name = "yaw"
@@ -291,7 +296,8 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 script = ExtResource("9_iktab")
 chord = 3.5
 span = 1.96
-aspect_ratio = 0.56
+area = 6.859999999999999
+aspect_ratio = 0.5599999999999999
 
 [sub_resource type="Resource" id="Resource_wiavu"]
 resource_name = "pitch"
@@ -354,13 +360,15 @@ drag_at_mach_multiplier_curve = SubResource("Curve_a71sr")
 script = ExtResource("9_iktab")
 chord = 9.03
 span = 3.465
-aspect_ratio = 0.383721
+area = 31.288949999999996
+aspect_ratio = 0.38372093023255816
 
 [sub_resource type="Resource" id="Resource_gdnov"]
 script = ExtResource("9_iktab")
 chord = 8.535
 span = 1.135
-aspect_ratio = 0.132982
+area = 9.687225
+aspect_ratio = 0.1329818394844757
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_a3l80"]
 size = Vector3(4.22054, 2.34029, 8.54477)

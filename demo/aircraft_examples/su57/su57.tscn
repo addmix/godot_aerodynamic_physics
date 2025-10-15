@@ -239,7 +239,8 @@ drag_at_mach_multiplier_curve = SubResource("Curve_gdxys")
 script = ExtResource("7_u36rk")
 chord = 3.875
 span = 5.155
-aspect_ratio = 1.33032
+area = 19.975625
+aspect_ratio = 1.3303225806451613
 
 [sub_resource type="Resource" id="Resource_e5uxm"]
 script = ExtResource("6_1gcqf")
@@ -256,7 +257,8 @@ drag_at_mach_multiplier_curve = SubResource("Curve_gdxys")
 script = ExtResource("7_u36rk")
 chord = 0.798
 span = 3.12
-aspect_ratio = 3.90977
+area = 2.4897600000000004
+aspect_ratio = 3.9097744360902253
 
 [sub_resource type="Resource" id="Resource_4vll8"]
 resource_name = "roll"
@@ -299,7 +301,8 @@ drag_at_mach_multiplier_curve = SubResource("Curve_gdxys")
 script = ExtResource("7_u36rk")
 chord = 2.616
 span = 2.865
-aspect_ratio = 1.09518
+area = 7.494840000000001
+aspect_ratio = 1.0951834862385321
 
 [sub_resource type="Resource" id="Resource_r2kyo"]
 resource_name = "pitch"
@@ -371,13 +374,15 @@ drag_at_mach_multiplier_curve = SubResource("Curve_6kdxg")
 script = ExtResource("7_u36rk")
 chord = 8.68
 span = 4.344
-aspect_ratio = 0.500461
+area = 37.70592
+aspect_ratio = 0.5004608294930876
 
 [sub_resource type="Resource" id="Resource_uxcik"]
 script = ExtResource("7_u36rk")
 chord = 1.71
 span = 2.195
-aspect_ratio = 1.28363
+area = 3.7534499999999995
+aspect_ratio = 1.283625730994152
 
 [sub_resource type="Resource" id="Resource_pgu1l"]
 resource_name = "yaw"

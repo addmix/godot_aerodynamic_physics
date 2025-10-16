@@ -363,7 +363,11 @@ func integrator(state : PhysicsDirectBodyState3D) -> void:
 	last_angular_velocity = uncommitted_last_angular_velocity
 	
 	current_gravity = state.total_gravity
-	var total_force_and_torque := calculate_forces(state)
+	substep_delta = state.step / SUBSTEPS
+	if Engine.is_editor_hint():
+		center_of_mass = state.center_of_mass_local
+	
+	var total_force_and_torque := calculate_forces(substep_delta)
 	state.apply_central_force(current_force)
 	state.apply_torque(current_torque)
 	
@@ -377,7 +381,7 @@ var linear_velocity_prediction : Vector3 = linear_velocity
 var angular_velocity_prediction : Vector3 = angular_velocity
 var substep_delta : float = get_physics_process_delta_time() / SUBSTEPS
 
-func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
+func calculate_forces(substep_delta : float) -> PackedVector3Array:
 	#eventually implement wind
 	#wind = Vector3.ZERO
 	air_velocity = -linear_velocity + wind
@@ -397,12 +401,6 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	bank_angle = global_rotation.z
 	heading = global_rotation.y
 	inclination = global_rotation.x
-	if not Engine.is_editor_hint():
-		center_of_mass = state.center_of_mass_local
-	
-	substep_delta = state.step / SUBSTEPS
-	if Engine.is_editor_hint():
-		substep_delta = 1.0 / float(ProjectSettings.get_setting("physics/common/physics_ticks_per_second")) / SUBSTEPS
 	
 	var last_force_and_torque := PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 	var total_force_and_torque := last_force_and_torque
@@ -413,9 +411,21 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 			for influencer : AeroInfluencer3D in aero_influencers:
 				influencer._update_transform_substep(substep_delta)
 		
-		linear_velocity_prediction = predict_linear_velocity(last_force_and_torque[0]) + state.total_gravity * PREDICTION_TIMESTEP_FRACTION
+		linear_velocity_prediction = predict_linear_velocity(last_force_and_torque[0]) + current_gravity * PREDICTION_TIMESTEP_FRACTION
 		angular_velocity_prediction = predict_angular_velocity(last_force_and_torque[1])
-		last_force_and_torque = calculate_aerodynamic_forces(substep_delta)
+		last_force_and_torque = PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
+		for influencer : AeroInfluencer3D in aero_influencers:
+			if influencer.disabled:
+				continue
+			
+			var force_and_torque : PackedVector3Array = influencer._calculate_forces(substep_delta)
+			
+			influencer._current_force = force_and_torque[0]
+			influencer._current_torque = force_and_torque[1]
+			
+			#sum the force and torque of each influencer
+			last_force_and_torque[0] += force_and_torque[0]
+			last_force_and_torque[1] += force_and_torque[1]
 		
 		#add to total forces
 		total_force_and_torque[0] += last_force_and_torque[0]
@@ -428,27 +438,6 @@ func calculate_forces(state : PhysicsDirectBodyState3D) -> PackedVector3Array:
 	current_torque = total_force_and_torque[1]
 	
 	return total_force_and_torque
-
-func calculate_aerodynamic_forces(substep_delta : float = 0.0) -> PackedVector3Array:
-	var force : Vector3
-	var torque : Vector3
-	
-	#can we parallelize this for loop?
-	for influencer : AeroInfluencer3D in aero_influencers:
-		if influencer.disabled:
-			continue
-		
-		#relative_position is the position of the surface, centered on the AeroBody's origin, with the global rotation
-		var relative_position : Vector3 = global_basis * (influencer.transform.origin - center_of_mass)
-		var force_and_torque : PackedVector3Array = influencer._calculate_forces(substep_delta)
-		
-		influencer._current_force = force_and_torque[0]
-		influencer._current_torque = force_and_torque[1]
-		
-		force += force_and_torque[0]
-		torque += force_and_torque[1]
-	
-	return PackedVector3Array([force, torque])
 
 func predict_linear_velocity(force : Vector3) -> Vector3:
 	return linear_velocity + (force / mass * get_physics_process_delta_time() * PREDICTION_TIMESTEP_FRACTION)
@@ -519,9 +508,8 @@ func _update_debug() -> void:
 		var original_angular_velocity := angular_velocity
 		linear_velocity = debug_linear_velocity
 		angular_velocity = debug_angular_velocity
-		
-		var body_state = PhysicsDirectBodyState3DExtension.new()
-		var last_force_and_torque := calculate_forces(body_state)
+		substep_delta = 1.0 / float(ProjectSettings.get_setting("physics/common/physics_ticks_per_second")) / SUBSTEPS
+		var last_force_and_torque := calculate_forces(substep_delta)
 		
 		linear_velocity = original_linear_velocity
 		angular_velocity = original_angular_velocity

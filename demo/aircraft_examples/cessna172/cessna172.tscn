@@ -389,6 +389,7 @@ roughness = 0.8
 mass = 1111.0
 center_of_mass = Vector3(0, 0.01, -1.65)
 can_sleep = false
+substeps_override = 32
 show_debug = true
 
 [node name="AeroControlComponent" type="Node" parent="." index="0"]
@@ -473,6 +474,7 @@ transform = Transform3D(0.999858, -0.0168242, 0, 0.0168242, 0.999858, 0, 0, 0, 1
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_5oq5f")
 wing_config = SubResource("Resource_4u4b6")
+mirror_axis = 1
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
 [node name="FlapR" type="Node3D" parent="WingR1" index="0"]
@@ -487,14 +489,14 @@ metadata/_custom_type_script = "uid://d1725od371u4a"
 transform = Transform3D(1, -5.55112e-16, 0, 5.55112e-16, 1, 0, 0, 0, 1, 0, 8.88178e-16, 0.127996)
 size = Vector3(1.99478, 0.0454879, 0.510548)
 
-[node name="WingR2" type="Node3D" parent="." index="20"]
-transform = Transform3D(0.998018, -0.0629299, 0, 0.0629299, 0.998018, 0, 0, 0, 1, 3.9786, 0.792559, -1.72793)
+[node name="WingR2" type="Node3D" parent="WingR1" index="1"]
+transform = Transform3D(0.9989359518124928, -0.04613015224113451, 0, 0.04613015224113451, 0.9989359518124928, 0, 0, 0, 1, 2.4704969031905866, 0.075848636507725, 0.1292100000000005)
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_5oq5f")
 wing_config = SubResource("Resource_i3e03")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="AileronR" type="Node3D" parent="WingR2" index="0"]
+[node name="AileronR" type="Node3D" parent="WingR1/WingR2" index="0"]
 transform = Transform3D(0.989364, 0, 0.145461, 0, 1, 0, -0.145461, 0, 0.989364, -0.0750582, -2.1684e-19, 0.775168)
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_5oq5f")
@@ -502,56 +504,18 @@ wing_config = SubResource("Resource_keinb")
 actuation_config = SubResource("Resource_4mn0n")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="WingR2/AileronR" index="0"]
+[node name="CSGBox3D" type="CSGBox3D" parent="WingR1/WingR2/AileronR" index="0"]
 transform = Transform3D(1, 5.50469e-16, 2.38698e-15, -2.47025e-15, 1, -7.1991e-16, 1.58207e-15, 1.69806e-17, 1, 0, 0, 0.0906042)
 size = Vector3(2.83724, 0.146557, 0.400159)
 
-[node name="WingL1" type="Node3D" parent="." index="21"]
-transform = Transform3D(0.999858, -0.0168242, 0, 0.0168242, 0.999858, 0, 0, 0, 1, -1.51, 0.675, -1.857)
-script = ExtResource("2_iyyha")
-manual_config = SubResource("Resource_5oq5f")
-wing_config = SubResource("Resource_4u4b6")
-metadata/_custom_type_script = "uid://d1725od371u4a"
-
-[node name="FlapL" type="Node3D" parent="WingL1" index="0"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.01053)
-script = ExtResource("2_iyyha")
-manual_config = SubResource("Resource_5oq5f")
-wing_config = SubResource("Resource_snyt3")
-actuation_config = SubResource("Resource_cp2h5")
-metadata/_custom_type_script = "uid://d1725od371u4a"
-
-[node name="CSGBox3D" type="CSGBox3D" parent="WingL1/FlapL" index="0"]
-transform = Transform3D(1, -5.55112e-16, 0, 5.55112e-16, 1, 0, 0, 0, 1, 0, 8.88178e-16, 0.127996)
-size = Vector3(1.99478, 0.0454879, 0.510548)
-
-[node name="WingL2" type="Node3D" parent="." index="22"]
-transform = Transform3D(0.998027, 0.0627905, 0, -0.0627905, 0.998027, 0, 0, 0, 1, -3.979, 0.793, -1.728)
-script = ExtResource("2_iyyha")
-manual_config = SubResource("Resource_5oq5f")
-wing_config = SubResource("Resource_i3e03")
-metadata/_custom_type_script = "uid://d1725od371u4a"
-
-[node name="AileronL" type="Node3D" parent="WingL2" index="0"]
-transform = Transform3D(0.989272, 0, -0.146083, 0, 1, 0, 0.146083, 0, 0.989272, 0.075, 0, 0.775)
-script = ExtResource("2_iyyha")
-manual_config = SubResource("Resource_5oq5f")
-wing_config = SubResource("Resource_keinb")
-actuation_config = SubResource("Resource_4mn0n")
-metadata/_custom_type_script = "uid://d1725od371u4a"
-
-[node name="CSGBox3D" type="CSGBox3D" parent="WingL2/AileronL" index="0"]
-transform = Transform3D(1, 5.50469e-16, 2.38698e-15, -2.47025e-15, 1, -7.1991e-16, 1.58207e-15, 1.69806e-17, 1, 0, 0, 0.0906042)
-size = Vector3(2.83724, 0.146557, 0.400159)
-
-[node name="HorizontalStab" type="Node3D" parent="." index="23"]
+[node name="HorizontalStab" type="Node3D" parent="." index="20"]
 transform = Transform3D(1, 0, 0, 0, 0.99889, 0.0471065, 0, -0.0471065, 0.99889, 0, 0.210207, 2.68076)
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_5oq5f")
 wing_config = SubResource("Resource_g185g")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="Elevator2" type="Node3D" parent="." index="24"]
+[node name="Elevator2" type="Node3D" parent="." index="21"]
 transform = Transform3D(1, 0, 0, 0, 0.99889, 0.0471065, 0, -0.0471065, 0.99889, 0, 0.23602, 3.22812)
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_5oq5f")
@@ -563,7 +527,7 @@ metadata/_custom_type_script = "uid://d1725od371u4a"
 transform = Transform3D(1, -5.55112e-16, 0, 5.55112e-16, 1, -4.92661e-16, 0, 4.92661e-16, 1, 0, 8.88178e-16, 0.127996)
 size = Vector3(3.43267, 0.0454879, 0.510548)
 
-[node name="VerticalStab" type="Node3D" parent="." index="25"]
+[node name="VerticalStab" type="Node3D" parent="." index="22"]
 transform = Transform3D(3.70173e-17, 1, 3.94809e-17, -0.762205, 6.15827e-17, -0.647335, -0.647335, -1.38778e-17, 0.762205, 0, 0.727, 2.911)
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_5oq5f")
@@ -582,7 +546,7 @@ metadata/_custom_type_script = "uid://d1725od371u4a"
 transform = Transform3D(1, -5.55112e-16, 0, 5.55112e-16, 1, -2.4266699999999997e-31, -3.88578e-16, 8.13513e-31, 1, -2.22045e-16, 8.88178e-16, 0.0855698)
 size = Vector3(1.57572, 0.0454879, 0.389499)
 
-[node name="Body" type="Node3D" parent="." index="26"]
+[node name="Body" type="Node3D" parent="." index="23"]
 transform = Transform3D(6.12303e-17, 1, 0, -1, 6.12303e-17, 0, 0, 0, 1, 1.28712e-17, -0.210209, -1.16851)
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_6kba8")
@@ -590,7 +554,7 @@ wing_config = SubResource("Resource_k8v0t")
 actuation_config = SubResource("Resource_o4ret")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="VehicleWheel3D" type="VehicleWheel3D" parent="." index="27"]
+[node name="VehicleWheel3D" type="VehicleWheel3D" parent="." index="24"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.16734, -2.95022)
 wheel_radius = 0.155
 suspension_travel = 0.1
@@ -605,7 +569,7 @@ height = 0.107076
 sides = 16
 material = SubResource("StandardMaterial3D_4tt3o")
 
-[node name="VehicleWheel3D2" type="VehicleWheel3D" parent="." index="28"]
+[node name="VehicleWheel3D2" type="VehicleWheel3D" parent="." index="25"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.20138, -1.10981, -1.25764)
 wheel_radius = 0.155
 suspension_travel = 0.15
@@ -619,7 +583,7 @@ height = 0.107076
 sides = 16
 material = SubResource("StandardMaterial3D_4tt3o")
 
-[node name="VehicleWheel3D3" type="VehicleWheel3D" parent="." index="29"]
+[node name="VehicleWheel3D3" type="VehicleWheel3D" parent="." index="26"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.201, -1.11, -1.25776)
 wheel_radius = 0.155
 suspension_travel = 0.15

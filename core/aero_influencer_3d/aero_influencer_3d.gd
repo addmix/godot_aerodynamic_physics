@@ -28,6 +28,45 @@ const AeroNodeUtils = preload("../../utils/node_utils.gd")
 ## nodes like AeroMovers or Propellers. Sleep is only interrupted if the AeroInfluencer sub-class triggers it.
 @export var can_override_body_sleep : bool = true
 
+@export_enum("None", "X", "Y", "Z") var mirror_axis : int = 0:
+	set(x):
+		mirror_axis = x
+		
+		if mirror_duplicate: 
+			mirror_duplicate.queue_free()
+		
+		if mirror_axis == 0 or is_duplicate or not is_inside_tree():
+			return # no duplication
+		
+		mirror_axis = 0
+		mirror_duplicate = duplicate()
+		mirror_duplicate.is_duplicate = true
+		mirror_duplicate.name = name + "Mirror"
+		mirror_axis = x
+		mirror_duplicate.mirror_axis = x
+		
+		match mirror_axis:
+			1: #X
+				mirror_duplicate.position *= Vector3(-1, 1, 1)
+				mirror_duplicate.scale = Vector3(-1, 1, 1)
+				mirror_duplicate.rotation.y *= -1
+				mirror_duplicate.rotation.z *= -1
+			2: #Y
+				mirror_duplicate.position *= Vector3(1, -1, 1)
+				mirror_duplicate.scale = Vector3(1, -1, 1)
+				mirror_duplicate.rotation.x *= -1
+				mirror_duplicate.rotation.z *= -1
+			3: #Z
+				mirror_duplicate.position *= Vector3(1, 1, -1)
+				mirror_duplicate.scale = Vector3(1, 1, -1)
+				mirror_duplicate.rotation.x *= -1
+				mirror_duplicate.rotation.y *= -1
+		
+		get_parent().add_child(mirror_duplicate)
+var is_duplicate : bool = false
+var mirror_duplicate : AeroInfluencer3D = null
+
+
 @export_group("Actuation Control")
 ## Config that controls how this [AeroInfluencer3D] will rotate in response to control commands.
 @export var actuation_config : AeroInfluencerControlConfig
@@ -105,6 +144,10 @@ func _init():
 	thrust_debug_vector = AeroDebugVector3D.new(Color(1.0, 0.0, 1.0), debug_width, false, 3)
 	thrust_debug_vector.visible = false
 
+func _notification(what: int) -> void:
+	match what:
+		NOTIFICATION_TRANSFORM_CHANGED:
+			mirror_axis = mirror_axis
 
 func _ready() -> void:
 	if not Engine.is_editor_hint():
@@ -120,6 +163,12 @@ func _ready() -> void:
 func _enter_tree() -> void:
 	AeroNodeUtils.connect_signal_safe(self, "child_entered_tree", on_child_enter_tree, 0, true)
 	AeroNodeUtils.connect_signal_safe(self, "child_exiting_tree", on_child_exit_tree, 0, true)
+	
+	set_deferred("mirror_axis", mirror_axis) #ensures that mirrored version is reliably created when nodes are changed
+
+func _exit_tree() -> void:
+	if mirror_duplicate: 
+		mirror_duplicate.queue_free()
 
 func on_child_enter_tree(node : Node) -> void:
 	if node is AeroInfluencer3D:

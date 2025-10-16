@@ -11,6 +11,8 @@ const AeroTransformUtils = preload("../../../utils/transform_utils.gd")
 
 @export var disable_lift_dissymmetry : bool = false
 
+@export var use_movement_as_velocity : bool = false
+
 var _linear_velocity : Vector3 = Vector3.ZERO
 var _angular_velocity : Vector3 = Vector3.ZERO
 
@@ -20,14 +22,15 @@ var _angular_velocity : Vector3 = Vector3.ZERO
 func _update_transform_substep(substep_delta : float) -> void:
 	_linear_velocity = Vector3.ZERO
 	_angular_velocity = Vector3.ZERO
-	#calculate velocity caused by moving the node
-	_linear_velocity = (position - last_position) / substep_delta
 	
-	var axis_angle : Quaternion = AeroTransformUtils.quat_to_axis_angle(basis * last_rotation.inverse())
-	_angular_velocity = -Vector3(axis_angle.x, axis_angle.y, axis_angle.z) * axis_angle.w / substep_delta * basis
-	#calculate angular velocity caused by rotating the node
-	var rotation_quat : Quaternion = Quaternion(basis * last_rotation.inverse())
-	#_angular_velocity = rotation_quat.get_axis() * rotation_quat.get_angle() / substep_delta * basis
+	if use_movement_as_velocity:
+		#calculate velocity caused by moving the node
+		_linear_velocity = (position - last_position) / substep_delta
+		_linear_velocity -= linear_motor #cancel out any movement caused by motor
+		
+		var axis_angle : Quaternion = AeroTransformUtils.quat_to_axis_angle(basis * last_rotation.inverse())
+		_angular_velocity = Vector3(axis_angle.x, axis_angle.y, axis_angle.z) * axis_angle.w / substep_delta * basis * 2.0 #i'm not entirely sure why the 2.0 is needed, but testing showed that it's needed.
+		_angular_velocity -= angular_motor #cancel out any rotation caused by motor
 	
 	#motors
 	default_transform.origin += linear_motor * basis * substep_delta

@@ -168,8 +168,6 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 		force += force_and_torque[0]
 		torque += force_and_torque[1]
 	
-	torque += relative_position.cross(force)
-	
 	return PackedVector3Array([force, torque])
 
 ## Intended to be overridden.[br]

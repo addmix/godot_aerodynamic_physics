@@ -62,8 +62,8 @@ max_integral = 0.2
 
 [sub_resource type="Resource" id="Resource_2kwcq"]
 script = ExtResource("3_lml3a")
-p = 0.2
-i = 0.1
+p = 0.1
+i = 0.03
 clamp_integral = true
 
 [sub_resource type="Resource" id="Resource_d2mh3"]
@@ -73,6 +73,7 @@ i = 0.4
 
 [sub_resource type="Resource" id="Resource_3ify0"]
 script = ExtResource("3_lml3a")
+p = 0.5
 i = 0.4
 clamp_integral = true
 min_integral = -2.0
@@ -307,9 +308,9 @@ drag_at_mach_multiplier_curve = SubResource("Curve_3hujt")
 
 [sub_resource type="Resource" id="Resource_oml6j"]
 script = ExtResource("7_lml3a")
-span = 4.43
-area = 4.43
-aspect_ratio = 4.43
+span = 4.429999999999999
+area = 4.429999999999999
+aspect_ratio = 4.429999999999999
 
 [sub_resource type="Resource" id="Resource_103ye"]
 script = ExtResource("6_4y6qq")
@@ -352,9 +353,9 @@ min_value = Vector3(0, -150, 0)
 
 [sub_resource type="Resource" id="Resource_3x6k4"]
 script = ExtResource("7_lml3a")
-chord = 0.4
+chord = 0.4000000000000001
 span = 1.65
-area = 0.66
+area = 0.6600000000000001
 aspect_ratio = 4.124999999999999
 
 [sub_resource type="Resource" id="Resource_8u3u3"]

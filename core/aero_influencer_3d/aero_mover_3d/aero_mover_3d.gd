@@ -24,7 +24,7 @@ func _update_transform_substep(substep_delta : float) -> void:
 	_linear_velocity = (position - last_position) / substep_delta
 	
 	var axis_angle : Quaternion = AeroTransformUtils.quat_to_axis_angle(basis * last_rotation.inverse())
-	_angular_velocity = -Vector3(axis_angle.x, axis_angle.y, axis_angle.z) * axis_angle.w / substep_delta * basis
+	_angular_velocity = -Vector3(axis_angle.x, axis_angle.y, axis_angle.z) * axis_angle.w * basis
 	#calculate angular velocity caused by rotating the node
 	var rotation_quat : Quaternion = Quaternion(basis * last_rotation.inverse())
 	#_angular_velocity = rotation_quat.get_axis() * rotation_quat.get_angle() / substep_delta * basis

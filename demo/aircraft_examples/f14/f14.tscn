@@ -471,7 +471,6 @@ physics_material_override = SubResource("PhysicsMaterial_3wjhu")
 center_of_mass = Vector3(0, 0, 1.66)
 can_sleep = false
 show_debug = true
-show_center_of_thrust = false
 debug_scale = 0.2
 debug_center_width = 0.5
 

@@ -45,22 +45,17 @@ const AeroNodeUtils = preload("../../utils/node_utils.gd")
 		mirror_axis = x
 		mirror_duplicate.mirror_axis = x
 		
+		
 		match mirror_axis:
 			1: #X
 				mirror_duplicate.position *= Vector3(-1, 1, 1)
-				mirror_duplicate.scale = Vector3(-1, 1, 1)
-				mirror_duplicate.rotation.y *= -1
-				mirror_duplicate.rotation.z *= -1
+				mirror_duplicate.basis = Basis(Vector3(-1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1)) * mirror_duplicate.basis
 			2: #Y
 				mirror_duplicate.position *= Vector3(1, -1, 1)
-				mirror_duplicate.scale = Vector3(1, -1, 1)
-				mirror_duplicate.rotation.x *= -1
-				mirror_duplicate.rotation.z *= -1
+				mirror_duplicate.basis = Basis(Vector3(1, 0, 0), Vector3(0, -1, 0), Vector3(0, 0, 1)) * mirror_duplicate.basis
 			3: #Z
 				mirror_duplicate.position *= Vector3(1, 1, -1)
-				mirror_duplicate.scale = Vector3(1, 1, -1)
-				mirror_duplicate.rotation.x *= -1
-				mirror_duplicate.rotation.y *= -1
+				mirror_duplicate.basis = Basis(Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, -1)) * mirror_duplicate.basis
 		
 		get_parent().add_child(mirror_duplicate)
 var is_duplicate : bool = false

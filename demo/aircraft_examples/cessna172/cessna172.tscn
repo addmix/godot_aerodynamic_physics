@@ -496,7 +496,7 @@ wing_config = SubResource("Resource_i3e03")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
 [node name="AileronR" type="Node3D" parent="WingR1/WingR2" index="0"]
-transform = Transform3D(0.989364, 0, 0.145461, 0, 1, 0, -0.145461, 0, 0.989364, -0.0750582, -2.1684000000000002e-19, 0.775168)
+transform = Transform3D(0.989364, 0, 0.145461, 0, 1, 0, -0.145461, 0, 0.989364, -0.0750582, -2.1684e-19, 0.775168)
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_5oq5f")
 wing_config = SubResource("Resource_keinb")
@@ -534,7 +534,7 @@ wing_config = SubResource("Resource_3wa4j")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
 [node name="Rudder" type="Node3D" parent="VerticalStab" index="0"]
-transform = Transform3D(0.908829, 1.5407400000000001e-33, -0.417169, 4.24757e-33, 1, 1.6940700000000002e-33, 0.417169, 3.08149e-33, 0.908829, -0.52477, -2.9501300000000003e-19, 0.499497)
+transform = Transform3D(0.908829, 1.54074e-33, -0.417169, 4.24757e-33, 1, 1.6940700000000002e-33, 0.417169, 3.08149e-33, 0.908829, -0.52477, -2.9501300000000003e-19, 0.499497)
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_5oq5f")
 wing_config = SubResource("Resource_uei0l")

@@ -30,11 +30,11 @@ func _ready():
 func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	var force_and_torque : PackedVector3Array = super._calculate_forces(substep_delta)
 	
-	var force : Vector3 = global_transform.basis * get_thrust_force()
-	var torque : Vector3 = relative_position.cross(force)
+	_current_force = global_transform.basis * get_thrust_force()
+	_current_torque = relative_position.cross(_current_force)
 	
-	force_and_torque[0] += force
-	force_and_torque[1] += torque
+	force_and_torque[0] += _current_force
+	force_and_torque[1] += _current_torque
 	
 	return force_and_torque
 

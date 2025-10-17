@@ -205,14 +205,14 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 		var _AeroUnits : Node = $"/root/AeroUnits"
 		mach = _AeroUnits.speed_to_mach_at_altitude(world_air_velocity.length(), altitude)
 	
+	_current_force = Vector3.ZERO
+	_current_torque = Vector3.ZERO
+	
 	var force : Vector3 = Vector3.ZERO
 	var torque : Vector3 = Vector3.ZERO
 	
 	for influencer : AeroInfluencer3D in aero_influencers:
 		var force_and_torque : PackedVector3Array = influencer._calculate_forces(substep_delta)
-		
-		influencer._current_force = force_and_torque[0]
-		influencer._current_torque = force_and_torque[1]
 		
 		force += force_and_torque[0]
 		torque += force_and_torque[1]

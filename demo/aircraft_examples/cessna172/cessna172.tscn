@@ -386,9 +386,8 @@ roughness = 0.8
 
 [node name="cessna172" instance=ExtResource("1_7rcro")]
 mass = 1111.0
-center_of_mass = Vector3(0, 0.01, -1.65)
+center_of_mass = Vector3(0, 0.00999999999999978, -1.59)
 can_sleep = false
-substeps_override = 32
 show_debug = true
 
 [node name="AeroControlComponent" type="Node" parent="." index="0"]
@@ -489,14 +488,14 @@ transform = Transform3D(1, -5.55112e-16, 0, 5.55112e-16, 1, 0, 0, 0, 1, 0, 8.881
 size = Vector3(1.99478, 0.0454879, 0.510548)
 
 [node name="WingR2" type="Node3D" parent="WingR1" index="1"]
-transform = Transform3D(0.9989359518124928, -0.04613015224113451, 0, 0.04613015224113451, 0.9989359518124928, 0, 0, 0, 1, 2.4704969031905866, 0.075848636507725, 0.1292100000000005)
+transform = Transform3D(0.9989359518124928, -0.04613015224113451, 0, 0.04613015224113451, 0.9989359518124928, 0, 0, 0, 1, 2.4704969031905866, 0.075848636507725, 0.04244418146555129)
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_5oq5f")
 wing_config = SubResource("Resource_i3e03")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
 [node name="AileronR" type="Node3D" parent="WingR1/WingR2" index="0"]
-transform = Transform3D(0.989364, 0, 0.145461, 0, 1, 0, -0.145461, 0, 0.989364, -0.0750582, -2.1684e-19, 0.775168)
+transform = Transform3D(0.989364, 0, 0.145461, 0, 1, -1.7347234759768067e-18, -0.145461, 0, 0.989364, -0.07505819999999996, -1.1102230246251563e-16, 0.8491647939709599)
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_5oq5f")
 wing_config = SubResource("Resource_keinb")

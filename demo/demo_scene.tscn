@@ -105,7 +105,7 @@ shadow_enabled = true
 environment = SubResource("Environment_bkiet")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.12099, -190.455)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.12099, -4151.1200113938085)
 use_collision = true
 size = Vector3(10000, 1, 10000)
 material = SubResource("StandardMaterial3D_1sawy")

@@ -173,7 +173,7 @@ script/source = "extends MeshInstance3D
 
 func _process(delta: float) -> void:
 	$\"../WingR\".rotation.y = $\"../SwingR\".rotation.y
-	$\"../WingL\".rotation.y = $\"../SwingRMirror\".rotation.y
+	$\"../WingL\".rotation.y = -$\"../SwingR\".rotation.y
 	
 	$\"../ElevonR\".rotation.x = $\"../ElevonRControl\".rotation.x
 	$\"../ElevonL\".rotation.x = -$\"../ElevonRControlMirror\".rotation.x
@@ -184,7 +184,6 @@ resource_name = "wing_sweep"
 script = ExtResource("11_6jy66")
 axis_name = "wing_sweep"
 contribution = Vector3(0, -1, 0)
-axis_flip_y = 1
 metadata/_custom_type_script = "uid://c46td0go5kvp6"
 
 [sub_resource type="Resource" id="Resource_58hhq"]

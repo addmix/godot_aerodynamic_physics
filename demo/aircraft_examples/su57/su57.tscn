@@ -351,8 +351,8 @@ drag_at_mach_multiplier_curve = SubResource("Curve_6kdxg")
 [sub_resource type="Resource" id="Resource_dfwn2"]
 script = ExtResource("7_u36rk")
 chord = 8.68
-span = 4.343999999999999
-area = 37.70591999999999
+span = 4.3439999999999985
+area = 37.705919999999985
 aspect_ratio = 0.5004608294930875
 
 [sub_resource type="Resource" id="Resource_uxcik"]
@@ -524,25 +524,13 @@ manual_config = SubResource("Resource_1ghes")
 wing_config = SubResource("Resource_dfwn2")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="RudderL2" type="Node3D" parent="." index="25"]
-transform = Transform3D(0.320158, 0.907044, 0.273441, -0.689722, 0.421036, -0.589078, -0.649448, 0, 0.760406, -2.85341, 1.3384, 6.21621)
-rotation_order = 5
-script = ExtResource("5_tc445")
-manual_config = SubResource("Resource_13llr")
-wing_config = SubResource("Resource_uxcik")
-actuation_config = SubResource("Resource_qc6jj")
-metadata/_custom_type_script = "uid://d1725od371u4a"
-
-[node name="CSGBox3D" type="CSGBox3D" parent="RudderL2" index="0"]
-transform = Transform3D(1, 1.13705e-07, -1.01328e-06, 7.97294e-08, 0.999999, 3.68959e-07, 4.17233e-07, -2.36298e-06, 0.999999, -4.76837e-07, 0, 0.403564)
-size = Vector3(2.42773, 0.117432, 1.80713)
-
-[node name="RudderR2" type="Node3D" parent="." index="26"]
+[node name="RudderR2" type="Node3D" parent="." index="25"]
 transform = Transform3D(0.320158, -0.907044, -0.273441, 0.689722, 0.421036, -0.589078, 0.649448, 0, 0.760406, 2.853, 1.338, 6.216)
 rotation_order = 5
 script = ExtResource("5_tc445")
 manual_config = SubResource("Resource_13llr")
 wing_config = SubResource("Resource_uxcik")
+mirror_axis = 1
 actuation_config = SubResource("Resource_qc6jj")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
@@ -550,6 +538,6 @@ metadata/_custom_type_script = "uid://d1725od371u4a"
 transform = Transform3D(1, 1.13705e-07, -1.01328e-06, 7.97294e-08, 0.999999, 3.68959e-07, 4.17233e-07, -2.36298e-06, 0.999999, -4.76837e-07, 0, 0.403564)
 size = Vector3(2.42773, 0.117432, 1.80713)
 
-[node name="BallLauncher" type="Marker3D" parent="." index="27"]
+[node name="BallLauncher" type="Marker3D" parent="." index="26"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.12893, -7.60912)
 script = ExtResource("14_myln2")

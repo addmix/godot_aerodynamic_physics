@@ -12,6 +12,7 @@ func _init():
 	wing_material.cull_mode = StandardMaterial3D.CULL_DISABLED
 	wing_material.vertex_color_use_as_albedo = true
 	wing_material.flags_no_depth_test = true
+	wing_material.render_priority = 100
 
 func _get_gizmo_name() -> String:
 	return "AeroSurfaceGizmo"

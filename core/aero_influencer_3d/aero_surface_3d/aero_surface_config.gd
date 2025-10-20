@@ -22,13 +22,11 @@ func get_area() -> float:
 func set_area(_area : float) -> void:
 	var _aspect_ratio := aspect_ratio
 	
-	if is_equal_approx(area, 0.0):
-		span = 2.0
-		chord = 1.0
-		_aspect_ratio = 2.0
-	
 	var _span = _aspect_ratio * chord / sqrt(area) * sqrt(_area)
 	var _chord = span / _aspect_ratio / sqrt(area) * sqrt(_area)
+	
+	if is_equal_approx(_span, 0.0) or is_equal_approx(_chord, 0.0):
+		return
 	
 	span = _span
 	chord = _chord
@@ -39,6 +37,9 @@ func set_aspect_ratio(_aspect_ratio : float) -> void:
 	
 	var _span = sqrt(_aspect_ratio * _area)
 	var _chord = sqrt(_area) / sqrt(_aspect_ratio)
+	
+	if is_equal_approx(_span, 0.0) or is_equal_approx(_chord, 0.0):
+		return
 	
 	span = _span
 	chord = _chord

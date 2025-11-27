@@ -5,7 +5,7 @@ class_name AeroControlComponent
 
 
 ## Include for the AeroMathUtils library.
-const AeroMathUtils = preload("../utils/math_utils.gd")
+const AeroMathUtils = preload("../../utils/math_utils.gd")
 
 ## Reference to the parent [AeroBody3D].
 @onready var aero_body : AeroBody3D = get_parent()

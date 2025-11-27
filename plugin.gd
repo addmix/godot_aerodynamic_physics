@@ -17,7 +17,7 @@ const aeropropeller3d_icon = preload("./icons/AeroPropeller3D.svg")
 const aerothruster3d_icon = preload("./icons/JetThrusterComponent.svg")
 
 #plugin gizmos
-const gizmo_plugin = preload("./core/spatial_gizmo/aero_surface_gizmo.gd")
+const gizmo_plugin = preload("./core/gizmos/aero_surface_gizmo.gd")
 var gizmo_plugin_instance = gizmo_plugin.new()
 
 #nodes

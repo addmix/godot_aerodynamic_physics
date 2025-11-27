@@ -41,8 +41,8 @@ _subresources={
 "materials": {
 "Material": {
 "use_external/enabled": true,
-"use_external/fallback_path": "",
-"use_external/path": "res://assets/vehicles/cessna172/Material.tres"
+"use_external/fallback_path": "res://assets/vehicles/cessna172/Material.tres",
+"use_external/path": "uid://d16llp28ark8a"
 }
 }
 }

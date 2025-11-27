@@ -36,7 +36,7 @@ const aero_jet_thruster_3d = preload("./core/aero_influencer_3d/aero_thruster_3d
 const flight_assist = preload("./core/flight_assist.gd")
 
 func _enter_tree():
-	ifndef("physics/3d/aerodynamics/substeps", 1)
+	ifndef("physics/aerodynamics/substeps", 1)
 	add_autoload_singleton("AeroUnits", path + "/core/singletons/aero_units.gd")
 	add_node_3d_gizmo_plugin(gizmo_plugin_instance)
 	

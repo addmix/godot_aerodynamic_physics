@@ -128,14 +128,14 @@ const AeroNodeUtils = preload("../utils/node_utils.gd")
 ## The total amount of substeps used when calculating aerodynamics. [br]
 ## For example, when SUBSTEPS is set to 4, the physics update is broken down into 4 sub-iterations. [br]
 ## The initial physics update does NOT count as an extra substep. [br]
-var SUBSTEPS : int = ProjectSettings.get_setting("physics/3d/aerodynamics/substeps", 1):
+var SUBSTEPS : int = ProjectSettings.get_setting("physics/aerodynamics/substeps", 1):
 	set(x):
 		SUBSTEPS = x
 		PREDICTION_TIMESTEP_FRACTION = 1.0 / float(SUBSTEPS)
 	get:
 		if substeps_override > -1:
 			return substeps_override
-		return ProjectSettings.get_setting("physics/3d/aerodynamics/substeps", 1)
+		return ProjectSettings.get_setting("physics/aerodynamics/substeps", 1)
 ## Used to calculate [code]substep_delta[/code].
 var PREDICTION_TIMESTEP_FRACTION : float:
 	get:

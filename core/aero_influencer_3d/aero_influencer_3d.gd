@@ -269,7 +269,7 @@ func get_relative_position() -> Vector3:
 	return get_parent().get_relative_position() + (get_parent().global_basis * position)
 
 func get_world_air_velocity() -> Vector3:
-	return -get_linear_velocity()
+	return -get_linear_velocity() + aero_body.wind
 
 func get_linear_velocity() -> Vector3:
 	return get_parent().linear_velocity + get_parent().angular_velocity.cross(get_parent().global_basis * position)

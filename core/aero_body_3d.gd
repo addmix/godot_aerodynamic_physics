@@ -138,6 +138,9 @@ var SUBSTEPS : int = ProjectSettings.get_setting("physics/aerodynamics/substeps"
 		return ProjectSettings.get_setting("physics/aerodynamics/substeps", 1)
 ## Used to calculate [code]substep_delta[/code].
 var PREDICTION_TIMESTEP_FRACTION : float:
+	set(x):
+		PREDICTION_TIMESTEP_FRACTION = x
+		substep_delta = get_physics_process_delta_time() * PREDICTION_TIMESTEP_FRACTION
 	get:
 		return 1.0 / float(SUBSTEPS)
 
@@ -202,6 +205,7 @@ var heading := 0.0
 ## Alias for [code]global_rotation.x[/code]
 var inclination := 0.0
 
+var atmosphere_areas : Array[AeroAtmosphere3D] = []
 
 #override warning tests
 var test_enter_tree_override : bool = false
@@ -361,13 +365,16 @@ func integrator(state : PhysicsDirectBodyState3D) -> void:
 	last_angular_velocity = uncommitted_last_angular_velocity
 	
 	current_gravity = state.total_gravity
-	substep_delta = state.step / SUBSTEPS
 	if Engine.is_editor_hint():
 		center_of_mass = state.center_of_mass_local
 	
-	var total_force_and_torque := calculate_forces(substep_delta)
+	var total_force_and_torque := calculate_forces(state.step)
+	
 	state.apply_central_force(current_force)
-	state.apply_torque(current_torque)
+	state.apply_torque(current_torque.limit_length(1_000_00))
+	
+	#if name == "PlayerF17":
+		#print("kinetic energy ", 0.5 * mass * linear_velocity.length_squared())
 	
 	linear_acceleration = (linear_velocity - last_linear_velocity) / state.step
 	angular_acceleration = (angular_velocity - last_angular_velocity) / state.step
@@ -377,9 +384,21 @@ func integrator(state : PhysicsDirectBodyState3D) -> void:
 
 var linear_velocity_prediction : Vector3 = linear_velocity
 var angular_velocity_prediction : Vector3 = angular_velocity
-var substep_delta : float = get_physics_process_delta_time() / SUBSTEPS
+var substep_delta : float = get_physics_process_delta_time() * PREDICTION_TIMESTEP_FRACTION
 
-func calculate_forces(substep_delta : float) -> PackedVector3Array:
+func calculate_forces(delta : float) -> PackedVector3Array:
+	wind = Vector3.ZERO
+	var desired_air_density : float = 1.225
+	if has_node("/root/AeroUnits"):
+		var _AeroUnits : Node = $"/root/AeroUnits"
+		desired_air_density = _AeroUnits.get_density_at_altitude(altitude)
+	for atmosphere : AeroAtmosphere3D in atmosphere_areas:
+		wind += atmosphere.wind
+		if atmosphere.override_density:
+			desired_air_density = atmosphere.density
+	
+	air_density = move_toward(air_density, desired_air_density, 100000.0 * delta)
+	
 	#eventually implement wind
 	#wind = Vector3.ZERO
 	air_velocity = -linear_velocity + wind
@@ -389,7 +408,7 @@ func calculate_forces(substep_delta : float) -> PackedVector3Array:
 		var _AeroUnits : Node = $"/root/AeroUnits"
 		altitude = _AeroUnits.get_altitude(self)
 		mach = _AeroUnits.speed_to_mach_at_altitude(air_speed, altitude)
-		air_density = _AeroUnits.get_density_at_altitude(altitude)
+		#air_density = _AeroUnits.get_density_at_altitude(altitude)
 		air_pressure = _AeroUnits.get_pressure_at_altitude(altitude)
 	
 	local_air_velocity = air_velocity * global_transform.basis
@@ -403,12 +422,14 @@ func calculate_forces(substep_delta : float) -> PackedVector3Array:
 	var last_force_and_torque := PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 	var total_force_and_torque := last_force_and_torque
 	
+	substep_delta = delta * PREDICTION_TIMESTEP_FRACTION
 	for substep : int in SUBSTEPS:
 		#allow aeroinfluencers to update their own transforms before we calculate forces
 		if not Engine.is_editor_hint():
 			for influencer : AeroInfluencer3D in aero_influencers:
 				influencer._update_transform_substep(substep_delta)
 		
+		#need to do air velocity/wind calculation here, too?
 		linear_velocity_prediction = predict_linear_velocity(last_force_and_torque[0]) + current_gravity * PREDICTION_TIMESTEP_FRACTION
 		angular_velocity_prediction = predict_angular_velocity(last_force_and_torque[1])
 		last_force_and_torque = PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
@@ -417,9 +438,6 @@ func calculate_forces(substep_delta : float) -> PackedVector3Array:
 				continue
 			
 			var force_and_torque : PackedVector3Array = influencer._calculate_forces(substep_delta)
-			
-			#influencer._current_force = force_and_torque[0]
-			#influencer._current_torque = force_and_torque[1]
 			
 			#sum the force and torque of each influencer
 			last_force_and_torque[0] += force_and_torque[0]
@@ -434,6 +452,35 @@ func calculate_forces(substep_delta : float) -> PackedVector3Array:
 	
 	current_force = total_force_and_torque[0]
 	current_torque = total_force_and_torque[1]
+	
+	#maybe try some calculation to preserve energy?
+	var velocity_change : Vector3 = (current_force * delta) / mass
+	if velocity_change.length() >= air_velocity.length() and air_velocity.length() > 10.0:#sign(-air_velocity.dot(-air_velocity + velocity_change)) == -1.0:
+		var air_velocity_direction : Vector3 = -air_velocity.normalized()
+		print("stop dead")
+		print("kinetic energy ", 0.5 * mass * linear_velocity.length_squared())
+		print(velocity_change.length())
+		
+		print("air velocity ", air_velocity.length())
+		print(air_velocity_direction.dot(velocity_change))
+		
+		print("velocity before change ", air_velocity)
+		#velocity_change -= (air_velocity_direction.dot(velocity_change) + air_velocity.length()) * air_velocity_direction
+		velocity_change = velocity_change.limit_length(air_velocity.length())
+		
+		
+		print(air_velocity_direction.dot(velocity_change))
+		print("velocity change ", velocity_change)
+		print("velocity after change ", air_velocity + velocity_change)
+		
+		velocity_change *= mass
+		velocity_change /= delta
+		total_force_and_torque[0] = velocity_change
+		
+		current_force = total_force_and_torque[0]
+		current_torque = total_force_and_torque[1]
+	
+	
 	
 	return total_force_and_torque
 

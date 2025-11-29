@@ -37,6 +37,10 @@ const flight_assist = preload("./core/flight_assist.gd")
 
 func _enter_tree():
 	ifndef("physics/aerodynamics/substeps", 1)
+	ifndef("physics/aerodynamics/atmosphere_area_collision_layer", 15)
+	if ProjectSettings.get_setting("layer_names/3d_physics/layer_15") == "":
+		ProjectSettings.set_setting("layer_names/3d_physics/layer_15", "Atmosphere Areas")
+	
 	add_autoload_singleton("AeroUnits", path + "/core/singletons/aero_units.gd")
 	add_node_3d_gizmo_plugin(gizmo_plugin_instance)
 	

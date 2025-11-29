@@ -31,6 +31,7 @@ const AeroNodeUtils = preload("../utils/node_utils.gd")
 
 ## Overrides the amount of simulation substeps that are used when calculating aerodynamics.
 @export var substeps_override : int = -1
+@export var experimental_energy_tracking : bool = false
 
 @export_group("Debug")
 
@@ -373,9 +374,6 @@ func integrator(state : PhysicsDirectBodyState3D) -> void:
 	state.apply_central_force(current_force)
 	state.apply_torque(current_torque.limit_length(1_000_00))
 	
-	#if name == "PlayerF17":
-		#print("kinetic energy ", 0.5 * mass * linear_velocity.length_squared())
-	
 	linear_acceleration = (linear_velocity - last_linear_velocity) / state.step
 	angular_acceleration = (angular_velocity - last_angular_velocity) / state.step
 	
@@ -397,7 +395,7 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 		if atmosphere.override_density:
 			desired_air_density = atmosphere.density
 	
-	air_density = move_toward(air_density, desired_air_density, 100000.0 * delta)
+	air_density = desired_air_density# move_toward(air_density, desired_air_density, 100000.0 * delta)
 	
 	#eventually implement wind
 	#wind = Vector3.ZERO
@@ -453,28 +451,19 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 	current_force = total_force_and_torque[0]
 	current_torque = total_force_and_torque[1]
 	
-	#maybe try some calculation to preserve energy?
-	var velocity_change : Vector3 = (current_force * delta) / mass
-	if velocity_change.length() >= air_velocity.length() and air_velocity.length() > 10.0:#sign(-air_velocity.dot(-air_velocity + velocity_change)) == -1.0:
-		var air_velocity_direction : Vector3 = -air_velocity.normalized()
-		print("stop dead")
-		print("kinetic energy ", 0.5 * mass * linear_velocity.length_squared())
-		print(velocity_change.length())
+	
+	if experimental_energy_tracking:
+		var pre_kinetic_energy : float = 0.5 * mass * linear_velocity.length_squared()
+		var velocity_change : Vector3 = (current_force * delta) / mass
+		var post_kinetic_energy : float = 0.5 * mass * (linear_velocity + velocity_change).length_squared()
 		
-		print("air velocity ", air_velocity.length())
-		print(air_velocity_direction.dot(velocity_change))
-		
-		print("velocity before change ", air_velocity)
-		#velocity_change -= (air_velocity_direction.dot(velocity_change) + air_velocity.length()) * air_velocity_direction
-		velocity_change = velocity_change.limit_length(air_velocity.length())
-		
-		
-		print(air_velocity_direction.dot(velocity_change))
-		print("velocity change ", velocity_change)
-		print("velocity after change ", air_velocity + velocity_change)
+		var clamped_kinetic_energy : float = clamp(post_kinetic_energy, 0, pre_kinetic_energy)
+		var velocity : Vector3 = (linear_velocity + velocity_change).normalized() * sqrt(clamped_kinetic_energy / (0.5 * mass))
+		velocity_change = velocity - linear_velocity
 		
 		velocity_change *= mass
 		velocity_change /= delta
+		
 		total_force_and_torque[0] = velocity_change
 		
 		current_force = total_force_and_torque[0]

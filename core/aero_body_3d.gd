@@ -372,7 +372,7 @@ func integrator(state : PhysicsDirectBodyState3D) -> void:
 	var total_force_and_torque := calculate_forces(state.step)
 	
 	state.apply_central_force(current_force)
-	state.apply_torque(current_torque.limit_length(1_000_00))
+	state.apply_torque(current_torque)
 	
 	linear_acceleration = (linear_velocity - last_linear_velocity) / state.step
 	angular_acceleration = (angular_velocity - last_angular_velocity) / state.step
@@ -453,23 +453,48 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 	
 	
 	if experimental_energy_tracking:
+		#linear inertia calcs
 		var pre_kinetic_energy : float = 0.5 * mass * linear_velocity.length_squared()
 		var velocity_change : Vector3 = (current_force * delta) / mass
 		var post_kinetic_energy : float = 0.5 * mass * (linear_velocity + velocity_change).length_squared()
 		
-		var clamped_kinetic_energy : float = clamp(post_kinetic_energy, 0, pre_kinetic_energy)
-		var velocity : Vector3 = (linear_velocity + velocity_change).normalized() * sqrt(clamped_kinetic_energy / (0.5 * mass))
+		#angular inertia calcs
+		var real_inertia : Basis = get_inverse_inertia_tensor().inverse()
+		var inertia_around_angular_velocity_axis : float = (real_inertia * angular_velocity.normalized()).dot(angular_velocity.normalized())
+		var pre_rotational_kinetic_energy : float = 0.5 * inertia_around_angular_velocity_axis * angular_velocity.length_squared()
+		var angular_velocity_change : Vector3 = get_inverse_inertia_tensor() * (current_torque * delta)
+		var post_rotational_kinetic_energy : float = 0.5 * inertia_around_angular_velocity_axis * (angular_velocity + angular_velocity_change).length_squared()
+		
+		#kinetic energy is clamped, to avoid integration errors when forces are too high.
+		var clamped_kinetic_energy : float = clamp(post_kinetic_energy + post_rotational_kinetic_energy, 0, pre_kinetic_energy + pre_rotational_kinetic_energy)
+		
+		#calculate the proportion of energy between linear and angular, which will
+		#be needed to convert the total clamped energy back into velocities
+		var angular_energy_proportion : float = post_rotational_kinetic_energy / (post_kinetic_energy + post_rotational_kinetic_energy)
+		
+		
+		#depending on the difference between the original post_kinetic_energy and pre_kinetic_energy
+		#use a lerp on this (linear_velocity + velocity_change).normalized() term so that the resulting
+		#vector is pointing in the correct direction
+		var linear_energy : float = clamped_kinetic_energy * (1.0 - angular_energy_proportion)
+		var velocity : Vector3 = (linear_velocity + velocity_change).normalized() * sqrt(linear_energy / (0.5 * mass))
 		velocity_change = velocity - linear_velocity
 		
 		velocity_change *= mass
 		velocity_change /= delta
-		
 		total_force_and_torque[0] = velocity_change
-		
 		current_force = total_force_and_torque[0]
+		
+		#this angular energy section might not be working perfectly.
+		var angular_energy : float = clamped_kinetic_energy * angular_energy_proportion
+		#this inertia term might need to be changed, cuz calculating the inertia around the (angular_velocity + angular_velocity_change) axis might be more correct.
+		var new_angular_velocity : Vector3 = (angular_velocity + angular_velocity_change).normalized() * sqrt(angular_energy / (0.5 * inertia_around_angular_velocity_axis))
+		angular_velocity_change = new_angular_velocity - angular_velocity
+		#same here, might need to use a different inertia axis
+		angular_velocity_change *= inertia_around_angular_velocity_axis
+		angular_velocity_change /= delta
+		total_force_and_torque[1] = angular_velocity_change
 		current_torque = total_force_and_torque[1]
-	
-	
 	
 	return total_force_and_torque
 

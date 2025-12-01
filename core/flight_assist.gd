@@ -60,7 +60,7 @@ var angular_rate_error := Vector3.ZERO
 ##Minimum limit for airspeed adjustment. This prevents controls from losing authority at low speeds due to control surface stalls.
 @export var min_accounted_airspeed : float = 75.0
 ##Air density that control adjustments are tuned at.
-@export var tuned_density : float = 1.222
+@export var tuned_density : float = 1.225
 ##Minimum limit for air density adjustment. This prevents controls from losing authority at low air density due to control surface stalls.
 @export var min_accounted_air_density : float = 0.1
 

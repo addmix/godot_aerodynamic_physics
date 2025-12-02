@@ -7,7 +7,7 @@ class_name AeroBuoyancy3D
 	set(x):
 		buoyancy_mesh = x
 		calculate_vertex_areas()
-		if buoyancy_mesh_debug and buoyancy_mesh:
+		if buoyancy_mesh_debug:
 			buoyancy_mesh_debug.mesh = buoyancy_mesh
 @export var show_buoyancy_mesh_debug : bool = true
 var buoyancy_mesh_debug : MeshInstance3D
@@ -37,6 +37,9 @@ func update_debug_visibility(_show_debug : bool = false) -> void:
 	buoyancy_mesh_debug.visible = show_debug and show_buoyancy_mesh_debug
 
 func calculate_vertex_areas() -> void:
+	vertex_positions = []
+	vertex_buoyancy_coefficients = []
+	
 	if not buoyancy_mesh:
 		return
 	
@@ -90,6 +93,7 @@ func calculate_vertex_areas() -> void:
 	#
 	#print(sanitized_indices)
 	#print(sanitized_indices.size())
+	#print(sanitized_indices.size() / 3)
 	#
 	#print(vertex_triangle_affiliation_index_array)
 	
@@ -103,30 +107,53 @@ func calculate_vertex_areas() -> void:
 			var triangle_index_offset : int = triangle_index * 3
 			#for semi-decent results, this area sum needs to be biased for triangle aspect ratio (obtuse/isosceles triangles)
 			
-			var vert_a : Vector3 = sanitized_vertices[sanitized_indices[triangle_index_offset]]
+			#need to adjust this so that vert_a is always the current vertex
+			var vert_a : Vector3 = sanitized_vertices[sanitized_indices[triangle_index_offset + 0]]
 			var vert_b : Vector3 = sanitized_vertices[sanitized_indices[triangle_index_offset + 1]]
 			var vert_c : Vector3 = sanitized_vertices[sanitized_indices[triangle_index_offset + 2]]
 			
 			var side_ab : Vector3 = vert_b - vert_a
 			var side_ac : Vector3 = vert_c - vert_a
 			
-			var triangle_area : float = 0.5 * abs(side_ab.dot(side_ac))
+			var triangle_area : float = 0.5 * abs(side_ab.dot(side_ac)) / 3.0
 			var triangle_normal : Vector3 = side_ac.cross(side_ab).normalized()
 			area_sum += triangle_area
 			#normal sum should be biased using triangle area, where smaller triangles contribute less to the normal's direction.
 			normal_sum += triangle_normal * triangle_area # area can be encoded into normal length.
+			#the vertex position needs to be adjusted so that it is at the barycenter of the average triangles.
+			
 			#if the cross product isn't normalized, would the length of the result be something like twice the triangle's area?
 			
 			#maybe also calculate the average distance/offset of triangles?
+		#print(sanitized_vertices[vertex_index])
+		#print(normal_sum)
+		#print()
 		
 		vertex_areas.append(area_sum)
-		vertex_normals.append(normal_sum.normalized() * area_sum)
+		vertex_normals.append(normal_sum)
+	
 	
 	#print(vertex_areas)
 	#print(vertex_normals)
 	
 	#for normal in vertex_normals:
 		#print(normal.length())
+	
+	
+	#test for phantom force/torque
+	#sum of all forces/torque at the same pressure should be 0
+	var force_sum : Vector3 = Vector3.ZERO
+	var torque_sum : Vector3 = Vector3.ZERO
+	for vertex_index : int in sanitized_vertices.size():
+		var vertex_position : Vector3 = sanitized_vertices[vertex_index]
+		var vertex_buoyancy_factor : Vector3 = vertex_normals[vertex_index]
+		
+		force_sum += vertex_buoyancy_factor
+		torque_sum += vertex_position.cross(vertex_buoyancy_factor)
+	
+	print(force_sum)
+	print(torque_sum)
+	
 	
 	vertex_positions = sanitized_vertices
 	vertex_buoyancy_coefficients = vertex_normals
@@ -152,16 +179,17 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 				# use precomputed center of pressure?
 				continue
 			
-			var force : Vector3 = atmosphere.get_density_at_position(global_vertex_position) * aero_body.current_gravity.length() * atmosphere.get_distance_to_surface(global_vertex_position) * vertex_buoyancy_factor
+			var force : Vector3 = atmosphere.get_density_at_position(global_vertex_position) * aero_body.current_gravity.length() * min(atmosphere.get_distance_to_surface(global_vertex_position), 0.0) * vertex_buoyancy_factor
+			
 			force_sum += force
-			#torque_sum += vertex_position.cross(force)
+			torque_sum += vertex_position.cross(force)
 	
 	_current_force += force_sum
 	_current_torque += torque_sum
 	
-	if not Engine.is_editor_hint():
-		print(_current_force)
-		print(_current_torque)
-		print()
+	#if not Engine.is_editor_hint():
+		#print(_current_force)
+		#print(_current_torque)
+		#print()
 	
 	return PackedVector3Array([force_and_torque[0] + force_sum, force_and_torque[1] + torque_sum])

@@ -461,6 +461,7 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 		#linear inertia calcs
 		var pre_kinetic_energy : float = 0.5 * mass * linear_velocity.length_squared()
 		var velocity_change : Vector3 = (current_force * delta) / mass
+		var velocity_change_length : float = velocity_change.length()
 		var post_kinetic_energy : float = 0.5 * mass * (linear_velocity + velocity_change).length_squared()
 		
 		#angular inertia calcs
@@ -468,6 +469,7 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 		var inertia_around_angular_velocity_axis : float = (real_inertia * angular_velocity.normalized()).dot(angular_velocity.normalized())
 		var pre_rotational_kinetic_energy : float = 0.5 * inertia_around_angular_velocity_axis * angular_velocity.length_squared()
 		var angular_velocity_change : Vector3 = get_inverse_inertia_tensor() * (current_torque * delta)
+		var angular_velocity_change_length : float = angular_velocity_change.length()
 		var post_rotational_kinetic_energy : float = 0.5 * inertia_around_angular_velocity_axis * (angular_velocity + angular_velocity_change).length_squared()
 		
 		#kinetic energy is clamped, to avoid integration errors when forces are too high.
@@ -483,7 +485,7 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 		#vector is pointing in the correct direction
 		var linear_energy : float = clamped_kinetic_energy * (1.0 - angular_energy_proportion)
 		var velocity : Vector3 = (linear_velocity + velocity_change).normalized() * sqrt(linear_energy / (0.5 * mass))
-		velocity_change = velocity - linear_velocity
+		velocity_change = (velocity - linear_velocity)#.limit_length(velocity_change_length)
 		
 		velocity_change *= mass
 		velocity_change /= delta
@@ -494,7 +496,7 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 		var angular_energy : float = clamped_kinetic_energy * angular_energy_proportion
 		#this inertia term might need to be changed, cuz calculating the inertia around the (angular_velocity + angular_velocity_change) axis might be more correct.
 		var new_angular_velocity : Vector3 = (angular_velocity + angular_velocity_change).normalized() * sqrt(angular_energy / (0.5 * inertia_around_angular_velocity_axis))
-		angular_velocity_change = new_angular_velocity - angular_velocity
+		angular_velocity_change = (new_angular_velocity - angular_velocity)#.limit_length(angular_velocity_change_length)
 		#same here, might need to use a different inertia axis
 		angular_velocity_change *= inertia_around_angular_velocity_axis
 		angular_velocity_change /= delta
@@ -517,21 +519,27 @@ func get_amount_of_active_influencers() -> int:
 	
 	return count
 
+#this could be computed and cached once per iteration
 func get_relative_position() -> Vector3:
 	return global_basis * -center_of_mass
 
+#this could be computed and cached once per iteration
 func get_drag_direction() -> Vector3:
 	return air_velocity.normalized()
 
+#this could be computed and cached once per iteration
 func get_linear_velocity() -> Vector3:
 	return linear_velocity_prediction
 
+#this could be computed and cached once per iteration
 func get_angular_velocity() -> Vector3:
 	return angular_velocity_prediction
 
+#this could be computed and cached once per iteration
 func get_linear_acceleration() -> Vector3:
 	return (linear_velocity_prediction - last_linear_velocity) / substep_delta
 
+#this could be computed and cached once per iteration
 func get_angular_acceleration() -> Vector3:
 	return (angular_velocity_prediction - last_angular_velocity) / substep_delta
 

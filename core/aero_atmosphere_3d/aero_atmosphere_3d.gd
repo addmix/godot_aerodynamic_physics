@@ -2,6 +2,7 @@
 extends Area3D
 class_name AeroAtmosphere3D
 
+@export var per_influencer_positioning : bool = false
 @export var wind : Vector3 = Vector3.ZERO
 @export var override_wind : bool = false
 @export var density : float = 1.225
@@ -16,8 +17,6 @@ func _init() -> void:
 	collision_layer = 0
 	collision_mask = 0
 	set_collision_mask_value(ProjectSettings.get_setting("physics/aerodynamics/atmosphere_area_collision_layer"), true) 
-	
-	
 	
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
@@ -39,5 +38,5 @@ func get_density_at_position(_position : Vector3) -> float:
 func get_temperature_at_position(_position : Vector3) -> float:
 	return temperature
 
-func get_distance_to_surface(_position : Vector3, direction : Vector3) -> float:
+func get_distance_to_surface(_position : Vector3, direction : Vector3 = Vector3(0, 1, 0)) -> float:
 	return 0.0

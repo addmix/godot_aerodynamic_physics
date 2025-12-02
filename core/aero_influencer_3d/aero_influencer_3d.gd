@@ -192,6 +192,14 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	world_air_velocity = get_world_air_velocity()
 	air_speed = world_air_velocity.length()
 	air_density = aero_body.air_density
+	for atmosphere : AeroAtmosphere3D in aero_body.atmosphere_areas:
+		if not atmosphere.per_influencer_positioning:
+			continue
+		
+		#this usage of global position might not work properly with substeps
+		#probably is out of date for substeps without force_update_transform()
+		air_density = atmosphere.get_density_at_position(global_position)
+	
 	altitude = aero_body.altitude
 	dynamic_pressure = 0.5 * air_density * air_speed * air_speed
 	drag_direction = world_air_velocity.normalized()
@@ -265,12 +273,15 @@ func is_overriding_body_sleep() -> bool:
 	
 	return overriding
 
+#this could be computed and cached once per iteration
 func get_relative_position() -> Vector3:
 	return get_parent().get_relative_position() + (get_parent().global_basis * position)
 
+#this could be computed and cached once per iteration
 func get_world_air_velocity() -> Vector3:
 	return -get_linear_velocity() + aero_body.wind
 
+#this could be computed and cached once per iteration
 func get_linear_velocity() -> Vector3:
 	return get_parent().linear_velocity + get_parent().angular_velocity.cross(get_parent().global_basis * position)
 

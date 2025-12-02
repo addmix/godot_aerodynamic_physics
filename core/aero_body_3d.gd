@@ -383,6 +383,7 @@ func integrator(state : PhysicsDirectBodyState3D) -> void:
 var linear_velocity_prediction : Vector3 = linear_velocity
 var angular_velocity_prediction : Vector3 = angular_velocity
 var substep_delta : float = get_physics_process_delta_time() * PREDICTION_TIMESTEP_FRACTION
+var current_substep : float = 0
 
 func calculate_forces(delta : float) -> PackedVector3Array:
 	wind = Vector3.ZERO
@@ -391,9 +392,12 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 		var _AeroUnits : Node = $"/root/AeroUnits"
 		desired_air_density = _AeroUnits.get_density_at_altitude(altitude)
 	for atmosphere : AeroAtmosphere3D in atmosphere_areas:
+		if atmosphere.per_influencer_positioning:
+			continue
+		
 		wind += atmosphere.wind
 		if atmosphere.override_density:
-			desired_air_density = atmosphere.density
+			desired_air_density = atmosphere.get_density_at_position(global_position)
 	
 	air_density = desired_air_density# move_toward(air_density, desired_air_density, 100000.0 * delta)
 	
@@ -422,6 +426,7 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 	
 	substep_delta = delta * PREDICTION_TIMESTEP_FRACTION
 	for substep : int in SUBSTEPS:
+		current_substep = substep
 		#allow aeroinfluencers to update their own transforms before we calculate forces
 		if not Engine.is_editor_hint():
 			for influencer : AeroInfluencer3D in aero_influencers:

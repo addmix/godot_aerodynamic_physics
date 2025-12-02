@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://cm3bcxtjtm5pb"]
+[gd_scene load_steps=8 format=3 uid="uid://cm3bcxtjtm5pb"]
 
 [ext_resource type="Script" uid="uid://3iji867c81k5" path="res://addons/godot_aerodynamic_physics/core/aero_body_3d.gd" id="1_3np0c"]
 [ext_resource type="Script" uid="uid://7scpeqlmo40t" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/drag_influencer/aero_drag_influencer.gd" id="2_wx2e6"]
 [ext_resource type="PackedScene" uid="uid://bm03tdt5so3wj" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/camera without rotation.tscn" id="3_jckdf"]
-[ext_resource type="Script" uid="uid://blp6761y154ht" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_buoyancy_3d/aero_buoyancy_3d.gd" id="4_glt2x"]
+[ext_resource type="Script" uid="uid://blp6761y154ht" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_buoyancy_3d/aero_buoyancy_mesh_3d.gd" id="4_glt2x"]
 [ext_resource type="ArrayMesh" uid="uid://b1iuflfc2mlu7" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/floaty_ball/Buoyancy mesh ball.res" id="5_aiyxi"]
+[ext_resource type="Script" uid="uid://cpjspki0t1o6j" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_buoyancy_3d/aero_buoyancy_sphere_3d.tscn.gd" id="6_lv2ui"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_x8fbi"]
 radius = 1.8
@@ -26,7 +27,6 @@ metadata/_custom_type_script = "uid://3iji867c81k5"
 shape = SubResource("SphereShape3D_x8fbi")
 
 [node name="CSGSphere3D" type="CSGSphere3D" parent="."]
-visible = false
 radius = 1.7
 radial_segments = 32
 rings = 16
@@ -41,6 +41,13 @@ metadata/_custom_type_script = "uid://c3n4g48jfeemj"
 camera_distance = 5.0
 
 [node name="AeroBuoyancy3D" type="Node3D" parent="."]
+visible = false
 script = ExtResource("4_glt2x")
 buoyancy_mesh = ExtResource("5_aiyxi")
+disabled = true
 metadata/_custom_type_script = "uid://blp6761y154ht"
+
+[node name="AeroBuoyancySphere3D" type="Node3D" parent="."]
+script = ExtResource("6_lv2ui")
+radius = 1.7
+metadata/_custom_type_script = "uid://cpjspki0t1o6j"

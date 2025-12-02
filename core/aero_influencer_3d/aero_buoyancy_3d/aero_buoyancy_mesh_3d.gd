@@ -1,6 +1,6 @@
 @tool
-extends AeroInfluencer3D
-class_name AeroBuoyancy3D
+extends AeroBuoyancy3D
+class_name AeroBuoyancyMesh3D
 
 @export_tool_button("Recalculate mesh data") var action = calculate_vertex_areas
 @export var buoyancy_mesh : Mesh:
@@ -158,20 +158,14 @@ func calculate_vertex_areas() -> void:
 	vertex_positions = sanitized_vertices
 	vertex_buoyancy_coefficients = vertex_normals
 
-var force_sum : Vector3 = Vector3.ZERO
-var torque_sum : Vector3 = Vector3.ZERO
-func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
-	var force_and_torque : PackedVector3Array = super._calculate_forces(substep_delta)
-	
-	if not aero_body.current_substep == 0:
-		return PackedVector3Array([force_and_torque[0] + force_sum, force_and_torque[1] + torque_sum])
-	
-	force_sum = Vector3.ZERO
-	torque_sum = Vector3.ZERO
-	
+
+func calculate_buoyancy() -> void:
+	var force_sum : Vector3 = Vector3.ZERO
+	var torque_sum : Vector3 = Vector3.ZERO
+	var force_position_sum : Vector3 = Vector3.ZERO
 	for vertex_index : int in vertex_positions.size():
-		var vertex_position : Vector3 = relative_position + global_basis * vertex_positions[vertex_index]
-		var global_vertex_position : Vector3 = aero_body.global_position + vertex_position
+		var vertex_position : Vector3 = global_basis * vertex_positions[vertex_index]
+		var global_vertex_position : Vector3 = aero_body.global_position + relative_position + vertex_position
 		var vertex_buoyancy_factor : Vector3 = global_basis * vertex_buoyancy_coefficients[vertex_index]
 		
 		for atmosphere : AeroAtmosphere3D in aero_body.atmosphere_areas:
@@ -182,14 +176,12 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 			var force : Vector3 = atmosphere.get_density_at_position(global_vertex_position) * aero_body.current_gravity.length() * min(atmosphere.get_distance_to_surface(global_vertex_position), 0.0) * vertex_buoyancy_factor
 			
 			force_sum += force
-			torque_sum += vertex_position.cross(force)
+			#torque_sum += vertex_position.cross(force)
+			force_position_sum += vertex_position * force.length()
 	
-	_current_force += force_sum
-	_current_torque += torque_sum
+	force_position_sum /= force_sum.length()
+	if is_equal_approx(force_sum.length(), 0.0):
+		force_position_sum = Vector3.ZERO
 	
-	#if not Engine.is_editor_hint():
-		#print(_current_force)
-		#print(_current_torque)
-		#print()
-	
-	return PackedVector3Array([force_and_torque[0] + force_sum, force_and_torque[1] + torque_sum])
+	buoyancy_force = force_sum
+	center_of_pressure = force_position_sum

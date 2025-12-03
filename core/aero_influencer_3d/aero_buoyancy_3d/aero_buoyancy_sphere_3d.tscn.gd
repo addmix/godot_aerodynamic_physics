@@ -17,7 +17,6 @@ func calculate_buoyancy() -> void:
 			var submerged_height : float = min(atmosphere.get_distance_to_surface(global_position), 0.0) #incomplete
 			#calculate submerged volume of sphere
 			var submerged_volume : float = ((PI * submerged_height * submerged_height) / 3.0) * (3.0 * radius - submerged_height)
-			print(submerged_volume)
 			
 			var force : Vector3 = atmosphere.density * -aero_body.current_gravity * submerged_volume
 			buoyancy_force += force

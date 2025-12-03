@@ -170,10 +170,10 @@ func calculate_buoyancy() -> void:
 		
 		for atmosphere : AeroAtmosphere3D in aero_body.atmosphere_areas:
 			if not atmosphere.per_influencer_positioning:
-				# use precomputed center of pressure?
+				# use precomputed center of pressure? yes, use precomputed center of pressure.
 				continue
 			
-			var force : Vector3 = atmosphere.get_density_at_position(global_vertex_position) * aero_body.current_gravity.length() * min(atmosphere.get_distance_to_surface(global_vertex_position), 0.0) * vertex_buoyancy_factor
+			var force : Vector3 = Vector3(0, 1, 0) * atmosphere.density * aero_body.current_gravity.length() * min(atmosphere.get_distance_to_surface(global_vertex_position), 0.0) * vertex_buoyancy_factor
 			
 			force_sum += force
 			#torque_sum += vertex_position.cross(force)

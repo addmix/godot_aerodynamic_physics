@@ -1,4 +1,6 @@
-[gd_scene load_steps=9 format=3 uid="uid://ckyvuem8v7maq"]
+[gd_scene load_steps=14 format=3 uid="uid://cpbp7en0cerjl"]
+
+[ext_resource type="Script" uid="uid://b63k67778qs5n" path="res://addons/godot_aerodynamic_physics/core/aero_atmosphere_3d/aero_water_atmosphere_3d/aero_water_atmosphere_3d.gd" id="1_2sti6"]
 
 [sub_resource type="GDScript" id="GDScript_2sti6"]
 script/source = "extends Node3D
@@ -72,7 +74,12 @@ var vehicles := {
 	\"B-2 Spirit\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/b2/b2.tscn\",
 	\"V-22 Osprey\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/tilt_rotor/v22.tscn\",
 	\"UH-60 \\\"Blackhawk\\\"\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/blackhawk/blackhawk.tscn\",
+	\"Boat\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/boat/boat.tscn\",
 }
+
+var water_spawns : Array[String] = [
+	\"Boat\",
+]
 
 func _ready() -> void:
 	for key in vehicles.keys():
@@ -92,7 +99,40 @@ func _on_button_pressed() -> void:
 	var vehicle_instance : Node = vehicle_scene.instantiate()
 	
 	$\"..\".add_child(vehicle_instance)
+	
+	if vehicle_name in water_spawns:
+		vehicle_instance.global_transform = $WaterSpawn.global_transform
+	else:
+		vehicle_instance.global_transform = global_transform
 "
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0xmma"]
+size = Vector3(10000, 248.8212, 10000)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_gngni"]
+noise_type = 2
+frequency = 0.0485
+fractal_octaves = 3
+fractal_lacunarity = 1.903
+fractal_gain = -0.479
+fractal_weighted_strength = 0.16
+cellular_distance_function = 1
+cellular_jitter = 1.455
+cellular_return_type = 6
+domain_warp_enabled = true
+domain_warp_type = 1
+domain_warp_amplitude = 11.435
+domain_warp_frequency = 0.031
+domain_warp_fractal_octaves = 2
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_ropp0"]
+noise = SubResource("FastNoiseLite_gngni")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_koshk"]
+albedo_color = Color(1.347661e-06, 0.38931048, 0.5508373, 1)
+albedo_texture = SubResource("NoiseTexture2D_ropp0")
+metallic_specular = 0.25
+roughness = 0.14
 
 [node name="Main" type="Node3D"]
 script = SubResource("GDScript_2sti6")
@@ -105,13 +145,13 @@ shadow_enabled = true
 environment = SubResource("Environment_bkiet")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.12099, -4151.1200113938085)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, -4151.119999999995)
 use_collision = true
 size = Vector3(10000, 1, 10000)
 material = SubResource("StandardMaterial3D_1sawy")
 
 [node name="VehicleSpawner" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 647.618, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.14208106946543, 0)
 script = SubResource("GDScript_bs15r")
 
 [node name="Control" type="Control" parent="VehicleSpawner"]
@@ -155,5 +195,27 @@ grow_horizontal = 2
 grow_vertical = 0
 text = "Press F5 to return to vehicle selection"
 horizontal_alignment = 1
+
+[node name="WaterSpawn" type="Marker3D" parent="VehicleSpawner"]
+transform = Transform3D(-0.2588190451025207, 0, 0.9659258262890683, 0, 1, 0, -0.9659258262890683, 0, -0.2588190451025207, 0, 0, 991.9770866800802)
+
+[node name="AeroWaterAtmosphere3D" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 4059.1263203257226)
+collision_layer = 0
+collision_mask = 16384
+monitorable = false
+script = ExtResource("1_2sti6")
+per_influencer_positioning = true
+density = 1000.0
+metadata/_custom_type_script = "uid://b63k67778qs5n"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AeroWaterAtmosphere3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -124.41058492660522, 0)
+shape = SubResource("BoxShape3D_0xmma")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="AeroWaterAtmosphere3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -124.58323287963869, 0)
+size = Vector3(10000, 249.1665, 10000)
+material = SubResource("StandardMaterial3D_koshk")
 
 [connection signal="pressed" from="VehicleSpawner/Control/VBoxContainer/Button" to="VehicleSpawner" method="_on_button_pressed"]

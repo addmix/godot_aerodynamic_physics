@@ -17,7 +17,7 @@ func _init() -> void:
 		AeroControlConfigAxis.new("pitch", -1.0, 1.0, "ui_up", "ui_down"),
 		AeroControlConfigAxis.new("yaw"),
 		AeroControlConfigAxis.new("roll", -1.0, 1.0, "ui_left", "ui_right"),
-		AeroControlConfigAxis.new("throttle", 0.0, 1.0, "ui_page_up", "ui_page_down"),
+		AeroControlConfigAxis.new("throttle", 0.0, 1.0, "ui_page_up", "ui_page_down", true),
 		AeroControlConfigAxis.new("brake", 0.0, 1.0),
 		AeroControlConfigAxis.new("collective"),
 	]

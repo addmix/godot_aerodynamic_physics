@@ -41,12 +41,16 @@ var cumulative_command : float = 0.0
 @export_subgroup("")
 @export_group("")
 
-func _init(_axis_name : String = "", _min_limit : float = -1.0, _max_limit : float = 1.0, default_increase_event : StringName = "", default_decrease_event : StringName = "") -> void:
+func _init(_axis_name : String = "", _min_limit : float = -1.0, _max_limit : float = 1.0, default_increase_event : StringName = "", default_decrease_event : StringName = "", use_cumulative : bool = false) -> void:
 	axis_name = _axis_name
 	min_limit = _min_limit
 	max_limit = _max_limit
-	positive_event = default_increase_event
-	negative_event = default_decrease_event
+	if not use_cumulative:
+		positive_event = default_increase_event
+		negative_event = default_decrease_event
+	else:
+		cumulative_positive_event = default_increase_event
+		cumulative_negative_event = default_decrease_event
 
 func update(delta : float) -> float:
 	var total_input : float = input + get_axis(negative_event, positive_event)

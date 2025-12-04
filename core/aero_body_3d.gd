@@ -281,6 +281,8 @@ func _init():
 	
 	#test that necessary functions (_ready(), _enter_tree(), _physics_process()
 	test_overrides.call_deferred()
+	
+	set_collision_layer_value(ProjectSettings.get_setting("physics/aerodynamics/atmosphere_area_collision_layer"), true) 
 
 func _enter_tree() -> void:
 	test_enter_tree_override = true

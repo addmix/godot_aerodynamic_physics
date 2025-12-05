@@ -1,6 +1,7 @@
-[gd_scene load_steps=14 format=3 uid="uid://cpbp7en0cerjl"]
+[gd_scene load_steps=16 format=3 uid="uid://cpbp7en0cerjl"]
 
 [ext_resource type="Script" uid="uid://b63k67778qs5n" path="res://addons/godot_aerodynamic_physics/core/aero_atmosphere_3d/aero_water_atmosphere_3d/aero_water_atmosphere_3d.gd" id="1_2sti6"]
+[ext_resource type="Script" uid="uid://oce3ma8abugl" path="res://addons/godot_aerodynamic_physics/core/aero_atmosphere_3d/aero_atmosphere_3d.gd" id="2_0xmma"]
 
 [sub_resource type="GDScript" id="GDScript_2sti6"]
 script/source = "extends Node3D
@@ -75,10 +76,12 @@ var vehicles := {
 	\"V-22 Osprey\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/tilt_rotor/v22.tscn\",
 	\"UH-60 \\\"Blackhawk\\\"\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/blackhawk/blackhawk.tscn\",
 	\"Boat\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/boat/boat.tscn\",
+	\"Floaty ball\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/floaty_ball/floaty_ball.tscn\",
 }
 
 var water_spawns : Array[String] = [
 	\"Boat\",
+	\"Floaty ball\",
 ]
 
 func _ready() -> void:
@@ -107,7 +110,7 @@ func _on_button_pressed() -> void:
 "
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_0xmma"]
-size = Vector3(10000, 248.8212, 10000)
+size = Vector3(10000, 1532.665120148833, 10000)
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_gngni"]
 noise_type = 2
@@ -133,6 +136,9 @@ albedo_color = Color(1.347661e-06, 0.38931048, 0.5508373, 1)
 albedo_texture = SubResource("NoiseTexture2D_ropp0")
 metallic_specular = 0.25
 roughness = 0.14
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_gngni"]
+size = Vector3(8192, 594.6878854330316, 8192)
 
 [node name="Main" type="Node3D"]
 script = SubResource("GDScript_2sti6")
@@ -197,10 +203,10 @@ text = "Press F5 to return to vehicle selection"
 horizontal_alignment = 1
 
 [node name="WaterSpawn" type="Marker3D" parent="VehicleSpawner"]
-transform = Transform3D(-0.2588190451025207, 0, 0.9659258262890683, 0, 1, 0, -0.9659258262890683, 0, -0.2588190451025207, 0, 0, 991.9770866800802)
+transform = Transform3D(-0.2588190451025207, 0, 0.9659258262890684, 0, 1, 0, -0.9659258262890684, 0, -0.2588190451025207, 0, 0, 991.9770866800802)
 
 [node name="AeroWaterAtmosphere3D" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 4059.1263203257226)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 5580.072630985623)
 collision_layer = 0
 collision_mask = 16384
 monitorable = false
@@ -210,12 +216,24 @@ density = 1000.0
 metadata/_custom_type_script = "uid://b63k67778qs5n"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="AeroWaterAtmosphere3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -124.41058492660522, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -766.3325209617615, 0)
 shape = SubResource("BoxShape3D_0xmma")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="AeroWaterAtmosphere3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -124.58323287963869, 0)
-size = Vector3(10000, 249.1665, 10000)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -758.9841728210449, 0)
+size = Vector3(10000, 1517.9683227894193, 10000)
 material = SubResource("StandardMaterial3D_koshk")
+
+[node name="AeroAtmosphere3D" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4852.942073230426)
+collision_layer = 0
+collision_mask = 16384
+monitorable = false
+script = ExtResource("2_0xmma")
+wind = Vector3(-6, 0, 0)
+metadata/_custom_type_script = "uid://oce3ma8abugl"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AeroAtmosphere3D"]
+shape = SubResource("BoxShape3D_gngni")
 
 [connection signal="pressed" from="VehicleSpawner/Control/VBoxContainer/Button" to="VehicleSpawner" method="_on_button_pressed"]

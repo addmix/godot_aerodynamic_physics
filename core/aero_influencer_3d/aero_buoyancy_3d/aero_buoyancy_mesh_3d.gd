@@ -186,11 +186,17 @@ func calculate_vertex_areas() -> void:
 	
 	vertex_sizes = _vertex_sizes
 
+#var cached_buoyancy_force : Vector3 = Vector3.ZERO
+#var cached_buoyancy_torque : Vector3 = Vector3.ZERO
 
-func calculate_buoyancy() -> void:
+func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
+	var force_and_torque : PackedVector3Array = super._calculate_forces(substep_delta)
+	
 	var force_sum : Vector3 = Vector3.ZERO
 	var torque_sum : Vector3 = Vector3.ZERO
 	var force_position_sum : Vector3 = Vector3.ZERO
+	
+	
 	for vertex_index : int in vertex_positions.size():
 		var vertex_position : Vector3 = global_basis * vertex_positions[vertex_index]
 		var global_vertex_position : Vector3 = aero_body.global_position + relative_position + vertex_position
@@ -198,37 +204,56 @@ func calculate_buoyancy() -> void:
 		var vertex_radius : float = vertex_sizes[vertex_index]
 		
 		var vertex_density : float = aero_body.air_density 
-		
 		var vertex_velocity = world_air_velocity + -angular_velocity.cross(vertex_position) #this has to be negative because it's air velocity, not linear velocity
-		var vertex_airspeed : float = vertex_velocity.length()
-		var vertex_drag_direction : Vector3 = vertex_velocity.normalized()
+		
+		var ambient_lift_drag_force : PackedVector3Array = calculate_mesh_lift_drag(vertex_position, vertex_velocity, vertex_buoyancy_factor, vertex_density)
+		
+		force_sum += ambient_lift_drag_force[0]
+		torque_sum += ambient_lift_drag_force[1]
 		
 		for atmosphere : AeroAtmosphere3D in aero_body.atmosphere_areas:
 			if not atmosphere.per_influencer_positioning:
-				# use precomputed center of pressure? yes, use precomputed center of pressure.
+				#use some precomputed center of pressure/buoyancy factor
 				continue
 			
 			var distance_to_surface : float = atmosphere.get_distance_to_surface(global_vertex_position)
-			#this remap should be limited by the dot product of the vertex normal and the surface normal
-			vertex_density = clamp(remap(distance_to_surface, -vertex_radius, vertex_radius, atmosphere.density, aero_body.air_density), aero_body.air_density, atmosphere.density)
+			#we subtract the aerobody's density because buoyancy is relative to the difference in pressure between the inside and outside.
+			vertex_density = clamp(remap(distance_to_surface, -vertex_radius, vertex_radius, atmosphere.density - aero_body.air_density, 0.0), 0.0, atmosphere.density - aero_body.air_density)
+			var buoyancy_force_and_torque : PackedVector3Array = calculate_mesh_buoyancy(vertex_position, vertex_buoyancy_factor, vertex_density, distance_to_surface)
+			var lift_drag_force_and_torque : PackedVector3Array = calculate_mesh_lift_drag(vertex_position, vertex_velocity, vertex_buoyancy_factor, vertex_density)
 			
-			var vertex_dynamic_pressure : float = 0.5 * vertex_density * vertex_airspeed * vertex_airspeed
-			
-			#this V3(0, 1, 0) term needs to be removed eventually, for proper buoyancy effects.
-			var force : Vector3 = vertex_density * aero_body.current_gravity.length() * min(distance_to_surface, 0.0) * vertex_buoyancy_factor# * Vector3(0, 1, 0)
-			#something in this drag calc causes a weird nose-up thing
-			
-			var lift_and_drag = vertex_buoyancy_factor.normalized() * vertex_dynamic_pressure * (vertex_drag_direction.dot(vertex_buoyancy_factor))
-			
-			force = force + lift_and_drag
-			
-			force_sum += force
-			#torque_sum += vertex_position.cross(force)
-			force_position_sum += vertex_position * force.length()
+			force_sum += buoyancy_force_and_torque[0] + lift_drag_force_and_torque[0]
+			torque_sum += buoyancy_force_and_torque[1] + lift_drag_force_and_torque[1]
 	
-	force_position_sum /= force_sum.length()
-	if is_equal_approx(force_sum.length(), 0.0):
-		force_position_sum = Vector3.ZERO
 	
-	buoyancy_force = force_sum
-	center_of_pressure = force_position_sum
+	#force_position_sum /= force_sum.length()
+	#if is_equal_approx(force_sum.length(), 0.0):
+		#force_position_sum = Vector3.ZERO
+	
+	#buoyancy_force = force_sum
+	#center_of_pressure = force_position_sum
+	
+	_current_force = force_sum
+	_current_torque = torque_sum#(relative_position + force_position_sum).cross(force_sum)
+	
+	return PackedVector3Array([force_and_torque[0] + _current_force, force_and_torque[1] + _current_torque])
+
+func calculate_mesh_buoyancy(vertex_position : Vector3, vertex_buoyancy_factor : Vector3, vertex_density : float, distance_to_surface : float) -> PackedVector3Array:
+	#early return when density == 0.0. Because there will be no buoyant force.
+	if vertex_density == 0.0:
+		return PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
+	
+	var force : Vector3 = vertex_density * aero_body.current_gravity.length() * min(distance_to_surface, 0.0) * vertex_buoyancy_factor# * Vector3(0, 1, 0)
+	return PackedVector3Array([force, vertex_position.cross(force)])
+
+func calculate_mesh_lift_drag(vertex_position : Vector3, vertex_velocity : Vector3, vertex_buoyancy_factor : Vector3, vertex_density : float) -> PackedVector3Array:
+	#early return when density == 0.0. Because there will be no force.
+	if vertex_density == 0.0:
+		return PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
+	
+	var vertex_drag_direction : Vector3 = vertex_velocity.normalized()
+	var vertex_airspeed : float = vertex_velocity.length()
+	var vertex_dynamic_pressure : float = 0.5 * vertex_density * vertex_airspeed * vertex_airspeed
+	
+	var force : Vector3 = vertex_buoyancy_factor.normalized() * vertex_dynamic_pressure * (vertex_drag_direction.dot(vertex_buoyancy_factor))
+	return PackedVector3Array([force, vertex_position.cross(force)])

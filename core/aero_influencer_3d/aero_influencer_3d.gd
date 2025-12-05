@@ -189,16 +189,22 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	angular_velocity = get_angular_velocity()
 	
 	relative_position = get_relative_position()
-	world_air_velocity = get_world_air_velocity()
-	air_speed = world_air_velocity.length()
 	air_density = aero_body.air_density
+	world_air_velocity = get_world_air_velocity()
 	for atmosphere : AeroAtmosphere3D in aero_body.atmosphere_areas:
 		if not atmosphere.per_influencer_positioning:
 			continue
 		
-		#this usage of global position might not work properly with substeps
-		#probably is out of date for substeps without force_update_transform()
+		#this is a kinda bad way to do it tbh. It's difficult to separate global
+		#effects from atmosphere-specific effects.
+		#ideally, the global atmosphere can be converted into it's own atmosphere area
+		
 		air_density = atmosphere.get_density_at_position(global_position)
+		world_air_velocity = -get_linear_velocity() + atmosphere.wind
+	
+	air_speed = world_air_velocity.length()
+	
+	
 	
 	altitude = aero_body.altitude
 	dynamic_pressure = 0.5 * air_density * air_speed * air_speed

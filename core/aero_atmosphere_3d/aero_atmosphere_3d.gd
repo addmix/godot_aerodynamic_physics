@@ -42,4 +42,4 @@ func get_distance_to_surface(_position : Vector3, direction : Vector3 = Vector3(
 	return 0.0
 
 func get_surface_normal(_position : Vector3, direction : Vector3 = Vector3(0, 1, 0)) -> Vector3:
-	return Vector3.ZERO
+	return Vector3(0, 1, 0)

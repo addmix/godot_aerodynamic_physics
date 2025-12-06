@@ -150,7 +150,6 @@ metadata/_custom_type_script = "uid://cc5dwx5pqkaur"
 
 [node name="CameraWithoutRotation" parent="." index="1" instance=ExtResource("5_lsv46")]
 camera_distance = 8.0
-camera_height = 1.99
 
 [node name="Label3D" type="Label3D" parent="CameraWithoutRotation/Camera3D" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.57529, -2.9862)
@@ -163,7 +162,7 @@ Sail: Q/E"
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." index="3"]
 shape = SubResource("ConvexPolygonShape3D_m8ttw")
 
-[node name="Rudder" type="Node3D" parent="." index="5"]
+[node name="Rudder" type="Node3D" parent="." index="4"]
 transform = Transform3D(6.123233995736766e-17, 1, 0, -1, 6.123233995736766e-17, 0, 0, 0, 1, 0, -0.6395103987786441, 1.6947709974150575)
 script = ExtResource("5_jg8xp")
 manual_config = SubResource("Resource_m2rhy")
@@ -171,16 +170,16 @@ wing_config = SubResource("Resource_dylod")
 actuation_config = SubResource("Resource_3ocix")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="Rudder" index="5"]
+[node name="CSGBox3D" type="CSGBox3D" parent="Rudder" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.17159610241651535)
 size = Vector3(1.0105100724617841, 0.07490833214797021, 0.6891372122681787)
 
-[node name="AeroBuoyancyMesh3D" type="Node3D" parent="." index="6"]
+[node name="AeroBuoyancyMesh3D" type="Node3D" parent="." index="5"]
 script = ExtResource("8_bdfv4")
 buoyancy_mesh = ExtResource("9_3ocix")
 metadata/_custom_type_script = "uid://blp6761y154ht"
 
-[node name="Sail" type="Node3D" parent="." index="7"]
+[node name="Sail" type="Node3D" parent="." index="6"]
 transform = Transform3D(6.123233995736766e-17, 0.9999999999999999, 0, -1, 6.123233995736765e-17, 0, 0, 0, 0.9999999999999999, 0, 3.196154347436603, 0)
 script = ExtResource("5_jg8xp")
 manual_config = SubResource("Resource_kx3he")
@@ -188,7 +187,7 @@ wing_config = SubResource("Resource_i8owv")
 actuation_config = SubResource("Resource_m8ttw")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="Sail" index="5"]
+[node name="CSGBox3D" type="CSGBox3D" parent="Sail" index="0"]
 transform = Transform3D(1, -1.3681806324926923e-30, 6.162975822039079e-33, 0, 0.9999999999999777, 5.551115123125659e-17, -6.162975822039017e-33, -5.551115123125659e-17, 0.9999999999999777, 0, 0, 0.7246000000013735)
 size = Vector3(5, 0, 3)
 

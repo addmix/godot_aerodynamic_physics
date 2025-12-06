@@ -195,15 +195,24 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 		if not atmosphere.per_influencer_positioning:
 			continue
 		
+		if not atmosphere.is_inside_atmosphere(global_position):
+			continue
+		
+		if atmosphere.override_density:
+			air_density = atmosphere.get_density_at_position(global_position)
+		
+		if atmosphere.override_wind:
+			world_air_velocity = -linear_velocity + atmosphere.wind
 		
 		#this is a kinda bad way to do it tbh. It's difficult to separate global
 		#effects from atmosphere-specific effects.
 		#ideally, the global atmosphere can be converted into it's own atmosphere area
 		
+		#we can create a fake atmosphere node as a proxy for the AeroUnits singleton
+		#that way global aero isn't constrained by the bounds of a collision shape
 		
-		if atmosphere.get_distance_to_surface(global_position) < 0:
-			air_density = atmosphere.get_density_at_position(global_position)
-			world_air_velocity = -get_linear_velocity() + atmosphere.wind
+		#also, atmospheres should be given a priority value so they can be ordered deterministically
+		#and give more flexibility for wind/density values
 		
 	
 	air_speed = world_air_velocity.length()

@@ -343,6 +343,7 @@ min_value = Vector3(-0.3, 0, 0)
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
 [node name="blackhawk" instance=ExtResource("1_o32yo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.622818276083514, 0)
 mass = 5675.0
 can_sleep = false
 substeps_override = 4
@@ -448,4 +449,6 @@ size = Vector3(1.63875, 0.0300794, 0.405596)
 [node name="AeroBuoyancyMesh3D" type="Node3D" parent="." index="11"]
 script = ExtResource("15_l68jr")
 buoyancy_mesh = ExtResource("16_l68jr")
+skin_friction = null
+aero_force_multiplier = null
 metadata/_custom_type_script = "uid://blp6761y154ht"

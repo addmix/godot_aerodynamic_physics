@@ -14,7 +14,6 @@
 [ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/flight_info_label.tscn" id="13_m134i"]
 [ext_resource type="Script" uid="uid://j11128f5e4xl" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_thruster_3d/aero_jet_thruster_3d.gd" id="13_qs0nt"]
 
-
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_m08mi"]
 friction = 0.0
 
@@ -232,6 +231,8 @@ max_value = Vector3(0.1, 0, 0)
 min_value = Vector3(-0.1, 0, 0)
 
 [node name="AeroBody3D" type="VehicleBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8844791671787666, 0)
+collision_layer = 16385
 mass = 850.0
 physics_material_override = SubResource("PhysicsMaterial_m08mi")
 center_of_mass_mode = 1

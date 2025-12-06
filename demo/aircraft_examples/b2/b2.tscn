@@ -323,13 +323,12 @@ size = Vector3(9.74759, 1, 6.25656)
 size = Vector3(13.9041, 1, 10.9709)
 
 [node name="B2" instance=ExtResource("1_nswbj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.485515075796764, 0)
+collision_layer = 16385
 mass = 152200.0
 physics_material_override = SubResource("PhysicsMaterial_y4kyt")
-center_of_mass_mode = 1
 center_of_mass = Vector3(0, 0, 1.16)
 can_sleep = false
-linear_damp_mode = 1
-angular_damp_mode = 1
 show_debug = true
 
 [node name="AeroControlComponent" type="Node" parent="." index="0"]
@@ -387,7 +386,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.01294)
 size = Vector3(1, 0.180664, 3.02588)
 
 [node name="WingtipR" type="Node3D" parent="." index="4"]
-transform = Transform3D(0.8191519999999999, -3.4694469519536134e-18, -0.5735760000000001, 2.9544509200229996e-18, 1, -6.938893903907225e-18, 0.573576, -6.938893903907225e-18, 0.819152, 20.32, -1.249000902703301e-16, 4.5302299999999995)
+transform = Transform3D(0.8191519999999999, -3.4694469519536134e-18, -0.5735760000000001, 2.9544509200229996e-18, 1, -6.9388939039072245e-18, 0.573576, -6.9388939039072245e-18, 0.819152, 20.32, -1.249000902703301e-16, 4.5302299999999995)
 script = ExtResource("2_pw2a8")
 manual_config = SubResource("Resource_eqt1k")
 wing_config = SubResource("Resource_6qdaa")

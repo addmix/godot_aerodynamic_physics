@@ -387,10 +387,10 @@ albedo_color = Color(0.137255, 0.156863, 0.180392, 1)
 roughness = 0.8
 
 [node name="cessna172" instance=ExtResource("1_7rcro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.300238504398001, 0)
 mass = 1111.0
 center_of_mass = Vector3(0, 0.00999999999999978, -1.59)
 can_sleep = false
-experimental_energy_tracking = true
 show_debug = true
 
 [node name="AeroControlComponent" type="Node" parent="." index="0"]
@@ -535,7 +535,7 @@ wing_config = SubResource("Resource_3wa4j")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
 [node name="Rudder" type="Node3D" parent="VerticalStab" index="0"]
-transform = Transform3D(0.908829, 1.54074e-33, -0.417169, 4.24757e-33, 1, 1.6940700000000002e-33, 0.417169, 3.08149e-33, 0.908829, -0.52477, -2.9501300000000003e-19, 0.499497)
+transform = Transform3D(0.908829, 1.5407400000000001e-33, -0.417169, 4.24757e-33, 1, 1.6940700000000002e-33, 0.417169, 3.08149e-33, 0.908829, -0.52477, -2.9501300000000003e-19, 0.499497)
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_5oq5f")
 wing_config = SubResource("Resource_uei0l")

@@ -16,7 +16,6 @@
 [ext_resource type="Script" uid="uid://3kjm0rdymoth" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_thruster_3d/aero_thruster_3d.gd" id="13_a3l80"]
 [ext_resource type="Script" uid="uid://cy2j3ls8g16s2" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/ball_launcher.gd" id="15_iktab"]
 
-
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_k5k50"]
 friction = 0.0
 
@@ -252,10 +251,10 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
 [sub_resource type="Resource" id="Resource_435wi"]
 script = ExtResource("9_iktab")
-chord = 1.7200000000000002
+chord = 1.72
 span = 2.8
 area = 4.816
-aspect_ratio = 1.6279069767441858
+aspect_ratio = 1.627906976744186
 
 [sub_resource type="Resource" id="Resource_f8ilg"]
 script = ExtResource("9_iktab")
@@ -380,6 +379,8 @@ use_separate_minmax = true
 min_value = Vector3(0, 0, -1)
 
 [node name="berkut" instance=ExtResource("1_anlvu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9324358432048339, 0)
+collision_layer = 16385
 mass = 25670.0
 physics_material_override = SubResource("PhysicsMaterial_k5k50")
 center_of_mass = Vector3(0, 0, 3.16)
@@ -456,7 +457,7 @@ actuation_config = SubResource("Resource_tso66")
 metadata/_custom_type_script = "uid://c3n4g48jfeemj"
 
 [node name="CanardR" type="Node3D" parent="CanardRRotate" index="0"]
-transform = Transform3D(0.503572, 0, -0.863953, 0, 1, 0, 0.863953, 0, 0.503572, 0.9854160574002475, 0, 0.275143)
+transform = Transform3D(0.503572, 0, -0.863953, 0, 1, 0, 0.863953, 0, 0.503572, 0.9854160574002476, 0, 0.275143)
 script = ExtResource("5_vfc5r")
 manual_config = SubResource("Resource_3aslk")
 wing_config = SubResource("Resource_435wi")

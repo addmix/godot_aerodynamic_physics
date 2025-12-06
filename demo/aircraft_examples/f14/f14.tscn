@@ -467,6 +467,7 @@ radius = 0.800698
 height = 7.89659
 
 [node name="f14" instance=ExtResource("1_6mwa3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9527770467977446, 0)
 collision_layer = 16385
 mass = 27500.0
 physics_material_override = SubResource("PhysicsMaterial_3wjhu")
@@ -655,7 +656,7 @@ shape = SubResource("CapsuleShape3D_u1i2l")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.93934, -7.60912)
 script = ExtResource("15_t486t")
 
-[node name="AeroBuoyancyMesh3D" type="Node3D" parent="." index="26"]
+[node name="AeroBuoyancyMesh3D" type="Node3D" parent="." index="25"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.430850245749097, 3.2500851950511027)
 script = ExtResource("16_y8hps")
 buoyancy_mesh = ExtResource("17_cck4l")

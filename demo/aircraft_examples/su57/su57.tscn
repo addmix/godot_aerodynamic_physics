@@ -15,7 +15,6 @@
 [ext_resource type="Script" uid="uid://crkbhmxpjff4o" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="7_u36rk"]
 [ext_resource type="Script" uid="uid://cy2j3ls8g16s2" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/ball_launcher.gd" id="14_myln2"]
 
-
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_dne2k"]
 friction = 0.0
 
@@ -379,6 +378,8 @@ min_value = Vector3(-0.4, 0, 0)
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
 [node name="su57" instance=ExtResource("1_6jmm2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.874373187240769, 0)
+collision_layer = 16385
 mass = 26700.0
 physics_material_override = SubResource("PhysicsMaterial_dne2k")
 center_of_mass = Vector3(0, 0, 2.5)

@@ -106,9 +106,9 @@ func _on_button_pressed() -> void:
 	$\"..\".add_child(vehicle_instance)
 	
 	if vehicle_name in water_spawns:
-		vehicle_instance.global_transform = $WaterSpawn.global_transform
+		vehicle_instance.global_transform = $WaterSpawn.global_transform * vehicle_instance.transform
 	else:
-		vehicle_instance.global_transform = global_transform
+		vehicle_instance.global_transform = global_transform * vehicle_instance.transform
 "
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_0xmma"]
@@ -163,7 +163,7 @@ size = Vector3(10000, 1, 10000)
 material = SubResource("StandardMaterial3D_1sawy")
 
 [node name="VehicleSpawner" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 script = SubResource("GDScript_bs15r")
 
 [node name="Control" type="Control" parent="VehicleSpawner"]
@@ -209,7 +209,7 @@ text = "Press F5 to return to vehicle selection"
 horizontal_alignment = 1
 
 [node name="WaterSpawn" type="Marker3D" parent="VehicleSpawner"]
-transform = Transform3D(-0.2588190451025207, 0, 0.9659258262890684, 0, 1, 0, -0.9659258262890684, 0, -0.2588190451025207, 0, 0, 991.9770866800802)
+transform = Transform3D(-0.2588190451025207, 0, 0.9659258262890684, 0, 1, 0, -0.9659258262890684, 0, -0.2588190451025207, 0, -0.5, 991.9770866800802)
 
 [node name="AeroWaterAtmosphere3D" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 5580.072630985623)
@@ -218,7 +218,9 @@ collision_mask = 16384
 monitorable = false
 script = ExtResource("1_2sti6")
 per_influencer_positioning = true
+override_wind = true
 density = 1000.0
+override_density = true
 metadata/_custom_type_script = "uid://b63k67778qs5n"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="AeroWaterAtmosphere3D"]

@@ -7,7 +7,9 @@ func _init() -> void:
 	#this will be reenabled even if the user disables the setting in the inspector
 	#find a fix eventually
 	per_influencer_positioning = true
+	override_density = true
 	density = 1000.0
+	override_wind = true
 
 #this should be overridden to match a wave displacement shader
 func get_surface_height(_position : Vector3) -> float:

@@ -15,7 +15,6 @@
 [ext_resource type="Script" uid="uid://crkbhmxpjff4o" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="9_cenmu"]
 [ext_resource type="Script" uid="uid://7scpeqlmo40t" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/drag_influencer/aero_drag_influencer.gd" id="14_b7dno"]
 
-
 [sub_resource type="Resource" id="Resource_bstvm"]
 script = ExtResource("3_2v3d0")
 p = 0.001
@@ -221,6 +220,8 @@ max_value = Vector3(0, 1273, 0)
 min_value = Vector3(0, -1273, 0)
 
 [node name="Quadcopter" type="VehicleBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08146114829738887, 0)
+collision_layer = 16385
 mass = 1.4
 center_of_mass_mode = 1
 can_sleep = false

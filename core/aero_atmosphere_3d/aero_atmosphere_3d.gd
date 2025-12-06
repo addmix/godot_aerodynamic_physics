@@ -29,6 +29,9 @@ func _on_body_exited(body : PhysicsBody3D) -> void:
 	if body is AeroBody3D:
 		body.atmosphere_areas.erase(self)
 
+func is_inside_atmosphere(_position : Vector3) -> bool:
+	return get_distance_to_surface(_position) < 0.0
+
 func get_wind_at_position(_position : Vector3) -> Vector3:
 	return wind
 

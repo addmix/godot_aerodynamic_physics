@@ -4,26 +4,23 @@
 script/source = "extends Node3D
 
 @export var right_click_to_move : bool = true
-@export var camera_distance : float = 10.0:
-	get:
-		return $Camera3D.position.z
+@export var camera_distance : float = 0.0:
 	set(x):
-		$Camera3D.position.z = x
+		camera_distance = x
+		$Camera3D.position.z = camera_distance
 @export var camera_height : float = 2.0:
-	get:
-		return $Camera3D.position.y
 	set(x):
-		$Camera3D.position.y = x
-@export var camera_fov : float = 45.0:
-	get:
-		return $Camera3D.fov
+		camera_height = x
+		$Camera3D.position.y = camera_height
+@export var camera_fov : float = 70.0:
 	set(x):
-		$Camera3D.fov = x
+		camera_fov = x
+		$Camera3D.fov = camera_fov
 
 func _ready() -> void:
 	$Camera3D.position.z = camera_distance
-	camera_height = camera_height
-	camera_fov = camera_fov
+	$Camera3D.position.y = camera_height
+	$Camera3D.fov = camera_fov
 
 func _process(delta: float) -> void:
 	global_position = get_parent().global_position

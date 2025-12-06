@@ -9,6 +9,10 @@ class_name AeroBuoyancyMesh3D
 		calculate_vertex_areas()
 		if buoyancy_mesh_debug:
 			buoyancy_mesh_debug.mesh = buoyancy_mesh
+
+@export var skin_friction : float = 0.02
+@export var aero_force_multiplier : float = 1.0
+
 @export var show_buoyancy_mesh_debug : bool = true
 var buoyancy_mesh_debug : MeshInstance3D
 
@@ -27,7 +31,7 @@ func _init() -> void:
 	var debug_material := StandardMaterial3D.new()
 	debug_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_DEPTH_PRE_PASS
 	debug_material.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
-	debug_material.albedo_color.a = 0.2
+	debug_material.albedo_color.a = 0.1
 	buoyancy_mesh_debug.material_override = debug_material
 	buoyancy_mesh_debug.visible = false
 
@@ -177,9 +181,8 @@ func calculate_vertex_areas() -> void:
 		force_sum += vertex_buoyancy_factor
 		torque_sum += vertex_position.cross(vertex_buoyancy_factor)
 	
-	print(force_sum)
-	print(torque_sum)
-	
+	#print(force_sum)
+	#print(torque_sum)
 	
 	vertex_positions = _vertex_positions#sanitized_vertices
 	vertex_buoyancy_coefficients = vertex_normals
@@ -204,7 +207,7 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 		var vertex_radius : float = vertex_sizes[vertex_index]
 		
 		var vertex_density : float = aero_body.air_density 
-		var vertex_velocity = world_air_velocity + -angular_velocity.cross(vertex_position) #this has to be negative because it's air velocity, not linear velocity
+		var vertex_velocity = -get_linear_velocity() + -angular_velocity.cross(vertex_position) #this has to be negative because it's air velocity, not linear velocity
 		
 		var ambient_lift_drag_force : PackedVector3Array = calculate_mesh_lift_drag(vertex_position, vertex_velocity, vertex_buoyancy_factor, vertex_density)
 		
@@ -217,8 +220,15 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 				continue
 			
 			var distance_to_surface : float = atmosphere.get_distance_to_surface(global_vertex_position)
+			var surface_normal : Vector3 = atmosphere.get_surface_normal(global_vertex_position)
+			
+			var surface_contact_depth : float = vertex_radius #* abs(surface_normal.dot(vertex_buoyancy_factor.normalized()))
+			#if vertex_index == 50:
+				#print(abs(surface_normal.dot(vertex_buoyancy_factor.normalized())))
+				#print(vertex_radius)
+				#print(surface_contact_depth)
 			#we subtract the aerobody's density because buoyancy is relative to the difference in pressure between the inside and outside.
-			vertex_density = clamp(remap(distance_to_surface, -vertex_radius, vertex_radius, atmosphere.density - aero_body.air_density, 0.0), 0.0, atmosphere.density - aero_body.air_density)
+			vertex_density = clamp(remap(distance_to_surface, -surface_contact_depth, surface_contact_depth, atmosphere.density - aero_body.air_density, 0.0), 0.0, atmosphere.density - aero_body.air_density)
 			var buoyancy_force_and_torque : PackedVector3Array = calculate_mesh_buoyancy(vertex_position, vertex_buoyancy_factor, vertex_density, distance_to_surface)
 			var lift_drag_force_and_torque : PackedVector3Array = calculate_mesh_lift_drag(vertex_position, vertex_velocity, vertex_buoyancy_factor, vertex_density)
 			
@@ -251,9 +261,9 @@ func calculate_mesh_lift_drag(vertex_position : Vector3, vertex_velocity : Vecto
 	if vertex_density == 0.0:
 		return PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 	
-	var vertex_drag_direction : Vector3 = vertex_velocity.normalized()
+	var vertex_drag_direction : Vector3 = vertex_velocity.normalized() * aero_force_multiplier
 	var vertex_airspeed : float = vertex_velocity.length()
 	var vertex_dynamic_pressure : float = 0.5 * vertex_density * vertex_airspeed * vertex_airspeed
 	
-	var force : Vector3 = vertex_buoyancy_factor.normalized() * vertex_dynamic_pressure * (vertex_drag_direction.dot(vertex_buoyancy_factor))
+	var force : Vector3 = vertex_buoyancy_factor.normalized() * vertex_dynamic_pressure * (min(vertex_drag_direction.dot(vertex_buoyancy_factor), skin_friction))
 	return PackedVector3Array([force, vertex_position.cross(force)])

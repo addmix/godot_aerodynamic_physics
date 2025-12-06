@@ -37,6 +37,18 @@ import_script/path=""
 materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
-_subresources={}
+_subresources={
+"meshes": {
+"aim-9_fueslage_aero": {
+"generate/lightmap_uv": 2,
+"generate/lods": 2,
+"generate/shadow_meshes": 2,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://addons/godot_aerodynamic_physics/demo/aircraft_examples/missile/fueslage_aero_mesh.res",
+"save_to_file/path": "uid://cnc5tcxdletkg"
+}
+}
+}
 gltf/naming_version=1
 gltf/embedded_image_handling=1

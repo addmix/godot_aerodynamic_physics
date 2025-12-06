@@ -3,18 +3,18 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://bmhep0mniktj8"
-path="res://.godot/imported/v22.glb-ae9c8953e039a281063707b4bd0cc505.scn"
+uid="uid://rk545pm4b6qh"
+path="res://.godot/imported/sailboat.glb-3ae80aeb89a77856fe9c060d4c11539d.scn"
 
 [deps]
 
-source_file="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/tilt_rotor/v22.glb"
-dest_files=["res://.godot/imported/v22.glb-ae9c8953e039a281063707b4bd0cc505.scn"]
+source_file="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/sailboat/sailboat.glb"
+dest_files=["res://.godot/imported/sailboat.glb-3ae80aeb89a77856fe9c060d4c11539d.scn"]
 
 [params]
 
 nodes/root_type="AeroBody3D"
-nodes/root_name="V22"
+nodes/root_name=""
 nodes/root_script=null
 nodes/apply_root_scale=true
 nodes/root_scale=1.0
@@ -39,33 +39,16 @@ materials/extract_format=0
 materials/extract_path=""
 _subresources={
 "meshes": {
-"v22_fueslage_aero": {
+"sailboat_Hull": {
 "generate/lightmap_uv": 0,
 "generate/lods": 0,
 "generate/shadow_meshes": 0,
 "lods/normal_merge_angle": 20.0,
 "save_to_file/enabled": true,
-"save_to_file/fallback_path": "res://addons/godot_aerodynamic_physics/demo/aircraft_examples/tilt_rotor/fueslage_aero_mesh.res",
-"save_to_file/path": "uid://2sb1na0g4lve"
-}
-},
-"nodes": {
-"PATH:Cube": {
-"import/skip_import": true
-},
-"PATH:Empty_001": {
-"import/skip_import": true
-},
-"PATH:Empty_002": {
-"import/skip_import": true
-},
-"PATH:Empty_003": {
-"import/skip_import": true
-},
-"PATH:Empty_004": {
-"import/skip_import": true
+"save_to_file/fallback_path": "res://addons/godot_aerodynamic_physics/demo/aircraft_examples/sailboat/hull.res",
+"save_to_file/path": "uid://uc3ehbomh536"
 }
 }
 }
-gltf/naming_version=1
+gltf/naming_version=2
 gltf/embedded_image_handling=1

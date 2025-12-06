@@ -1,4 +1,4 @@
-[gd_scene load_steps=73 format=3 uid="uid://bwpwxnufuujve"]
+[gd_scene load_steps=75 format=3 uid="uid://bwpwxnufuujve"]
 
 [ext_resource type="PackedScene" uid="uid://bxxwpa0sowfbh" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/cessna172/cessna172.glb" id="1_7rcro"]
 [ext_resource type="Script" uid="uid://cc5dwx5pqkaur" path="res://addons/godot_aerodynamic_physics/core/controls/aero_control_component.gd" id="2_4u4b6"]
@@ -13,7 +13,8 @@
 [ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_mover_3d/aero_propeller_3d.gd" id="5_keinb"]
 [ext_resource type="Script" uid="uid://c46td0go5kvp6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_axis_config.gd" id="5_o4ret"]
 [ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/flight_info_label.tscn" id="7_ey0gl"]
-
+[ext_resource type="Script" uid="uid://blp6761y154ht" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_buoyancy_3d/aero_buoyancy_mesh_3d.gd" id="14_lo3t1"]
+[ext_resource type="ArrayMesh" uid="uid://cs0vlbs2pbabv" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/cessna172/fueslage_aero_mesh.res" id="15_op60t"]
 
 [sub_resource type="Resource" id="Resource_scrto"]
 script = ExtResource("3_4yv37")
@@ -173,7 +174,7 @@ contribution = Vector3(1, 1, 1)
 script = ExtResource("5_5fm2q")
 axis_configs = Array[ExtResource("5_o4ret")]([SubResource("Resource_afw6h")])
 use_separate_minmax = true
-max_value = Vector3(0, 240, 0)
+max_value = Vector3(0, 250, 0)
 
 [sub_resource type="Curve" id="Curve_scrto"]
 bake_resolution = 21
@@ -208,10 +209,10 @@ drag_at_mach_multiplier_curve = SubResource("Curve_iyp87")
 
 [sub_resource type="Resource" id="Resource_fnaxt"]
 script = ExtResource("4_o4ret")
-chord = 0.1500000340909207
+chord = 0.167
 span = 1.0999997499999716
-area = 0.16499999999999998
-aspect_ratio = 7.333330000000001
+area = 0.18369995824999527
+aspect_ratio = 6.586824850299231
 
 [sub_resource type="Resource" id="Resource_gsj65"]
 resource_name = "collective"
@@ -389,6 +390,7 @@ roughness = 0.8
 mass = 1111.0
 center_of_mass = Vector3(0, 0.00999999999999978, -1.59)
 can_sleep = false
+experimental_energy_tracking = true
 show_debug = true
 
 [node name="AeroControlComponent" type="Node" parent="." index="0"]
@@ -452,7 +454,6 @@ propeller_speed_control_config = SubResource("Resource_sgq0w")
 show_torque = true
 show_lift = false
 show_thrust = true
-metadata/_custom_type_script = "uid://bsu5rdrtiqph7"
 
 [node name="ManualAeroSurface3D" type="Node3D" parent="AeroPropeller3D" index="0"]
 transform = Transform3D(1, 0, 0, 0, 0.766044, -0.642787, 0, 0.642787, 0.766044, 0.555826, 0, 0)
@@ -547,9 +548,11 @@ size = Vector3(1.57572, 0.0454879, 0.389499)
 
 [node name="Body" type="Node3D" parent="." index="23"]
 transform = Transform3D(6.12303e-17, 1, 0, -1, 6.12303e-17, 0, 0, 0, 1, 1.28712e-17, -0.210209, -1.16851)
+visible = false
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_6kba8")
 wing_config = SubResource("Resource_k8v0t")
+disabled = true
 actuation_config = SubResource("Resource_o4ret")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
@@ -595,3 +598,11 @@ radius = 0.147615
 height = 0.107076
 sides = 16
 material = SubResource("StandardMaterial3D_4tt3o")
+
+[node name="AeroBuoyancyMesh3D" type="Node3D" parent="." index="27"]
+script = ExtResource("14_lo3t1")
+buoyancy_mesh = ExtResource("15_op60t")
+metadata/_custom_type_script = "uid://blp6761y154ht"
+
+[node name="Fueslage_aero" parent="." index="28"]
+visible = false

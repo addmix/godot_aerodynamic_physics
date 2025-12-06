@@ -1,4 +1,4 @@
-[gd_scene load_steps=83 format=3 uid="uid://c1jq0a2ww3rai"]
+[gd_scene load_steps=85 format=3 uid="uid://c1jq0a2ww3rai"]
 
 [ext_resource type="PackedScene" uid="uid://7sy37erdrln" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/f14/f14.glb" id="1_6mwa3"]
 [ext_resource type="Script" uid="uid://cc5dwx5pqkaur" path="res://addons/godot_aerodynamic_physics/core/controls/aero_control_component.gd" id="2_2l6s8"]
@@ -15,7 +15,8 @@
 [ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_config.gd" id="12_yuw0c"]
 [ext_resource type="Script" uid="uid://3kjm0rdymoth" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_thruster_3d/aero_thruster_3d.gd" id="13_yuw0c"]
 [ext_resource type="Script" uid="uid://cy2j3ls8g16s2" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/ball_launcher.gd" id="15_t486t"]
-
+[ext_resource type="Script" uid="uid://blp6761y154ht" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_buoyancy_3d/aero_buoyancy_mesh_3d.gd" id="16_y8hps"]
+[ext_resource type="ArrayMesh" uid="uid://doft1hjfsl7yu" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/boat/hull.res" id="17_cck4l"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_3wjhu"]
 friction = 0.0
@@ -466,6 +467,7 @@ radius = 0.800698
 height = 7.89659
 
 [node name="f14" instance=ExtResource("1_6mwa3")]
+collision_layer = 16385
 mass = 27500.0
 physics_material_override = SubResource("PhysicsMaterial_3wjhu")
 center_of_mass = Vector3(0, 0, 1.66)
@@ -652,3 +654,9 @@ shape = SubResource("CapsuleShape3D_u1i2l")
 [node name="BallLauncher" type="Marker3D" parent="." index="24"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.93934, -7.60912)
 script = ExtResource("15_t486t")
+
+[node name="AeroBuoyancyMesh3D" type="Node3D" parent="." index="26"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.430850245749097, 3.2500851950511027)
+script = ExtResource("16_y8hps")
+buoyancy_mesh = ExtResource("17_cck4l")
+metadata/_custom_type_script = "uid://blp6761y154ht"

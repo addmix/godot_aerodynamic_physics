@@ -1,0 +1,195 @@
+[gd_scene load_steps=34 format=3 uid="uid://dlsy5stllk630"]
+
+[ext_resource type="PackedScene" uid="uid://rk545pm4b6qh" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/sailboat/sailboat.glb" id="1_83o6f"]
+[ext_resource type="Script" uid="uid://cc5dwx5pqkaur" path="res://addons/godot_aerodynamic_physics/core/controls/aero_control_component.gd" id="2_1v2fn"]
+[ext_resource type="Script" uid="uid://dfbhcpt1rr3ai" path="res://addons/godot_aerodynamic_physics/core/controls/aero_control_config_axis.gd" id="3_cn55w"]
+[ext_resource type="Script" uid="uid://cbgqb7g7mmwtu" path="res://addons/godot_aerodynamic_physics/core/controls/aero_control_config.gd" id="4_lsv46"]
+[ext_resource type="Script" uid="uid://d1725od371u4a" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd" id="5_jg8xp"]
+[ext_resource type="PackedScene" uid="uid://bm03tdt5so3wj" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/camera without rotation.tscn" id="5_lsv46"]
+[ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/flight_info_label.tscn" id="6_jg8xp"]
+[ext_resource type="Script" uid="uid://ctbwb7xlhft6t" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_config.gd" id="6_wnqtr"]
+[ext_resource type="Script" uid="uid://crkbhmxpjff4o" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="7_uj172"]
+[ext_resource type="Script" uid="uid://blp6761y154ht" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_buoyancy_3d/aero_buoyancy_mesh_3d.gd" id="8_bdfv4"]
+[ext_resource type="ArrayMesh" uid="uid://ej6jh2vofayr" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/sailboat/hull.res" id="9_3ocix"]
+[ext_resource type="Script" uid="uid://c46td0go5kvp6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_axis_config.gd" id="10_wnqtr"]
+[ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_config.gd" id="11_uj172"]
+
+[sub_resource type="Resource" id="Resource_jsg04"]
+resource_name = "steering"
+script = ExtResource("3_cn55w")
+axis_name = "steering"
+cumulative_positive_event = &"roll_left"
+cumulative_negative_event = &"roll_right"
+cumulative_rate = 0.5
+
+[sub_resource type="Resource" id="Resource_wnqtr"]
+resource_name = "sail_direction"
+script = ExtResource("3_cn55w")
+axis_name = "sail_direction"
+cumulative_positive_event = &"yaw_left"
+cumulative_negative_event = &"yaw_right"
+cumulative_rate = 0.2
+
+[sub_resource type="Resource" id="Resource_rnlel"]
+script = ExtResource("4_lsv46")
+axis_configs = Array[ExtResource("3_cn55w")]([SubResource("Resource_jsg04"), SubResource("Resource_wnqtr")])
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_m8ttw"]
+points = PackedVector3Array(1.0513176918029783, 0.615614116191864, 1.7668290537787117, -1.0513176918029783, 0.615614116191864, 1.7668290537787117, 0.9414109479848912, 0.27855819625927314, 1.7668290537787117, 1.0513176918029783, 0.615614116191864, -1.6008801516276745, -0.9416167658572095, 0.27855819625927314, 1.7668290537787117, -1.0513176918029783, 0.615614116191864, -1.6008801516276745, 0.8238889428910188, -0.07049329608632143, 1.7668290537787117, 0.9414109479848912, 0.27855819625927314, -1.6008801516276745, 0.6697313565244505, 0.3467953049037358, -2.3378041044472715, 0.7382687080065162, 0.615614116191864, -2.3378041044472715, -0.8240947607633371, -0.07049329608632143, 1.7668290537787117, -0.9416167658572095, 0.27855819625927314, -1.6008801516276745, -0.7384745258788346, 0.615614116191864, -2.3378041044472715, -0.6699371743967688, 0.3467953049037358, -2.3378041044472715, 0, -0.38886758685112, 1.7668290537787117, 0.3776757957044765, -0.2429542306142574, -0.03105633466058899, 0.8238889428910188, -0.07049329608632143, -0.02820556501718618, 0.8238889428910188, -0.0573178313048257, -0.775107211588693, 0.8697863284180478, 0.12615543199570367, -1.6008801516276745, 0.5806122178105331, 0.12782694618440082, -2.337328976173371, 0.6246572424866954, 0.2359837466295147, -2.3378041044472715, 0, 0.615614116191864, -3.08660626411438, -0.25562579741959657, -0.2901499253539434, 1.766353925504812, -0.8240947607633371, -0.07049329608632143, -0.02820556501718618, -0.37788161357679495, -0.2429542306142574, -0.03105633466058899, -0.6248630603590138, 0.2359837466295147, -2.3378041044472715, -0.5808180356828514, 0.12782694618440082, -2.337328976173371, -0.8699921462903661, 0.12615543199570367, -1.6008801516276745, -0.8240947607633371, -0.0573178313048257, -0.775107211588693, 0, -0.38886758685112, -0.02820556501718618, 0.3776757957044765, -0.22977876583276172, -0.778433109505996, 0.7998082518297522, -0.02260933079834831, -1.6008801516276745, 0.30440463315908484, 0.01023100679134986, -2.341605130638475, 0, -0.1196554781068277, -2.339704617542873, -0.3046104510314033, 0.01023100679134986, -2.341605130638475, -0.37788161357679495, -0.22977876583276172, -0.778433109505996, -0.8000140697020708, -0.02260933079834831, -1.6008801516276745, 0, -0.3722507693281889, -0.775107211588693, 0, -0.3199422076583702, -1.6008801516276745)
+
+[sub_resource type="Curve" id="Curve_8yqvt"]
+_limits = [0.0, 1.0, -180.0, 180.0]
+bake_resolution = 21
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-90, 1), 0.0, 0.0, 0, 0, Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(90, 1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+point_count = 5
+
+[sub_resource type="Curve" id="Curve_n7ux1"]
+_limits = [1.0, 2.0, 0.0, 2.0]
+bake_resolution = 23
+_data = [Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 2), 0.0, 0.0, 0, 0, Vector2(2, 1.2), 0.181, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_1hk4k"]
+_limits = [-1.0, 1.0, -180.0, 180.0]
+bake_resolution = 36
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-148, 1), 0.0, 0.0, 0, 0, Vector2(-145, 0.7), 0.0, 0.0, 0, 0, Vector2(-35, -0.7), 0.0, 0.0, 0, 0, Vector2(-32, -1), 0.0, 0.0, 0, 0, Vector2(32, 1), 0.0, 0.0, 0, 0, Vector2(35, 0.7), 0.0, 0.0, 0, 0, Vector2(137.426, -0.7), 0.0, 0.0, 0, 0, Vector2(148, -1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+point_count = 10
+
+[sub_resource type="Curve" id="Curve_6cdlb"]
+_limits = [0.0, 1.0, 0.0, 90.0]
+bake_resolution = 4
+_data = [Vector2(0, 1), 0.0, -0.0244575, 0, 0, Vector2(35.2174, 0.443437), -0.00834336, -0.00834336, 0, 0, Vector2(90, 0.291), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Resource" id="Resource_m2rhy"]
+script = ExtResource("6_wnqtr")
+lift_aoa_curve = SubResource("Curve_1hk4k")
+drag_aoa_curve = SubResource("Curve_8yqvt")
+sweep_drag_multiplier_curve = SubResource("Curve_6cdlb")
+drag_at_mach_multiplier_curve = SubResource("Curve_n7ux1")
+
+[sub_resource type="Resource" id="Resource_dylod"]
+script = ExtResource("7_uj172")
+chord = 0.7
+span = 1.0
+area = 0.7
+aspect_ratio = 1.4285714285714286
+
+[sub_resource type="Resource" id="Resource_bdfv4"]
+resource_name = "steering"
+script = ExtResource("10_wnqtr")
+axis_name = "steering"
+contribution = Vector3(1, 0, 0)
+
+[sub_resource type="Resource" id="Resource_3ocix"]
+script = ExtResource("11_uj172")
+axis_configs = Array[ExtResource("10_wnqtr")]([SubResource("Resource_bdfv4")])
+max_value = Vector3(1, 0, 0)
+min_value = Vector3(-1, 0, 0)
+metadata/_custom_type_script = "uid://cblxodmmwvpt6"
+
+[sub_resource type="Curve" id="Curve_r48a8"]
+_limits = [0.0, 1.0, -180.0, 180.0]
+bake_resolution = 21
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-90, 1), 0.0, 0.0, 0, 0, Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(90, 1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+point_count = 5
+
+[sub_resource type="Curve" id="Curve_rhao6"]
+_limits = [1.0, 2.0, 0.0, 2.0]
+bake_resolution = 23
+_data = [Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 2), 0.0, 0.0, 0, 0, Vector2(2, 1.2), 0.181, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_pii2e"]
+_limits = [-1.0, 1.0, -180.0, 180.0]
+bake_resolution = 36
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-148, 1), 0.0, 0.0, 0, 0, Vector2(-145, 0.7), 0.0, 0.0, 0, 0, Vector2(-35, -0.7), 0.0, 0.0, 0, 0, Vector2(-32, -1), 0.0, 0.0, 0, 0, Vector2(32, 1), 0.0, 0.0, 0, 0, Vector2(35, 0.7), 0.0, 0.0, 0, 0, Vector2(137.426, -0.7), 0.0, 0.0, 0, 0, Vector2(148, -1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+point_count = 10
+
+[sub_resource type="Curve" id="Curve_ktbt2"]
+_limits = [0.0, 1.0, 0.0, 90.0]
+bake_resolution = 4
+_data = [Vector2(0, 1), 0.0, -0.0244575, 0, 0, Vector2(35.2174, 0.443437), -0.00834336, -0.00834336, 0, 0, Vector2(90, 0.291), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Resource" id="Resource_kx3he"]
+script = ExtResource("6_wnqtr")
+lift_aoa_curve = SubResource("Curve_pii2e")
+drag_aoa_curve = SubResource("Curve_r48a8")
+sweep_drag_multiplier_curve = SubResource("Curve_ktbt2")
+drag_at_mach_multiplier_curve = SubResource("Curve_rhao6")
+
+[sub_resource type="Resource" id="Resource_i8owv"]
+script = ExtResource("7_uj172")
+chord = 3.0
+span = 5.0
+area = 15.0
+aspect_ratio = 1.6666666666666667
+
+[sub_resource type="Resource" id="Resource_uj172"]
+resource_name = "sail_direction"
+script = ExtResource("10_wnqtr")
+axis_name = "sail_direction"
+contribution = Vector3(1, 0, 0)
+
+[sub_resource type="Resource" id="Resource_m8ttw"]
+script = ExtResource("11_uj172")
+axis_configs = Array[ExtResource("10_wnqtr")]([SubResource("Resource_uj172")])
+max_value = Vector3(1.5699999999999998, 0, 0)
+min_value = Vector3(-1.5699999999999998, 0, 0)
+metadata/_custom_type_script = "uid://cblxodmmwvpt6"
+
+[node name="sailboat" instance=ExtResource("1_83o6f")]
+mass = 1500.0
+show_debug = true
+
+[node name="AeroControlComponent" type="Node" parent="." index="0"]
+script = ExtResource("2_1v2fn")
+control_config = SubResource("Resource_rnlel")
+metadata/_custom_type_script = "uid://cc5dwx5pqkaur"
+
+[node name="CameraWithoutRotation" parent="." index="1" instance=ExtResource("5_lsv46")]
+camera_distance = 8.0
+camera_height = 1.99
+
+[node name="Label3D" type="Label3D" parent="CameraWithoutRotation/Camera3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.57529, -2.9862)
+text = "Controls:
+Rudder: A/D
+Sail: Q/E"
+
+[node name="FlightInfoLabel" parent="CameraWithoutRotation/Camera3D" index="1" instance=ExtResource("6_jg8xp")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="3"]
+shape = SubResource("ConvexPolygonShape3D_m8ttw")
+
+[node name="Rudder" type="Node3D" parent="." index="5"]
+transform = Transform3D(6.123233995736766e-17, 1, 0, -1, 6.123233995736766e-17, 0, 0, 0, 1, 0, -0.6395103987786441, 1.6947709974150575)
+script = ExtResource("5_jg8xp")
+manual_config = SubResource("Resource_m2rhy")
+wing_config = SubResource("Resource_dylod")
+actuation_config = SubResource("Resource_3ocix")
+metadata/_custom_type_script = "uid://d1725od371u4a"
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Rudder" index="5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.17159610241651535)
+size = Vector3(1.0105100724617841, 0.07490833214797021, 0.6891372122681787)
+
+[node name="AeroBuoyancyMesh3D" type="Node3D" parent="." index="6"]
+script = ExtResource("8_bdfv4")
+buoyancy_mesh = ExtResource("9_3ocix")
+metadata/_custom_type_script = "uid://blp6761y154ht"
+
+[node name="Sail" type="Node3D" parent="." index="7"]
+transform = Transform3D(6.123233995736766e-17, 0.9999999999999999, 0, -1, 6.123233995736765e-17, 0, 0, 0, 0.9999999999999999, 0, 3.196154347436603, 0)
+script = ExtResource("5_jg8xp")
+manual_config = SubResource("Resource_kx3he")
+wing_config = SubResource("Resource_i8owv")
+actuation_config = SubResource("Resource_m8ttw")
+metadata/_custom_type_script = "uid://d1725od371u4a"
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Sail" index="5"]
+transform = Transform3D(1, -1.3681806324926923e-30, 6.162975822039079e-33, 0, 0.9999999999999777, 5.551115123125659e-17, -6.162975822039017e-33, -5.551115123125659e-17, 0.9999999999999777, 0, 0, 0.7246000000013735)
+size = Vector3(5, 0, 3)
+
+[editable path="CameraWithoutRotation"]

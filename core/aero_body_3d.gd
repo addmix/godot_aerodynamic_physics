@@ -438,6 +438,8 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 		linear_velocity_prediction = predict_linear_velocity(last_force_and_torque[0]) + current_gravity * PREDICTION_TIMESTEP_FRACTION
 		angular_velocity_prediction = predict_angular_velocity(last_force_and_torque[1])
 		last_force_and_torque = PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
+		
+		#for atmosphere : AeroAtmosphere3D in atmosphere_areas:
 		for influencer : AeroInfluencer3D in aero_influencers:
 			if influencer.disabled:
 				continue

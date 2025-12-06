@@ -195,12 +195,16 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 		if not atmosphere.per_influencer_positioning:
 			continue
 		
+		
 		#this is a kinda bad way to do it tbh. It's difficult to separate global
 		#effects from atmosphere-specific effects.
 		#ideally, the global atmosphere can be converted into it's own atmosphere area
 		
-		air_density = atmosphere.get_density_at_position(global_position)
-		world_air_velocity = -get_linear_velocity() + atmosphere.wind
+		
+		if atmosphere.get_distance_to_surface(global_position) < 0:
+			air_density = atmosphere.get_density_at_position(global_position)
+			world_air_velocity = -get_linear_velocity() + atmosphere.wind
+		
 	
 	air_speed = world_air_velocity.length()
 	

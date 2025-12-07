@@ -462,6 +462,7 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 	
 	
 	if experimental_energy_tracking:
+		#this really hates zero velocity
 		#linear inertia calcs
 		var pre_kinetic_energy : float = 0.5 * mass * linear_velocity.length_squared()
 		var velocity_change : Vector3 = (current_force * delta) / mass
@@ -499,7 +500,10 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 		#this angular energy section might not be working perfectly.
 		var angular_energy : float = clamped_kinetic_energy * angular_energy_proportion
 		#this inertia term might need to be changed, cuz calculating the inertia around the (angular_velocity + angular_velocity_change) axis might be more correct.
-		var new_angular_velocity : Vector3 = (angular_velocity + angular_velocity_change).normalized() * sqrt(angular_energy / (0.5 * inertia_around_angular_velocity_axis))
+		var new_angular_velocity : Vector3 = Vector3.ZERO
+		if not inertia_around_angular_velocity_axis == 0.0:
+			new_angular_velocity = (angular_velocity + angular_velocity_change).normalized() * sqrt(angular_energy / (0.5 * inertia_around_angular_velocity_axis))
+		
 		angular_velocity_change = (new_angular_velocity - angular_velocity)#.limit_length(angular_velocity_change_length)
 		#same here, might need to use a different inertia axis
 		angular_velocity_change *= inertia_around_angular_velocity_axis

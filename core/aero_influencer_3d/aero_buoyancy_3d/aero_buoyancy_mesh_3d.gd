@@ -261,9 +261,12 @@ func calculate_mesh_lift_drag(vertex_position : Vector3, vertex_velocity : Vecto
 	if vertex_density == 0.0:
 		return PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 	
-	var vertex_drag_direction : Vector3 = vertex_velocity.normalized() * aero_force_multiplier
+	var vertex_drag_direction : Vector3 = vertex_velocity.normalized()
 	var vertex_airspeed : float = vertex_velocity.length()
 	var vertex_dynamic_pressure : float = 0.5 * vertex_density * vertex_airspeed * vertex_airspeed
 	
-	var force : Vector3 = vertex_buoyancy_factor.normalized() * vertex_dynamic_pressure * (min(vertex_drag_direction.dot(vertex_buoyancy_factor), skin_friction))
+	#area * normal * dynamic pressure * normal angle (limited to 0) * force multiplier
+	var force : Vector3 = vertex_buoyancy_factor * vertex_dynamic_pressure * (min(vertex_drag_direction.dot(vertex_buoyancy_factor.normalized()), 0.0)) * aero_force_multiplier
+	#drag direction * area * dynamic pressure * skin friction coefficient
+	force += vertex_drag_direction * vertex_buoyancy_factor.length() * vertex_dynamic_pressure * skin_friction
 	return PackedVector3Array([force, vertex_position.cross(force)])

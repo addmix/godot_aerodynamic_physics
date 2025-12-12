@@ -75,12 +75,14 @@ var vehicles := {
 	\"B-2 Spirit\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/b2/b2.tscn\",
 	\"V-22 Osprey\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/tilt_rotor/v22.tscn\",
 	\"UH-60 \\\"Blackhawk\\\"\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/blackhawk/blackhawk.tscn\",
+	\"PBY Catalina\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/catalina/catalina.tscn\",
 	\"Boat\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/boat/boat.tscn\",
 	\"Sailboat\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/sailboat/sailboat.tscn\",
 	\"Floaty ball\" : \"res://addons/godot_aerodynamic_physics/demo/aircraft_examples/floaty_ball/floaty_ball.tscn\",
 }
 
 var water_spawns : Array[String] = [
+	\"PBY Catalina\",
 	\"Boat\",
 	\"Sailboat\",
 	\"Floaty ball\",

@@ -1,0 +1,677 @@
+[gd_scene load_steps=97 format=3 uid="uid://bt71s1mntdvdi"]
+
+[ext_resource type="PackedScene" uid="uid://ch1pn8fij8h3f" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/catalina/catalina.glb" id="1_8heaw"]
+[ext_resource type="Script" uid="uid://cc5dwx5pqkaur" path="res://addons/godot_aerodynamic_physics/core/controls/aero_control_component.gd" id="2_0pbsb"]
+[ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/flight_info_label.tscn" id="2_km0hj"]
+[ext_resource type="Script" uid="uid://blp6761y154ht" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_buoyancy_3d/aero_buoyancy_mesh_3d.gd" id="2_yvgc5"]
+[ext_resource type="ArrayMesh" uid="uid://bu2dric4n2nfo" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/catalina/fueslage.res" id="3_2tceh"]
+[ext_resource type="Script" uid="uid://b4xqlunpiyivk" path="res://addons/godot_aerodynamic_physics/utils/pid.gd" id="3_h0te8"]
+[ext_resource type="Script" uid="uid://cdp8dc63ytxx1" path="res://addons/godot_aerodynamic_physics/core/flight_assist.gd" id="4_jduiy"]
+[ext_resource type="ArrayMesh" uid="uid://dxq2fpcuanwf4" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/catalina/float.res" id="4_lv6b5"]
+[ext_resource type="Script" uid="uid://dfbhcpt1rr3ai" path="res://addons/godot_aerodynamic_physics/core/controls/aero_control_config_axis.gd" id="5_65nru"]
+[ext_resource type="Script" uid="uid://cbgqb7g7mmwtu" path="res://addons/godot_aerodynamic_physics/core/controls/aero_control_config.gd" id="6_16k3l"]
+[ext_resource type="Script" uid="uid://d1725od371u4a" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd" id="6_kigpq"]
+[ext_resource type="Script" uid="uid://ctbwb7xlhft6t" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_config.gd" id="7_35f7f"]
+[ext_resource type="Script" uid="uid://crkbhmxpjff4o" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="8_yinxf"]
+[ext_resource type="Script" uid="uid://c46td0go5kvp6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_axis_config.gd" id="9_n73q8"]
+[ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_config.gd" id="10_0pbsb"]
+[ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_mover_3d/aero_propeller_3d.gd" id="11_h0te8"]
+
+[sub_resource type="Resource" id="Resource_rrmb4"]
+script = ExtResource("3_h0te8")
+p = 0.001
+i = 0.0
+d = 0.01
+
+[sub_resource type="Resource" id="Resource_eo8u4"]
+script = ExtResource("3_h0te8")
+i = 0.05
+d = 0.1
+
+[sub_resource type="Resource" id="Resource_rv6uo"]
+script = ExtResource("3_h0te8")
+p = 2.0
+i = 0.0
+
+[sub_resource type="Resource" id="Resource_xyrqe"]
+script = ExtResource("3_h0te8")
+p = 0.01
+i = 0.0
+
+[sub_resource type="Resource" id="Resource_kw2nn"]
+script = ExtResource("3_h0te8")
+i = 0.0
+
+[sub_resource type="Resource" id="Resource_0euej"]
+script = ExtResource("3_h0te8")
+p = 10.0
+i = 0.0
+
+[sub_resource type="Resource" id="Resource_nb4wf"]
+script = ExtResource("3_h0te8")
+p = 10.0
+i = 0.0
+
+[sub_resource type="Resource" id="Resource_svion"]
+script = ExtResource("3_h0te8")
+p = 2.0
+i = 0.0
+clamp_integral = true
+min_integral = -0.3
+max_integral = 0.3
+
+[sub_resource type="Resource" id="Resource_cn0tc"]
+script = ExtResource("3_h0te8")
+i = 0.0
+clamp_integral = true
+min_integral = -0.2
+max_integral = 0.2
+
+[sub_resource type="Resource" id="Resource_8ihv2"]
+script = ExtResource("3_h0te8")
+p = 0.0
+i = 0.4
+
+[sub_resource type="Resource" id="Resource_7ibqc"]
+script = ExtResource("3_h0te8")
+p = 2.0
+i = 0.0
+
+[sub_resource type="Resource" id="Resource_utkc8"]
+script = ExtResource("4_jduiy")
+enable_flight_assist = false
+max_angular_rates = Vector3(2, 1, 4)
+pitch_assist_pid = SubResource("Resource_svion")
+yaw_assist_pid = SubResource("Resource_7ibqc")
+roll_assist_pid = SubResource("Resource_cn0tc")
+g_limit = 6.5
+bank_angle_pid = SubResource("Resource_eo8u4")
+heading_pid = SubResource("Resource_0euej")
+inclination_pid = SubResource("Resource_nb4wf")
+speed_pid = SubResource("Resource_8ihv2")
+altitude_pid = SubResource("Resource_rrmb4")
+direction_pitch_pid = SubResource("Resource_rv6uo")
+direction_yaw_pid = SubResource("Resource_kw2nn")
+direction_roll_pid = SubResource("Resource_xyrqe")
+metadata/_custom_type_script = "uid://cdp8dc63ytxx1"
+
+[sub_resource type="Resource" id="Resource_lvl4a"]
+resource_name = "pitch"
+script = ExtResource("5_65nru")
+axis_name = "pitch"
+positive_event = &"pitch_up"
+negative_event = &"pitch_down"
+
+[sub_resource type="Resource" id="Resource_8ix2c"]
+resource_name = "yaw"
+script = ExtResource("5_65nru")
+axis_name = "yaw"
+positive_event = &"yaw_left"
+negative_event = &"yaw_right"
+
+[sub_resource type="Resource" id="Resource_s5u7q"]
+resource_name = "roll"
+script = ExtResource("5_65nru")
+axis_name = "roll"
+positive_event = &"roll_left"
+negative_event = &"roll_right"
+
+[sub_resource type="Resource" id="Resource_x57iw"]
+resource_name = "throttle"
+script = ExtResource("5_65nru")
+axis_name = "throttle"
+min_limit = 0.0
+cumulative_positive_event = &"throttle_up"
+cumulative_negative_event = &"throttle_down"
+
+[sub_resource type="Resource" id="Resource_7dsrn"]
+resource_name = "collective"
+script = ExtResource("5_65nru")
+axis_name = "collective"
+min_limit = 0.0
+cumulative_positive_event = &"collective_up"
+cumulative_negative_event = &"collective_down"
+metadata/_custom_type_script = "uid://dfbhcpt1rr3ai"
+
+[sub_resource type="Resource" id="Resource_cvjw4"]
+script = ExtResource("6_16k3l")
+axis_configs = Array[ExtResource("5_65nru")]([SubResource("Resource_lvl4a"), SubResource("Resource_8ix2c"), SubResource("Resource_s5u7q"), SubResource("Resource_x57iw"), SubResource("Resource_7dsrn")])
+
+[sub_resource type="Curve" id="Curve_jduiy"]
+_limits = [0.0, 1.0, -180.0, 180.0]
+bake_resolution = 21
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-90, 1), 0.0, 0.0, 0, 0, Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(90, 1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+point_count = 5
+
+[sub_resource type="Curve" id="Curve_65nru"]
+_limits = [1.0, 2.0, 0.0, 2.0]
+bake_resolution = 23
+_data = [Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 2), 0.0, 0.0, 0, 0, Vector2(2, 1.2), 0.181, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_16k3l"]
+_limits = [-1.0, 1.0, -180.0, 180.0]
+bake_resolution = 36
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-148, 1), 0.0, 0.0, 0, 0, Vector2(-145, 0.7), 0.0, 0.0, 0, 0, Vector2(-35, -0.7), 0.0, 0.0, 0, 0, Vector2(-32, -1), 0.0, 0.0, 0, 0, Vector2(32, 1), 0.0, 0.0, 0, 0, Vector2(35, 0.7), 0.0, 0.0, 0, 0, Vector2(137.426, -0.7), 0.0, 0.0, 0, 0, Vector2(148, -1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+point_count = 10
+
+[sub_resource type="Curve" id="Curve_utkc8"]
+_limits = [0.0, 1.0, 0.0, 90.0]
+bake_resolution = 4
+_data = [Vector2(0, 1), 0.0, -0.0244575, 0, 0, Vector2(35.2174, 0.443437), -0.00834336, -0.00834336, 0, 0, Vector2(90, 0.291), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Resource" id="Resource_vwm3g"]
+script = ExtResource("7_35f7f")
+min_lift_coefficient = -1.2999999999999972
+max_lift_coefficient = 1.3
+lift_aoa_curve = SubResource("Curve_16k3l")
+min_drag_coefficient = 0.05
+drag_aoa_curve = SubResource("Curve_jduiy")
+sweep_drag_multiplier_curve = SubResource("Curve_utkc8")
+drag_at_mach_multiplier_curve = SubResource("Curve_65nru")
+
+[sub_resource type="Resource" id="Resource_6qk7s"]
+script = ExtResource("8_yinxf")
+chord = 9.117999999999999
+span = 26.138999999999996
+area = 238.33540199999993
+aspect_ratio = 2.8667470936608908
+
+[sub_resource type="Resource" id="Resource_hsuvl"]
+script = ExtResource("8_yinxf")
+chord = 6.093
+span = 18.724
+area = 114.085332
+aspect_ratio = 3.0730346299031677
+
+[sub_resource type="Curve" id="Curve_lvl4a"]
+_limits = [0.0, 1.0, -180.0, 180.0]
+bake_resolution = 21
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-90, 1), 0.0, 0.0, 0, 0, Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(90, 1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+point_count = 5
+
+[sub_resource type="Curve" id="Curve_8ix2c"]
+_limits = [1.0, 2.0, 0.0, 2.0]
+bake_resolution = 23
+_data = [Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 2), 0.0, 0.0, 0, 0, Vector2(2, 1.2), 0.181, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_s5u7q"]
+_limits = [-1.0, 1.0, -180.0, 180.0]
+bake_resolution = 36
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-148, 1), 0.0, 0.0, 0, 0, Vector2(-145, 0.7), 0.0, 0.0, 0, 0, Vector2(-35, -0.7), 0.0, 0.0, 0, 0, Vector2(-32, -1), 0.0, 0.0, 0, 0, Vector2(32, 1), 0.0, 0.0, 0, 0, Vector2(35, 0.7), 0.0, 0.0, 0, 0, Vector2(137.426, -0.7), 0.0, 0.0, 0, 0, Vector2(148, -1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+point_count = 10
+
+[sub_resource type="Curve" id="Curve_x57iw"]
+_limits = [0.0, 1.0, 0.0, 90.0]
+bake_resolution = 4
+_data = [Vector2(0, 1), 0.0, -0.0244575, 0, 0, Vector2(35.2174, 0.443437), -0.00834336, -0.00834336, 0, 0, Vector2(90, 0.291), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Resource" id="Resource_1tns4"]
+script = ExtResource("7_35f7f")
+lift_aoa_curve = SubResource("Curve_s5u7q")
+drag_aoa_curve = SubResource("Curve_lvl4a")
+sweep_drag_multiplier_curve = SubResource("Curve_x57iw")
+drag_at_mach_multiplier_curve = SubResource("Curve_8ix2c")
+
+[sub_resource type="Resource" id="Resource_8a4f4"]
+script = ExtResource("8_yinxf")
+chord = 2.063
+span = 13.714000000000002
+area = 28.291982000000008
+aspect_ratio = 6.647600581677169
+
+[sub_resource type="Resource" id="Resource_ejoba"]
+resource_name = "roll"
+script = ExtResource("9_n73q8")
+axis_name = "roll"
+contribution = Vector3(1, 0, 0)
+axis_flip_x = 1
+
+[sub_resource type="Resource" id="Resource_0thx8"]
+script = ExtResource("10_0pbsb")
+axis_configs = Array[ExtResource("9_n73q8")]([SubResource("Resource_ejoba")])
+max_value = Vector3(0.6, 0, 0)
+min_value = Vector3(-0.6, 0, 0)
+metadata/_custom_type_script = "uid://cblxodmmwvpt6"
+
+[sub_resource type="Resource" id="Resource_jjr16"]
+resource_name = "throttle"
+script = ExtResource("9_n73q8")
+axis_name = "throttle"
+contribution = Vector3(1, 1, 1)
+
+[sub_resource type="Resource" id="Resource_segqd"]
+script = ExtResource("10_0pbsb")
+axis_configs = Array[ExtResource("9_n73q8")]([SubResource("Resource_jjr16")])
+use_separate_minmax = true
+max_value = Vector3(0, 283, 0)
+
+[sub_resource type="Curve" id="Curve_7dsrn"]
+_limits = [0.0, 1.0, -180.0, 180.0]
+bake_resolution = 21
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-90, 1), 0.0, 0.0, 0, 0, Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(90, 1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+point_count = 5
+
+[sub_resource type="Curve" id="Curve_cvjw4"]
+_limits = [1.0, 2.0, 0.0, 2.0]
+bake_resolution = 23
+_data = [Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 2), 0.0, 0.0, 0, 0, Vector2(2, 1.2), 0.181, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_wb065"]
+_limits = [-1.0, 1.0, -180.0, 180.0]
+bake_resolution = 36
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-148, 1), 0.0, 0.0, 0, 0, Vector2(-145, 0.7), 0.0, 0.0, 0, 0, Vector2(-35, -0.7), 0.0, 0.0, 0, 0, Vector2(-32, -1), 0.0, 0.0, 0, 0, Vector2(32, 1), 0.0, 0.0, 0, 0, Vector2(35, 0.7), 0.0, 0.0, 0, 0, Vector2(137.426, -0.7), 0.0, 0.0, 0, 0, Vector2(148, -1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+point_count = 10
+
+[sub_resource type="Curve" id="Curve_rod6k"]
+_limits = [0.0, 1.0, 0.0, 90.0]
+bake_resolution = 4
+_data = [Vector2(0, 1), 0.0, -0.0244575, 0, 0, Vector2(35.2174, 0.443437), -0.00834336, -0.00834336, 0, 0, Vector2(90, 0.291), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Resource" id="Resource_ejmvr"]
+script = ExtResource("7_35f7f")
+lift_aoa_curve = SubResource("Curve_wb065")
+drag_aoa_curve = SubResource("Curve_7dsrn")
+sweep_drag_multiplier_curve = SubResource("Curve_rod6k")
+drag_at_mach_multiplier_curve = SubResource("Curve_cvjw4")
+
+[sub_resource type="Resource" id="Resource_rca78"]
+script = ExtResource("8_yinxf")
+chord = 0.395
+span = 3.55
+area = 1.40225
+aspect_ratio = 8.987341772151899
+
+[sub_resource type="Resource" id="Resource_km0hj"]
+resource_name = "collective"
+script = ExtResource("9_n73q8")
+axis_name = "collective"
+contribution = Vector3(1, 0, 0)
+
+[sub_resource type="Resource" id="Resource_kigpq"]
+script = ExtResource("10_0pbsb")
+axis_configs = Array[ExtResource("9_n73q8")]([SubResource("Resource_km0hj")])
+use_separate_minmax = true
+max_value = Vector3(0.25, 0, 0)
+metadata/_custom_type_script = "uid://cblxodmmwvpt6"
+
+[sub_resource type="Curve" id="Curve_jmvpa"]
+_limits = [0.0, 1.0, -180.0, 180.0]
+bake_resolution = 21
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-90, 1), 0.0, 0.0, 0, 0, Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(90, 1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+point_count = 5
+
+[sub_resource type="Curve" id="Curve_kto0w"]
+_limits = [1.0, 2.0, 0.0, 2.0]
+bake_resolution = 23
+_data = [Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 2), 0.0, 0.0, 0, 0, Vector2(2, 1.2), 0.181, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_lrs1t"]
+_limits = [-1.0, 1.0, -180.0, 180.0]
+bake_resolution = 36
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-148, 1), 0.0, 0.0, 0, 0, Vector2(-145, 0.7), 0.0, 0.0, 0, 0, Vector2(-35, -0.7), 0.0, 0.0, 0, 0, Vector2(-32, -1), 0.0, 0.0, 0, 0, Vector2(32, 1), 0.0, 0.0, 0, 0, Vector2(35, 0.7), 0.0, 0.0, 0, 0, Vector2(137.426, -0.7), 0.0, 0.0, 0, 0, Vector2(148, -1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+point_count = 10
+
+[sub_resource type="Curve" id="Curve_ck37f"]
+_limits = [0.0, 1.0, 0.0, 90.0]
+bake_resolution = 4
+_data = [Vector2(0, 1), 0.0, -0.0244575, 0, 0, Vector2(35.2174, 0.443437), -0.00834336, -0.00834336, 0, 0, Vector2(90, 0.291), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Resource" id="Resource_0xyeg"]
+script = ExtResource("7_35f7f")
+lift_aoa_curve = SubResource("Curve_lrs1t")
+drag_aoa_curve = SubResource("Curve_jmvpa")
+sweep_drag_multiplier_curve = SubResource("Curve_ck37f")
+drag_at_mach_multiplier_curve = SubResource("Curve_kto0w")
+
+[sub_resource type="Resource" id="Resource_sctmh"]
+script = ExtResource("8_yinxf")
+chord = 2.2910000000000004
+span = 13.195
+area = 30.229745000000005
+aspect_ratio = 5.7594936708860756
+
+[sub_resource type="Curve" id="Curve_h2hs3"]
+_limits = [0.0, 1.0, -180.0, 180.0]
+bake_resolution = 21
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-90, 1), 0.0, 0.0, 0, 0, Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(90, 1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+point_count = 5
+
+[sub_resource type="Curve" id="Curve_5d4lb"]
+_limits = [1.0, 2.0, 0.0, 2.0]
+bake_resolution = 23
+_data = [Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 2), 0.0, 0.0, 0, 0, Vector2(2, 1.2), 0.181, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_r1x5l"]
+_limits = [-1.0, 1.0, -180.0, 180.0]
+bake_resolution = 36
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-148, 1), 0.0, 0.0, 0, 0, Vector2(-145, 0.7), 0.0, 0.0, 0, 0, Vector2(-35, -0.7), 0.0, 0.0, 0, 0, Vector2(-32, -1), 0.0, 0.0, 0, 0, Vector2(32, 1), 0.0, 0.0, 0, 0, Vector2(35, 0.7), 0.0, 0.0, 0, 0, Vector2(137.426, -0.7), 0.0, 0.0, 0, 0, Vector2(148, -1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+point_count = 10
+
+[sub_resource type="Curve" id="Curve_ywds6"]
+_limits = [0.0, 1.0, 0.0, 90.0]
+bake_resolution = 4
+_data = [Vector2(0, 1), 0.0, -0.0244575, 0, 0, Vector2(35.2174, 0.443437), -0.00834336, -0.00834336, 0, 0, Vector2(90, 0.291), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Resource" id="Resource_px2bq"]
+script = ExtResource("7_35f7f")
+lift_aoa_curve = SubResource("Curve_r1x5l")
+drag_aoa_curve = SubResource("Curve_h2hs3")
+sweep_drag_multiplier_curve = SubResource("Curve_ywds6")
+drag_at_mach_multiplier_curve = SubResource("Curve_5d4lb")
+
+[sub_resource type="Resource" id="Resource_7qth2"]
+script = ExtResource("8_yinxf")
+chord = 2.3490000000000006
+span = 14.165
+area = 33.273585000000004
+aspect_ratio = 6.030225627926775
+
+[sub_resource type="Resource" id="Resource_4pa3l"]
+resource_name = "pitch"
+script = ExtResource("9_n73q8")
+axis_name = "pitch"
+contribution = Vector3(-1, 0, 0)
+
+[sub_resource type="Resource" id="Resource_6axm8"]
+script = ExtResource("10_0pbsb")
+axis_configs = Array[ExtResource("9_n73q8")]([SubResource("Resource_4pa3l")])
+max_value = Vector3(0.4, 0, 0)
+min_value = Vector3(-0.4, 0, 0)
+metadata/_custom_type_script = "uid://cblxodmmwvpt6"
+
+[sub_resource type="Curve" id="Curve_s1gfc"]
+_limits = [0.0, 1.0, -180.0, 180.0]
+bake_resolution = 21
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-90, 1), 0.0, 0.0, 0, 0, Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(90, 1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+point_count = 5
+
+[sub_resource type="Curve" id="Curve_mwbq2"]
+_limits = [1.0, 2.0, 0.0, 2.0]
+bake_resolution = 23
+_data = [Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 2), 0.0, 0.0, 0, 0, Vector2(2, 1.2), 0.181, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_8dpna"]
+_limits = [-1.0, 1.0, -180.0, 180.0]
+bake_resolution = 36
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-148, 1), 0.0, 0.0, 0, 0, Vector2(-145, 0.7), 0.0, 0.0, 0, 0, Vector2(-35, -0.7), 0.0, 0.0, 0, 0, Vector2(-32, -1), 0.0, 0.0, 0, 0, Vector2(32, 1), 0.0, 0.0, 0, 0, Vector2(35, 0.7), 0.0, 0.0, 0, 0, Vector2(137.426, -0.7), 0.0, 0.0, 0, 0, Vector2(148, -1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+point_count = 10
+
+[sub_resource type="Curve" id="Curve_r012w"]
+_limits = [0.0, 1.0, 0.0, 90.0]
+bake_resolution = 4
+_data = [Vector2(0, 1), 0.0, -0.0244575, 0, 0, Vector2(35.2174, 0.443437), -0.00834336, -0.00834336, 0, 0, Vector2(90, 0.291), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Resource" id="Resource_qv8b5"]
+script = ExtResource("7_35f7f")
+lift_aoa_curve = SubResource("Curve_8dpna")
+drag_aoa_curve = SubResource("Curve_s1gfc")
+sweep_drag_multiplier_curve = SubResource("Curve_r012w")
+drag_at_mach_multiplier_curve = SubResource("Curve_mwbq2")
+
+[sub_resource type="Resource" id="Resource_3vvy3"]
+script = ExtResource("8_yinxf")
+chord = 3.5549999999999997
+span = 6.789999999999999
+area = 24.138449999999995
+aspect_ratio = 1.909985935302391
+
+[sub_resource type="Curve" id="Curve_7hwab"]
+_limits = [0.0, 1.0, -180.0, 180.0]
+bake_resolution = 21
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-90, 1), 0.0, 0.0, 0, 0, Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(90, 1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+point_count = 5
+
+[sub_resource type="Curve" id="Curve_d0bqd"]
+_limits = [1.0, 2.0, 0.0, 2.0]
+bake_resolution = 23
+_data = [Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 2), 0.0, 0.0, 0, 0, Vector2(2, 1.2), 0.181, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_fmfua"]
+_limits = [-1.0, 1.0, -180.0, 180.0]
+bake_resolution = 36
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-148, 1), 0.0, 0.0, 0, 0, Vector2(-145, 0.7), 0.0, 0.0, 0, 0, Vector2(-35, -0.7), 0.0, 0.0, 0, 0, Vector2(-32, -1), 0.0, 0.0, 0, 0, Vector2(32, 1), 0.0, 0.0, 0, 0, Vector2(35, 0.7), 0.0, 0.0, 0, 0, Vector2(137.426, -0.7), 0.0, 0.0, 0, 0, Vector2(148, -1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+point_count = 10
+
+[sub_resource type="Curve" id="Curve_ilcdk"]
+_limits = [0.0, 1.0, 0.0, 90.0]
+bake_resolution = 4
+_data = [Vector2(0, 1), 0.0, -0.0244575, 0, 0, Vector2(35.2174, 0.443437), -0.00834336, -0.00834336, 0, 0, Vector2(90, 0.291), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Resource" id="Resource_o30t8"]
+script = ExtResource("7_35f7f")
+lift_aoa_curve = SubResource("Curve_fmfua")
+drag_aoa_curve = SubResource("Curve_7hwab")
+sweep_drag_multiplier_curve = SubResource("Curve_ilcdk")
+drag_at_mach_multiplier_curve = SubResource("Curve_d0bqd")
+
+[sub_resource type="Resource" id="Resource_ux024"]
+script = ExtResource("8_yinxf")
+chord = 3.19
+span = 6.94
+area = 22.1386
+aspect_ratio = 2.175548589341693
+
+[sub_resource type="Resource" id="Resource_k5k1t"]
+resource_name = "yaw"
+script = ExtResource("9_n73q8")
+axis_name = "yaw"
+contribution = Vector3(1, 0, 0)
+
+[sub_resource type="Resource" id="Resource_nrhy0"]
+script = ExtResource("10_0pbsb")
+axis_configs = Array[ExtResource("9_n73q8")]([SubResource("Resource_k5k1t")])
+max_value = Vector3(0.5, 0, 0)
+min_value = Vector3(-0.5, 0, 0)
+metadata/_custom_type_script = "uid://cblxodmmwvpt6"
+
+[sub_resource type="GDScript" id="GDScript_0pbsb"]
+script/source = "extends MeshInstance3D
+
+func _physics_process(delta: float) -> void:
+	$Tail/TailHorizontal/Elevator.rotation.x = $\"../TailHorizontal/Elevator\".rotation.x
+	$Tail/Rudder.rotation.y = -$\"../TailVertical/Rudder\".rotation.x
+	$Wing/AileronR.rotation.x = $\"../Wing/Wing2/Aileron\".rotation.x + deg_to_rad(13.9)
+	
+	#the mirrored wing might not show up until after this runs once
+	if $\"../Wing/Wing2Mirror/Aileron\":
+		$Wing/AileronL.rotation.x = $\"../Wing/Wing2Mirror/Aileron\".rotation.x + deg_to_rad(13.9)
+"
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_yvgc5"]
+points = PackedVector3Array(3.288508176803589, -2.007404022788106, -9.125407612501128, 3.225416203168751, -2.032335198756392, -6.5623655350953225, 0, -3.129805564880371, -3.999323457689517, 0, -2.987697861861137, -11.688449689906934, 0, -2.939830004002027, -14.25149176731274, 0, -2.5922894110041104, -16.828221652875584, 3.036140282264238, -1.389110858774596, -14.25149176731274, 3.0612483125883054, -0.268703810759793, -3.999323457689517, 3.054810356094954, -0.10415804936910078, 1.260216826653238, 3.1172585340804577, -1.6349322538219024, 1.260216826653238, 3.1629680251832477, -2.056767751205313, -3.999323457689517, -3.163611820832583, -2.056767751205313, -3.999323457689517, -3.2260599988180862, -2.032335198756392, -6.5623655350953225, -3.288508176803589, -2.007404022788106, -9.125407612501128, 2.479900841238728, -1.8438555084361448, 5.60951786855281, 2.0530643257295704, -1.886238507582232, 5.60951786855281, 1.0262102650401177, -1.9769879881067955, 5.60951786855281, -1.0268540606894527, -1.9769879881067955, 5.60951786855281, -2.0537081213789055, -1.886238507582232, 5.60951786855281, -2.4805446368880633, -1.8438555084361448, 5.60951786855281, -3.162968025183248, -1.6982574407813509, -11.688449689906934, -3.0367840779135724, -1.389110858774596, -14.25149176731274, -2.3189519289049585, -0.9223992446482696, -16.828221652875584, -1.6848132143099046, -0.7513713775058228, -18.22095613285444, 0, -1.9415857182318284, -18.22095613285444, 1.6841694186605691, -0.7513713775058228, -18.22095613285444, 2.3183081332556235, -0.9223992446482696, -16.828221652875584, 2.61574172324843, 0.10925281691943312, -14.25149176731274, 3.030346121420221, -0.11562639031451294, -2.6100109297499223, 3.0425782387575877, -0.10964290808212418, -0.6766080275679727, 2.2468468161794295, 1.1428993725645986, -9.125407612501128, 2.2468468161794295, 1.1428993725645986, 3.4331563715833937, 2.1953431642326224, 1.1428993725645986, 5.60951786855281, 2.110362138520392, 1.1428993725645986, 7.108332861748728, 2.2494219987767696, 0.6003969834946803, 7.108332861748728, 2.479900841238728, -0.0857089791525687, 5.60951786855281, -3.1179023297297928, -1.6349322538219024, 1.260216826653238, -3.0554541517442897, -0.10415804936910078, 1.260216826653238, -3.0618921082376405, -0.268703810759793, -3.999323457689517, 1.5515475148975426, 0.9549183057637168, 11.553448560747585, 0.30837811603150334, 0.918518788850018, 15.485271453857422, 0.1963576730471992, 0.7345267102040625, 15.485271453857422, 0, 0.6966313227322667, 15.485271453857422, -0.19700146869653468, 0.7345267102040625, 15.485271453857422, -0.30902191168083837, 0.918518788850018, 15.485271453857422, -1.552191310546878, 0.9549183057637168, 11.553448560747585, -2.2500657944261047, 0.6003969834946803, 7.108332861748728, -2.4805446368880633, -0.0857089791525687, 5.60951786855281, -2.6163855188977654, 0.10925281691943312, -14.25149176731274, -1.0873708517269502, 1.0720948328146642, -18.22095613285444, -1.4189256111345163, 0.10925281691943312, -18.371522022581885, -0.7487343401766982, -0.00044435734102821, -19.473390579223633, -0.7345708358913265, -0.722949836901976, -18.92587825294202, 0, -0.7199580957857816, -19.08328804674798, 0.7480905445273631, -0.00044435734102821, -19.473390579223633, 0.7339270402419915, -0.722949836901976, -18.92587825294202, 1.418281815485181, 0.10925281691943312, -18.371522022581885, 1.0867270560776152, 1.0720948328146642, -18.22095613285444, 1.418925611134516, 1.585178434242004, -14.25149176731274, 0.9013139090691116, 1.8544351346995, 5.60951786855281, 0.8678365353036881, 1.8524406406220368, 7.108332861748728, 0.7043124403725773, 1.8439640407928195, 11.553448560747585, 1.3558336374996784, 1.4580294368037414, 11.553448560747585, -3.043222034406923, -0.10964290808212418, -0.6766080275679727, -2.111005934169728, 1.1428993725645986, 7.108332861748728, -2.1959869598819584, 1.1428993725645986, 5.60951786855281, -2.2474906118287645, 1.1428993725645986, 3.4331563715833937, -2.2474906118287645, 1.1428993725645986, -9.125407612501128, -3.0309899170695567, -0.11562639031451294, -2.6100109297499223, 0.30902191168083837, 1.4281120256417976, 15.485271453857422, 0.35666278973163434, 1.1867782422687831, 15.485271453857422, -0.3573065853809694, 1.1867782422687831, 15.485271453857422, -0.3096657073301734, 1.4281120256417976, 15.485271453857422, -1.3564774331490137, 1.4580294368037414, 11.553448560747585, -1.4195694067838516, 1.585178434242004, -14.25149176731274, 0, 1.9636336854405956, -14.25149176731274, 0, 1.2650621348092033, -18.22095613285444, 0.9013139090691116, 1.8544351346995, -9.125407612501128, 0, 1.964132308959961, -3.999323457689517, -0.7049562360219128, 1.8439640407928195, 11.553448560747585, 0.17897519051515198, 1.5427954350959163, 15.485271453857422, -0.8684803309530231, 1.8524406406220368, 7.108332861748728, -0.901957704718447, 1.8544351346995, 5.60951786855281, -0.17961898616448746, 1.5427954350959163, 15.485271453857422, -0.901957704718447, 1.8544351346995, -9.125407612501128)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_2tceh"]
+points = PackedVector3Array(-7.26227035434711, -0.20537710189819336, -1.404997706413269, -0.00144465294496676, -0.17670949644751163, 0.9478116556943724, -5.995309721611399, -0.17670949644751163, -0.2730019022663217, -6.880881976875926, -0.17670949644751163, -0.7741702250325316, -6.961782541794056, -3.98493923987886e-05, -0.6135109639788571, -7.379287242889404, -3.98493923987886e-05, -1.3223307665755435, -7.26227035434711, 0.20537781715393064, -1.404997706413269, 7.260825701402142, -0.20537710189819336, -1.404997706413269, 5.992420415721465, -0.17670949644751163, -0.2730019022663217, -0.00144465294496676, -3.98493923987886e-05, 1.1084709167480469, -5.995309721611399, -3.98493923987886e-05, -0.11234264121264714, -6.880881976875926, 0.1766700046829815, -0.7741702250325316, -5.995309721611399, 0.1766700046829815, -0.2730019022663217, -0.00144465294496676, 0.1766700046829815, 0.9478116556943724, 7.260825701402142, 0.20537781715393064, -1.404997706413269, 7.379287242889404, -3.98493923987886e-05, -1.3223307665755435, 6.960337888849089, -3.98493923987886e-05, -0.6135109639788571, 6.87943732393096, -0.17670949644751163, -0.7741702250325316, 5.992420415721465, -3.98493923987886e-05, -0.11234264121264714, 5.992420415721465, 0.1766700046829815, -0.2730019022663217, 6.87943732393096, 0.1766700046829815, -0.7741702250325316)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_lv6b5"]
+points = PackedVector3Array(-0.4103147472454032, -2.7197093963623047, 6.733449271673697, 0.4101872014738006, -2.7197093963623047, 6.733449271673697, 0, -2.7197093963623047, 7.396849155426025, -0.4103147472454032, -1.3913905343322337, 6.733449271673697, -0.5586504796191688, -2.697481325387768, 5.724918650852673, -0.6515038013458252, -2.6767862248252685, 4.306952273556284, -0.5716601483226289, -2.6576240946748055, 3.0558533516822615, 0.5715326025510263, -2.6576240946748055, 3.0558533516822615, 0.6515038013458252, -2.6767862248252685, 4.306952273556284, 0.5585229338475663, -2.697481325387768, 5.724918650852673, 0.4101872014738006, -1.3913905343322337, 6.733449271673697, 0, -1.3913905343322337, 7.396849155426025, -0.6515038013458252, -0.20793737623966013, 4.018800667607421, -0.5586504796191688, -1.1491812092303857, 5.638635966585499, -0.2823863383280456, 4.541971445457022, -0.16265356900081474, -0.5868380951433324, 0.9126639949593957, 2.837704678252048, -0.2823863383280456, 0.690383285214029, -0.6510461214565166, -0.2823863383280456, -2.3012084738762004, -0.06090512057254349, 0, -2.3219035744387, 0.07747276928990543, 0.5867105493717297, 0.9126639949593957, 2.837704678252048, 0.28225879255644304, -2.3012084738762004, -0.06090512057254349, 0.28225879255644304, 0.690383285214029, -0.6510461214565166, 0.5585229338475663, -1.1491812092303857, 5.638635966585499, 0.6515038013458252, -0.20793737623966013, 4.018800667607421, 0.28225879255644304, 4.541971445457022, -0.16265356900081474, 0, 4.788013196588962, -0.01125187773954705, 0, 5.110703468322754, -0.9188480377197266, -0.2823863383280456, 4.767318096026463, -0.916406074957448, -0.2823863383280456, 3.9717064521792538, -0.916406074957448, 0, 3.9717064521792538, -0.9188480377197266, 0.28225879255644304, 3.9717064521792538, -0.916406074957448, 0.28225879255644304, 4.767318096026463, -0.916406074957448)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_nrmmd"]
+points = PackedVector3Array(-0.00027085368112356, -1.3847404718399048, -0.8053498263926646, 0.6920983689598676, -1.1993134596801496, -0.8053498263926646, -0.00027085368112356, -1.3847404718399048, 1.9966212833123735, -0.6923689842224121, -1.1993134596801496, -0.8053498263926646, -0.00027085368112356, -1.2050063942640017, -2.4680110915340103, 1.1990405954041328, -0.6923711895942688, -0.8053498263926646, 0.6920983689598676, -1.1993134596801496, 1.9966212833123735, 0.5541124902111345, -1.056447910837765, -2.4680110915340103, 2.384185791015625e-07, -1.3253712968940183, 2.2951570179841436, -0.6628199453548052, -1.1478059563024396, 2.2951570179841436, -0.6923689842224121, -1.1993134596801496, 1.9966212833123735, -1.1993112106666777, -0.6923711895942688, -0.8053498263926646, -0.5543831054736789, -1.056447910837765, -2.4680110915340103, -0.00027085368112356, -0.9534329040823452, -3.375803427576739, 0.9599373634662496, -0.6506230026460198, -2.4680110915340103, 1.3847386837005615, -1.9073486328125e-06, -0.8053498263926646, 1.1990405954041328, -0.6923711895942688, 1.9966212833123735, 0.6625493300922605, -1.1478059563024396, 2.2951570179841436, 0.3868486646944971, -0.849604620957804, -3.375803427576739, 2.384185791015625e-07, -1.1201545597523008, 2.454172990941964, -0.560076039567438, -0.9699695235878204, 2.454172990941964, -0.9699672943180953, -0.5600782335504668, 2.454782247543334, -1.1478037117231423, -0.6628221481828458, 2.2951570179841436, -1.1993112106666777, -0.6923711895942688, 1.9966212833123735, -1.384738206863403, -1.9073486328125e-06, -0.8053498263926646, -1.108766449365937, -0.09651070315107856, -2.4680110915340103, -0.960207978728794, -0.6506230026460198, -2.4680110915340103, -0.3871192799570417, -0.849604620957804, -3.375803427576739, -0.24235609871573804, -0.6891180841177819, -3.769383192062378, -0.00027085368112356, -0.75390910152448, -3.769383192062378, 0.2420854834531936, -0.6891180841177819, -3.769383192062378, 1.1084958341033926, -0.09651070315107856, -2.4680110915340103, 0.6698688167842368, -0.5663133523804001, -3.375803427576739, 0.7736970909704151, -0.17946489280149547, -3.375803427576739, 0.9599373634662496, 0.4578726884669033, -2.4680110915340103, 1.1990405954041328, 0.6923673748970032, -0.8053498263926646, 1.3847386837005615, -1.9073486328125e-06, 1.9966212833123735, 1.147533096460598, -0.6628221481828458, 2.2951570179841436, 0.9696966790555508, -0.5600782335504668, 2.454782247543334, 0.5598054243048936, -0.9699695235878204, 2.454172990941964, -1.1201523175534551, -0.00027299947167347, 2.454782247543334, -1.3253690370284867, -0.00027299947167347, 2.2951570179841436, -1.384738206863403, -1.9073486328125e-06, 1.9966212833123735, -1.1993112106666777, 0.6923673748970032, -0.8053498263926646, -0.960207978728794, 0.4578726884669033, -2.4680110915340103, -0.7739677062329596, -0.17946489280149547, -3.375803427576739, -0.6701394320467812, -0.5663133523804001, -3.375803427576739, -0.41965033192137946, -0.5115527435262034, -3.769383192062378, 0.4193797166588351, -0.5115527435262034, -3.769383192062378, 0.48444182058751073, -0.26946747765096735, -3.769383192062378, 0.6698688167842368, 0.20738356677740932, -3.375803427576739, 0.3868486646944971, 0.4906748353548131, -3.375803427576739, 0.5541124902111345, 0.8636975966586484, -2.4680110915340103, 0.6920983689598676, 1.199038552859843, -0.8053498263926646, 1.1990405954041328, 0.6923673748970032, 1.9966212833123735, 1.147533096460598, 0.6625472413625397, 2.2951570179841436, 1.3250984217659425, -0.00027299947167347, 2.2951570179841436, 1.1198817022909109, -0.00027299947167347, 2.454782247543334, -0.9699672943180953, 0.5598033267301605, 2.454782247543334, -1.1478037117231423, 0.6625472413625397, 2.2951570179841436, -1.1993112106666777, 0.6923673748970032, 1.9966212833123735, -0.6923689842224121, 1.199038552859843, -0.8053498263926646, -0.5543831054736789, 0.8636975966586484, -2.4680110915340103, -0.3871192799570417, 0.4906748353548131, -3.375803427576739, -0.6701394320467812, 0.20738356677740932, -3.375803427576739, -0.4847124358500553, -0.26946747765096735, -3.769383192062378, 0.4193797166588351, -0.02711111965269075, -3.769383192062378, 0.2420854834531936, 0.15018312881584728, -3.769383192062378, -0.00027085368112356, 0.2152452383455861, -3.769383192062378, -0.00027085368112356, 0.5942320263563139, -3.375803427576739, -0.00027085368112356, 1.0122560800848852, -2.4680110915340103, -0.00027085368112356, 1.3847366571426392, -0.8053498263926646, 0.6920983689598676, 1.199038552859843, 1.9966212833123735, 0.6625493300922605, 1.1475310494821334, 2.2951570179841436, 0.9696966790555508, 0.5598033267301605, 2.454782247543334, -0.560076039567438, 0.9696946167675145, 2.454782247543334, -0.6628199453548052, 1.1475310494821334, 2.2951570179841436, -0.6923689842224121, 1.199038552859843, 1.9966212833123735, -0.24235609871573804, 0.15018312881584728, -3.769383192062378, -0.41965033192137946, -0.02711111965269075, -3.769383192062378, -0.00027085368112356, 1.3844655650195985, 1.9966212833123735, 2.384185791015625e-07, 1.3250963900737118, 2.2951570179841436, 2.384185791015625e-07, 1.1198796529319943, 2.454782247543334, 0.5598054243048936, 0.9696946167675145, 2.454782247543334)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_8f6hu"]
+points = PackedVector3Array(-0.00027085368112356, -1.3847404718399048, -0.8053498263926646, 0.6920983689598676, -1.1993134596801496, -0.8053498263926646, -0.00027085368112356, -1.3847404718399048, 1.9966212833123735, -0.6923689842224121, -1.1993134596801496, -0.8053498263926646, -0.00027085368112356, -1.2050063942640017, -2.4680110915340103, 1.1990405954041328, -0.6923711895942688, -0.8053498263926646, 0.6920983689598676, -1.1993134596801496, 1.9966212833123735, 0.5541124902111345, -1.056447910837765, -2.4680110915340103, 2.384185791015625e-07, -1.3253712968940183, 2.2951570179841436, -0.6628199453548052, -1.1478059563024396, 2.2951570179841436, -0.6923689842224121, -1.1993134596801496, 1.9966212833123735, -1.1993112106666777, -0.6923711895942688, -0.8053498263926646, -0.5543831054736789, -1.056447910837765, -2.4680110915340103, -0.00027085368112356, -0.9534329040823452, -3.375803427576739, 0.9599373634662496, -0.6506230026460198, -2.4680110915340103, 1.3847386837005615, -1.9073486328125e-06, -0.8053498263926646, 1.1990405954041328, -0.6923711895942688, 1.9966212833123735, 0.6625493300922605, -1.1478059563024396, 2.2951570179841436, 0.3868486646944971, -0.849604620957804, -3.375803427576739, 2.384185791015625e-07, -1.1201545597523008, 2.454172990941964, -0.560076039567438, -0.9699695235878204, 2.454172990941964, -0.9699672943180953, -0.5600782335504668, 2.454782247543334, -1.1478037117231423, -0.6628221481828458, 2.2951570179841436, -1.1993112106666777, -0.6923711895942688, 1.9966212833123735, -1.384738206863403, -1.9073486328125e-06, -0.8053498263926646, -1.108766449365937, -0.09651070315107856, -2.4680110915340103, -0.960207978728794, -0.6506230026460198, -2.4680110915340103, -0.3871192799570417, -0.849604620957804, -3.375803427576739, -0.24235609871573804, -0.6891180841177819, -3.769383192062378, -0.00027085368112356, -0.75390910152448, -3.769383192062378, 0.2420854834531936, -0.6891180841177819, -3.769383192062378, 1.1084958341033926, -0.09651070315107856, -2.4680110915340103, 0.6698688167842368, -0.5663133523804001, -3.375803427576739, 0.7736970909704151, -0.17946489280149547, -3.375803427576739, 0.9599373634662496, 0.4578726884669033, -2.4680110915340103, 1.1990405954041328, 0.6923673748970032, -0.8053498263926646, 1.3847386837005615, -1.9073486328125e-06, 1.9966212833123735, 1.147533096460598, -0.6628221481828458, 2.2951570179841436, 0.9696966790555508, -0.5600782335504668, 2.454782247543334, 0.5598054243048936, -0.9699695235878204, 2.454172990941964, -1.1201523175534551, -0.00027299947167347, 2.454782247543334, -1.3253690370284867, -0.00027299947167347, 2.2951570179841436, -1.384738206863403, -1.9073486328125e-06, 1.9966212833123735, -1.1993112106666777, 0.6923673748970032, -0.8053498263926646, -0.960207978728794, 0.4578726884669033, -2.4680110915340103, -0.7739677062329596, -0.17946489280149547, -3.375803427576739, -0.6701394320467812, -0.5663133523804001, -3.375803427576739, -0.41965033192137946, -0.5115527435262034, -3.769383192062378, 0.4193797166588351, -0.5115527435262034, -3.769383192062378, 0.48444182058751073, -0.26946747765096735, -3.769383192062378, 0.6698688167842368, 0.20738356677740932, -3.375803427576739, 0.3868486646944971, 0.4906748353548131, -3.375803427576739, 0.5541124902111345, 0.8636975966586484, -2.4680110915340103, 0.6920983689598676, 1.199038552859843, -0.8053498263926646, 1.1990405954041328, 0.6923673748970032, 1.9966212833123735, 1.147533096460598, 0.6625472413625397, 2.2951570179841436, 1.3250984217659425, -0.00027299947167347, 2.2951570179841436, 1.1198817022909109, -0.00027299947167347, 2.454782247543334, -0.9699672943180953, 0.5598033267301605, 2.454782247543334, -1.1478037117231423, 0.6625472413625397, 2.2951570179841436, -1.1993112106666777, 0.6923673748970032, 1.9966212833123735, -0.6923689842224121, 1.199038552859843, -0.8053498263926646, -0.5543831054736789, 0.8636975966586484, -2.4680110915340103, -0.3871192799570417, 0.4906748353548131, -3.375803427576739, -0.6701394320467812, 0.20738356677740932, -3.375803427576739, -0.4847124358500553, -0.26946747765096735, -3.769383192062378, 0.4193797166588351, -0.02711111965269075, -3.769383192062378, 0.2420854834531936, 0.15018312881584728, -3.769383192062378, -0.00027085368112356, 0.2152452383455861, -3.769383192062378, -0.00027085368112356, 0.5942320263563139, -3.375803427576739, -0.00027085368112356, 1.0122560800848852, -2.4680110915340103, -0.00027085368112356, 1.3847366571426392, -0.8053498263926646, 0.6920983689598676, 1.199038552859843, 1.9966212833123735, 0.6625493300922605, 1.1475310494821334, 2.2951570179841436, 0.9696966790555508, 0.5598033267301605, 2.454782247543334, -0.560076039567438, 0.9696946167675145, 2.454782247543334, -0.6628199453548052, 1.1475310494821334, 2.2951570179841436, -0.6923689842224121, 1.199038552859843, 1.9966212833123735, -0.24235609871573804, 0.15018312881584728, -3.769383192062378, -0.41965033192137946, -0.02711111965269075, -3.769383192062378, -0.00027085368112356, 1.3844655650195985, 1.9966212833123735, 2.384185791015625e-07, 1.3250963900737118, 2.2951570179841436, 2.384185791015625e-07, 1.1198796529319943, 2.454782247543334, 0.5598054243048936, 0.9696946167675145, 2.454782247543334)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_vpgbi"]
+points = PackedVector3Array(-0.00013925710411477, -0.863564670085907, 0.7482319381335989, -0.6733080983955411, -0.31407083041189976, 1.547317469409414, -0.7113252878189087, -0.36236588016280735, 0.6756494662774761, -0.7113252878189087, -0.3763667252046014, -0.2855595301722955, -0.6790176396642519, -0.4024806609005319, -1.2257399600095455, -0.00013925710411477, -0.8530247080881519, -0.2855595301722955, 0.6788783825601372, -0.4024806609005319, -1.2257399600095455, 0.7111860307147939, -0.3763667252046014, -0.2855595301722955, 0.7111860307147939, -0.36236588016280735, 0.6756494662774761, 0.6731688412914263, -0.31407083041189976, 1.547317469409414, -0.00013925710411477, -0.7240281582648809, 1.6287183724256264, -0.4120617710759888, -0.21480641219423624, 2.192419625812895, -0.6733080983955411, 0.5637349598488961, 1.547317469409414, -0.7113252878189087, 0.5424977229877479, 0.6756494662774761, -0.7113252878189087, 0.5382502756155183, -0.2855595301722955, -0.5283414530119301, -0.4267068422088048, -2.19441070590247, -0.6790176396642519, 0.5382502756155183, -1.2257399600095455, -0.5283414530119301, 0.5632630212519818, -2.291413448663456, -0.00013925710411477, -0.783492421476096, -1.2257399600095455, 0.5282021959078154, -0.4267068422088048, -2.19441070590247, 0.5282021959078154, 0.5632630212519818, -2.291413448663456, 0.6788783825601372, 0.5382502756155183, -1.2257399600095455, 0.7111860307147939, 0.5382502756155183, -0.2855595301722955, 0.7111860307147939, 0.5424977229877479, 0.6756494662774761, 0.6731688412914263, 0.5637349598488961, 1.547317469409414, 0.41192251397187407, -0.21480641219423624, 2.192419625812895, -0.00013925710411477, -0.1336329735249584, 2.452902515464774, -0.00013925710411477, 0.7068896675795995, 2.452902515464774, -0.4066307440155077, 0.6137604511218233, 2.192419625812895, -0.00013925710411477, 0.7435435652732849, -4.476349353790283, -0.31318922715440983, 0.608883752287041, -3.218705402189806, -0.3230764815465677, -0.4528207779047352, -3.066078709034408, -0.00013925710411477, -0.4981268832085183, -3.938425053024815, 0.3229372244424529, -0.4528207779047352, -3.066078709034408, 0.3130499700502951, 0.608883752287041, -3.218705402189806, 0.4064914869113929, 0.6137604511218233, 2.192419625812895)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_mrqkl"]
+points = PackedVector3Array(-0.00013925710411477, -0.863564670085907, 0.7482319381335989, -0.6733080983955411, -0.31407083041189976, 1.547317469409414, -0.7113252878189087, -0.36236588016280735, 0.6756494662774761, -0.7113252878189087, -0.3763667252046014, -0.2855595301722955, -0.6790176396642519, -0.4024806609005319, -1.2257399600095455, -0.00013925710411477, -0.8530247080881519, -0.2855595301722955, 0.6788783825601372, -0.4024806609005319, -1.2257399600095455, 0.7111860307147939, -0.3763667252046014, -0.2855595301722955, 0.7111860307147939, -0.36236588016280735, 0.6756494662774761, 0.6731688412914263, -0.31407083041189976, 1.547317469409414, -0.00013925710411477, -0.7240281582648809, 1.6287183724256264, -0.4120617710759888, -0.21480641219423624, 2.192419625812895, -0.6733080983955411, 0.5637349598488961, 1.547317469409414, -0.7113252878189087, 0.5424977229877479, 0.6756494662774761, -0.7113252878189087, 0.5382502756155183, -0.2855595301722955, -0.5283414530119301, -0.4267068422088048, -2.19441070590247, -0.6790176396642519, 0.5382502756155183, -1.2257399600095455, -0.5283414530119301, 0.5632630212519818, -2.291413448663456, -0.00013925710411477, -0.783492421476096, -1.2257399600095455, 0.5282021959078154, -0.4267068422088048, -2.19441070590247, 0.5282021959078154, 0.5632630212519818, -2.291413448663456, 0.6788783825601372, 0.5382502756155183, -1.2257399600095455, 0.7111860307147939, 0.5382502756155183, -0.2855595301722955, 0.7111860307147939, 0.5424977229877479, 0.6756494662774761, 0.6731688412914263, 0.5637349598488961, 1.547317469409414, 0.41192251397187407, -0.21480641219423624, 2.192419625812895, -0.00013925710411477, -0.1336329735249584, 2.452902515464774, -0.00013925710411477, 0.7068896675795995, 2.452902515464774, -0.4066307440155077, 0.6137604511218233, 2.192419625812895, -0.00013925710411477, 0.7435435652732849, -4.476349353790283, -0.31318922715440983, 0.608883752287041, -3.218705402189806, -0.3230764815465677, -0.4528207779047352, -3.066078709034408, -0.00013925710411477, -0.4981268832085183, -3.938425053024815, 0.3229372244424529, -0.4528207779047352, -3.066078709034408, 0.3130499700502951, 0.608883752287041, -3.218705402189806, 0.4064914869113929, 0.6137604511218233, 2.192419625812895)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_km0hj"]
+points = PackedVector3Array(-12.905168426531596, -0.15763838424660215, -6.1760334968566895, -12.905168426531596, -0.5815213853340179, -2.3786331332093957, -30.800836239742317, 0.28675213136426525, -2.2587816267155443, -31.98427963256836, 0.344429515961473, -2.2506713743964113, -18.121085602320445, 0.07911354681431737, -5.60020558219826, -31.98427963256836, 0.7086210015609848, -4.0691701721753, 12.898906821278551, -0.15763838424660215, -6.1760334968566895, -12.905168426531596, -0.6467059850692749, 0.996132970696422, 12.898906821278551, -0.5815213853340179, -2.3786331332093957, -31.98427963256836, 0.3118372160938445, 0.6059397202314774, -30.800836239742317, 0.6547887759369242, -4.199835348427996, -30.800836239742317, 0.25214570060594055, 0.6302704771888754, -31.98427963256836, 0.8990479221358929, -2.9977157269032, 31.98427963256836, 0.7086210015609848, -4.0691701721753, 31.978018027315315, 0.344429515961473, -2.2506713743964113, 30.794574634489273, 0.28675213136426525, -2.2587816267155443, -12.905168426531596, -0.48081484079921066, 2.709198488326585, -18.121085602320445, -0.24076705918987937, 2.5037387629085543, -30.800836239742317, 0.3429646934955122, 2.0045076757086004, -31.98427963256836, 0.3977124331607982, 1.958549579233516, 12.898906821278551, -0.6467059850692749, 0.996132970696422, -31.98427963256836, 1.032896074963064, -2.243462261223849, 31.98427963256836, 0.8990479221358929, -2.9977157269032, 31.978018027315315, 0.3977124331607982, 1.958549579233516, 31.978018027315315, 0.3118372160938445, 0.6059397202314774, 30.794574634489273, 0.25214570060594055, 0.6302704771888754, -12.905168426531596, -0.13346881355824836, 3.0300040245056152, -31.98427963256836, 0.6443519158669533, 2.2820585328522576, 12.898906821278551, -0.48081484079921066, 2.709198488326585, 30.794574634489273, 0.3429646934955122, 2.0045076757086004, 18.114823997067397, -0.24076705918987937, 2.5037387629085543, -31.98427963256836, 1.2238723039627075, 0.6122476942574693, 31.978018027315315, 1.032896074963064, -2.243462261223849, 31.978018027315315, 1.2238723039627075, 0.6122476942574693, 31.978018027315315, 0.9916979431079156, 1.964857553259508, 31.978018027315315, 0.6443519158669533, 2.2820585328522576, -12.905168426531596, 0.3751907877466505, 2.709198488326585, 12.898906821278551, -0.13346881355824836, 3.0300040245056152, -31.98427963256836, 0.9916979431079156, 1.964857553259508, 12.898906821278551, 0.3751907877466505, 2.709198488326585)
+
+[node name="catalina" instance=ExtResource("1_8heaw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.625663792684044, 0)
+mass = 16000.0
+center_of_mass = Vector3(0, 0.5399999999999991, -5.3)
+show_debug = true
+
+[node name="AeroControlComponent" type="Node" parent="." index="0"]
+script = ExtResource("2_0pbsb")
+flight_assist = SubResource("Resource_utkc8")
+control_config = SubResource("Resource_cvjw4")
+metadata/_custom_type_script = "uid://cc5dwx5pqkaur"
+
+[node name="Camera3D" type="Camera3D" parent="." index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 32)
+
+[node name="Label3D" type="Label3D" parent="Camera3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.313, -2.986)
+text = "Controls:
+Pitch: W/A
+Yaw: Q/E
+Roll: A/D
+Throttle: Shift/Ctrl
+Propeller Pitch: T/G"
+
+[node name="FlightInfoLabel" parent="Camera3D" index="1" instance=ExtResource("2_km0hj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5125, 1.313, -2.986)
+
+[node name="FueslageBuoyancy" type="Node3D" parent="." index="2"]
+script = ExtResource("2_yvgc5")
+buoyancy_mesh = ExtResource("3_2tceh")
+metadata/_custom_type_script = "uid://blp6761y154ht"
+
+[node name="FloatL" type="Node3D" parent="." index="3"]
+transform = Transform3D(1, 0, 0, 0, 0.9926691362298, 0.1208635014252936, 0, -0.12086350142529358, 0.9926691362298002, -27.17249870300293, 0.12441341554545282, -5.612114003561103)
+script = ExtResource("2_yvgc5")
+buoyancy_mesh = ExtResource("4_lv6b5")
+metadata/_custom_type_script = "uid://blp6761y154ht"
+
+[node name="FloatR" type="Node3D" parent="." index="4"]
+transform = Transform3D(1, 0, 0, 0, 0.9926691362298004, 0.12086350142529362, 0, -0.12086350142529362, 0.9926691362298004, 27.17245864868164, 0.12441341554545282, -5.612114003561103)
+script = ExtResource("2_yvgc5")
+buoyancy_mesh = ExtResource("4_lv6b5")
+metadata/_custom_type_script = "uid://blp6761y154ht"
+
+[node name="Wing" type="Node3D" parent="." index="5"]
+transform = Transform3D(1, 0, 0, 0, 0.9927573419294456, -0.1201368388346467, 0, 0.1201368388346467, 0.9927573419294456, 0, 4.243060905662596, -6.913277240514427)
+script = ExtResource("6_kigpq")
+manual_config = SubResource("Resource_vwm3g")
+wing_config = SubResource("Resource_6qk7s")
+metadata/_custom_type_script = "uid://d1725od371u4a"
+
+[node name="Wing2" type="Node3D" parent="Wing" index="0"]
+transform = Transform3D(0.998171886552097, -0.0435811257516329, -0.04187565372919923, 0.04361938736533599, 0.999048221581858, 0, 0.04183579738573417, -0.00182659036119061, 0.9991228300988586, 22.46982721646553, 0.4069279029529166, -0.3345438313580009)
+script = ExtResource("6_kigpq")
+manual_config = SubResource("Resource_vwm3g")
+wing_config = SubResource("Resource_hsuvl")
+mirror_axis = 1
+metadata/_custom_type_script = "uid://d1725od371u4a"
+
+[node name="Aileron" type="Node3D" parent="Wing/Wing2" index="0"]
+transform = Transform3D(0.9884938868086836, 0, 0.151260820247219, 0, 1, 0, -0.151260820247219, 0, 0.9884938868086836, 1.3355874856253156, 2.168404344971009e-18, 4.459693561979232)
+script = ExtResource("6_kigpq")
+manual_config = SubResource("Resource_1tns4")
+wing_config = SubResource("Resource_8a4f4")
+actuation_config = SubResource("Resource_0thx8")
+metadata/_custom_type_script = "uid://d1725od371u4a"
+
+[node name="EngineR" type="Node3D" parent="Wing" index="1" node_paths=PackedStringArray("propeller_blade")]
+transform = Transform3D(0.9999999999999998, 0, 0, 0, -0.09410831331851396, 0.99556196460308, 0, -0.99556196460308, -0.09410831331851396, 4.255958564061166, -0.22866046489026243, -5.942324614898082)
+script = ExtResource("11_h0te8")
+propeller_amount = 3
+propeller_blade = NodePath("Blade")
+propeller_speed_control_config = SubResource("Resource_segqd")
+mirror_only_position = true
+mirror_axis = 1
+show_torque = true
+show_lift = false
+show_thrust = true
+
+[node name="Blade" type="Node3D" parent="Wing/EngineR" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.804408776796484, 0, 0)
+script = ExtResource("6_kigpq")
+manual_config = SubResource("Resource_ejmvr")
+wing_config = SubResource("Resource_rca78")
+actuation_config = SubResource("Resource_kigpq")
+metadata/_custom_type_script = "uid://d1725od371u4a"
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Wing/EngineR/Blade" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1.0000000000000764, -3.434752482434078e-16, 0, 3.434752482434078e-16, 1.0000000000000764, 0, 5.3290705182007514e-15, 0.09529135376214626)
+size = Vector3(3.537813784316313, 0.06311671097091676, 0.37421620171153336)
+
+[node name="TailHorizontal" type="Node3D" parent="." index="6"]
+transform = Transform3D(0.999999999999924, 2.3574953658499423e-08, 3.887001042152727e-07, -7.413951295453973e-18, 0.998165801930276, -0.06053950657949585, -3.894143672965396e-07, 0.06053950657949124, 0.9981658019302004, 4.693354366756635e-06, 4.51368567467843, 14.796052764602129)
+script = ExtResource("6_kigpq")
+manual_config = SubResource("Resource_0xyeg")
+wing_config = SubResource("Resource_sctmh")
+metadata/_custom_type_script = "uid://d1725od371u4a"
+
+[node name="Elevator" type="Node3D" parent="TailHorizontal" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 6.938893903907225e-18, 0, 6.938893903907225e-18, 1, 0, 0, 2.416899999996531)
+script = ExtResource("6_kigpq")
+manual_config = SubResource("Resource_px2bq")
+wing_config = SubResource("Resource_7qth2")
+actuation_config = SubResource("Resource_6axm8")
+metadata/_custom_type_script = "uid://d1725od371u4a"
+
+[node name="TailVertical" type="Node3D" parent="." index="7"]
+transform = Transform3D(-2.38558259006959e-07, 0.999999999999924, 3.0778808702800373e-07, -0.790387085939972, 6.123233995736767e-17, -0.6126077491995342, -0.6126077491994877, -3.89414367296315e-07, 0.7903870859399119, 4.339031875133514e-06, 3.777090264967476, 13.886219313768018)
+script = ExtResource("6_kigpq")
+manual_config = SubResource("Resource_qv8b5")
+wing_config = SubResource("Resource_3vvy3")
+metadata/_custom_type_script = "uid://d1725od371u4a"
+
+[node name="Rudder" type="Node3D" parent="TailVertical" index="0"]
+transform = Transform3D(0.790387085939972, 0, -0.6126077491995342, 1.0562999060206643e-23, 1, 0, 0.6126077491995342, -5.293955920339377e-23, 0.790387085939972, -2.643239220808616, -1.0587165663335539e-21, 2.3992059440746556)
+script = ExtResource("6_kigpq")
+manual_config = SubResource("Resource_o30t8")
+wing_config = SubResource("Resource_ux024")
+actuation_config = SubResource("Resource_nrhy0")
+metadata/_custom_type_script = "uid://d1725od371u4a"
+
+[node name="Fueslage" parent="." index="8"]
+script = SubResource("GDScript_0pbsb")
+
+[node name="AileronL" parent="Fueslage/Wing" index="0"]
+transform = Transform3D(0.9973221642297576, 0.04176523831559446, -0.06003470333493929, -0.05501490073451862, 0.9693130566265606, -0.2395945720387779, 0.04818569739293636, 0.24225578036801448, 0.9690151058910488, -24.458295822143555, -0.4589342176914215, 3.4229016304016113)
+
+[node name="AileronR" parent="Fueslage/Wing" index="1"]
+transform = Transform3D(0.9973221612713918, -0.0417652480580164, 0.06003474570290525, 0.05501492041037804, 0.9693130559450738, -0.23959457027792197, -0.04818573615915722, 0.2422557814151701, 0.96901510370155, 24.458301544189453, -0.4589342176914215, 3.4229016304016113)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="9"]
+shape = SubResource("ConvexPolygonShape3D_yvgc5")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="." index="10"]
+transform = Transform3D(-0.999999999999924, 2.3574953658499433e-08, -3.887001043377374e-07, 0, 0.9981658019302762, 0.06053950657949585, 3.894143674187797e-07, 0.060539506579491253, -0.9981658019302004, 4.679166812947538e-06, 4.515895366668701, 14.7596197128297)
+shape = SubResource("ConvexPolygonShape3D_2tceh")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="." index="11"]
+transform = Transform3D(-0.999999999999924, 0, -3.894143674187797e-07, 0, 1, 0, 3.894143674187797e-07, 0, -0.999999999999924, 5.245208740234375e-06, 3.1576802730560303, 16.213191986083984)
+shape = SubResource("ConvexPolygonShape3D_lv6b5")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="." index="12"]
+transform = Transform3D(-0.9999999999999244, -1.3142376508619873e-08, -3.884777990362563e-07, -2.3533003005715792e-08, 0.9996419100412388, 0.0267591421593334, 3.879870103159141e-07, 0.02675914215934051, -0.9996419100411637, -4.255961888055924, 4.65205158419893, -9.865268684868314)
+shape = SubResource("ConvexPolygonShape3D_nrmmd")
+
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="." index="13"]
+transform = Transform3D(-0.9999999999999244, -1.3142376508619873e-08, -3.884777990362563e-07, -2.3533003005715792e-08, 0.9996419100412388, 0.0267591421593334, 3.879870103159141e-07, 0.02675914215934051, -0.9996419100411637, 4.255958564061166, 4.6520517681825995, -9.865272469729444)
+shape = SubResource("ConvexPolygonShape3D_8f6hu")
+
+[node name="CollisionShape3D6" type="CollisionShape3D" parent="." index="14"]
+transform = Transform3D(-0.9997503398608264, 0.02234408082724301, -3.847482985835883e-07, 0.02234408082723648, 0.9997503398609, 2.126032440374903e-08, 3.851272846774716e-07, 1.2658169457058221e-08, -0.999999999999926, -27.17139398668139, 0.12884503379842194, -5.538838735166767)
+shape = SubResource("ConvexPolygonShape3D_vpgbi")
+
+[node name="CollisionShape3D7" type="CollisionShape3D" parent="." index="15"]
+transform = Transform3D(-0.9997503385673384, -0.02234413870221252, -3.850880043415655e-07, -0.02234413870222237, 0.999750338567412, 2.1328903893058637e-08, 3.845152867325286e-07, 2.9928038658422196e-08, -0.9999999999999256, 27.17140043164965, 0.12884625501533264, -5.538859346123579)
+shape = SubResource("ConvexPolygonShape3D_mrqkl")
+
+[node name="CollisionShape3D8" type="CollisionShape3D" parent="." index="16"]
+transform = Transform3D(-0.9999999999999244, 2.3533003005715792e-08, -3.879870103159141e-07, -2.3533003005715792e-08, 0.9926691299378396, 0.12086355310204838, 3.879870103159141e-07, 0.12086355310204838, -0.9926691299377643, 0, 4.272988796234131, -6.219121932983398)
+shape = SubResource("ConvexPolygonShape3D_km0hj")

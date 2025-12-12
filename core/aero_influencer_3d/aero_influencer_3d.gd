@@ -28,6 +28,7 @@ const AeroNodeUtils = preload("../../utils/node_utils.gd")
 ## nodes like AeroMovers or Propellers. Sleep is only interrupted if the AeroInfluencer sub-class triggers it.
 @export var can_override_body_sleep : bool = true
 
+@export var mirror_only_position : bool = false
 @export_enum("None", "X", "Y", "Z") var mirror_axis : int = 0:
 	set(x):
 		mirror_axis = x
@@ -47,15 +48,20 @@ const AeroNodeUtils = preload("../../utils/node_utils.gd")
 		
 		
 		match mirror_axis:
+			#an adjustment can be made to this basis calculation to avoid having a negative scale
+			#could also be adjusted to allow arbitrary mirror axis??
 			1: #X
 				mirror_duplicate.position *= Vector3(-1, 1, 1)
-				mirror_duplicate.basis = Basis(Vector3(-1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1)) * mirror_duplicate.basis
+				if not mirror_only_position:
+					mirror_duplicate.basis = Basis(Vector3(-1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1)) * mirror_duplicate.basis
 			2: #Y
 				mirror_duplicate.position *= Vector3(1, -1, 1)
-				mirror_duplicate.basis = Basis(Vector3(1, 0, 0), Vector3(0, -1, 0), Vector3(0, 0, 1)) * mirror_duplicate.basis
+				if not mirror_only_position:
+					mirror_duplicate.basis = Basis(Vector3(1, 0, 0), Vector3(0, -1, 0), Vector3(0, 0, 1)) * mirror_duplicate.basis
 			3: #Z
 				mirror_duplicate.position *= Vector3(1, 1, -1)
-				mirror_duplicate.basis = Basis(Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, -1)) * mirror_duplicate.basis
+				if not mirror_only_position:
+					mirror_duplicate.basis = Basis(Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, -1)) * mirror_duplicate.basis
 		
 		get_parent().add_child(mirror_duplicate)
 var is_duplicate : bool = false

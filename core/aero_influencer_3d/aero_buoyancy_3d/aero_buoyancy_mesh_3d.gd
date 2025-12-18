@@ -222,11 +222,7 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 			var distance_to_surface : float = atmosphere.get_distance_to_surface(global_vertex_position)
 			var surface_normal : Vector3 = atmosphere.get_surface_normal(global_vertex_position)
 			
-			var surface_contact_depth : float = vertex_radius #* abs(surface_normal.dot(vertex_buoyancy_factor.normalized()))
-			#if vertex_index == 50:
-				#print(abs(surface_normal.dot(vertex_buoyancy_factor.normalized())))
-				#print(vertex_radius)
-				#print(surface_contact_depth)
+			var surface_contact_depth : float = vertex_radius * (1.0 - abs(surface_normal.dot(vertex_buoyancy_factor.normalized())))
 			#we subtract the aerobody's density because buoyancy is relative to the difference in pressure between the inside and outside.
 			vertex_density = clamp(remap(distance_to_surface, -surface_contact_depth, surface_contact_depth, atmosphere.density - aero_body.air_density, 0.0), 0.0, atmosphere.density - aero_body.air_density)
 			var buoyancy_force_and_torque : PackedVector3Array = calculate_mesh_buoyancy(vertex_position, vertex_buoyancy_factor, vertex_density, distance_to_surface)

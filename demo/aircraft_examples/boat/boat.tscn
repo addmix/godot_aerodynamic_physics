@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3 uid="uid://ca7gwywplc00p"]
+[gd_scene load_steps=39 format=3 uid="uid://ca7gwywplc00p"]
 
 [ext_resource type="PackedScene" uid="uid://isluevpxgivx" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/boat/boat.glb" id="1_annr2"]
 [ext_resource type="Script" uid="uid://blp6761y154ht" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_buoyancy_3d/aero_buoyancy_mesh_3d.gd" id="2_ojow4"]
@@ -101,10 +101,16 @@ drag_at_mach_multiplier_curve = SubResource("Curve_xiynb")
 
 [sub_resource type="Resource" id="Resource_j3mod"]
 script = ExtResource("11_tufii")
-chord = 0.18300000000000002
-span = 0.523
-area = 0.09570900000000002
-aspect_ratio = 2.8579234972677594
+chord = 0.2
+span = 0.4
+area = 0.08000000000000002
+
+[sub_resource type="Resource" id="Resource_hcphs"]
+script = ExtResource("11_tufii")
+chord = 0.25
+span = 0.2
+area = 0.05
+aspect_ratio = 0.8
 
 [sub_resource type="Resource" id="Resource_nof2j"]
 resource_name = "throttle"
@@ -115,8 +121,8 @@ contribution = Vector3(1, 1, 1)
 [sub_resource type="Resource" id="Resource_uiicu"]
 script = ExtResource("8_bx2ck")
 axis_configs = Array[ExtResource("7_fbcns")]([SubResource("Resource_nof2j")])
-max_value = Vector3(0, 200, 0)
-min_value = Vector3(0, -200, 0)
+max_value = Vector3(0, 350, 0)
+min_value = Vector3(0, -350, 0)
 
 [sub_resource type="Curve" id="Curve_3h27b"]
 _limits = [0.0, 1.0, -180.0, 180.0]
@@ -153,17 +159,16 @@ drag_at_mach_multiplier_curve = SubResource("Curve_qvpob")
 
 [sub_resource type="Resource" id="Resource_w1uje"]
 script = ExtResource("11_tufii")
-chord = 0.201
-span = 0.294
-area = 0.059094
-aspect_ratio = 1.4626865671641789
+chord = 0.2
+span = 0.2
+area = 0.04000000000000001
+aspect_ratio = 1.0
 
 [node name="Boat" instance=ExtResource("1_annr2")]
 mass = 1800.0
-center_of_mass = Vector3(0, -0.09999999999999964, 0)
 show_debug = true
 debug_width = 0.075
-influencer_debug_width = 0.05
+influencer_debug_width = 0.025
 debug_center_width = 0.15
 
 [node name="AeroControlComponent" type="Node" parent="." index="0"]
@@ -184,6 +189,7 @@ Throttle: Shift/Ctrl"
 [node name="FlightInfoLabel" parent="CameraWithoutRotation/Camera3D" index="1" instance=ExtResource("8_gp0bn")]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." index="3"]
+visible = false
 shape = SubResource("ConvexPolygonShape3D_gp0bn")
 
 [node name="AeroBuoyancyMesh3D" type="Node3D" parent="." index="4"]
@@ -192,20 +198,27 @@ buoyancy_mesh = ExtResource("3_6e2ia")
 metadata/_custom_type_script = "uid://blp6761y154ht"
 
 [node name="OutboardRotate" type="Node3D" parent="." index="5"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5569941822463479, 1.946746907040108)
+transform = Transform3D(0.9998476951563913, 0.0015210774457754552, 0.017385994761764084, 0, 0.9961946980917455, -0.08715574274765817, -0.01745240643728351, 0.08714246850588939, 0.9960429728140489, 0, 0.3721159610864453, 1.946746907040108)
 script = ExtResource("9_gp0bn")
 actuation_config = SubResource("Resource_yuxf8")
 metadata/_custom_type_script = "uid://c3n4g48jfeemj"
 
 [node name="Rudder" type="Node3D" parent="OutboardRotate" index="0"]
-transform = Transform3D(6.093179528402392e-17, 1, -6.059354761065442e-18, -0.9950917330032952, 6.123233995736766e-17, 0.09895677292888368, 0.09895677292888368, 0, 0.9950917330032952, 2.1885573832565102e-17, -1.2080225085121707, -0.00524451466257613)
+transform = Transform3D(6.09317952840239e-17, 1, -6.059354761065439e-18, -0.9239376299075744, 5.861514313387751e-17, 0.3825431427182732, 0.3825431427182732, -1.7710574582708975e-17, 0.9239376299075744, 2.1885573832565102e-17, -1.0565670071897624, 0.00679333678503724)
 script = ExtResource("9_pyde1")
 manual_config = SubResource("Resource_85l1x")
 wing_config = SubResource("Resource_j3mod")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="AeroPropeller3D" type="Node3D" parent="OutboardRotate" index="1" node_paths=PackedStringArray("propeller_blade")]
-transform = Transform3D(1, 0, 0, 0, 0.08715574274765814, 0.9961946980917455, 0, -0.9961946980917455, 0.08715574274765814, 0, -1.2002601701693414, 0.24945381175169823)
+[node name="Rudder2" type="Node3D" parent="OutboardRotate" index="1"]
+transform = Transform3D(-1, 1.224646799147353e-16, 0, -1.2246467991473535e-16, -1, 0, 0, 0, 1, 2.1885573832565102e-17, -0.8459867015728342, 0.21029735987245912)
+script = ExtResource("9_pyde1")
+manual_config = SubResource("Resource_85l1x")
+wing_config = SubResource("Resource_hcphs")
+metadata/_custom_type_script = "uid://d1725od371u4a"
+
+[node name="AeroPropeller3D" type="Node3D" parent="OutboardRotate" index="2" node_paths=PackedStringArray("propeller_blade")]
+transform = Transform3D(1, 0, 0, 0, 0.08715574274765812, 0.9961946980917454, 0, -0.9961946980917454, 0.08715574274765812, 0, -1.00819209637935, 0.2289692561721881)
 script = ExtResource("6_8u34d")
 propeller_amount = 3
 propeller_blade = NodePath("ManualAeroSurface3D")
@@ -216,27 +229,30 @@ show_lift = false
 show_thrust = true
 
 [node name="ManualAeroSurface3D" type="Node3D" parent="OutboardRotate/AeroPropeller3D" index="0"]
-transform = Transform3D(1, 0, 0, 0, 0.8660254037844384, -0.4999999999999998, 0, 0.4999999999999998, 0.8660254037844384, 0.1547106956849627, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 0.9063077870366502, -0.42261826174069955, 0, 0.42261826174069955, 0.9063077870366502, 0.12213315501424946, 0, 0)
 script = ExtResource("9_pyde1")
 manual_config = SubResource("Resource_jhqwu")
 wing_config = SubResource("Resource_w1uje")
+show_force = false
+show_lift = false
+show_drag = false
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
 [node name="CSGBox3D" type="CSGBox3D" parent="OutboardRotate/AeroPropeller3D/ManualAeroSurface3D" index="0"]
-transform = Transform3D(1, 0, 0, 0, 1.0000000000000022, 0, 0, 0, 1.0000000000000022, 0, 0, 0.0484994947910311)
-size = Vector3(0.29169467849897046, 0.02171675442514242, 0.20659217378033645)
+transform = Transform3D(1, 0, 0, 0, 1.0000000000000022, 5.551115123125783e-17, 0, -5.551115123125783e-17, 1.0000000000000022, 0, 0, 0.04941531829536017)
+size = Vector3(0.1967637893067149, 0.01187669383898537, 0.19131065197871067)
 
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="OutboardRotate/AeroPropeller3D" index="1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.01319748675450682, 0)
 radius = 0.03205869
 height = 0.113940015
 
-[node name="CSGBox3D" type="CSGBox3D" parent="OutboardRotate" index="2"]
+[node name="CSGBox3D" type="CSGBox3D" parent="OutboardRotate" index="3"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.11371392756700516, 0.04976937919855118)
 size = Vector3(0.3051432223910524, 0.5555105119756263, 0.46904054573883514)
 
-[node name="CSGBox3D2" type="CSGBox3D" parent="OutboardRotate" index="3"]
-transform = Transform3D(1, 0, 0, 0, 0.996007793875622, 0.08926631245333633, 0, -0.08926631245333633, 0.996007793875622, 0, -0.7646932988695567, 0.00657118751579788)
-size = Vector3(0.09501928310100992, 1.4401770114063766, 0.2261102475140433)
+[node name="CSGBox3D2" type="CSGBox3D" parent="OutboardRotate" index="4"]
+transform = Transform3D(1, 0, 0, 0, 0.996007793875625, 0.08926631245333552, 0, -0.08926631245333552, 0.996007793875625, 0, -0.6239883985798936, 0.03499681120693454)
+size = Vector3(0.09501928310100992, 1.164965463433873, 0.2204151855348755)
 
 [editable path="CameraWithoutRotation"]

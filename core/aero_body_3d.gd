@@ -661,16 +661,16 @@ func _update_debug() -> void:
 		
 		force_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(force_vector_sum, debug_scaling_factor) * debug_scale
 		if not is_equal_approx(force_sum, 0.0):
-			force_debug_vector.position = global_transform.basis.inverse() * force_position_sum / amount_of_aero_influencers / (force_sum / amount_of_aero_influencers)
+			force_debug_vector.position = global_transform.basis.inverse() * (force_position_sum / force_sum)
 		drag_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(drag_vector_sum, debug_scaling_factor) * debug_scale
 		if not is_equal_approx(drag_sum, 0.0):
-			drag_debug_vector.position = global_transform.basis.inverse() * drag_position_sum / amount_of_aero_influencers / (drag_sum / amount_of_aero_influencers)
+			drag_debug_vector.position = global_transform.basis.inverse() * (drag_position_sum / drag_sum)
 		lift_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(lift_vector_sum, debug_scaling_factor) * debug_scale
 		if not is_equal_approx(lift_sum, 0.0):
-			lift_debug_vector.position = global_transform.basis.inverse() * lift_position_sum / amount_of_aero_influencers / (lift_sum / amount_of_aero_influencers)
+			lift_debug_vector.position = global_transform.basis.inverse() * (lift_position_sum / lift_sum)
 		thrust_debug_vector.value = global_transform.basis.inverse() * AeroMathUtils.v3log_with_base(thrust_vector_sum, debug_scaling_factor) * debug_scale
 		if not is_equal_approx(thrust_sum, 0.0):
-			thrust_debug_vector.position = global_transform.basis.inverse() * thrust_position_sum / amount_of_aero_influencers / (thrust_sum / amount_of_aero_influencers)
+			thrust_debug_vector.position = global_transform.basis.inverse() * (thrust_position_sum / thrust_sum)
 	
 	
 	for influencer : AeroInfluencer3D in aero_influencers:

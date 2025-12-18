@@ -432,6 +432,8 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 		#allow aeroinfluencers to update their own transforms before we calculate forces
 		if not Engine.is_editor_hint():
 			for influencer : AeroInfluencer3D in aero_influencers:
+				if influencer.disabled:
+					continue
 				influencer._update_transform_substep(substep_delta)
 		
 		#need to do air velocity/wind calculation here, too?
@@ -561,6 +563,8 @@ func get_control_command(axis_name : String = "") -> float:
 func is_overriding_body_sleep() -> bool:
 	var overriding : bool = false
 	for influencer : AeroInfluencer3D in aero_influencers:
+		if influencer.disabled:
+			continue
 		overriding = overriding or influencer.is_overriding_body_sleep()
 	
 	return overriding

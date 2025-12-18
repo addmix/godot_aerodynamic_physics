@@ -240,6 +240,9 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	var torque : Vector3 = Vector3.ZERO
 	
 	for influencer : AeroInfluencer3D in aero_influencers:
+		if influencer.disabled:
+			continue
+		
 		var force_and_torque : PackedVector3Array = influencer._calculate_forces(substep_delta)
 		
 		force += force_and_torque[0]
@@ -254,10 +257,9 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 ## Be sure to call [code]super(substep_delta)[/code] at the end of the overridden function to retain 
 ## existing functionality.
 func _update_transform_substep(substep_delta : float) -> void:
-	if disabled:
-		return
-	
 	for influencer : AeroInfluencer3D in aero_influencers:
+		if influencer.disabled:
+			continue
 		influencer._update_transform_substep(substep_delta)
 	
 	_update_control_transform(substep_delta)
@@ -294,6 +296,9 @@ func is_overriding_body_sleep() -> bool:
 	var overriding : bool = false
 	
 	for influencer : AeroInfluencer3D in aero_influencers:
+		if influencer.disabled:
+			continue
+		
 		overriding = overriding or influencer.is_overriding_body_sleep()
 	
 	return overriding

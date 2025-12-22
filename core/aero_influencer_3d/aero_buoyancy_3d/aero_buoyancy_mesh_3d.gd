@@ -202,7 +202,7 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	
 	for vertex_index : int in vertex_positions.size():
 		var vertex_position : Vector3 =  relative_position + global_basis * vertex_positions[vertex_index]
-		var global_vertex_position : Vector3 = aero_body.global_position + vertex_position
+		var global_vertex_position : Vector3 = global_position + global_basis * vertex_positions[vertex_index]
 		var vertex_buoyancy_factor : Vector3 = global_basis * vertex_buoyancy_coefficients[vertex_index]
 		var vertex_radius : float = vertex_sizes[vertex_index]
 		

@@ -129,7 +129,7 @@ func calculate_vertex_areas() -> void:
 			var side_ab : Vector3 = vert_b - vert_a
 			var side_ac : Vector3 = vert_c - vert_a
 			
-			var triangle_area : float = 0.5 * abs(side_ab.dot(side_ac)) / 3.0
+			var triangle_area : float = 0.5 * abs(side_ab.cross(side_ac).length()) / 3.0
 			area_sum += triangle_area
 			#normal sum should be biased using triangle area, where smaller triangles contribute less to the normal's direction.
 			var triangle_normal : Vector3 = side_ac.cross(side_ab).normalized()

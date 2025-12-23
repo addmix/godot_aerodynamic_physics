@@ -14,7 +14,7 @@ func calculate_buoyancy() -> void:
 				# use precomputed center of pressure?
 				continue
 			
-			var submerged_height : float = min(atmosphere.get_distance_to_surface(global_position) - radius, 0.0) #incomplete
+			var submerged_height : float = clamp(-(atmosphere.get_distance_to_surface(global_position) - radius), 0.0, 2.0 * radius)
 			#calculate submerged volume of sphere
 			var submerged_volume : float = ((PI * submerged_height * submerged_height) / 3.0) * (3.0 * radius - submerged_height)
 			

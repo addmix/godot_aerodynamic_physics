@@ -18,12 +18,14 @@ center_of_mass_mode = 1
 linear_damp_mode = 1
 angular_damp_mode = 1
 script = ExtResource("1_lv2ui")
+show_debug = true
 metadata/_custom_type_script = "uid://3iji867c81k5"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("SphereShape3D_x8fbi")
 
 [node name="CSGSphere3D" type="CSGSphere3D" parent="."]
+visible = false
 radius = 1.7
 radial_segments = 32
 rings = 16
@@ -38,13 +40,13 @@ metadata/_custom_type_script = "uid://c3n4g48jfeemj"
 camera_distance = 5.0
 
 [node name="AeroBuoyancyMesh3D" type="Node3D" parent="."]
-visible = false
 script = ExtResource("4_glt2x")
 buoyancy_mesh = ExtResource("5_aiyxi")
-disabled = true
 metadata/_custom_type_script = "uid://blp6761y154ht"
 
 [node name="AeroBuoyancySphere3D" type="Node3D" parent="."]
+visible = false
 script = ExtResource("6_lv2ui")
 radius = 1.7
+disabled = true
 metadata/_custom_type_script = "uid://cpjspki0t1o6j"

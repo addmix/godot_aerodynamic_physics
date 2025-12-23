@@ -2,11 +2,11 @@
 extends AeroBuoyancy3D
 class_name AeroBuoyancyMesh3D
 
-@export_tool_button("Recalculate mesh data") var action = calculate_vertex_areas
+@export_tool_button("Recalculate mesh data") var action = calculate_mesh_data
 @export var buoyancy_mesh : Mesh:
 	set(x):
 		buoyancy_mesh = x
-		calculate_vertex_areas()
+		calculate_mesh_data()
 		if buoyancy_mesh_debug:
 			buoyancy_mesh_debug.mesh = buoyancy_mesh
 
@@ -45,7 +45,7 @@ func update_debug_visibility(_show_debug : bool = false) -> void:
 	
 	buoyancy_mesh_debug.visible = show_debug and show_buoyancy_mesh_debug
 
-func calculate_vertex_areas() -> void:
+func calculate_mesh_data() -> void:
 	vertex_positions = []
 	vertex_buoyancy_coefficients = []
 	
@@ -106,14 +106,12 @@ func calculate_vertex_areas() -> void:
 	#
 	#print(vertex_triangle_affiliation_index_array)
 	
-	var vertex_areas : PackedFloat64Array = []
 	var vertex_normals : PackedVector3Array = []
 	var _vertex_positions : PackedVector3Array = []
 	var _vertex_sizes : PackedFloat64Array = []
 	for vertex_index : int in vertex_triangle_affiliation_index_array.keys():
 		var vertex_position : Vector3 = sanitized_vertices[vertex_index]
 		
-		var area_sum : float = 0.0
 		var normal_sum : Vector3 = Vector3.ZERO
 		var position_sum : Vector3 = Vector3.ZERO
 		var distance_sum : float = 0.0
@@ -129,12 +127,11 @@ func calculate_vertex_areas() -> void:
 			var side_ab : Vector3 = vert_b - vert_a
 			var side_ac : Vector3 = vert_c - vert_a
 			
-			var triangle_area : float = 0.5 * abs(side_ab.cross(side_ac).length()) / 3.0
-			area_sum += triangle_area
+			var triangle_normal : Vector3 = 0.5 * side_ac.cross(side_ab)
 			#normal sum should be biased using triangle area, where smaller triangles contribute less to the normal's direction.
-			var triangle_normal : Vector3 = side_ac.cross(side_ab).normalized()
-			#if the cross product isn't normalized, would the length of the result be something like twice the triangle's area?
-			normal_sum += triangle_normal * triangle_area # area can be encoded into normal length.
+			
+			normal_sum += triangle_normal / 3.0 # area is encoded into the length of the triangle normal. It's divided by 3.0 because
+			#the area of the triangle must be shared between 3 vertices
 			#the vertex position needs to be adjusted so that it is at the barycenter of the average triangles.
 			
 			var triangle_center : Vector3 = (vert_a + vert_b + vert_c) / 3.0
@@ -144,7 +141,6 @@ func calculate_vertex_areas() -> void:
 			#maybe also calculate the average distance/offset of triangles?
 		
 		
-		vertex_areas.append(area_sum)
 		vertex_normals.append(normal_sum)
 		#print(normal_sum)
 		position_sum /= vertex_triangle_affiliation_index_array[vertex_index].size()
@@ -162,8 +158,6 @@ func calculate_vertex_areas() -> void:
 		#print(distance_sum)
 		
 	
-	
-	#print(vertex_areas)
 	#print(vertex_normals)
 	
 	#for normal in vertex_normals:

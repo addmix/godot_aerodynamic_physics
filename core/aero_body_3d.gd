@@ -463,8 +463,10 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 	current_torque = total_force_and_torque[1]
 	
 	
+	#other features needed for energy tracking to work:
+	#- separate thrust(energy creation) and drag(energy loss) from regular forces
+	#- possibly
 	if experimental_energy_tracking:
-		#this really hates zero velocity
 		#linear inertia calcs
 		var pre_kinetic_energy : float = 0.5 * mass * linear_velocity.length_squared()
 		var velocity_change : Vector3 = (current_force * delta) / mass

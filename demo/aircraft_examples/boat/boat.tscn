@@ -166,6 +166,7 @@ aspect_ratio = 1.0
 
 [node name="Boat" instance=ExtResource("1_annr2")]
 mass = 1800.0
+center_of_mass = Vector3(0, 0.09999999999999964, 0.1999999999999993)
 show_debug = true
 debug_width = 0.075
 influencer_debug_width = 0.025
@@ -198,7 +199,7 @@ buoyancy_mesh = ExtResource("3_6e2ia")
 metadata/_custom_type_script = "uid://blp6761y154ht"
 
 [node name="OutboardRotate" type="Node3D" parent="." index="5"]
-transform = Transform3D(0.9998476951563913, 0.0015210774457754552, 0.017385994761764084, 0, 0.9961946980917455, -0.08715574274765817, -0.01745240643728351, 0.08714246850588939, 0.9960429728140489, 0, 0.3721159610864453, 1.946746907040108)
+transform = Transform3D(0.9998476951563912, 0.00152107744577545, 0.01738599476176408, 0, 0.9961946980917455, -0.08715574274765817, -0.01745240643728351, 0.08714246850588939, 0.9960429728140489, 0, 0.3721159610864453, 1.946746907040108)
 script = ExtResource("9_gp0bn")
 actuation_config = SubResource("Resource_yuxf8")
 metadata/_custom_type_script = "uid://c3n4g48jfeemj"
@@ -229,7 +230,7 @@ show_lift = false
 show_thrust = true
 
 [node name="ManualAeroSurface3D" type="Node3D" parent="OutboardRotate/AeroPropeller3D" index="0"]
-transform = Transform3D(1, 0, 0, 0, 0.9063077870366502, -0.42261826174069955, 0, 0.42261826174069955, 0.9063077870366502, 0.12213315501424946, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 0.9063077870366502, -0.4226182617406995, 0, 0.4226182617406995, 0.9063077870366502, 0.12213315501424946, 0, 0)
 script = ExtResource("9_pyde1")
 manual_config = SubResource("Resource_jhqwu")
 wing_config = SubResource("Resource_w1uje")

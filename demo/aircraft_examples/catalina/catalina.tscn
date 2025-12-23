@@ -518,7 +518,7 @@ points = PackedVector3Array(-12.905168426531596, -0.15763838424660215, -6.176033
 [node name="catalina" instance=ExtResource("1_8heaw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.625663792684044, 0)
 mass = 16000.0
-center_of_mass = Vector3(0, 0.5399999999999991, -5.3)
+center_of_mass = Vector3(0, 0, -5)
 show_debug = true
 
 [node name="AeroControlComponent" type="Node" parent="." index="0"]
@@ -529,6 +529,7 @@ metadata/_custom_type_script = "uid://cc5dwx5pqkaur"
 
 [node name="Camera3D" type="Camera3D" parent="." index="1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 32)
+far = 100000.0
 
 [node name="Label3D" type="Label3D" parent="Camera3D" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.313, -2.986)
@@ -614,7 +615,7 @@ wing_config = SubResource("Resource_sctmh")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
 [node name="Elevator" type="Node3D" parent="TailHorizontal" index="0"]
-transform = Transform3D(1, 0, 0, 0, 1, 6.938893903907225e-18, 0, 6.938893903907225e-18, 1, 0, 0, 2.416899999996531)
+transform = Transform3D(1, 0, 0, 0, 1, 6.9388939039072245e-18, 0, 6.9388939039072245e-18, 1, 0, 0, 2.416899999996531)
 script = ExtResource("6_kigpq")
 manual_config = SubResource("Resource_px2bq")
 wing_config = SubResource("Resource_7qth2")

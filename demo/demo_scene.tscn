@@ -146,7 +146,7 @@ uv1_triplanar = true
 uv1_world_triplanar = true
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_gngni"]
-size = Vector3(8192, 594.6878854330316, 8192)
+size = Vector3(10000, 594.6879, 10000)
 
 [node name="Main" type="Node3D"]
 script = SubResource("GDScript_2sti6")
@@ -235,7 +235,7 @@ size = Vector3(10000, 1517.9683227894193, 10000)
 material = SubResource("StandardMaterial3D_koshk")
 
 [node name="AeroAtmosphere3D" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4852.942073230426)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5633.996997465442)
 collision_layer = 0
 collision_mask = 16384
 monitorable = false

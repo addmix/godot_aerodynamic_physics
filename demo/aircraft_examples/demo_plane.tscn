@@ -130,16 +130,16 @@ size = Vector3(7.3728, 0.215118, 4.76475)
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_6onr1"]
 radius = 0.446985
 
-[sub_resource type="Resource" id="Resource_e07xt"]
+[sub_resource type="Resource" id="Resource_rvvp2"]
 resource_name = "throttle"
 script = ExtResource("11_1g5my")
 axis_name = "throttle"
-contribution = Vector3(1, 1, -1)
+contribution = Vector3(-1, -1, -1)
 
-[sub_resource type="Resource" id="Resource_0lgyr"]
+[sub_resource type="Resource" id="Resource_blosn"]
 script = ExtResource("12_njgyo")
-axis_configs = Array[ExtResource("11_1g5my")]([SubResource("Resource_e07xt")])
-max_value = Vector3(0, 0, 1)
+axis_configs = Array[ExtResource("11_1g5my")]([SubResource("Resource_rvvp2")])
+use_separate_minmax = true
 min_value = Vector3(0, 0, -1)
 
 [sub_resource type="Curve" id="Curve_v5kpe"]
@@ -255,12 +255,13 @@ shape = SubResource("BoxShape3D_nchkm")
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, -0.434142, -0.220745)
 shape = SubResource("CapsuleShape3D_6onr1")
 
-[node name="AeroThruster3D" type="Node3D" parent="."]
+[node name="AeroJetThruster3D" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.29881)
 script = ExtResource("13_qs0nt")
-throttle_control_config = SubResource("Resource_0lgyr")
-max_thrust_force = 2000.0
-metadata/_custom_type_script = "uid://3kjm0rdymoth"
+intake_fan_max_velocity = 100.0
+exhaust_velocity = 100.0
+throttle_control_config = SubResource("Resource_blosn")
+metadata/_custom_type_script = "uid://j11128f5e4xl"
 
 [node name="Elevator" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.57628e-07, 2.72025)

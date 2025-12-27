@@ -17,15 +17,11 @@ class_name AeroJetThruster3D
 #@export var fuel_expansion_ratio : float = 10.0
 
 func get_thrust_force() -> Vector3:
-	return throttle.normalized() * calculate_mass_flow_acceleration_force() * get_physics_process_delta_time()
+	return throttle * calculate_mass_flow_acceleration_force()
 
 func calculate_mass_flow_acceleration_force() -> float:
-	var intake_air_velocity : float = get_linear_velocity().length()
-	#var intake_air_density : float = air_density
-	#var intake_air_pressure : float = 101325.0
+	var intake_air_velocity : float = world_air_velocity.length()
 	var intake_mass_flow_rate : float = air_density * intake_air_velocity * intake_area
-	
-		#intake_air_pressure = aero_units.get_pressure_at_altitude(altitude)
 	
 	var fuel_burn_rate : float = max_fuel_flow * throttle.length()
 	var exhaust_velocity : float = calculate_exhaust_velocity()

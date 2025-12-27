@@ -85,6 +85,8 @@ script = ExtResource("4_6i8qa")
 pitch_assist_pid = SubResource("Resource_jjb3x")
 yaw_assist_pid = SubResource("Resource_3ify0")
 roll_assist_pid = SubResource("Resource_2kwcq")
+enable_aoa_limiter = false
+enable_control_adjustment = false
 bank_angle_pid = SubResource("Resource_djyaq")
 heading_pid = SubResource("Resource_4m0ek")
 inclination_pid = SubResource("Resource_woiej")
@@ -449,6 +451,4 @@ size = Vector3(1.63875, 0.0300794, 0.405596)
 [node name="AeroBuoyancyMesh3D" type="Node3D" parent="." index="11"]
 script = ExtResource("15_l68jr")
 buoyancy_mesh = ExtResource("16_l68jr")
-skin_friction = null
-aero_force_multiplier = null
 metadata/_custom_type_script = "uid://blp6761y154ht"

@@ -12,22 +12,18 @@
 > These features are not listed in any particular order.
 - C++ port (in development)
 - QOL/Usability
-    - AeroInfluencer editor mirroring
+    - AeroBody simulation stability (water interactions need improvement)
     - Make AeroSurfaces visible in running projects
     - AeroSurface editor improvements
         - Lift/drag curve customization improvements
         - Wing size/shape editor gizmos
 - More nodes
     - Helicopter rotors (Need improvements)
-    - Ducted fans
+    - Ducted fans (Need improvements)
     - Custom AeroSurface shapes
-    - Fuselage
-    - Primitive shapes (spheres, capsules, cubes)
+    - Primitive shapes (spheres, capsules, cubes) (some are present)
 - Engine simulation
     - Fuel tanks
     - Power transfer shafts (driveshafts)
     - Wheels
     - Suspension
-- Customizeable atmospheres and water
-    - Wind
-    - Buoyancy

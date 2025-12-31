@@ -15,7 +15,7 @@
 
 ## Development Direction
 1. Usability, stability, and performance.
-2. More AeroInfluencer3D derived nodes (Dynamic rotor systems, primitive shapes, fuselages).
+2. More AeroInfluencer3D derived nodes (Dynamic rotor systems, primitive shapes).
 3. Aerofoil profiles for AeroSurfaces.
 4. Energy–maneuverability graphs and aircraft performance profiling.
 5. And [More](CONTRIBUTING.md/#future-features)

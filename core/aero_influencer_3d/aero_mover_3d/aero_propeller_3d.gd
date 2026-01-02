@@ -21,7 +21,7 @@ class_name AeroPropeller3D
 			#remove all propellers
 			while propeller_instances.size() > 0:
 				var instance : AeroInfluencer3D = propeller_instances.pop_back()
-				if instance:
+				if instance and not instance == propeller_blade:
 					instance.queue_free()
 		
 		#reinitialize instances array
@@ -93,6 +93,8 @@ func update_propeller_amount() -> void:
 
 func update_propeller_transforms() -> void:
 	var base_transform : Transform3D = propeller_blade.default_transform
+	if Engine.is_editor_hint():
+		base_transform = propeller_blade.transform
 	
 	for i in propeller_amount - 1:
 		var prop_index = i + 1 #we already have 1 surface, so we add 1

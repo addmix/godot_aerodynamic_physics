@@ -137,4 +137,4 @@ The AOA limiter serves to prevent the aircraft from stalling, by reducing the co
 ![AOA Limiter](getting_started_assets/aoa_limiter.png)
 
 ## Further reference
-[Getting familiar with Aero Nodes](../getting_familiar_with_aero_nodes.md)
+[Getting familiar with Aero Nodes](getting_familiar_with_aero_nodes.md)

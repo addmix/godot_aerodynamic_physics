@@ -21,3 +21,11 @@
 5. And [More](CONTRIBUTING.md/#future-features)
 
 > [How to contribute](CONTRIBUTING.md)
+
+## Helpful documentation
+
+- [Getting Started](docs/getting_started/getting_started.md)
+- [Getting Familiar with Aero Nodes](docs/getting_started/getting_familiar_with_aero_nodes.md)
+- [Aerodynamic Design](docs/advanced_concepts/aerodynamic_design.md)
+- [Using Atmospheres](docs/getting_started/using_atmospheres.md)
+- [Control Theory](docs/advanced_concepts/control_theory.md)

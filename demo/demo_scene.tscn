@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://cpbp7en0cerjl"]
+[gd_scene format=3 uid="uid://cpbp7en0cerjl"]
 
 [ext_resource type="Script" uid="uid://b63k67778qs5n" path="res://addons/godot_aerodynamic_physics/core/aero_atmosphere_3d/aero_water_atmosphere_3d/aero_water_atmosphere_3d.gd" id="1_2sti6"]
 [ext_resource type="Script" uid="uid://oce3ma8abugl" path="res://addons/godot_aerodynamic_physics/core/aero_atmosphere_3d/aero_atmosphere_3d.gd" id="2_0xmma"]
@@ -148,27 +148,27 @@ uv1_world_triplanar = true
 [sub_resource type="BoxShape3D" id="BoxShape3D_gngni"]
 size = Vector3(10000, 594.6879, 10000)
 
-[node name="Main" type="Node3D"]
+[node name="Main" type="Node3D" unique_id=1599123890]
 script = SubResource("GDScript_2sti6")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=364671362]
 transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
 shadow_enabled = true
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=599009698]
 environment = SubResource("Environment_bkiet")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="."]
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=1834304834]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, -4151.119999999995)
 use_collision = true
 size = Vector3(10000, 1, 10000)
 material = SubResource("StandardMaterial3D_1sawy")
 
-[node name="VehicleSpawner" type="Marker3D" parent="."]
+[node name="VehicleSpawner" type="Marker3D" parent="." unique_id=2143956688]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 script = SubResource("GDScript_bs15r")
 
-[node name="Control" type="Control" parent="VehicleSpawner"]
+[node name="Control" type="Control" parent="VehicleSpawner" unique_id=2014092588]
 layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
@@ -182,7 +182,7 @@ offset_bottom = 44.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VehicleSpawner/Control"]
+[node name="VBoxContainer" type="VBoxContainer" parent="VehicleSpawner/Control" unique_id=865038144]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -190,16 +190,16 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="OptionButton" type="OptionButton" parent="VehicleSpawner/Control/VBoxContainer"]
+[node name="OptionButton" type="OptionButton" parent="VehicleSpawner/Control/VBoxContainer" unique_id=1751436688]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Button" type="Button" parent="VehicleSpawner/Control/VBoxContainer"]
+[node name="Button" type="Button" parent="VehicleSpawner/Control/VBoxContainer" unique_id=1805189645]
 layout_mode = 2
 size_flags_vertical = 3
 text = "Spawn"
 
-[node name="Label" type="Label" parent="VehicleSpawner"]
+[node name="Label" type="Label" parent="VehicleSpawner" unique_id=2139684694]
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
@@ -210,10 +210,10 @@ grow_vertical = 0
 text = "Press F5 to return to vehicle selection"
 horizontal_alignment = 1
 
-[node name="WaterSpawn" type="Marker3D" parent="VehicleSpawner"]
+[node name="WaterSpawn" type="Marker3D" parent="VehicleSpawner" unique_id=2108868646]
 transform = Transform3D(-0.2588190451025207, 0, 0.9659258262890684, 0, 1, 0, -0.9659258262890684, 0, -0.2588190451025207, 0, -0.5, 991.9770866800802)
 
-[node name="AeroWaterAtmosphere3D" type="Area3D" parent="."]
+[node name="AeroWaterAtmosphere3D" type="Area3D" parent="." unique_id=364326081]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 5580.072630985623)
 collision_layer = 0
 collision_mask = 16384
@@ -225,16 +225,16 @@ density = 1000.0
 override_density = true
 metadata/_custom_type_script = "uid://b63k67778qs5n"
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="AeroWaterAtmosphere3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AeroWaterAtmosphere3D" unique_id=1942881277]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -750, 0)
 shape = SubResource("BoxShape3D_0xmma")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="AeroWaterAtmosphere3D"]
+[node name="CSGBox3D" type="CSGBox3D" parent="AeroWaterAtmosphere3D" unique_id=898783615]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -758.9841728210449, 0)
 size = Vector3(10000, 1517.9683227894193, 10000)
 material = SubResource("StandardMaterial3D_koshk")
 
-[node name="AeroAtmosphere3D" type="Area3D" parent="."]
+[node name="AeroAtmosphere3D" type="Area3D" parent="." unique_id=1122071783]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5633.996997465442)
 collision_layer = 0
 collision_mask = 16384
@@ -243,7 +243,7 @@ script = ExtResource("2_0xmma")
 wind = Vector3(-10, 0, 0)
 metadata/_custom_type_script = "uid://oce3ma8abugl"
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="AeroAtmosphere3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AeroAtmosphere3D" unique_id=1771759187]
 shape = SubResource("BoxShape3D_gngni")
 
 [connection signal="pressed" from="VehicleSpawner/Control/VBoxContainer/Button" to="VehicleSpawner" method="_on_button_pressed"]

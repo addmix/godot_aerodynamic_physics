@@ -52,7 +52,7 @@ var angular_rate_error := Vector3.ZERO
 @export var aoa_limit_start : float = 22.0
 ##Angle of attack (degrees) that control authority is reduced to 0.
 @export var aoa_limit_end : float = 25.0
-@export_subgroup("Tuning")
+@export_subgroup("Control Adjustments")
 ##If enabled, the flight assist resource will adjust the control authority in an attempt to maintain a consistent control respsonse, despite changing airspeed or air density.
 @export var enable_control_adjustment : bool = true
 ##Airspeed that control adjustments are tuned at.
@@ -63,6 +63,8 @@ var angular_rate_error := Vector3.ZERO
 @export var tuned_density : float = 1.225
 ##Minimum limit for air density adjustment. This prevents controls from losing authority at low air density due to control surface stalls.
 @export var min_accounted_air_density : float = 0.1
+
+@export var control_rotation : float = 0.0
 
 @export_group("Autopilot")
 @export_subgroup("Bank Angle Target")
@@ -194,10 +196,11 @@ func target_direction(delta : float) -> void:
 	var angles_to_local_direction_target := Vector3(
 		atan2(local_direction_target.y, -local_direction_target.z),
 		atan2(-local_direction_target.x, -local_direction_target.z),
-		0.0#atan2(-local_direction_target.x, local_direction_target.y)
+		atan2(-local_direction_target.x, local_direction_target.y)
 	)
-	var error := angles_to_local_direction_target
+	var error := angles_to_local_direction_target # <-- Calculating error? That's for a PID!
 	
+	# For more precise flying, it may be desirable to point the velocity vector at the target direction instead
 	var local_velocity_direction : Vector3 = linear_velocity.normalized() * global_transform.basis
 	if use_velocity_vector_for_targetting:
 		if linear_velocity.is_equal_approx(Vector3.ZERO):
@@ -205,23 +208,34 @@ func target_direction(delta : float) -> void:
 		var angles_to_local_velocity_direction := Vector3(
 				atan2(local_velocity_direction.y, -local_velocity_direction.z),
 				atan2(-local_velocity_direction.x, -local_velocity_direction.z),
-				0.0
+				atan2(-local_velocity_direction.x, local_velocity_direction.y)
 			)
 		
 		error = angles_to_local_direction_target - angles_to_local_velocity_direction
 	
-	var local_desired_acceleration : Vector3 = local_direction_target * linear_velocity.length() - local_velocity_direction * linear_velocity.length() + Vector3(0, 9.8, 0) * global_transform.basis
-	var roll_error : float = -local_desired_acceleration.x
-	
+	# When the desired direction is more than 90 degrees away from the current direction,
+	# yaw is usually undesirable. because the >90 degree target passes the polar origin of the yaw
+	# 
+	# Using yaw may still be desirable on radially symmetric craft, such as missiles and rockets.
 	if disable_yaw_on_immelmann and abs(error.x) >= deg_to_rad(90.0):
 		error.y = 0.0 #disable yaw when pointing backwards, stops an annoying oscillation
 	
+	# The controls would be unnatural without roll
+	# This calculates how much roll is needed to align the felt G-forces with the aerobody's
+	# local Y axis (up). This results in the aerobody rolling into maneuvers in a realistic way.
+	var local_desired_acceleration : Vector3 = local_direction_target * linear_velocity.length() - local_velocity_direction * linear_velocity.length() + Vector3(0, 9.8, 0) * global_transform.basis
+	var roll_error : float = -local_desired_acceleration.x
+
 	error.z = roll_error
 	
+
+	# Feed the error we calculated into PIDs
+	# In most cases, these PIDs are (P:1, I:0, D:0), because that's all that is needed.
 	direction_pitch_pid.update(delta, error.x)
 	direction_yaw_pid.update(delta, error.y)
 	direction_roll_pid.update(delta, error.z)
 	
+	# The result of those PIDs is applied to the control input.
 	control_input.x += direction_pitch_pid.output
 	control_input.y += direction_yaw_pid.output
 	control_input.z += direction_roll_pid.output
@@ -241,6 +255,8 @@ func flight_assist(delta : float) -> void:
 		#yaw_assist_pid._integral_error = 0.0
 		#roll_assist_pid._integral_error = 0.0
 		#return #prevents unnecessary input commands
+	
+	#control_input = control_input.rotated(Vector3(0, 1, 0), control_rotation)
 
 	var angular_rates := max_angular_rates
 	
@@ -276,6 +292,11 @@ func flight_assist(delta : float) -> void:
 	#adjust for changing airspeed and density
 	if enable_control_adjustment:
 		control_command *= FlightAssist.get_control_adjustment_factor(air_speed, air_density, tuned_airspeed, tuned_density, min_accounted_airspeed, min_accounted_air_density)
+	
+	#add this up near the control adjustment/tuning category
+	#@export var control_speed_adjustment_curve : Curve
+	#if control_speed_adjustment_curve:
+		#control_command *= control_speed_adjustment_curve.sample(air_speed)
 	
 	control_command = control_command.clamp(Vector3(-1, -1, -1), Vector3(1, 1, 1))
 

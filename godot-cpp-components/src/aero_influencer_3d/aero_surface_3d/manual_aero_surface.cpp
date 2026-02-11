@@ -13,8 +13,8 @@ void ManualAeroSurface3D::_bind_methods() {
 ManualAeroSurface3D::ManualAeroSurface3D() {}
 ManualAeroSurface3D::~ManualAeroSurface3D() {}
 
-PackedVector3Array ManualAeroSurface3D::calculate_forces(double substep_delta) {
-    PackedVector3Array force_and_torque = AeroSurface3D::calculate_forces(substep_delta);
+ForceAndTorque ManualAeroSurface3D::calculate_forces(double substep_delta) {
+    ForceAndTorque force_and_torque = AeroSurface3D::calculate_forces(substep_delta);
 
     Vector3 force = Vector3(0, 0, 0);
     Vector3 torque = Vector3(0, 0, 0);
@@ -44,9 +44,7 @@ PackedVector3Array ManualAeroSurface3D::calculate_forces(double substep_delta) {
     force = lift_vector + drag_vector;
     torque = get_relative_position().cross(force);
 
-    force_and_torque[0] = force_and_torque[0] + force;
-    force_and_torque[1] = force_and_torque[1] + torque;
-    
+    force_and_torque += ForceAndTorque(force, torque);
     return force_and_torque;
 }
 

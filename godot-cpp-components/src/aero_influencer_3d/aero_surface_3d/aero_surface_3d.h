@@ -30,7 +30,7 @@ public:
 	~AeroSurface3D();
 
     void _enter_tree() override;
-    PackedVector3Array calculate_forces(double substep_delta);
+    ForceAndTorque calculate_forces(double substep_delta);
 
     void set_wing_config(const Ref<AeroSurfaceConfig> &p_config);
 	Ref<AeroSurfaceConfig> get_wing_config() const;

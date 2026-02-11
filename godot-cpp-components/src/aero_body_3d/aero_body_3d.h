@@ -15,6 +15,30 @@
 
 namespace godot {
 
+struct ForceAndTorque {
+    Vector3 force{};
+    Vector3 torque{};
+
+    ForceAndTorque() = default;
+    ForceAndTorque(const Vector3& f, const Vector3& t)
+        : force(f), torque(t) {}
+    ForceAndTorque& operator+=(const ForceAndTorque other) {
+        force += other.force;
+        torque += other.torque;
+        return *this;
+    }
+	ForceAndTorque& operator/=(const float divisor) {
+		force /= divisor;
+		torque /= divisor;
+		return *this;
+	}
+	ForceAndTorque operator/(float divisor) const {
+		ForceAndTorque result = *this;
+		result /= divisor;
+		return result;
+	}
+};
+
 class AeroInfluencer3D;//forward declaration
 
 class AeroBody3D : public VehicleBody3D {
@@ -102,7 +126,7 @@ public:
 	int get_substeps() const;
 	double get_prediction_timestep_fraction() const;
 	TypedArray<AeroInfluencer3D> get_aero_influencers() const;
-	PackedVector3Array calculate_forces(PhysicsDirectBodyState3D *body_state);
+	ForceAndTorque calculate_forces(PhysicsDirectBodyState3D *body_state);
 	Vector3 get_current_force() const;
 	Vector3 get_current_torque() const;
 	Vector3 get_current_gravity() const;
@@ -125,7 +149,7 @@ public:
 
 	Vector3 predict_linear_velocity(const Vector3 force);
 	Vector3 predict_angular_velocity(const Vector3 torque);
-	PackedVector3Array calculate_aerodynamic_forces(double substep_delta);
+	ForceAndTorque calculate_aerodynamic_forces(double substep_delta);
 
 	int get_amount_of_active_influencers();
 	Vector3 get_relative_position();

@@ -148,15 +148,15 @@ void AeroBody3D::integrate_forces(PhysicsDirectBodyState3D *body_state) {
 
 	current_gravity = body_state->get_total_gravity();
 
-	PackedVector3Array total_force_and_torque = calculate_forces(body_state);
-	current_force = total_force_and_torque[0];
-	current_torque = total_force_and_torque[1];
+	ForceAndTorque total_force_and_torque = calculate_forces(body_state);
+	current_force = total_force_and_torque.force;
+	current_torque = total_force_and_torque.torque;
 
 	body_state->apply_central_force(current_force);
 	body_state->apply_torque(current_torque);
 }
 
-PackedVector3Array AeroBody3D::calculate_forces(PhysicsDirectBodyState3D *body_state) {
+ForceAndTorque AeroBody3D::calculate_forces(PhysicsDirectBodyState3D *body_state) {
 	wind = Vector3();
 	air_velocity = -body_state->get_linear_velocity() + wind;
 	air_speed = air_velocity.length();
@@ -180,10 +180,8 @@ PackedVector3Array AeroBody3D::calculate_forces(PhysicsDirectBodyState3D *body_s
 
 	substep_delta = body_state->get_step() / substeps;
 
-	PackedVector3Array last_force_and_torque = PackedVector3Array(Array());
-	last_force_and_torque.append(Vector3()); //idk how to properly instantiate the array with items.
-	last_force_and_torque.append(Vector3());
-	PackedVector3Array total_force_and_torque = last_force_and_torque;
+	ForceAndTorque last_force_and_torque;
+	ForceAndTorque total_force_and_torque = last_force_and_torque;
 
 	linear_velocity_prediction = body_state->get_linear_velocity();
 	angular_velocity_prediction = body_state->get_angular_velocity();
@@ -203,23 +201,19 @@ PackedVector3Array AeroBody3D::calculate_forces(PhysicsDirectBodyState3D *body_s
 			}
 		}
 
-		linear_velocity_prediction = predict_linear_velocity(last_force_and_torque[0] + body_state->get_total_gravity() * get_mass());
-		angular_velocity_prediction = predict_angular_velocity(last_force_and_torque[1]);
+		linear_velocity_prediction = predict_linear_velocity(last_force_and_torque.force + body_state->get_total_gravity() * get_mass());
+		angular_velocity_prediction = predict_angular_velocity(last_force_and_torque.torque);
 		last_force_and_torque = calculate_aerodynamic_forces(substep_delta);
 
-		total_force_and_torque[0] += last_force_and_torque[0];
-		total_force_and_torque[1] += last_force_and_torque[1];
+		total_force_and_torque += last_force_and_torque;
 	}
 
-	total_force_and_torque[0] = total_force_and_torque[0] / substeps;
-	total_force_and_torque[1] = total_force_and_torque[1] / substeps;
-
+	total_force_and_torque /= substeps;
 	return total_force_and_torque;
 }
 
-PackedVector3Array AeroBody3D::calculate_aerodynamic_forces(double substep_delta) {
-	Vector3 force;
-	Vector3 torque;
+ForceAndTorque AeroBody3D::calculate_aerodynamic_forces(double substep_delta) {
+	ForceAndTorque total_force_and_torque;
 
 	for (int i = 0; i < aero_influencers.size(); i++) {
 		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
@@ -228,15 +222,11 @@ PackedVector3Array AeroBody3D::calculate_aerodynamic_forces(double substep_delta
 		if (influencer->is_disabled()) continue;
 
 		Vector3 relative_position = get_global_basis().xform(influencer->get_position() - get_center_of_mass());
-		PackedVector3Array force_and_torque = influencer->calculate_forces_with_override(substep_delta);
+		ForceAndTorque force_and_torque = influencer->calculate_forces_with_override(substep_delta);
 		
-		force += force_and_torque[0];
-		torque += force_and_torque[1];
+		total_force_and_torque += force_and_torque;
 	}
 
-	PackedVector3Array total_force_and_torque = PackedVector3Array();
-	total_force_and_torque.append(force);
-	total_force_and_torque.append(torque);
 	return total_force_and_torque;
 }
 
@@ -354,7 +344,7 @@ void AeroBody3D::_update_debug() {
 		//Vector3 original_angular_velocity = RigidBody3D::get_angular_velocity();
 		//RigidBody3D::set_linear_velocity(debug_linear_velocity);
 		//RigidBody3D::set_angular_velocity(debug_angular_velocity);
-		PackedVector3Array last_force_and_torque = calculate_aerodynamic_forces(get_physics_process_delta_time());
+		ForceAndTorque last_force_and_torque = calculate_aerodynamic_forces(get_physics_process_delta_time());
 		//RigidBody3D::set_linear_velocity(original_linear_velocity);
 		//RigidBody3D::set_angular_velocity(original_angular_velocity);
 

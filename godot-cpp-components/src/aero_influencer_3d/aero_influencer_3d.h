@@ -9,6 +9,7 @@
 
 namespace godot {
 
+struct ForceAndTorque;
 class AeroBody3D; //forward declaraction
 
 class AeroInfluencer3D : public Node3D {
@@ -84,8 +85,8 @@ public:
 	void on_child_enter_tree(const Node node);
 	void on_child_exit_tree(const Node node);
 
-	PackedVector3Array calculate_forces_with_override(double substep_delta);
-	virtual PackedVector3Array calculate_forces(double substep_delta);
+	ForceAndTorque calculate_forces_with_override(double substep_delta);
+	virtual ForceAndTorque calculate_forces(double substep_delta);
 	void _update_transform_substep(double substep_delta);
 	void _update_control_transform(double substep_delta);
 	void set_overriding_body_sleep(bool override);
@@ -107,7 +108,7 @@ public:
 	void set_actuation_config(const Ref<Resource> &p_config);
 	Ref<Resource> get_actuation_config() const;
 
-	void set_disabled(const int p_substeps);
+	void set_disabled(const int p_disabled);
 	int is_disabled() const;
 	void set_enable_automatic_control(const bool p_enable_automatic_control);
 	bool get_enable_automatic_control() const;

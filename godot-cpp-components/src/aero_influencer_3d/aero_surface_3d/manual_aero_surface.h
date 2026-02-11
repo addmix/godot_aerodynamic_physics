@@ -18,7 +18,7 @@ public:
 	ManualAeroSurface3D();
 	~ManualAeroSurface3D();
 
-    PackedVector3Array calculate_forces(double substep_delta);
+    ForceAndTorque calculate_forces(double substep_delta);
 
     void set_manual_config(const Ref<ManualAeroSurfaceConfig> &p_config);
 	Ref<ManualAeroSurfaceConfig> get_manual_config() const;

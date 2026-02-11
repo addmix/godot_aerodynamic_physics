@@ -74,7 +74,7 @@ void AeroInfluencer3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("on_child_entered_tree", "node"), &AeroInfluencer3D::on_child_entered_tree);
 	ClassDB::bind_method(D_METHOD("on_child_exiting_tree", "node"), &AeroInfluencer3D::on_child_exiting_tree);
 
-	ClassDB::bind_method(D_METHOD("default_calculate_forces", "substep_delta"), &AeroInfluencer3D::calculate_forces);
+	//ClassDB::bind_method(D_METHOD("default_calculate_forces", "substep_delta"), &AeroInfluencer3D::calculate_forces);
 	//ClassDB::bind_virtual_method("AeroInfluencer3D", "_calculate_forces");
 	GDVIRTUAL_BIND(_calculate_forces, "substep_delta");
 }
@@ -123,18 +123,18 @@ void AeroInfluencer3D::_physics_process(double delta) {
 	}
 }
 
-PackedVector3Array AeroInfluencer3D::calculate_forces_with_override(double substep_delta) {
+ForceAndTorque AeroInfluencer3D::calculate_forces_with_override(double substep_delta) {
 	if (GDVIRTUAL_IS_OVERRIDDEN(_calculate_forces)) {
 		PackedVector3Array result;
 		GDVIRTUAL_CALL(_calculate_forces, substep_delta, result);
 		UtilityFunctions::print("running gdscript override");
-		return result;
+		return ForceAndTorque(result[0], result[1]);
 	}
 	
 	return this->calculate_forces(substep_delta);
 }
 
-PackedVector3Array AeroInfluencer3D::calculate_forces(double substep_delta) {
+ForceAndTorque AeroInfluencer3D::calculate_forces(double substep_delta) {
 	linear_velocity = get_linear_velocity();
 	angular_velocity = get_angular_velocity();
 
@@ -149,26 +149,21 @@ PackedVector3Array AeroInfluencer3D::calculate_forces(double substep_delta) {
 	
 	mach = AeroUnits::get_singleton()->speed_to_mach_at_altitude(air_speed, altitude);
 	
-	Vector3 force = Vector3();
-	Vector3 torque = Vector3();
+	ForceAndTorque total_force_and_torque;
 
 	for (int i = 0; i < aero_influencers.size(); i++) {
 		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
 		if (not influencer) continue;
 
-		PackedVector3Array force_and_torque = influencer->calculate_forces_with_override(substep_delta);
-		force += force_and_torque[0];
-		torque += force_and_torque[1];
+		ForceAndTorque force_and_torque = influencer->calculate_forces_with_override(substep_delta);
+		total_force_and_torque += force_and_torque;
 	}
 
-	torque += relative_position.cross(force);
+	total_force_and_torque.torque += relative_position.cross(total_force_and_torque.force);
 
-	_current_force = force;
-	_current_torque = torque;
+	_current_force = total_force_and_torque.force;
+	_current_torque = total_force_and_torque.torque;
 	
-	PackedVector3Array total_force_and_torque = PackedVector3Array();
-	total_force_and_torque.append(force);
-	total_force_and_torque.append(torque);
 	return total_force_and_torque;
 }
 //must be virtual

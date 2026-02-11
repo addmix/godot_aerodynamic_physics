@@ -223,10 +223,7 @@ PackedVector3Array AeroBody3D::calculate_aerodynamic_forces(double substep_delta
 		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
 
 		if (influencer->is_disabled()) {
-			PackedVector3Array total_force_and_torque = PackedVector3Array();
-			total_force_and_torque.append(force);
-			total_force_and_torque.append(torque);
-			return total_force_and_torque;
+			continue;
 		}
 
 		Vector3 relative_position = get_global_basis().xform(influencer->get_position() - get_center_of_mass());

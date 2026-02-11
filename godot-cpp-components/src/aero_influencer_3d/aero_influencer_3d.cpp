@@ -153,7 +153,8 @@ PackedVector3Array AeroInfluencer3D::calculate_forces(double substep_delta) {
 	Vector3 torque = Vector3();
 
 	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
+		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+		if (not influencer) continue;
 
 		PackedVector3Array force_and_torque = influencer->calculate_forces_with_override(substep_delta);
 		force += force_and_torque[0];
@@ -206,7 +207,8 @@ bool AeroInfluencer3D::is_overriding_body_sleep() {
 	bool overriding = false;
 
 	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
+		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+		if (not influencer) continue;
 		overriding = overriding or influencer->is_overriding_body_sleep();
 	}
 	
@@ -371,7 +373,8 @@ void AeroInfluencer3D::update_debug(){
 	}
 
 	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
+		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+		if (not influencer) continue;
 		influencer->update_debug();
 	}
 }
@@ -408,7 +411,8 @@ void AeroInfluencer3D::set_show_debug(const bool value) {
 	}
 
 	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
+		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+		if (not influencer) continue;
 		influencer->set_show_debug(show_debug);
 	}
 }
@@ -416,7 +420,8 @@ void AeroInfluencer3D::set_debug_scale(const double value) {
 	debug_scale = value;
 
 	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
+		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+		if (not influencer) continue;
 		influencer->set_debug_scale(debug_scale);
 	}
 }
@@ -424,7 +429,8 @@ void AeroInfluencer3D::set_debug_width(const double value) {
 	debug_width = value;
 
 	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
+		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+		if (not influencer) continue;
 		influencer->set_debug_width(debug_width);
 	}
 	if (force_debug_vector) {

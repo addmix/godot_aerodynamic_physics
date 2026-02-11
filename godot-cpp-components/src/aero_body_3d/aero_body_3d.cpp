@@ -194,7 +194,9 @@ PackedVector3Array AeroBody3D::calculate_forces(PhysicsDirectBodyState3D *body_s
 
 		if (not Engine::get_singleton()->is_editor_hint()) {
 			for (int i = 0; i < aero_influencers.size(); i++) {
-				AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
+				AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+				if (not influencer) continue;
+
 				if (influencer->is_disabled()) continue;
 
 				influencer->_update_transform_substep(substep_delta);
@@ -220,11 +222,10 @@ PackedVector3Array AeroBody3D::calculate_aerodynamic_forces(double substep_delta
 	Vector3 torque;
 
 	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
+		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+		if (not influencer) continue;
 
-		if (influencer->is_disabled()) {
-			continue;
-		}
+		if (influencer->is_disabled()) continue;
 
 		Vector3 relative_position = get_global_basis().xform(influencer->get_position() - get_center_of_mass());
 		PackedVector3Array force_and_torque = influencer->calculate_forces_with_override(substep_delta);
@@ -325,7 +326,8 @@ double AeroBody3D::get_inclination() const {return inclination;}
 int AeroBody3D::get_amount_of_active_influencers() {
 	int count = 0;
 	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
+		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+		if (not influencer) continue;
 		if (not influencer->is_disabled()) count += 1;
 	}
 
@@ -377,7 +379,8 @@ void AeroBody3D::_update_debug() {
 	Vector3 force_vector_sum = Vector3();
 	
 	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
+		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+		if (not influencer) continue;
 
 		if (/*influencer.omit_from_debug or */influencer->is_disabled()) {
 			amount_of_aero_influencers -= 1;
@@ -436,7 +439,8 @@ void AeroBody3D::set_show_debug(const bool value) {
 	show_debug = value;
 	
 	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
+		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+		if (not influencer) continue;
 		influencer->set_show_debug(show_debug);
 	}
 	
@@ -532,7 +536,8 @@ void AeroBody3D::set_debug_scale(const double value) {
 	debug_scale = value;
 
 	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
+		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+		if (not influencer) continue;
 		influencer->set_debug_scale(debug_scale);
 	}
 }
@@ -542,7 +547,8 @@ void AeroBody3D::set_debug_width(const double value) {
 	debug_width = value;
 
 	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) aero_influencers[i];
+		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+		if (not influencer) continue;
 		influencer->set_debug_width(debug_width);
 	}
 

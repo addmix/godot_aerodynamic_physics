@@ -13,8 +13,8 @@ reloadable = true
 
 ;windows.debug.x86_64 = "windows/gdexample.windows.template_debug.x86_64.dll"
 ;windows.release.x86_64 = "windows/gdexample.windows.template_release.x86_64.dll"
-;windows.debug.double.x86_64 = "windows/gdexample.windows.template_debug.double.x86_64.dll"
-windows.debug.double.x86_64 = "windows/gdexample.windows.template_debug.dev.double.x86_64.dll"
+windows.debug.double.x86_64 = "windows/gdexample.windows.template_debug.double.x86_64.dll"
+;windows.debug.double.x86_64 = "windows/gdexample.windows.template_debug.dev.double.x86_64.dll"
 ;windows.release.double.x86_64 = "windows/gdexample.windows.template_release.double.x86_64.dll"
 
 ;windows.debug.x86_32 = "windows/gdexample.windows.template_debug.x86_32.dll"

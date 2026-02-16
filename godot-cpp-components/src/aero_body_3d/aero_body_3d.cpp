@@ -43,16 +43,16 @@ void AeroBody3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_show_debug", "visible"), &AeroBody3D::set_show_debug);
 	ClassDB::bind_method(D_METHOD("get_show_debug"), &AeroBody3D::get_show_debug);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "show_debug"), "set_show_debug", "get_show_debug");
-	bool update_debug;
-	bool show_wing_debug_vectors;
-	bool show_lift_vectors;
-	bool show_drag_vectors;
-	bool show_linear_velocity;
-	bool show_angular_velocity;
-	bool show_center_of_lift;
-	bool show_center_of_drag;
-	bool show_center_of_mass;
-	bool show_center_of_thrust;
+	//bool update_debug;
+	//bool show_wing_debug_vectors;
+	//bool show_lift_vectors;
+	//bool show_drag_vectors;
+	//bool show_linear_velocity;
+	//bool show_angular_velocity;
+	//bool show_center_of_lift;
+	//bool show_center_of_drag;
+	//bool show_center_of_mass;
+	//bool show_center_of_thrust;
 	
 	//debug options
 	ADD_SUBGROUP("Options", "");
@@ -108,26 +108,24 @@ void AeroBody3D::_ready() {
 	set_show_debug(show_debug);
 }
 void AeroBody3D::on_child_entered_tree(Node *p_node) {
-	if (p_node->is_class("AeroInfluencer3D")) {
-		AeroInfluencer3D* influencer = (AeroInfluencer3D*) p_node;
+	AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(p_node);
+	if (!influencer) return;
 
-		aero_influencers.append(influencer);
-		influencer->set_aero_body(this);
+	aero_influencers.append(influencer);
+	influencer->set_aero_body(this);
 
-		influencer->set_show_debug(get_show_debug());
-		influencer->set_debug_scale(get_debug_scale());
-		influencer->set_debug_width(get_debug_width());
-	}
+	influencer->set_show_debug(get_show_debug());
+	influencer->set_debug_scale(get_debug_scale());
+	influencer->set_debug_width(get_debug_width());
 }
 
 
 void AeroBody3D::on_child_exiting_tree(Node *p_node) {
-	if (p_node->is_class("AeroInfluencer3D")) {
-		AeroInfluencer3D* influencer = (AeroInfluencer3D*) p_node;
-		
-		aero_influencers.erase(p_node);
-		influencer->set_aero_body(nullptr);
-	}
+	AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(p_node);
+	if (!influencer) return;
+
+	aero_influencers.erase(influencer);
+	influencer->set_aero_body(nullptr);
 }
 
 //PackedStringArray AeroBody3D::_get_configuration_warnings() const {}
@@ -201,7 +199,7 @@ ForceAndTorque AeroBody3D::calculate_forces(PhysicsDirectBodyState3D *body_state
 			}
 		}
 
-		linear_velocity_prediction = predict_linear_velocity(last_force_and_torque.force + body_state->get_total_gravity() * get_mass());
+		linear_velocity_prediction = predict_linear_velocity(last_force_and_torque.force + body_state->get_total_gravity() * get_mass()); //gravity is multiplied by math so that it is applied as an acceleration, not a force. It's cancelled out by a / mass
 		angular_velocity_prediction = predict_angular_velocity(last_force_and_torque.torque);
 		last_force_and_torque = calculate_aerodynamic_forces(substep_delta);
 
@@ -268,7 +266,7 @@ void AeroBody3D::set_substeps_override(const int p_substeps) {substeps_override 
 int AeroBody3D::get_substeps_override() const {return substeps_override;}
 void AeroBody3D::set_substeps(const int p_substeps) {
 	substeps = p_substeps;
-	prediction_timestep_fraction = (double) 1.0f / (double) substeps;
+	prediction_timestep_fraction = 1.0 / substeps;
 }
 int AeroBody3D::get_substeps() const {
 	if (substeps_override > -1){
@@ -278,7 +276,7 @@ int AeroBody3D::get_substeps() const {
 	return (int) ProjectSettings::get_singleton()->get_setting("physics/3d/aerodynamics/substeps", 1);
 }
 
-void AeroBody3D::set_aero_influencers(const TypedArray<AeroInfluencer3D> new_arr) {
+void AeroBody3D::set_aero_influencers(const TypedArray<AeroInfluencer3D> &new_arr) {
 	aero_influencers.assign(new_arr);
 	
 	//example of how to get a pointer to a node in the typed array.

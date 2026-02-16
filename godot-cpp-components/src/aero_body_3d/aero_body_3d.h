@@ -47,7 +47,7 @@ private:
 	int substeps_override = -1;
 	int substeps = 1;
 	double prediction_timestep_fraction = 1;
-	TypedArray<AeroInfluencer3D> aero_influencers;
+	TypedArray<AeroInfluencer3D> aero_influencers; //I'm guessing iterating this list is slow
 	Vector3 current_force = Vector3(0, 0, 0);
 	Vector3 current_torque = Vector3(0, 0, 0);
 	Vector3 current_gravity = Vector3(0, 0, 0);
@@ -104,7 +104,7 @@ private:
 protected:
 	static void _bind_methods();
 	void set_substeps(const int substeps);
-	void set_aero_influencers(const TypedArray<AeroInfluencer3D> new_arr);
+	void set_aero_influencers(const TypedArray<AeroInfluencer3D> &new_arr);
 public:
 	//init/deinit, and godot virtual overrides.
 	AeroBody3D();

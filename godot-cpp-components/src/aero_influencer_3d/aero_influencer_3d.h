@@ -134,7 +134,7 @@ public:
 	void set_brake_contribution(const Vector3 p_brake_contribution);
 	Vector3 get_brake_contribution() const;
 	void set_aero_body(AeroBody3D *new_body);
-	void set_aero_influencers(const TypedArray<AeroInfluencer3D> new_arr);
+	void set_aero_influencers(const TypedArray<AeroInfluencer3D> &new_arr);
 	TypedArray<AeroInfluencer3D> get_aero_influencers() const;
 	double get_air_speed();
 	Vector3 get_drag_direction();
@@ -142,8 +142,8 @@ public:
 	double get_dynamic_pressure();
 	double get_mach();
 
-	void on_child_entered_tree(const Variant &node);
-	void on_child_exiting_tree(const Variant &node);
+	void on_child_entered_tree(Node *p_node);
+	void on_child_exiting_tree(Node *p_node);
 	
 	void set_show_debug(const bool value);
 	void set_debug_scale(const double value);

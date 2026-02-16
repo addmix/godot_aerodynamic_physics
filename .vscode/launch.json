@@ -12,7 +12,7 @@
       "args": [
         "--editor",
         "--debug",
-        "--verbose",
+        //"--verbose",
         "--path",
         "../.."
       ],
@@ -45,7 +45,7 @@
       "program": "D:/User/Documents/Godot/repos/godot-vr/godot/bin/godot.windows.editor.double.x86_64.exe",
       "args": [
         "--editor",
-        "--debug",
+        //"--debug",
         //"--verbose",
         "--path",
         "../.."

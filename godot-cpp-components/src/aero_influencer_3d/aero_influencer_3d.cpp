@@ -68,7 +68,7 @@ void AeroInfluencer3D::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("set_aero_influencers", "in_arr"), &AeroInfluencer3D::set_aero_influencers);
 	ClassDB::bind_method(D_METHOD("get_aero_influencers"), &AeroInfluencer3D::get_aero_influencers);
-    ClassDB::add_property(get_class_static(), PropertyInfo(Variant::ARRAY, "aero_influencer_array", PROPERTY_HINT_TYPE_STRING, vformat("%s/%s:%s", Variant::OBJECT, PROPERTY_HINT_NODE_TYPE, "Node")), "set_aero_influencers", "get_aero_influencers");
+    ClassDB::add_property(get_class_static(), PropertyInfo(Variant::ARRAY, "aero_influencer_array", PROPERTY_HINT_NODE_TYPE, "AeroInfluencer3D"), "set_aero_influencers", "get_aero_influencers");
 
 	//register function so we can use it with a signal.
 	ClassDB::bind_method(D_METHOD("on_child_entered_tree", "node"), &AeroInfluencer3D::on_child_entered_tree);
@@ -94,27 +94,19 @@ void AeroInfluencer3D::_ready() {
 	this->connect("child_entered_tree", Callable(this, "on_child_entered_tree"));
 	this->connect("child_exiting_tree", Callable(this, "on_child_exiting_tree"));
 }
-void AeroInfluencer3D::on_child_entered_tree(const Variant &node) {
-	Node* typed_node = (Node*) (Object*) node;
-	//UtilityFunctions::print("child added ", typed_node->get_name());
+void AeroInfluencer3D::on_child_entered_tree(Node *p_node) {
+	AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(p_node);
+	if (!influencer) return;
 
-	if (typed_node->is_class("AeroInfluencer3D")) {
-		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) typed_node;
-
-		aero_influencers.append(influencer);
-		influencer->set_aero_body(aero_body);
-	}
+	aero_influencers.append(influencer);
+	influencer->set_aero_body(aero_body);
 }
-void AeroInfluencer3D::on_child_exiting_tree(const Variant &node) {
-	Node* typed_node = (Node*) (Object*) node;
-	//UtilityFunctions::print("child removed ", typed_node->get_name());
+void AeroInfluencer3D::on_child_exiting_tree(Node *p_node) {
+	AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(p_node);
+	if (!influencer) return;
 
-	if (typed_node->is_class("AeroInfluencer3D")) {
-		AeroInfluencer3D* influencer = (AeroInfluencer3D*) (Object*) typed_node;
-
-		aero_influencers.erase(node);
-		influencer->set_aero_body(nullptr);
-	}
+	aero_influencers.erase(influencer);
+	influencer->set_aero_body(nullptr);
 }
 void AeroInfluencer3D::_process(double delta) {}
 void AeroInfluencer3D::_physics_process(double delta) {
@@ -128,6 +120,9 @@ ForceAndTorque AeroInfluencer3D::calculate_forces_with_override(double substep_d
 		PackedVector3Array result;
 		GDVIRTUAL_CALL(_calculate_forces, substep_delta, result);
 		UtilityFunctions::print("running gdscript override");
+		
+		if (result.size() < 2) return ForceAndTorque();
+
 		return ForceAndTorque(result[0], result[1]);
 	}
 	
@@ -352,7 +347,7 @@ Vector3 AeroInfluencer3D::get_brake_contribution() const {
 void AeroInfluencer3D::set_aero_body(AeroBody3D *p_new_body) {
     aero_body = p_new_body;
 }
-void AeroInfluencer3D::set_aero_influencers(const TypedArray<AeroInfluencer3D> new_arr) {
+void AeroInfluencer3D::set_aero_influencers(const TypedArray<AeroInfluencer3D> &new_arr) {
     aero_influencers.assign(new_arr);
 }
 TypedArray<AeroInfluencer3D> AeroInfluencer3D::get_aero_influencers() const { return aero_influencers; }

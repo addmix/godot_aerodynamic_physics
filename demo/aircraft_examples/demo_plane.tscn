@@ -1,4 +1,4 @@
-[gd_scene load_steps=50 format=3 uid="uid://dx0v1i14fyw8c"]
+[gd_scene format=3 uid="uid://dx0v1i14fyw8c"]
 
 [ext_resource type="Script" uid="uid://3iji867c81k5" path="res://addons/godot_aerodynamic_physics/core/aero_body_3d.gd" id="1_ddp7w"]
 [ext_resource type="Script" uid="uid://cc5dwx5pqkaur" path="res://addons/godot_aerodynamic_physics/core/controls/aero_control_component.gd" id="2_x2dhw"]
@@ -230,7 +230,7 @@ axis_configs = Array[ExtResource("11_1g5my")]([SubResource("Resource_hj20f")])
 max_value = Vector3(0.1, 0, 0)
 min_value = Vector3(-0.1, 0, 0)
 
-[node name="AeroBody3D" type="VehicleBody3D"]
+[node name="AeroBody3D" type="VehicleBody3D" unique_id=1748065959]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8844791671787666, 0)
 collision_layer = 16385
 mass = 850.0
@@ -242,20 +242,20 @@ angular_damp_mode = 1
 script = ExtResource("1_ddp7w")
 show_debug = true
 
-[node name="AeroControlComponent" type="Node" parent="."]
+[node name="AeroControlComponent" type="Node" parent="." unique_id=292886688]
 script = ExtResource("2_x2dhw")
 flight_assist = SubResource("Resource_qpum4")
 control_config = SubResource("Resource_qs0nt")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=888324980]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.00468441, 1.16813)
 shape = SubResource("BoxShape3D_nchkm")
 
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="." unique_id=1583359615]
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, -0.434142, -0.220745)
 shape = SubResource("CapsuleShape3D_6onr1")
 
-[node name="AeroJetThruster3D" type="Node3D" parent="."]
+[node name="AeroJetThruster3D" type="Node3D" parent="." unique_id=609721618]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.29881)
 script = ExtResource("13_qs0nt")
 intake_fan_max_velocity = 100.0
@@ -263,18 +263,18 @@ exhaust_velocity = 100.0
 throttle_control_config = SubResource("Resource_blosn")
 metadata/_custom_type_script = "uid://j11128f5e4xl"
 
-[node name="Elevator" type="Node3D" parent="."]
+[node name="Elevator" type="Node3D" parent="." unique_id=600103243]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.57628e-07, 2.72025)
 script = ExtResource("2_ygpq6")
 manual_config = SubResource("Resource_raxm3")
 wing_config = SubResource("Resource_b87jk")
 actuation_config = SubResource("Resource_11wlp")
 
-[node name="CSGBox3D2" type="CSGBox3D" parent="Elevator"]
+[node name="CSGBox3D2" type="CSGBox3D" parent="Elevator" unique_id=1262734552]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.57628e-07, 0.29494)
 size = Vector3(2.0332, 0.113525, 1.14014)
 
-[node name="Rudder" type="Node3D" parent="."]
+[node name="Rudder" type="Node3D" parent="." unique_id=1932162616]
 transform = Transform3D(6.12304e-17, -1, 0, 0.835808, 5.11768e-17, -0.549023, 0.549023, 3.36168e-17, 0.835808, -2.96035e-17, 0.742918, 2.98506)
 script = ExtResource("2_ygpq6")
 manual_config = SubResource("Resource_raxm3")
@@ -282,11 +282,11 @@ wing_config = SubResource("Resource_7jeqs")
 actuation_config = SubResource("Resource_u1ahl")
 control_rotation_order = 4
 
-[node name="CSGBox3D3" type="CSGBox3D" parent="Rudder"]
+[node name="CSGBox3D3" type="CSGBox3D" parent="Rudder" unique_id=671702611]
 transform = Transform3D(-4.37114e-08, 0.999742, -0.0227224, -1, -4.37001e-08, 9.93232e-10, 3.55271e-15, 0.0227224, 0.999742, 0.0151641, -6.6283e-10, 0.239923)
 size = Vector3(0.141602, 1.41797, 1.14014)
 
-[node name="WingR" type="Node3D" parent="."]
+[node name="WingR" type="Node3D" parent="." unique_id=441448096]
 transform = Transform3D(0.996195, -0.0871557, 0, 0.0871558, 0.996194, 0, 0, 0, 1, 1.908, 0, -0.813632)
 script = ExtResource("2_ygpq6")
 manual_config = SubResource("Resource_raxm3")
@@ -294,15 +294,15 @@ wing_config = SubResource("Resource_658jb")
 mirror_axis = 1
 actuation_config = SubResource("Resource_hl3vl")
 
-[node name="CSGBox3D5" type="CSGBox3D" parent="WingR"]
+[node name="CSGBox3D5" type="CSGBox3D" parent="WingR" unique_id=1303328875]
 transform = Transform3D(1, 0, -5.96046e-08, 0, 1, 0, 5.96046e-08, 0, 1, -0.0699999, 0, 0.269945)
 size = Vector3(3.67285, 0.113525, 1.14014)
 
-[node name="Camera3D" type="Camera3D" parent="."]
+[node name="Camera3D" type="Camera3D" parent="." unique_id=264231530]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55771, 8.71651)
 far = 100000.0
 
-[node name="Label3D" type="Label3D" parent="Camera3D"]
+[node name="Label3D" type="Label3D" parent="Camera3D" unique_id=284383959]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.57529, -2.9862)
 text = "Controls:
 Pitch: W/A
@@ -310,8 +310,8 @@ Yaw: Q/E
 Roll: A/D
 Throttle: Shift/Ctrl"
 
-[node name="FlightInfoLabel" parent="Camera3D" instance=ExtResource("13_m134i")]
+[node name="FlightInfoLabel" parent="Camera3D" unique_id=758165330 instance=ExtResource("13_m134i")]
 
-[node name="CSGBox3D" type="CSGBox3D" parent="."]
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=240306869]
 transform = Transform3D(1, 0, 0, 0, 0.998193, 0.0600904, 0, -0.0600904, 0.998193, 0, -0.155863, 1.06391)
 size = Vector3(0.25, 0.25, 4.2828)

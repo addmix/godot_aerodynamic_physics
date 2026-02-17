@@ -48,7 +48,6 @@ const AeroNodeUtils = preload("../utils/node_utils.gd")
 	set(x):
 		show_wing_debug_vectors = x
 		_update_debug_visibility()
-@export var show_torque : bool = false
 ## Controls visibility of total lift vector.
 @export var show_lift_vectors : bool = true:
 	set(x):
@@ -59,6 +58,8 @@ const AeroNodeUtils = preload("../utils/node_utils.gd")
 	set(x):
 		show_drag_vectors = x
 		_update_debug_visibility()
+##
+@export var show_torque : bool = false
 ## Controls visibility of linear velocity vector.
 @export var show_linear_velocity : bool = true:
 	set(x):
@@ -145,6 +146,9 @@ var PREDICTION_TIMESTEP_FRACTION : float:
 	get:
 		return 1.0 / float(SUBSTEPS)
 
+var substep_delta : float = get_physics_process_delta_time() * PREDICTION_TIMESTEP_FRACTION
+var current_substep : float = 0
+
 ## List of [AeroInfluencer3D] nodes that affect this [AeroBody3D]
 var aero_influencers : Array[AeroInfluencer3D] = []
 ## Subset of [member AeroBody3D.aero_influencers] which only contains [AeroSurface3D]s
@@ -166,6 +170,10 @@ var linear_acceleration := Vector3.ZERO
 ## This [AeroBody3D]'s angular acceleration since the last frame. [br]
 ## Radians per second squared
 var angular_acceleration := Vector3.ZERO
+
+var linear_velocity_prediction : Vector3 = linear_velocity
+var angular_velocity_prediction : Vector3 = angular_velocity
+
 ## Wind velocity in meters per second.
 var wind := Vector3.ZERO:
 	set(x):
@@ -185,6 +193,8 @@ var air_speed := 0.0
 ## Mach 1.0 is the speed of sound.[br]
 ## Adjusted for atmospheric changes.
 var mach := 0.0
+## Altitude of the AeroBody3D in meters.
+var altitude := 0.0
 ## The denisty of the air in kg/m^3.
 var air_density : float = 1.225
 ## The pressure of air in pascals (Pa).
@@ -194,8 +204,6 @@ var angle_of_attack := 0.0
 ## The sideslip angle relative to the [member AeroBody3D.air_velocity] in radians.[br]
 ## Similar to [member AeroBody3D.angle_of_attack], but measured on the lateral axis, instead of vertical.
 var sideslip_angle := 0.0
-## Altitude of the AeroBody3D in meters.
-var altitude := 0.0
 ## Bank angle (roll) of the AeroBody3D in radians.
 ## Alias for [code]global_rotation.z[/code]
 var bank_angle := 0.0
@@ -213,6 +221,22 @@ var test_enter_tree_override : bool = false
 var test_ready_override : bool = false
 var test_physics_process_override : bool = false
 var test_integrate_forces_override : bool = false
+
+
+
+
+#debug
+var linear_velocity_vector : AeroDebugVector3D
+var angular_velocity_vector : AeroDebugVector3D
+
+var force_debug_vector : AeroDebugVector3D
+var torque_debug_vector : AeroDebugVector3D
+var lift_debug_vector : AeroDebugVector3D
+var drag_debug_vector : AeroDebugVector3D
+
+var mass_debug_point : AeroDebugPoint3D
+var thrust_debug_vector : AeroDebugVector3D
+
 
 func test_overrides() -> void:
 	if not is_inside_tree() or not get_tree():
@@ -237,17 +261,6 @@ func test_overrides() -> void:
 	
 	
 
-#debug
-var linear_velocity_vector : AeroDebugVector3D
-var angular_velocity_vector : AeroDebugVector3D
-
-var force_debug_vector : AeroDebugVector3D
-var torque_debug_vector : AeroDebugVector3D
-var lift_debug_vector : AeroDebugVector3D
-var drag_debug_vector : AeroDebugVector3D
-
-var mass_debug_point : AeroDebugPoint3D
-var thrust_debug_vector : AeroDebugVector3D
 
 func _init():
 	mass_debug_point = AeroDebugPoint3D.new(Color(1, 1, 0), debug_center_width, true, 5)
@@ -368,9 +381,13 @@ func integrator(state : PhysicsDirectBodyState3D) -> void:
 	last_angular_velocity = uncommitted_last_angular_velocity
 	
 	current_gravity = state.total_gravity
-	if Engine.is_editor_hint():
+	if not Engine.is_editor_hint():
 		center_of_mass = state.center_of_mass_local
 	
+	
+	linear_velocity_prediction = state.linear_velocity
+	angular_velocity_prediction = state.angular_velocity
+
 	var total_force_and_torque := calculate_forces(state.step)
 	
 	state.apply_central_force(current_force)
@@ -382,17 +399,18 @@ func integrator(state : PhysicsDirectBodyState3D) -> void:
 	uncommitted_last_linear_velocity = state.linear_velocity
 	uncommitted_last_angular_velocity = state.angular_velocity
 
-var linear_velocity_prediction : Vector3 = linear_velocity
-var angular_velocity_prediction : Vector3 = angular_velocity
-var substep_delta : float = get_physics_process_delta_time() * PREDICTION_TIMESTEP_FRACTION
-var current_substep : float = 0
+
 
 func calculate_forces(delta : float) -> PackedVector3Array:
-	wind = Vector3.ZERO
-	var desired_air_density : float = 1.225
 	if has_node("/root/AeroUnits"):
 		var _AeroUnits : Node = $"/root/AeroUnits"
-		desired_air_density = _AeroUnits.get_density_at_altitude(altitude)
+		altitude = _AeroUnits.get_altitude(self)
+		mach = _AeroUnits.speed_to_mach_at_altitude(air_speed, altitude)
+		air_density = _AeroUnits.get_density_at_altitude(altitude)
+		air_pressure = _AeroUnits.get_pressure_at_altitude(altitude)
+	
+	wind = Vector3.ZERO
+	var desired_air_density : float = 1.225
 	for atmosphere : AeroAtmosphere3D in atmosphere_areas:
 		if atmosphere.per_influencer_positioning:
 			continue
@@ -403,31 +421,26 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 	
 	air_density = desired_air_density# move_toward(air_density, desired_air_density, 100000.0 * delta)
 	
-	#eventually implement wind
-	#wind = Vector3.ZERO
-	air_velocity = -linear_velocity + wind
-	air_speed = air_velocity.length()
-	
-	if has_node("/root/AeroUnits"):
-		var _AeroUnits : Node = $"/root/AeroUnits"
-		altitude = _AeroUnits.get_altitude(self)
-		mach = _AeroUnits.speed_to_mach_at_altitude(air_speed, altitude)
-		#air_density = _AeroUnits.get_density_at_altitude(altitude)
-		air_pressure = _AeroUnits.get_pressure_at_altitude(altitude)
-	
-	local_air_velocity = air_velocity * global_transform.basis
-	local_angular_velocity = angular_velocity * global_transform.basis
-	angle_of_attack = global_basis.y.angle_to(-air_velocity) - (PI / 2.0)
-	sideslip_angle = global_basis.x.angle_to(air_velocity) - (PI / 2.0)
 	bank_angle = global_rotation.z
 	heading = global_rotation.y
 	inclination = global_rotation.x
 	
 	var last_force_and_torque := PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
-	var total_force_and_torque := last_force_and_torque
+	var total_force_and_torque := PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 	
 	substep_delta = delta * PREDICTION_TIMESTEP_FRACTION
 	for substep : int in SUBSTEPS:
+		#air velocity and other values must be updated in substeps
+		#using the velocity predictions for this to be useful/effective
+
+		air_velocity = -linear_velocity + wind
+		air_speed = air_velocity.length()
+
+		local_air_velocity = air_velocity * global_transform.basis
+		local_angular_velocity = angular_velocity * global_transform.basis
+		angle_of_attack = global_basis.y.angle_to(-air_velocity) - (PI / 2.0)
+		sideslip_angle = global_basis.x.angle_to(air_velocity) - (PI / 2.0)
+
 		current_substep = substep
 		#allow aeroinfluencers to update their own transforms before we calculate forces
 		if not Engine.is_editor_hint():
@@ -436,26 +449,28 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 					continue
 				influencer._update_transform_substep(substep_delta)
 		
-		#need to do air velocity/wind calculation here, too?
 		linear_velocity_prediction = predict_linear_velocity(last_force_and_torque[0]) + current_gravity * PREDICTION_TIMESTEP_FRACTION
 		angular_velocity_prediction = predict_angular_velocity(last_force_and_torque[1])
-		last_force_and_torque = PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 		
-		#for atmosphere : AeroAtmosphere3D in atmosphere_areas:
+		var substep_force_and_torque_sum := PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 		for influencer : AeroInfluencer3D in aero_influencers:
 			if influencer.disabled:
 				continue
 			
 			var force_and_torque : PackedVector3Array = influencer._calculate_forces(substep_delta)
 			
-			#sum the force and torque of each influencer
-			last_force_and_torque[0] += force_and_torque[0]
-			last_force_and_torque[1] += force_and_torque[1]
+			substep_force_and_torque_sum[0] += force_and_torque[0]
+			substep_force_and_torque_sum[1] += force_and_torque[1]
 		
 		#add to total forces
-		total_force_and_torque[0] += last_force_and_torque[0]
-		total_force_and_torque[1] += last_force_and_torque[1]
+		total_force_and_torque[0] += substep_force_and_torque_sum[0]
+		total_force_and_torque[1] += substep_force_and_torque_sum[1]
+
+		last_force_and_torque[0] = substep_force_and_torque_sum[0]
+		last_force_and_torque[1] = substep_force_and_torque_sum[1]
 	
+
+
 	total_force_and_torque[0] = total_force_and_torque[0] / SUBSTEPS
 	total_force_and_torque[1] = total_force_and_torque[1] / SUBSTEPS
 	
@@ -518,10 +533,10 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 	return total_force_and_torque
 
 func predict_linear_velocity(force : Vector3) -> Vector3:
-	return linear_velocity + (force / mass * get_physics_process_delta_time() * PREDICTION_TIMESTEP_FRACTION)
+	return linear_velocity_prediction + (force / mass * substep_delta)
 
 func predict_angular_velocity(torque : Vector3) -> Vector3:
-	return angular_velocity + get_physics_process_delta_time() * PREDICTION_TIMESTEP_FRACTION * (get_inverse_inertia_tensor() * torque)
+	return angular_velocity_prediction + (get_inverse_inertia_tensor() * torque * substep_delta)
 
 func get_amount_of_active_influencers() -> int:
 	var count : int = 0

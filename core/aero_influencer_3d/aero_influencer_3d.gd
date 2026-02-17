@@ -128,6 +128,8 @@ var lift_debug_vector : AeroDebugVector3D
 var drag_debug_vector : AeroDebugVector3D
 var thrust_debug_vector : AeroDebugVector3D
 
+var last_transform : Transform3D = Transform3D()
+
 func _init():
 	#initialize debug vectors
 	force_debug_vector = AeroDebugVector3D.new(Color(1, 1, 1), debug_width, true, 2)
@@ -181,7 +183,6 @@ func on_child_exit_tree(node : Node) -> void:
 		aero_influencers.erase(node)
 		node.aero_body = null
 
-var last_transform : Transform3D = Transform3D()
 func _physics_process(delta : float) -> void:
 	if Engine.is_editor_hint():
 		return
@@ -222,9 +223,6 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 		
 	
 	air_speed = world_air_velocity.length()
-	
-	
-	
 	altitude = aero_body.altitude
 	dynamic_pressure = 0.5 * air_density * air_speed * air_speed
 	drag_direction = world_air_velocity.normalized()
@@ -249,6 +247,10 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 		torque += force_and_torque[1]
 	
 	return PackedVector3Array([force, torque])
+
+## Used for input propagation.
+func get_control_command(axis_name : String = "") -> float:
+	return get_parent().get_control_command(axis_name)
 
 ## Intended to be overridden.[br]
 ## [br]
@@ -313,9 +315,17 @@ func get_world_air_velocity() -> Vector3:
 
 #this could be computed and cached once per iteration
 func get_linear_velocity() -> Vector3:
+	#wrong. using linear_velocity directly will cause substeps to not have the intended affect
+	#when the parent is an aerobody, the linear velocity prediction should be used.
+	if get_parent() is AeroBody3D:
+		return get_parent().linear_velocity_prediction + get_parent().angular_velocity_prediction.cross(get_parent().global_basis * position)
 	return get_parent().linear_velocity + get_parent().angular_velocity.cross(get_parent().global_basis * position)
 
 func get_angular_velocity() -> Vector3:
+	#wrong. using linear_velocity directly will cause substeps to not have the intended affect
+	#when the parent is an aerobody, the linear velocity prediction should be used.
+	if get_parent() is AeroBody3D:
+		return get_parent().angular_velocity_prediction
 	return get_parent().angular_velocity
 
 func get_centrifugal_offset() -> Vector3:
@@ -341,9 +351,7 @@ func get_angular_acceleration() -> Vector3:
 
 
 
-## Used for input propagation.
-func get_control_command(axis_name : String = "") -> float:
-	return get_parent().get_control_command(axis_name)
+
 
 #debug
 

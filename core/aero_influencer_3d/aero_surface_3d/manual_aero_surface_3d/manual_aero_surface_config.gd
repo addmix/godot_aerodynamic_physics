@@ -1,6 +1,6 @@
 @tool
 extends Resource
-class_name ManualAeroSurfaceConfig
+#class_name ManualAeroSurfaceConfig
 
 ##Lift coefficient used where the lift_aoa_curve has a value of -1.
 @export_range(-100.0, 0.0, 0.001, "or_greater", "exp", "suffix:cL") var min_lift_coefficient : float = -1.6

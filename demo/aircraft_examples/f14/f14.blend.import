@@ -41,7 +41,7 @@ _subresources={
 "materials": {
 "Material": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/vehicles/f14/Material.tres",
+"use_external/fallback_path": "res://addons/godot_aerodynamic_physics/demo/aircraft_examples/f14/Material.tres",
 "use_external/path": "uid://g3itwbd7yekm"
 }
 }
@@ -56,6 +56,7 @@ blender/meshes/colors=false
 blender/meshes/uvs=true
 blender/meshes/normals=true
 blender/meshes/export_geometry_nodes_instances=false
+blender/meshes/gpu_instances=false
 blender/meshes/tangents=true
 blender/meshes/skins=2
 blender/meshes/export_bones_deforming_mesh_only=false

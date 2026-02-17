@@ -1,0 +1,76 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "editor-debug (vsdbg | windows)",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "D:/User/Documents/Godot/repos/godot-vr/godot/bin/godot.windows.editor.dev.double.x86_64.exe",
+      "args": [
+        "--editor",
+        "--debug",
+        //"--verbose",
+        "--path",
+        "../.."
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart",
+      "preLaunchTask": "build-debug",
+    },
+    {
+      "name": "project-debug (vsdbg | windows)",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "D:/User/Documents/Godot/repos/godot-vr/godot/bin/godot.windows.editor.dev.double.x86_64.exe",
+      "args": [
+        //"--editor",
+        //"--debug",
+        //"--verbose",
+        "--path",
+        "../.."
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart",
+      "preLaunchTask": "build-debug",
+    },
+    {
+      "name": "editor-release (vsdbg | windows)",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "D:/User/Documents/Godot/repos/godot-vr/godot/bin/godot.windows.editor.double.x86_64.exe",
+      "args": [
+        "--editor",
+        //"--debug",
+        //"--verbose",
+        "--path",
+        "../.."
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart",
+      "preLaunchTask": "build-debug",
+    },
+    {
+      "name": "project-release (vsdbg | windows)",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "D:/User/Documents/Godot/repos/godot-vr/godot/bin/godot.windows.editor.double.x86_64.exe",
+      "args": [
+        //"--editor",
+        //"--debug",
+        //"--verbose",
+        "--path",
+        "../.."
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart",
+      "preLaunchTask": "build-debug",
+    },
+  ]
+}

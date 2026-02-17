@@ -1,0 +1,30 @@
+{
+    "files.associations": {
+        "deque": "cpp",
+        "list": "cpp",
+        "string": "cpp",
+        "vector": "cpp",
+        "system_error": "cpp",
+        "array": "cpp",
+        "tuple": "cpp",
+        "utility": "cpp",
+        "*.tcc": "cpp",
+        "memory": "cpp",
+        "type_traits": "cpp",
+        "xutility": "cpp",
+        "cstdlib": "cpp"
+    },
+    "files.exclude": {
+        //"**/godot-cpp-components/godot-cpp": true,
+        "**/*.o": true,
+        "**/*.obj": true,
+        "**/*.uid": true,
+        "**/*.import": true,
+        "**/*.pdb": true,
+        "**/*.TMP": true,
+        "**/*.ilk": true,
+        "**/*.lib": true,
+        "**/*.exp": true,
+        "**/~*.dll": true,
+    },
+}

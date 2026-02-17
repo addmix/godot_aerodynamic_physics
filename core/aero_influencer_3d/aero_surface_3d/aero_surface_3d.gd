@@ -1,6 +1,6 @@
 @tool
 extends AeroInfluencer3D
-class_name AeroSurface3D
+#class_name AeroSurface3D
 
 ##Config resource used to define the size of the AeroSurface3D node.
 @export var wing_config : AeroSurfaceConfig = AeroSurfaceConfig.new():

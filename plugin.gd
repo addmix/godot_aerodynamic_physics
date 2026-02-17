@@ -41,7 +41,7 @@ func _enter_tree():
 	if ProjectSettings.get_setting("layer_names/3d_physics/layer_15") == "":
 		ProjectSettings.set_setting("layer_names/3d_physics/layer_15", "Atmosphere Areas")
 	
-	add_autoload_singleton("AeroUnits", path + "/core/singletons/aero_units.gd")
+	#add_autoload_singleton("AeroUnits", path + "/core/singletons/aero_units.gd")
 	add_node_3d_gizmo_plugin(gizmo_plugin_instance)
 	
 	add_custom_type("AeroBody3D", "VehicleBody3D", aero_body_3d, aerobody3d_icon)

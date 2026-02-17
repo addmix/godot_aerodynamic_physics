@@ -1,6 +1,6 @@
 @tool
 extends Node3D
-class_name AeroInfluencer3D
+#class_name AeroInfluencer3D
 ## Base class for all aerodynamic nodes.
 ##
 ## This class does not directly apply any forces to a body, requiring an [AeroBody3D] parent to 
@@ -276,8 +276,8 @@ func _update_transform_substep(substep_delta : float) -> void:
 ## existing functionality.
 func _update_control_transform(substep_delta : float) -> void:
 	var actuation_value := Vector3.ZERO
-	if actuation_config:
-		actuation_value = actuation_config.update(self, substep_delta)
+	#if actuation_config:
+		#actuation_value = actuation_config.update(self, substep_delta)
 	
 	basis = default_transform.basis * Basis().from_euler(actuation_value, control_rotation_order)
 

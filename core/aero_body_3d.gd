@@ -1,6 +1,6 @@
 @tool
 extends VehicleBody3D
-class_name AeroBody3D
+#class_name AeroBody3D
 ## AeroBody3D is the base node for simulating aerodynamic forces.[br]
 ##
 ## Aerodynamic forces are calculated from child [AeroInfluencer3D] nodes.[br]
@@ -295,7 +295,7 @@ func _init():
 	#test that necessary functions (_ready(), _enter_tree(), _physics_process()
 	test_overrides.call_deferred()
 	
-	set_collision_layer_value(ProjectSettings.get_setting("physics/aerodynamics/atmosphere_area_collision_layer"), true) 
+	set_collision_layer_value(ProjectSettings.get_setting("physics/aerodynamics/atmosphere_area_collision_layer", 15), true) 
 
 func _enter_tree() -> void:
 	test_enter_tree_override = true
@@ -656,7 +656,7 @@ func _update_debug() -> void:
 				amount_of_aero_influencers -= 1
 				continue
 			
-			var force_vector := influencer._current_force
+			var force_vector : Vector3 = influencer._current_force
 			var force := force_vector.length()
 			force_sum += force
 			force_vector_sum += force_vector

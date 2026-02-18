@@ -3,100 +3,52 @@
 using namespace godot;
 
 void AeroBody3D::_bind_methods() {
-	
 	// substep override
 	ClassDB::bind_method(D_METHOD("set_substeps_override", "p_substeps"), &AeroBody3D::set_substeps_override);
 	ClassDB::bind_method(D_METHOD("get_substeps_override"), &AeroBody3D::get_substeps_override);
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "substeps_override"), "set_substeps_override", "get_substeps_override");
 	
-	//register function so we can use it with a signal.
-	ClassDB::bind_method(D_METHOD("on_child_entered_tree", "node"), &AeroBody3D::on_child_entered_tree);
-	ClassDB::bind_method(D_METHOD("on_child_exiting_tree", "node"), &AeroBody3D::on_child_exiting_tree);
-	
-	ClassDB::bind_method(D_METHOD("get_substeps"), &AeroBody3D::get_substeps);
-	ClassDB::bind_method(D_METHOD("get_aero_influencers"), &AeroBody3D::get_aero_influencers);
-	ClassDB::bind_method(D_METHOD("get_prediction_timestep_fraction"), &AeroBody3D::get_prediction_timestep_fraction);
-	ClassDB::bind_method(D_METHOD("get_current_force"), &AeroBody3D::get_current_force);
-	ClassDB::bind_method(D_METHOD("get_current_torque"), &AeroBody3D::get_current_torque);
-	ClassDB::bind_method(D_METHOD("get_current_gravity"), &AeroBody3D::get_current_gravity);
-	ClassDB::bind_method(D_METHOD("get_last_linear_velocity"), &AeroBody3D::get_last_linear_velocity);
-	ClassDB::bind_method(D_METHOD("get_last_angular_velocity"), &AeroBody3D::get_last_angular_velocity);
-	ClassDB::bind_method(D_METHOD("get_wind"), &AeroBody3D::get_wind);
-	ClassDB::bind_method(D_METHOD("get_air_velocity"), &AeroBody3D::get_air_velocity);
-	ClassDB::bind_method(D_METHOD("get_local_air_velocity"), &AeroBody3D::get_local_air_velocity);
-	ClassDB::bind_method(D_METHOD("get_local_angular_velocity"), &AeroBody3D::get_local_angular_velocity);
-	ClassDB::bind_method(D_METHOD("get_air_speed"), &AeroBody3D::get_air_speed);
-	ClassDB::bind_method(D_METHOD("get_mach"), &AeroBody3D::get_mach);
-	ClassDB::bind_method(D_METHOD("get_air_density"), &AeroBody3D::get_air_density);
-	ClassDB::bind_method(D_METHOD("get_air_pressure"), &AeroBody3D::get_air_pressure);
-	ClassDB::bind_method(D_METHOD("get_angle_of_attack"), &AeroBody3D::get_angle_of_attack);
-	ClassDB::bind_method(D_METHOD("get_sideslip_angle"), &AeroBody3D::get_sideslip_angle);
-	ClassDB::bind_method(D_METHOD("get_altitude"), &AeroBody3D::get_altitude);
-	ClassDB::bind_method(D_METHOD("get_bank_angle"), &AeroBody3D::get_bank_angle);
-	ClassDB::bind_method(D_METHOD("get_heading"), &AeroBody3D::get_heading);
-	ClassDB::bind_method(D_METHOD("get_inclination"), &AeroBody3D::get_inclination);
+	//experimental_energy_tracking;
 
 	//debug bindings
 	ADD_GROUP("Debug", "");
+
+	ADD_SUBGROUP("Visibility", "");
 	//debug visibility
 	ClassDB::bind_method(D_METHOD("set_show_debug", "visible"), &AeroBody3D::set_show_debug);
 	ClassDB::bind_method(D_METHOD("get_show_debug"), &AeroBody3D::get_show_debug);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "show_debug"), "set_show_debug", "get_show_debug");
-	
-	
-	
-	//void set_update_debug(const bool value);
-	//bool get_update_debug() const;
 	ClassDB::bind_method(D_METHOD("set_update_debug", "update"), &AeroBody3D::set_update_debug);
 	ClassDB::bind_method(D_METHOD("get_update_debug"), &AeroBody3D::get_update_debug);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "update_debug"), "set_update_debug", "get_update_debug");
-	//void set_show_wing_debug_vectors(const bool value);
-	//bool get_show_wing_debug_vectors() const;
 	ClassDB::bind_method(D_METHOD("set_show_wing_debug_vectors", "show"), &AeroBody3D::set_show_wing_debug_vectors);
 	ClassDB::bind_method(D_METHOD("get_show_wing_debug_vectors"), &AeroBody3D::get_show_wing_debug_vectors);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "show_wing_debug_vectors"), "set_show_wing_debug_vectors", "get_show_wing_debug_vectors");
-	//void set_show_lift_vectors(const bool value);
-	//bool get_show_lift_vectors() const;
 	ClassDB::bind_method(D_METHOD("set_show_lift_vectors", "show"), &AeroBody3D::set_show_lift_vectors);
 	ClassDB::bind_method(D_METHOD("get_show_lift_vectors"), &AeroBody3D::get_show_lift_vectors);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "show_lift_vectors"), "set_show_lift_vectors", "get_show_lift_vectors");
-	//void set_show_drag_vectors(const bool value);
-	//bool get_show_drag_vectors() const;
 	ClassDB::bind_method(D_METHOD("set_show_drag_vectors", "show"), &AeroBody3D::set_show_drag_vectors);
 	ClassDB::bind_method(D_METHOD("get_show_drag_vectors"), &AeroBody3D::get_show_drag_vectors);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "show_drag_vectors"), "set_show_drag_vectors", "get_show_drag_vectors");
-	//void set_show_linear_velocity(const bool value);
-	//bool get_show_linear_velocity() const;
 	ClassDB::bind_method(D_METHOD("set_show_linear_velocity", "show"), &AeroBody3D::set_show_linear_velocity);
 	ClassDB::bind_method(D_METHOD("get_show_linear_velocity"), &AeroBody3D::get_show_linear_velocity);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "show_linear_velocity"), "set_show_linear_velocity", "get_show_linear_velocity");
-	//void set_show_angular_velocity(const bool value);
-	//bool get_show_angular_velocity() const;
 	ClassDB::bind_method(D_METHOD("set_show_angular_velocity", "show"), &AeroBody3D::set_show_angular_velocity);
 	ClassDB::bind_method(D_METHOD("get_show_angular_velocity"), &AeroBody3D::get_show_angular_velocity);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "show_angular_velocity"), "set_show_angular_velocity", "get_show_angular_velocity");
-	//void set_show_center_of_lift(const bool value);
-	//bool get_show_center_of_lift() const;
 	ClassDB::bind_method(D_METHOD("set_show_center_of_lift", "show"), &AeroBody3D::set_show_center_of_lift);
 	ClassDB::bind_method(D_METHOD("get_show_center_of_lift"), &AeroBody3D::get_show_center_of_lift);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "show_center_of_lift"), "set_show_center_of_lift", "get_show_center_of_lift");
-	//void set_show_center_of_drag(const bool value);
-	//bool get_show_center_of_drag() const;
 	ClassDB::bind_method(D_METHOD("set_show_center_of_drag", "show"), &AeroBody3D::set_show_center_of_drag);
 	ClassDB::bind_method(D_METHOD("get_show_center_of_drag"), &AeroBody3D::get_show_center_of_drag);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "show_center_of_drag"), "set_show_center_of_drag", "get_show_center_of_drag");
-	//void set_show_center_of_mass(const bool value);
-	//bool get_show_center_of_mass() const;
 	ClassDB::bind_method(D_METHOD("set_show_center_of_mass", "show"), &AeroBody3D::set_show_center_of_mass);
 	ClassDB::bind_method(D_METHOD("get_show_center_of_mass"), &AeroBody3D::get_show_center_of_mass);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "show_center_of_mass"), "set_show_center_of_mass", "get_show_center_of_mass");
-	//void set_show_center_of_thrust(const bool value);
-	//bool get_show_center_of_thrust() const;
 	ClassDB::bind_method(D_METHOD("set_show_center_of_thrust", "show"), &AeroBody3D::set_show_center_of_thrust);
 	ClassDB::bind_method(D_METHOD("get_show_center_of_thrust"), &AeroBody3D::get_show_center_of_thrust);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "show_center_of_thrust"), "set_show_center_of_thrust", "get_show_center_of_thrust");
 
-	//debug options
 	ADD_SUBGROUP("Options", "");
 	ClassDB::bind_method(D_METHOD("set_debug_linear_velocity", "p_velocity"), &AeroBody3D::set_debug_linear_velocity);
 	ClassDB::bind_method(D_METHOD("get_debug_linear_velocity"), &AeroBody3D::get_debug_linear_velocity);
@@ -113,6 +65,54 @@ void AeroBody3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_debug_center_width", "p_width"), &AeroBody3D::set_debug_center_width);
 	ClassDB::bind_method(D_METHOD("get_debug_center_width"), &AeroBody3D::get_debug_center_width);
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "debug_center_width"), "set_debug_center_width", "get_debug_center_width");
+
+
+	ADD_GROUP("Do not show in inspector", "");
+	ADD_SUBGROUP("", "");
+	ClassDB::bind_method(D_METHOD("get_substeps"), &AeroBody3D::get_substeps);
+	//ADD_PROPERTY(PropertyInfo(Variant::INT, "substeps"), "", "get_substeps");
+	//ClassDB::bind_method(D_METHOD("get_aero_influencers"), &AeroBody3D::get_aero_influencers);
+	//ADD_PROPERTY(PropertyInfo(Variant::, ""), "", "");
+	ClassDB::bind_method(D_METHOD("get_prediction_timestep_fraction"), &AeroBody3D::get_prediction_timestep_fraction);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "prediction_timestep_fraction", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_prediction_timestep_fraction");
+	ClassDB::bind_method(D_METHOD("get_current_force"), &AeroBody3D::get_current_force);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_force", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_current_force");
+	ClassDB::bind_method(D_METHOD("get_current_torque"), &AeroBody3D::get_current_torque);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_torque", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_current_torque");
+	ClassDB::bind_method(D_METHOD("get_current_gravity"), &AeroBody3D::get_current_gravity);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_gravity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_current_gravity");
+	ClassDB::bind_method(D_METHOD("get_last_linear_velocity"), &AeroBody3D::get_last_linear_velocity);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "last_linear_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_last_linear_velocity");
+	ClassDB::bind_method(D_METHOD("get_last_angular_velocity"), &AeroBody3D::get_last_angular_velocity);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "last_angular_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_last_angular_velocity");
+	ClassDB::bind_method(D_METHOD("get_wind"), &AeroBody3D::get_wind);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "wind", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_wind");
+	ClassDB::bind_method(D_METHOD("get_air_velocity"), &AeroBody3D::get_air_velocity);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "air_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_air_velocity");
+	ClassDB::bind_method(D_METHOD("get_local_air_velocity"), &AeroBody3D::get_local_air_velocity);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "local_air_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_local_air_velocity");
+	ClassDB::bind_method(D_METHOD("get_local_angular_velocity"), &AeroBody3D::get_local_angular_velocity);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "local_angular_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_local_angular_velocity");
+	ClassDB::bind_method(D_METHOD("get_air_speed"), &AeroBody3D::get_air_speed);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "air_speed", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_air_speed");
+	ClassDB::bind_method(D_METHOD("get_mach"), &AeroBody3D::get_mach);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "mach", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_mach");
+	ClassDB::bind_method(D_METHOD("get_air_density"), &AeroBody3D::get_air_density);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "air_density", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_air_density");
+	ClassDB::bind_method(D_METHOD("get_air_pressure"), &AeroBody3D::get_air_pressure);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "air_pressure", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_air_pressure");
+	ClassDB::bind_method(D_METHOD("get_angle_of_attack"), &AeroBody3D::get_angle_of_attack);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "angle_of_attack", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_angle_of_attack");
+	ClassDB::bind_method(D_METHOD("get_sideslip_angle"), &AeroBody3D::get_sideslip_angle);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "sideslip_angle", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_sideslip_angle");
+	ClassDB::bind_method(D_METHOD("get_altitude"), &AeroBody3D::get_altitude);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "altitude", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_altitude");
+	ClassDB::bind_method(D_METHOD("get_bank_angle"), &AeroBody3D::get_bank_angle);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "bank_angle", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_bank_angle");
+	ClassDB::bind_method(D_METHOD("get_heading"), &AeroBody3D::get_heading);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "heading", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_heading");
+	ClassDB::bind_method(D_METHOD("get_inclination"), &AeroBody3D::get_inclination);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "inclination", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_inclination");
 }
 
 AeroBody3D::AeroBody3D() {
@@ -127,11 +127,11 @@ AeroBody3D::AeroBody3D() {
 	linear_velocity_prediction = RigidBody3D::get_linear_velocity();
 	angular_velocity_prediction = RigidBody3D::get_angular_velocity();
 
-	if (not this->is_connected("child_entered_tree", Callable(this, "on_child_entered_tree"))) {
-		this->connect("child_entered_tree", Callable(this, "on_child_entered_tree"));
+	if (not this->is_connected("child_entered_tree", callable_mp(this, &AeroBody3D::on_child_entered_tree))) {
+		this->connect("child_entered_tree", callable_mp(this, &AeroBody3D::on_child_entered_tree));
 	}
-	if (not this->is_connected("child_exiting_tree", Callable(this, "on_child_exiting_tree"))) {
-		this->connect("child_exiting_tree", Callable(this, "on_child_exiting_tree"));
+	if (not this->is_connected("child_exiting_tree", callable_mp(this, &AeroBody3D::on_child_exiting_tree))) {
+		this->connect("child_exiting_tree", callable_mp(this, &AeroBody3D::on_child_exiting_tree));
 	}
 	
 	PhysicsServer3D::get_singleton()->body_set_force_integration_callback(get_rid(), callable_mp(this, &AeroBody3D::integrate_forces));
@@ -399,12 +399,11 @@ Vector3 AeroBody3D::predict_angular_velocity(const Vector3 torque) const {
 
 
 double AeroBody3D::get_control_command(StringName axis_name) {
-	if (get_parent()->is_class("AeroInfluencer3D") or get_parent()->is_class("AeroBody3D")){
-		AeroInfluencer3D* parent = (AeroInfluencer3D*) get_parent();
-		if (not parent) return 0.0;
-		return 0.0;//parent->get_control_command(axis_name);
-	}
-	return 0.0;
+	Node* control_component = get_node_or_null("AeroControlComponent"); //wrong, bad, need to implement AeroNodeUtils.get_first_child_of_type()
+	if (not control_component) return 0.0;
+	
+	Variant result = control_component->call("get_control_command", axis_name);
+	return (double) result;
 }
 bool AeroBody3D::is_overriding_body_sleep() const {
 	bool overriding = false;

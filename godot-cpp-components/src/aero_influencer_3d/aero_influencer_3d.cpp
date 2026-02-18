@@ -28,18 +28,22 @@ void AeroInfluencer3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_can_override_body_sleep"), &AeroInfluencer3D::get_can_override_body_sleep);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "can_override_body_sleep"), "set_can_override_body_sleep", "get_can_override_body_sleep");
 
+	ADD_GROUP("Mirroring", "");
 	ClassDB::bind_method(D_METHOD("set_mirror_only_position", "only_position"), &AeroInfluencer3D::set_mirror_only_position);
 	ClassDB::bind_method(D_METHOD("get_mirror_only_position"), &AeroInfluencer3D::get_mirror_only_position);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "mirror_only_position"), "set_mirror_only_position", "get_mirror_only_position");
 
 	ClassDB::bind_method(D_METHOD("set_mirror_axis", "axis"), &AeroInfluencer3D::set_mirror_axis);
 	ClassDB::bind_method(D_METHOD("get_mirror_axis"), &AeroInfluencer3D::get_mirror_axis);
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "mirror_axis", PROPERTY_HINT_ENUM, "X,Y,Z"), "set_mirror_axis", "get_mirror_axis");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "mirror_axis", PROPERTY_HINT_ENUM, "None,X,Y,Z"), "set_mirror_axis", "get_mirror_axis");
 	
 	ClassDB::bind_method(D_METHOD("is_duplicate"), &AeroInfluencer3D::is_duplicate);
 	
 	ClassDB::bind_method(D_METHOD("get_mirror_duplicate"), &AeroInfluencer3D::get_mirror_duplicate);
+	//ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "mirror_duplicate"), "", "get_mirror_duplicate");
 
+	ADD_GROUP("Actuation Control", "");
+	ADD_SUBGROUP("", "");
 	ClassDB::bind_method(D_METHOD("set_actuation_config", "p_config"), &AeroInfluencer3D::set_actuation_config);
 	ClassDB::bind_method(D_METHOD("get_actuation_config"), &AeroInfluencer3D::get_actuation_config);
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "actuation_config", PROPERTY_HINT_RESOURCE_TYPE, "AeroInfluencerControlConfig"), "set_actuation_config", "get_actuation_config");
@@ -48,6 +52,8 @@ void AeroInfluencer3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_control_rotation_order"), &AeroInfluencer3D::get_control_rotation_order);
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "control_rotation_order", PROPERTY_HINT_ENUM, "XYZ,XZY,YXZ,YZX,ZXY,ZYX"), "set_control_rotation_order", "get_control_rotation_order");
 
+	ADD_GROUP("Debug", "");
+	
 	ClassDB::bind_method(D_METHOD("set_omit_from_debug", "omitted"), &AeroInfluencer3D::set_omit_from_debug);
 	ClassDB::bind_method(D_METHOD("is_omitted_from_debug"), &AeroInfluencer3D::is_omitted_from_debug);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "omit_from_debug"), "set_omit_from_debug", "is_omitted_from_debug");
@@ -68,6 +74,7 @@ void AeroInfluencer3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_show_debug"), &AeroInfluencer3D::get_show_debug);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "show_debug"), "set_show_debug", "get_show_debug");
 
+	ADD_SUBGROUP("Visibility", "");
 	ClassDB::bind_method(D_METHOD("set_show_force", "show"), &AeroInfluencer3D::set_show_force);
 	ClassDB::bind_method(D_METHOD("get_show_force"), &AeroInfluencer3D::get_show_force);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "show_force"), "set_show_force", "get_show_force");
@@ -76,51 +83,64 @@ void AeroInfluencer3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_show_torque"), &AeroInfluencer3D::get_show_torque);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "show_torque"), "set_show_torque", "get_show_torque");
 
-	//set_show_lift(bool show);
-	//get_show_lift();
 	ClassDB::bind_method(D_METHOD("set_show_lift", "show"), &AeroInfluencer3D::set_show_lift);
 	ClassDB::bind_method(D_METHOD("get_show_lift"), &AeroInfluencer3D::get_show_lift);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "show_lift"), "set_show_lift", "get_show_lift");
 
-	//set_show_drag(bool show);
-	//get_show_drag();
 	ClassDB::bind_method(D_METHOD("set_show_drag", "show"), &AeroInfluencer3D::set_show_drag);
 	ClassDB::bind_method(D_METHOD("get_show_drag"), &AeroInfluencer3D::get_show_drag);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "show_drag"), "set_show_drag", "get_show_drag");
 
-	//set_show_thrust(bool show);
-	//get_show_thrust();
 	ClassDB::bind_method(D_METHOD("set_show_thrust", "show"), &AeroInfluencer3D::set_show_thrust);
 	ClassDB::bind_method(D_METHOD("get_show_thrust"), &AeroInfluencer3D::get_show_thrust);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "show_thrust"), "set_show_thrust", "get_show_thrust");
 
+	ADD_GROUP("Dont show in inspector", "");
 	ClassDB::bind_method(D_METHOD("get_aero_body"), &AeroInfluencer3D::get_aero_body);
-	//ClassDB::bind_method(D_METHOD("get_aero_influencers"), &AeroInfluencer3D::get_aero_influencers);
-    
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "aero_body", PROPERTY_HINT_NODE_TYPE, "AeroBody3D", PROPERTY_USAGE_STORAGE), "", "get_aero_body");
+	
 	ClassDB::bind_method(D_METHOD("get_default_transform"), &AeroInfluencer3D::get_default_transform);
+	ADD_PROPERTY(PropertyInfo(Variant::TRANSFORM3D, "default_transform", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_default_transform");
 	ClassDB::bind_method(D_METHOD("get_altitude"), &AeroInfluencer3D::get_altitude);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "altitude", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_altitude");
 	ClassDB::bind_method(D_METHOD("get_air_density"), &AeroInfluencer3D::get_air_density);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "air_density", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_air_density");
 	ClassDB::bind_method(D_METHOD("get_relative_position"), &AeroInfluencer3D::get_relative_position);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "relative_position"), "", "get_relative_position");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "relative_position", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_relative_position");
 
 	ClassDB::bind_method(D_METHOD("get_linear_velocity"), &AeroInfluencer3D::get_linear_velocity);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "linear_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_linear_velocity");
 	ClassDB::bind_method(D_METHOD("get_angular_velocity"), &AeroInfluencer3D::get_angular_velocity);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "angular_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_angular_velocity");
 	ClassDB::bind_method(D_METHOD("get_local_air_velocity"), &AeroInfluencer3D::get_local_air_velocity);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "local_air_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_local_air_velocity");
 	ClassDB::bind_method(D_METHOD("get_world_air_velocity"), &AeroInfluencer3D::get_world_air_velocity);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "world_air_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_world_air_velocity");
 	ClassDB::bind_method(D_METHOD("get_drag_direction"), &AeroInfluencer3D::get_drag_direction);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "drag_direction", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_drag_direction");
 	ClassDB::bind_method(D_METHOD("get_air_speed"), &AeroInfluencer3D::get_air_speed);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "air_speed", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_air_speed");
 	ClassDB::bind_method(D_METHOD("get_mach"), &AeroInfluencer3D::get_mach);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "mach", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_mach");
 	ClassDB::bind_method(D_METHOD("get_dynamic_pressure"), &AeroInfluencer3D::get_dynamic_pressure);
-	ClassDB::bind_method(D_METHOD("get_centrifugal_offset"), &AeroInfluencer3D::get_centrifugal_offset);
-	ClassDB::bind_method(D_METHOD("get_linear_acceleration"), &AeroInfluencer3D::get_linear_acceleration);
-	ClassDB::bind_method(D_METHOD("get_angular_acceleration"), &AeroInfluencer3D::get_angular_acceleration);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "dynamic_pressure", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_dynamic_pressure");
+	//ClassDB::bind_method(D_METHOD("get_centrifugal_offset"), &AeroInfluencer3D::get_centrifugal_offset);
+	//ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "centrifugal", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_centrifugal_offset");
+	//ClassDB::bind_method(D_METHOD("get_linear_acceleration"), &AeroInfluencer3D::get_linear_acceleration);
+	//ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "aero_body", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_linear_acceleration");
+	//ClassDB::bind_method(D_METHOD("get_angular_acceleration"), &AeroInfluencer3D::get_angular_acceleration);
+	//ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "aero_body", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_angular_acceleration");
 	ClassDB::bind_method(D_METHOD("get_current_force"), &AeroInfluencer3D::get_current_force);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_force", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_current_force");
 	ClassDB::bind_method(D_METHOD("get_current_torque"), &AeroInfluencer3D::get_current_torque);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_torque", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_current_torque");
 }
 
 AeroInfluencer3D::AeroInfluencer3D() {
 	vector_3d_script = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/utils/vector_3d/vector_3d.gd");
 	point_3d_script = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/utils/point_3d/point_3d.gd");
+
+	mirror_duplicate = nullptr;
 }
 
 AeroInfluencer3D::~AeroInfluencer3D() {
@@ -145,7 +165,8 @@ void AeroInfluencer3D::_enter_tree() {
 	this->connect("child_entered_tree", callable_mp(this, &AeroInfluencer3D::on_child_entered_tree));
 	this->connect("child_exiting_tree", callable_mp(this, &AeroInfluencer3D::on_child_exiting_tree));
 
-	//set_deferred("mirror_axis", mirror_axis) #ensures that mirrored version is reliably created when nodes are changed
+	set_deferred("mirror_axis", mirror_axis);
+	//set_mirror_axis(mirror_axis); //set_deferred("mirror_axis", mirror_axis) #ensures that mirrored version is reliably created when nodes are changed
 }
 void AeroInfluencer3D::_exit_tree() {
 	if (mirror_duplicate) {
@@ -250,10 +271,17 @@ ForceAndTorque AeroInfluencer3D::calculate_forces(double substep_delta) {
 }
 
 double AeroInfluencer3D::get_control_command(StringName axis_name) {
-	if (get_parent()->is_class("AeroInfluencer3D") or get_parent()->is_class("AeroBody3D")){
+	if (get_parent()->is_class("AeroInfluencer3D")) {
 		AeroInfluencer3D* parent = (AeroInfluencer3D*) get_parent();
 		if (not parent) return 0.0;
-		return 0.0;//parent->get_control_command(axis_name);
+		
+		return parent->get_control_command(axis_name);
+	}
+	else if (get_parent()->is_class("AeroBody3D")) {
+		AeroBody3D* parent = (AeroBody3D*) get_parent();
+		if (not parent) return 0.0;
+
+		return parent->get_control_command(axis_name);
 	}
 	return 0.0;
 }
@@ -271,14 +299,6 @@ void AeroInfluencer3D::_update_transform_substep(double substep_delta) {
 }
 //must be virtual
 void AeroInfluencer3D::_update_control_transform(double substep_delta) {
-	/*
-	var actuation_value := Vector3.ZERO
-	if actuation_config:
-		actuation_value = actuation_config.update(self, substep_delta)
-	
-	basis = default_transform.basis * Basis().from_euler(actuation_value, control_rotation_order)
-
-	*/
 	if (actuation_config.is_valid()) {
 		Variant result = actuation_config->call("update", this, substep_delta);
 		Vector3 actuation_value = result;
@@ -398,49 +418,51 @@ bool AeroInfluencer3D::get_mirror_only_position() {
 	return mirror_only_position;
 }
 void AeroInfluencer3D::set_mirror_axis(int axis) {
-	/*
-	@export_enum("None", "X", "Y", "Z") var mirror_axis : int = 0:
-	set(x):
-		mirror_axis = x
-		
-		if mirror_duplicate: 
-			mirror_duplicate.queue_free()
-		
-		if mirror_axis == 0 or is_duplicate or not is_inside_tree():
-			return # no duplication
-		
-		mirror_axis = 0
-		mirror_duplicate = duplicate()
-		mirror_duplicate.is_duplicate = true
-		mirror_duplicate.name = name + "Mirror"
-		mirror_axis = x
-		mirror_duplicate.mirror_axis = x
-		
-		
-		match mirror_axis:
-			#an adjustment can be made to this basis calculation to avoid having a negative scale
-			#could also be adjusted to allow arbitrary mirror axis??
-			1: #X
-				mirror_duplicate.position *= Vector3(-1, 1, 1)
-				if not mirror_only_position:
-					mirror_duplicate.basis = Basis(Vector3(-1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1)) * mirror_duplicate.basis
-			2: #Y
-				mirror_duplicate.position *= Vector3(1, -1, 1)
-				if not mirror_only_position:
-					mirror_duplicate.basis = Basis(Vector3(1, 0, 0), Vector3(0, -1, 0), Vector3(0, 0, 1)) * mirror_duplicate.basis
-			3: #Z
-				mirror_duplicate.position *= Vector3(1, 1, -1)
-				if not mirror_only_position:
-					mirror_duplicate.basis = Basis(Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, -1)) * mirror_duplicate.basis
-		
-		get_parent().add_child(mirror_duplicate)
-	*/
+	mirror_axis = axis;
+	if (mirror_duplicate) {
+		mirror_duplicate->queue_free();
+		mirror_duplicate = nullptr;
+	}
+	if (mirror_axis == 0 or is_duplicate() or not is_inside_tree()) return;
+
+	mirror_duplicate = Object::cast_to<AeroInfluencer3D>(duplicate());
+	if (not mirror_duplicate) return; //something went wrong when duplicating and type casting
+	mirror_duplicate->set_duplicate(true);
+	mirror_duplicate->set_name(get_name() + (StringName) "Mirror");
+	mirror_duplicate->set_mirror_axis(mirror_axis);
+	
+	switch (mirror_axis)
+	{
+	case 1:
+		mirror_duplicate->set_position(mirror_duplicate->get_position() * Vector3(-1, 1, 1));
+		if (not mirror_only_position) {
+			mirror_duplicate->set_basis(Basis(Vector3(-1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1)) * mirror_duplicate->get_basis());
+		}
+		break;
+	case 2:
+		mirror_duplicate->set_position(mirror_duplicate->get_position() * Vector3(1, -1, 1));
+		if (not mirror_only_position) {
+			mirror_duplicate->set_basis(Basis(Vector3(1, 0, 0), Vector3(0, -1, 0), Vector3(0, 0, 1)) * mirror_duplicate->get_basis());
+		}
+		break;
+	case 3:
+		mirror_duplicate->set_position(mirror_duplicate->get_position() * Vector3(1, 1, -1));
+		if (not mirror_only_position) {
+			mirror_duplicate->set_basis(Basis(Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, -1)) * mirror_duplicate->get_basis());
+		}
+		break;
+	}
+
+	get_parent()->add_child(mirror_duplicate);
 }
 int AeroInfluencer3D::get_mirror_axis() {
 	return mirror_axis;
 }
-bool AeroInfluencer3D::is_duplicate() {
-	return duplicate;
+void AeroInfluencer3D::set_duplicate(const bool value){
+	_duplicate = value;
+}
+bool AeroInfluencer3D::is_duplicate() const {
+	return _duplicate;
 }
 AeroInfluencer3D* AeroInfluencer3D::get_mirror_duplicate() {
 	return mirror_duplicate;

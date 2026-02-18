@@ -53,7 +53,7 @@
       "cwd": "${workspaceFolder}",
       "console": "internalConsole",
       "internalConsoleOptions": "openOnSessionStart",
-      "preLaunchTask": "build-debug",
+      "preLaunchTask": "build-debug", //TODO - change this to release, but godot isn't set to load the release version
     },
     {
       "name": "project-release (vsdbg | windows)",

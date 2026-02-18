@@ -21,13 +21,13 @@ private:
 	
 	bool mirror_only_position = false;
 	int mirror_axis = 0;
-	bool duplicate = false;
+	bool _duplicate = false;
 	AeroInfluencer3D* mirror_duplicate = nullptr;
 
 	Ref<Resource> actuation_config;//AeroInfluencerControlConfig actuation_config; //TODO
 	int control_rotation_order = 0;
 	
-	bool omit_from_debug;
+	bool omit_from_debug = false;
 	double debug_scale;
 	double debug_scaling_factor;
 	double debug_width;
@@ -40,7 +40,7 @@ private:
 	bool show_thrust;
 
 	//internal values (not export properties)
-	AeroBody3D *aero_body;
+	AeroBody3D *aero_body = nullptr;
 	//see if it's possible/probably to convert this to a native array
 	//std::vector<AeroInfluencer3D*>
 	TypedArray<AeroInfluencer3D> aero_influencers;
@@ -126,7 +126,8 @@ public:
 	bool get_mirror_only_position();
 	void set_mirror_axis(int axis);
 	int get_mirror_axis();
-	bool is_duplicate(); //doesn't need setter because it is never expected to be changed outside of aeroinfluencer 
+	void set_duplicate(const bool value);
+	bool is_duplicate() const; //doesn't need setter because it is never expected to be changed outside of aeroinfluencer 
 	AeroInfluencer3D* get_mirror_duplicate();
 	
 	void set_actuation_config(const Ref<Resource> &p_config);

@@ -49,7 +49,6 @@ private:
 	int substeps_override = -1;
 	int substeps = 1;
 	double prediction_timestep_fraction = 1.0 / float(substeps);
-
 	double substep_delta = (1.0 / 60.0) / prediction_timestep_fraction;
 	int current_substep = 0;
 	//experimental_energy_tracking

@@ -9,6 +9,54 @@ void AeroBody3D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "substeps_override"), "set_substeps_override", "get_substeps_override");
 	
 	//experimental_energy_tracking;
+	//register function so we can use it with a signal.
+	ClassDB::bind_method(D_METHOD("on_child_entered_tree", "node"), &AeroBody3D::on_child_entered_tree);
+	ClassDB::bind_method(D_METHOD("on_child_exiting_tree", "node"), &AeroBody3D::on_child_exiting_tree);
+	
+	ClassDB::bind_method(D_METHOD("get_substeps"), &AeroBody3D::get_substeps);
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "get_substeps"), "", "get_substeps");
+	//ClassDB::bind_method(D_METHOD("get_aero_influencers"), &AeroBody3D::get_aero_influencers);
+	//ADD_PROPERTY(PropertyInfo(Variant::, ""), "", "");
+	ClassDB::bind_method(D_METHOD("get_prediction_timestep_fraction"), &AeroBody3D::get_prediction_timestep_fraction);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "prediction_timestep_fraction"), "", "get_prediction_timestep_fraction");
+	ClassDB::bind_method(D_METHOD("get_current_force"), &AeroBody3D::get_current_force);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_force"), "", "get_current_force");
+	ClassDB::bind_method(D_METHOD("get_current_torque"), &AeroBody3D::get_current_torque);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_torque"), "", "get_current_torque");
+	ClassDB::bind_method(D_METHOD("get_current_gravity"), &AeroBody3D::get_current_gravity);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_gravity"), "", "get_current_gravity");
+	ClassDB::bind_method(D_METHOD("get_last_linear_velocity"), &AeroBody3D::get_last_linear_velocity);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "last_linear_velocity"), "", "get_last_linear_velocity");
+	ClassDB::bind_method(D_METHOD("get_last_angular_velocity"), &AeroBody3D::get_last_angular_velocity);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "last_angular_velocity"), "", "get_last_angular_velocity");
+	ClassDB::bind_method(D_METHOD("get_wind"), &AeroBody3D::get_wind);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "wind"), "", "get_wind");
+	ClassDB::bind_method(D_METHOD("get_air_velocity"), &AeroBody3D::get_air_velocity);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "air_velocity"), "", "get_air_velocity");
+	ClassDB::bind_method(D_METHOD("get_local_air_velocity"), &AeroBody3D::get_local_air_velocity);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "local_air_velocity"), "", "get_local_air_velocity");
+	ClassDB::bind_method(D_METHOD("get_local_angular_velocity"), &AeroBody3D::get_local_angular_velocity);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "local_angular_velocity"), "", "get_local_angular_velocity");
+	ClassDB::bind_method(D_METHOD("get_air_speed"), &AeroBody3D::get_air_speed);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "air_speed"), "", "get_air_speed");
+	ClassDB::bind_method(D_METHOD("get_mach"), &AeroBody3D::get_mach);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "mach"), "", "get_mach");
+	ClassDB::bind_method(D_METHOD("get_air_density"), &AeroBody3D::get_air_density);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "air_density"), "", "get_air_density");
+	ClassDB::bind_method(D_METHOD("get_air_pressure"), &AeroBody3D::get_air_pressure);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "air_pressure"), "", "get_air_pressure");
+	ClassDB::bind_method(D_METHOD("get_angle_of_attack"), &AeroBody3D::get_angle_of_attack);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "angle_of_attack"), "", "get_angle_of_attack");
+	ClassDB::bind_method(D_METHOD("get_sideslip_angle"), &AeroBody3D::get_sideslip_angle);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "sideslip_angle"), "", "get_sideslip_angle");
+	ClassDB::bind_method(D_METHOD("get_altitude"), &AeroBody3D::get_altitude);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "altitude"), "", "get_altitude");
+	ClassDB::bind_method(D_METHOD("get_bank_angle"), &AeroBody3D::get_bank_angle);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "bank_angle"), "", "get_bank_angle");
+	ClassDB::bind_method(D_METHOD("get_heading"), &AeroBody3D::get_heading);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "heading"), "", "get_heading");
+	ClassDB::bind_method(D_METHOD("get_inclination"), &AeroBody3D::get_inclination);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "inclination"), "", "get_inclination");
 
 	//debug bindings
 	ADD_GROUP("Debug", "");

@@ -1,6 +1,6 @@
 @tool
 extends Resource
-#class_name AeroSurfaceConfig
+class_name AeroSurfaceConfig
 
 @export_group("Wing profile")
 ##Represents the length of the AeroSurface3D on the Z axis.

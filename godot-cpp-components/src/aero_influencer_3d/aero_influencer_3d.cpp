@@ -167,6 +167,9 @@ void AeroInfluencer3D::_enter_tree() {
 
 	set_deferred("mirror_axis", mirror_axis);
 	//set_mirror_axis(mirror_axis); //set_deferred("mirror_axis", mirror_axis) #ensures that mirrored version is reliably created when nodes are changed
+
+	default_transform = get_transform();
+	//TODO ensure other @onready variables are set
 }
 void AeroInfluencer3D::_exit_tree() {
 	if (mirror_duplicate) {
@@ -196,6 +199,7 @@ void AeroInfluencer3D::_physics_process(double delta) {
 }
 
 ForceAndTorque AeroInfluencer3D::calculate_forces_with_override(double substep_delta) {
+	ForceAndTorque result = calculate_forces(substep_delta); //TODO - this is wrong, not properly implemented.
 	//TODO revise this logic, may not be entirely necessary
 	if (GDVIRTUAL_IS_OVERRIDDEN(_calculate_forces)) {
 		PackedVector3Array result;
@@ -209,16 +213,17 @@ ForceAndTorque AeroInfluencer3D::calculate_forces_with_override(double substep_d
 	}
 	//do post-calculate_forces code, like updating current_force and current_torque.
 	
-	return this->calculate_forces(substep_delta);
+	return result;
 }
 
 ForceAndTorque AeroInfluencer3D::calculate_forces(double substep_delta) {
-	linear_velocity = get_linear_velocity();
-	angular_velocity = get_angular_velocity();
+	linear_velocity = calculate_linear_velocity();
+	angular_velocity = calculate_angular_velocity();
 
 	relative_position = calculate_relative_position();
-	air_density = aero_body->get_air_density();
+	air_density = aero_body->get_air_density(); //TODO - update for AeroAtmospheres
 	world_air_velocity = calculate_world_air_velocity();
+	
 	/*
 	for atmosphere : AeroAtmosphere3D in aero_body.atmosphere_areas:
 		if not atmosphere.per_influencer_positioning:
@@ -285,7 +290,7 @@ double AeroInfluencer3D::get_control_command(StringName axis_name) {
 	}
 	return 0.0;
 }
-//must be virtual
+//TODO add virtual for this func
 void AeroInfluencer3D::_update_transform_substep(double substep_delta) {
 	for (int i = 0; i < aero_influencers.size(); i++) {
 		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
@@ -297,7 +302,7 @@ void AeroInfluencer3D::_update_transform_substep(double substep_delta) {
 
 	_update_control_transform(substep_delta);
 }
-//must be virtual
+//TODO add virtual for this func
 void AeroInfluencer3D::_update_control_transform(double substep_delta) {
 	if (actuation_config.is_valid()) {
 		Variant result = actuation_config->call("update", this, substep_delta);
@@ -306,8 +311,13 @@ void AeroInfluencer3D::_update_control_transform(double substep_delta) {
 		//might be incorrect behavior, may need to set basis directly with: basis = ...
 		set_basis(default_transform.basis * Basis::from_euler(actuation_value, (godot::EulerOrder) control_rotation_order));
 	}
-}
 
+	if (GDVIRTUAL_IS_OVERRIDDEN(_update_control_transform)) {
+		PackedVector3Array result;
+		GDVIRTUAL_CALL(_update_control_transform, substep_delta);
+	}
+}
+//TODO add virtual for this func
 bool AeroInfluencer3D::is_overriding_body_sleep() {
 	if (not can_override_body_sleep) {
 		return false;
@@ -334,30 +344,49 @@ bool AeroInfluencer3D::is_overriding_body_sleep() {
 
 
 Vector3 AeroInfluencer3D::calculate_relative_position() {
-	if (get_parent()->is_class("AeroInfluencer3D") or get_parent()->is_class("AeroBody3D")){
+	if (get_parent()->is_class("AeroInfluencer3D")){
 		AeroInfluencer3D* parent = (AeroInfluencer3D*) get_parent();
 		return parent->get_relative_position() + (parent->get_global_basis().xform(get_position()));
 	}
+	else if (get_parent()->is_class("AeroBody3D")){
+		AeroBody3D* parent = (AeroBody3D*) get_parent();
+		return parent->get_relative_position() + (parent->get_global_basis().xform(get_position()));
+	}
+
 	return Vector3();
 }
 Vector3 AeroInfluencer3D::calculate_world_air_velocity() {
-	if (get_parent()->is_class("AeroInfluencer3D") or get_parent()->is_class("AeroBody3D")){
+	if (get_parent()->is_class("AeroInfluencer3D")){
 		AeroInfluencer3D* parent = (AeroInfluencer3D*) get_parent();
-		return -(parent->get_linear_velocity());
+		return -(get_linear_velocity());
+	}
+	else if (get_parent()->is_class("AeroBody3D")){
+		AeroBody3D* parent = (AeroBody3D*) get_parent();
+		return -(get_linear_velocity());
 	}
 	return Vector3();
 }
 Vector3 AeroInfluencer3D::calculate_linear_velocity() {
-	if (get_parent()->is_class("AeroInfluencer3D") or get_parent()->is_class("AeroBody3D")){
+	if (get_parent()->is_class("AeroInfluencer3D")){
 		AeroInfluencer3D* parent = (AeroInfluencer3D*) get_parent();
 		//TODO - Make sure this is actually used properly. this was the cause of substeps not working in previous versions
 		return parent->get_linear_velocity() + parent->get_angular_velocity().cross(parent->get_global_basis().xform(get_position()));
 	}
+	else if (get_parent()->is_class("AeroBody3D")){
+		AeroBody3D* parent = (AeroBody3D*) get_parent();
+		//TODO - Make sure this is actually used properly. this was the cause of substeps not working in previous versions
+		return parent->get_linear_velocity() + parent->get_angular_velocity().cross(parent->get_global_basis().xform(get_position()));
+	} 
 	return Vector3();
 }
 Vector3 AeroInfluencer3D::calculate_angular_velocity() {
-	if (get_parent()->is_class("AeroInfluencer3D") or get_parent()->is_class("AeroBody3D")){
+	if (get_parent()->is_class("AeroInfluencer3D")){
 		AeroInfluencer3D* parent = (AeroInfluencer3D*) get_parent();
+		//TODO - Make sure this is actually used properly. this was the cause of substeps not working in previous versions
+		return parent->get_angular_velocity();
+	}
+	else if (get_parent()->is_class("AeroBody3D")){
+		AeroBody3D* parent = (AeroBody3D*) get_parent();
 		//TODO - Make sure this is actually used properly. this was the cause of substeps not working in previous versions
 		return parent->get_angular_velocity();
 	}
@@ -372,10 +401,6 @@ Vector3 AeroInfluencer3D::calculate_linear_acceleration() {
 	return Vector3();
 }
 Vector3 AeroInfluencer3D::calculate_angular_acceleration() {
-	if (get_parent()->is_class("AeroInfluencer3D") or get_parent()->is_class("AeroBody3D")){
-		AeroInfluencer3D* parent = (AeroInfluencer3D*) get_parent();
-		return parent->get_angular_acceleration();
-	}
 	return Vector3();
 }
 
@@ -419,7 +444,7 @@ bool AeroInfluencer3D::get_mirror_only_position() {
 }
 void AeroInfluencer3D::set_mirror_axis(int axis) {
 	mirror_axis = axis;
-	if (mirror_duplicate) {
+	if (mirror_duplicate and not (mirror_duplicate == this)) {
 		mirror_duplicate->queue_free();
 		mirror_duplicate = nullptr;
 	}

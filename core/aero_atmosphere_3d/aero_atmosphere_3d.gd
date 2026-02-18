@@ -16,10 +16,12 @@ func _init() -> void:
 	
 	collision_layer = 0
 	collision_mask = 0
-	set_collision_mask_value(ProjectSettings.get_setting("physics/aerodynamics/atmosphere_area_collision_layer", 15), true) 
+	#set_collision_mask_value(ProjectSettings.get_setting("physics/aerodynamics/atmosphere_area_collision_layer"), true) 
+	set_collision_mask_value(15, true) 
 	
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
+
 #this isn't a great solution, but it's easier than the alternative.
 func _on_body_entered(body : PhysicsBody3D) -> void:
 	if body is AeroBody3D:

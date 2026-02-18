@@ -25,7 +25,7 @@
             "label": "build-godot-cpp",
             "group": "build",
             "type": "shell",
-            "command": "scons platform=windows precision=double debug_symbols=yes production=yes custom_api_file=../extension_api_double.json build_profile=../build_profile.json",
+            "command": "scons platform=windows precision=double target=template_debug debug_symbols=yes production=yes custom_api_file=../extension_api_double.json build_profile=../build_profile.json",
             "options": {
                 "cwd": "${workspaceFolder}/godot-cpp-components/godot-cpp",
             },

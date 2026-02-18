@@ -81,6 +81,14 @@ void AeroBody3D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_torque", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_current_torque");
 	ClassDB::bind_method(D_METHOD("get_current_gravity"), &AeroBody3D::get_current_gravity);
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_gravity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_current_gravity");
+	ClassDB::bind_method(D_METHOD("get_linear_velocity"), &AeroBody3D::get_linear_velocity);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "linear_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_linear_velocity");
+	ClassDB::bind_method(D_METHOD("get_angular_velocity"), &AeroBody3D::get_angular_velocity);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "angular_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_angular_velocity");
+	ClassDB::bind_method(D_METHOD("get_linear_acceleration"), &AeroBody3D::get_linear_acceleration);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "linear_acceleration", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_linear_acceleration");
+	ClassDB::bind_method(D_METHOD("get_angular_acceleration"), &AeroBody3D::get_angular_acceleration);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "angular_acceleration", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_angular_acceleration");
 	ClassDB::bind_method(D_METHOD("get_last_linear_velocity"), &AeroBody3D::get_last_linear_velocity);
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "last_linear_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_last_linear_velocity");
 	ClassDB::bind_method(D_METHOD("get_last_angular_velocity"), &AeroBody3D::get_last_angular_velocity);
@@ -566,8 +574,8 @@ void AeroBody3D::_update_debug() {
 
 
 
-	/*
-	OLD DEBUG IMPLEMENTATION
+	
+	//OLD DEBUG IMPLEMENTATION
 	if (mass_debug_point) {
 		mass_debug_point->set_position(get_center_of_mass());
 	}
@@ -588,14 +596,14 @@ void AeroBody3D::_update_debug() {
 		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
 		if (not influencer) continue;
 
-		if (/*influencer.omit_from_debug or *//*influencer->is_disabled()) {
+		if (influencer->is_omitted_from_debug() or influencer->is_disabled()) {
 			amount_of_aero_influencers -= 1;
 			continue;
 		}
 			
 		force_vector_sum += influencer->get_current_force();
 	}
-	*/
+	
 	/*
 	#lift and drag debug
 	var amount_of_aero_surfaces : int = aero_surfaces.size()

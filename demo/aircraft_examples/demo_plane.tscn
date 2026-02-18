@@ -61,7 +61,8 @@ radius = 0.446985
 resource_name = "roll"
 script = ExtResource("11_1g5my")
 axis_name = "roll"
-contribution = Vector3(-1, 0, 0)
+contribution = Vector3(1, 0, 0)
+axis_flip_x = 1
 
 [sub_resource type="Resource" id="Resource_m2vdb"]
 script = ExtResource("12_njgyo")
@@ -106,8 +107,9 @@ size = Vector3(0.141602, 1.41797, 1.14014)
 [node name="WingR" type="ManualAeroSurface3D" parent="." unique_id=1703940848]
 manual_config = SubResource("ManualAeroSurfaceConfig_m134i")
 wing_config = SubResource("AeroSurfaceConfig_rvvp2")
+mirror_axis = 1
 actuation_config = SubResource("Resource_m2vdb")
-omit_from_debug = false
+omit_from_debug = true
 debug_scale = 1.0
 debug_width = 0.3
 show_drag = true

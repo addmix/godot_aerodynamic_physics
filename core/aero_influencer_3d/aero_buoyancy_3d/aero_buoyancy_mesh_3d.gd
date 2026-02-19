@@ -201,7 +201,7 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 		var vertex_radius : float = vertex_sizes[vertex_index]
 		
 		var vertex_density : float = aero_body.air_density 
-		var vertex_velocity = -get_linear_velocity() + -angular_velocity.cross(vertex_position) #this has to be negative because it's air velocity, not linear velocity
+		var vertex_velocity = -get_linear_velocity_substep() + -get_angular_velocity_substep().cross(vertex_position) #this has to be negative because it's air velocity, not linear velocity
 		
 		var ambient_lift_drag_force : PackedVector3Array = calculate_mesh_lift_drag(vertex_position, vertex_velocity, vertex_buoyancy_factor, vertex_density)
 		

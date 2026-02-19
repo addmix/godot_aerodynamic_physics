@@ -240,6 +240,7 @@ can_sleep = false
 linear_damp_mode = 1
 angular_damp_mode = 1
 script = ExtResource("1_ddp7w")
+substeps_override = 16
 show_debug = true
 
 [node name="AeroControlComponent" type="Node" parent="." unique_id=292886688]

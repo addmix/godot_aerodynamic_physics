@@ -156,10 +156,10 @@ public:
 
 	Vector3 calculate_relative_position() const;
 	Vector3 calculate_drag_direction() const;
-	Vector3 calculate_linear_acceleration() const;
-	Vector3 calculate_angular_acceleration() const;
-	Vector3 predict_linear_velocity(const Vector3 force) const;
-	Vector3 predict_angular_velocity(const Vector3 torque) const;
+	//Vector3 calculate_linear_acceleration() const;
+	//Vector3 calculate_angular_acceleration() const;
+	Vector3 calculate_linear_velocity_substep(const Vector3 force) const;
+	Vector3 calculate_angular_velocity_substep(const Vector3 torque) const;
 	
 	double get_control_command(const StringName axis_name); //unimplemented
 	bool is_overriding_body_sleep() const; //unimplemented
@@ -197,7 +197,7 @@ public:
 	Vector3 get_linear_velocity_substep() const;
 	Vector3 get_angular_velocity_substep() const;
 	Vector3 get_linear_acceleration() const;
-	Vector3 get_angular_acceleration() const;
+	//Vector3 get_angular_acceleration() const;
 
 	Vector3 get_current_force() const;
 	Vector3 get_current_torque() const;

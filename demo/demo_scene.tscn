@@ -165,7 +165,7 @@ size = Vector3(10000, 1, 10000)
 material = SubResource("StandardMaterial3D_1sawy")
 
 [node name="VehicleSpawner" type="Marker3D" parent="." unique_id=2143956688]
-transform = Transform3D(-1, 0, 1.2246467991473532e-16, 0, 1, 0, -1.2246467991473532e-16, 0, -1, 0, 0, 739.2145345610188)
+transform = Transform3D(-1, 0, 1.2246467991473532e-16, 0, 1, 0, -1.2246467991473532e-16, 0, -1, 0, 0, 629.1521505701555)
 script = SubResource("GDScript_bs15r")
 
 [node name="Control" type="Control" parent="VehicleSpawner" unique_id=2014092588]

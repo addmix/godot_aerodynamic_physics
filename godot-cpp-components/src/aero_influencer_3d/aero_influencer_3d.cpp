@@ -192,9 +192,10 @@ void AeroInfluencer3D::on_child_exiting_tree(Node *p_node) {
 }
 void AeroInfluencer3D::_physics_process(double delta) {
 	if (is_overriding_body_sleep() and ObjectDB::get_instance(aero_body->get_instance_id()) != NULL) {
-		//aero_body->interrupt_sleep();
-		aero_body->set_sleeping(false);
+		aero_body->interrupt_sleep();
 	}
+	//if not transform == last_transform:
+	//	aero_body.interrupt_sleep()
 	last_transform = get_transform();
 }
 
@@ -258,6 +259,10 @@ ForceAndTorque AeroInfluencer3D::calculate_forces(double substep_delta) {
 	
 	mach = AeroUnits::get_singleton()->speed_to_mach_at_altitude(air_speed, altitude);
 	
+	//TODO replace current_force/torque with single ForceAndTorque variable
+	current_force = Vector3();
+	current_torque = Vector3();
+
 	ForceAndTorque total_force_and_torque;
 
 	for (int i = 0; i < aero_influencers.size(); i++) {
@@ -268,11 +273,6 @@ ForceAndTorque AeroInfluencer3D::calculate_forces(double substep_delta) {
 		ForceAndTorque force_and_torque = influencer->calculate_forces_with_override(substep_delta);
 		total_force_and_torque += force_and_torque;
 	}
-
-	total_force_and_torque.torque += relative_position.cross(total_force_and_torque.force);
-
-	current_force = total_force_and_torque.force;
-	current_torque = total_force_and_torque.torque;
 	
 	return total_force_and_torque;
 }
@@ -369,7 +369,7 @@ Vector3 AeroInfluencer3D::calculate_linear_velocity_substep() {
 	else if (get_parent()->is_class("AeroBody3D")){
 		AeroBody3D* parent = (AeroBody3D*) get_parent();
 		//TODO - Make sure this is actually used properly. this was the cause of substeps not working in previous versions
-		return parent->get_linear_velocity_substep() + parent->get_angular_velocity().cross(parent->get_global_basis().xform(get_position()));
+		return parent->get_linear_velocity_substep() + parent->get_angular_velocity_substep().cross(parent->get_global_basis().xform(get_position()));
 	} 
 	return Vector3();
 }

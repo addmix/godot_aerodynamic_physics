@@ -198,7 +198,9 @@ min_value = Vector3(-0.2, 0, 0)
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
 [node name="AeroBody3D" type="AeroBody3D" unique_id=1435907782]
+substeps_override = 16
 show_debug = true
+substeps = 16
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8844791671787666, 0)
 collision_layer = 16385
 mass = 850.0
@@ -222,7 +224,6 @@ shape = SubResource("CapsuleShape3D_6onr1")
 debug_scale = 1.0
 debug_width = 0.3
 show_debug = true
-show_drag = false
 default_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.29881)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.29881)
 script = ExtResource("13_qs0nt")
@@ -239,8 +240,8 @@ debug_scale = 1.0
 debug_width = 0.3
 show_debug = true
 show_drag = true
-default_transform = Transform3D(1, 0, 0, 0, 0.9999999999999999, 0, 0, 0, 0.9999999999999999, 0, -3.576279999917276e-07, 2.72025)
-transform = Transform3D(1, 0, 0, 0, 0.9999999999999999, 0, 0, 0, 0.9999999999999999, 0, -3.576279999917276e-07, 2.72025)
+default_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.576279999917276e-07, 2.72025)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.576279999917276e-07, 2.72025)
 
 [node name="CSGBox3D2" type="CSGBox3D" parent="Elevator" unique_id=1262734552]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.57628e-07, 0.29494)

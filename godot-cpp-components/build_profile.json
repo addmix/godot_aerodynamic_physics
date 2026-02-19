@@ -5,6 +5,7 @@
         "ClassDB",
         "GDScript",
         "VehicleBody3D",
+        "Area3D",
         "ProjectSettings",
         "Engine",
         "PhysicsDirectBodyState3D",

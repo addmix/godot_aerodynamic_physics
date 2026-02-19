@@ -5,6 +5,7 @@
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/classes/gd_script.hpp>
 #include <godot_cpp/classes/vehicle_body3d.hpp>
+#include <godot_cpp/classes/area3d.hpp>
 #include <godot_cpp/classes/project_settings.hpp>
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/classes/physics_direct_body_state3d.hpp>
@@ -12,6 +13,11 @@
 #include <godot_cpp/classes/mesh_instance3d.hpp>
 #include "aero_influencer_3d/aero_influencer_3d.h"
 #include "aero_units/aero_units.h"
+
+
+// TODO
+// TODO - Go through and set const in relevant places
+// TODO
 
 namespace godot {
 
@@ -79,8 +85,6 @@ private:
 	double debug_influencer_width = 0.1;
 	double debug_center_width = 0.4;
 
-	
-	
 	////std::vector<AeroInfluencer3D*>
 	TypedArray<AeroInfluencer3D> aero_influencers; //I'm guessing iterating this list is slow
 	//aero_surfaces
@@ -93,9 +97,8 @@ private:
 	Vector3 uncommitted_last_angular_velocity = Vector3(0, 0, 0);
 	Vector3 linear_acceleration = Vector3(0, 0, 0);
 	Vector3 angular_acceleration = Vector3(0, 0, 0);
-	Vector3 linear_velocity_prediction = Vector3(0, 0, 0);
-	Vector3 angular_velocity_prediction = Vector3(0, 0, 0);
-	
+	Vector3 linear_velocity_substep = Vector3(0, 0, 0);
+	Vector3 angular_velocity_substep = Vector3(0, 0, 0);
 	
 	Vector3 wind = Vector3(0, 0, 0);
 	Vector3 air_velocity = Vector3(0, 0, 0);
@@ -117,7 +120,7 @@ private:
 	double inclination = 0;
 
 	////std::vector<AeroAtmosphere3D*>
-	//TypedArray<AeroAtmosphere3D> atmosphere_areas;
+	TypedArray<Area3D> atmosphere_areas;
 
 	Ref<GDScript> point_3d_script = nullptr;
 	Ref<GDScript> vector_3d_script = nullptr;
@@ -139,8 +142,8 @@ public:
 	static void _bind_methods();
 	AeroBody3D();
 	~AeroBody3D();
-	void on_child_entered_tree(Node *p_node);
-	void on_child_exiting_tree(Node *p_node);
+	void on_child_entered_tree(Node* p_node);
+	void on_child_exiting_tree(Node* p_node);
 	
 	void _ready() override;
 	void _enter_tree() override;
@@ -163,8 +166,10 @@ public:
 	void interrupt_sleep();
 	
 	TypedArray<AeroInfluencer3D> get_aero_influencers() const;
+	TypedArray<Area3D> get_atmosphere_areas() const;
 
-	
+	void add_aero_atmosphere(const Area3D* atmosphere);
+	void remove_aero_atmosphere(const Area3D* atmosphere);
 	
 	
 
@@ -189,8 +194,8 @@ public:
 	int get_amount_of_active_influencers() const;
 	Vector3 get_relative_position() const;
 	Vector3 get_drag_direction() const;
-	Vector3 get_linear_velocity() const;
-	Vector3 get_angular_velocity() const;
+	Vector3 get_linear_velocity_substep() const;
+	Vector3 get_angular_velocity_substep() const;
 	Vector3 get_linear_acceleration() const;
 	Vector3 get_angular_acceleration() const;
 

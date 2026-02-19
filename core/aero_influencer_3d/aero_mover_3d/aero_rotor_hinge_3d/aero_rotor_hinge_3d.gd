@@ -23,7 +23,7 @@ func _update_transform_substep(substep_delta : float) -> void:
 	super._update_transform_substep(substep_delta)
 	
 	#should we use the torque instead of the force?
-	var force : Vector3 = _current_force * global_basis
+	var force : Vector3 = get_current_force() * global_basis
 	var linear_acceleration : Vector3 = get_linear_acceleration() * global_basis
 	
 	leadlag_velocity += force.z / blade_mass * substep_delta #might need to be negative

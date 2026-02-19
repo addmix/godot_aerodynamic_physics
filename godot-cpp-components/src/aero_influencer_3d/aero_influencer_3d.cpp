@@ -108,10 +108,10 @@ void AeroInfluencer3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_relative_position"), &AeroInfluencer3D::get_relative_position);
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "relative_position", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_relative_position");
 
-	ClassDB::bind_method(D_METHOD("get_linear_velocity"), &AeroInfluencer3D::get_linear_velocity);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "linear_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_linear_velocity");
-	ClassDB::bind_method(D_METHOD("get_angular_velocity"), &AeroInfluencer3D::get_angular_velocity);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "angular_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_angular_velocity");
+	ClassDB::bind_method(D_METHOD("get_linear_velocity_substep"), &AeroInfluencer3D::get_linear_velocity_substep);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "linear_velocity_substep", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_linear_velocity_substep");
+	ClassDB::bind_method(D_METHOD("get_angular_velocity_substep"), &AeroInfluencer3D::get_angular_velocity_substep);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "angular_velocity_substep", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_angular_velocity_substep");
 	ClassDB::bind_method(D_METHOD("get_local_air_velocity"), &AeroInfluencer3D::get_local_air_velocity);
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "local_air_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_local_air_velocity");
 	ClassDB::bind_method(D_METHOD("get_world_air_velocity"), &AeroInfluencer3D::get_world_air_velocity);
@@ -126,8 +126,8 @@ void AeroInfluencer3D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "dynamic_pressure", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_dynamic_pressure");
 	//ClassDB::bind_method(D_METHOD("get_centrifugal_offset"), &AeroInfluencer3D::get_centrifugal_offset);
 	//ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "centrifugal", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_centrifugal_offset");
-	//ClassDB::bind_method(D_METHOD("get_linear_acceleration"), &AeroInfluencer3D::get_linear_acceleration);
-	//ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "aero_body", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_linear_acceleration");
+	ClassDB::bind_method(D_METHOD("get_linear_acceleration"), &AeroInfluencer3D::get_linear_acceleration);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "linear_acceleration", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_linear_acceleration");
 	//ClassDB::bind_method(D_METHOD("get_angular_acceleration"), &AeroInfluencer3D::get_angular_acceleration);
 	//ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "aero_body", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_angular_acceleration");
 	ClassDB::bind_method(D_METHOD("get_current_force"), &AeroInfluencer3D::get_current_force);
@@ -217,27 +217,27 @@ ForceAndTorque AeroInfluencer3D::calculate_forces_with_override(double substep_d
 }
 
 ForceAndTorque AeroInfluencer3D::calculate_forces(double substep_delta) {
-	linear_velocity = calculate_linear_velocity();
-	angular_velocity = calculate_angular_velocity();
+	linear_velocity_substep = calculate_linear_velocity_substep();
+	angular_velocity_substep = calculate_angular_velocity_substep();
 
 	relative_position = calculate_relative_position();
-	air_density = aero_body->get_air_density(); //TODO - update for AeroAtmospheres
+	air_density = aero_body->get_air_density();
 	world_air_velocity = calculate_world_air_velocity();
-	
-	/*
-	for atmosphere : AeroAtmosphere3D in aero_body.atmosphere_areas:
-		if not atmosphere.per_influencer_positioning:
-			continue
+
+	for (int i = 0; i < aero_body->get_atmosphere_areas().size(); i++) {
+		Area3D* atmosphere = Object::cast_to<Area3D>(aero_body->get_atmosphere_areas()[i]);
+		if (not atmosphere) continue;
+		if (not atmosphere->get("per_influencer_positioning")) continue;
+		if (not atmosphere->call("is_inside_atmosphere", get_global_position())) continue; //error here
 		
-		if not atmosphere.is_inside_atmosphere(global_position):
-			continue
-		
-		if atmosphere.override_density:
-			air_density = atmosphere.get_density_at_position(global_position)
-		
-		if atmosphere.override_wind:
-			world_air_velocity = -linear_velocity + atmosphere.wind
-		
+		if (atmosphere->get("override_density")) {
+			air_density = atmosphere->call("get_density_at_position", get_global_position());
+		}
+		if (atmosphere->get("override_wind")) {
+			world_air_velocity += atmosphere->get("wind");
+		}
+
+		/*
 		#this is a kinda bad way to do it tbh. It's difficult to separate global
 		#effects from atmosphere-specific effects.
 		#ideally, the global atmosphere can be converted into it's own atmosphere area
@@ -247,7 +247,9 @@ ForceAndTorque AeroInfluencer3D::calculate_forces(double substep_delta) {
 		
 		#also, atmospheres should be given a priority value so they can be ordered deterministically
 		#and give more flexibility for wind/density values
-	*/
+		*/
+	}
+	
 	air_speed = world_air_velocity.length();
 	altitude = aero_body->get_altitude();
 	dynamic_pressure = 0.5 * air_density * air_speed * air_speed;
@@ -355,40 +357,32 @@ Vector3 AeroInfluencer3D::calculate_relative_position() {
 
 	return Vector3();
 }
-Vector3 AeroInfluencer3D::calculate_world_air_velocity() {
-	if (get_parent()->is_class("AeroInfluencer3D")){
-		AeroInfluencer3D* parent = (AeroInfluencer3D*) get_parent();
-		return -(get_linear_velocity());
-	}
-	else if (get_parent()->is_class("AeroBody3D")){
-		AeroBody3D* parent = (AeroBody3D*) get_parent();
-		return -(get_linear_velocity());
-	}
-	return Vector3();
+Vector3 AeroInfluencer3D::calculate_world_air_velocity() { //this function is redundant and should be removed.
+	return -get_linear_velocity_substep() + aero_body->get_wind();
 }
-Vector3 AeroInfluencer3D::calculate_linear_velocity() {
+Vector3 AeroInfluencer3D::calculate_linear_velocity_substep() {
 	if (get_parent()->is_class("AeroInfluencer3D")){
 		AeroInfluencer3D* parent = (AeroInfluencer3D*) get_parent();
 		//TODO - Make sure this is actually used properly. this was the cause of substeps not working in previous versions
-		return parent->get_linear_velocity() + parent->get_angular_velocity().cross(parent->get_global_basis().xform(get_position()));
+		return parent->get_linear_velocity_substep() + parent->get_angular_velocity_substep().cross(parent->get_global_basis().xform(get_position()));
 	}
 	else if (get_parent()->is_class("AeroBody3D")){
 		AeroBody3D* parent = (AeroBody3D*) get_parent();
 		//TODO - Make sure this is actually used properly. this was the cause of substeps not working in previous versions
-		return parent->get_linear_velocity() + parent->get_angular_velocity().cross(parent->get_global_basis().xform(get_position()));
+		return parent->get_linear_velocity_substep() + parent->get_angular_velocity().cross(parent->get_global_basis().xform(get_position()));
 	} 
 	return Vector3();
 }
-Vector3 AeroInfluencer3D::calculate_angular_velocity() {
+Vector3 AeroInfluencer3D::calculate_angular_velocity_substep() {
 	if (get_parent()->is_class("AeroInfluencer3D")){
 		AeroInfluencer3D* parent = (AeroInfluencer3D*) get_parent();
 		//TODO - Make sure this is actually used properly. this was the cause of substeps not working in previous versions
-		return parent->get_angular_velocity();
+		return parent->get_angular_velocity_substep();
 	}
 	else if (get_parent()->is_class("AeroBody3D")){
 		AeroBody3D* parent = (AeroBody3D*) get_parent();
 		//TODO - Make sure this is actually used properly. this was the cause of substeps not working in previous versions
-		return parent->get_angular_velocity();
+		return parent->get_angular_velocity_substep();
 	}
 	return Vector3();
 }
@@ -445,6 +439,7 @@ bool AeroInfluencer3D::get_mirror_only_position() {
 void AeroInfluencer3D::set_mirror_axis(int axis) {
 	mirror_axis = axis;
 	if (mirror_duplicate and not (mirror_duplicate == this)) {
+		//TODO - still issues with mirroring, some incorrectly initialized pointed when the duplicate happens or something.
 		mirror_duplicate->queue_free();
 		mirror_duplicate = nullptr;
 	}
@@ -547,6 +542,7 @@ void AeroInfluencer3D::set_debug_width(const double value) {
 double AeroInfluencer3D::get_debug_width() {
 	return debug_width;
 }
+//create virtual function for this
 void AeroInfluencer3D::set_show_debug(const bool value) {
 	//TODO implement the rest of the debug vectors
 	
@@ -650,11 +646,11 @@ double AeroInfluencer3D::get_air_density() {
 Vector3 AeroInfluencer3D::get_relative_position() {
 	return relative_position;
 }
-Vector3 AeroInfluencer3D::get_linear_velocity() {
-	return linear_velocity;
+Vector3 AeroInfluencer3D::get_linear_velocity_substep() {
+	return linear_velocity_substep;
 }
-Vector3 AeroInfluencer3D::get_angular_velocity() {
-	return angular_velocity;
+Vector3 AeroInfluencer3D::get_angular_velocity_substep() {
+	return angular_velocity_substep;
 }
 Vector3 AeroInfluencer3D::get_local_air_velocity() {
 	return local_air_velocity;

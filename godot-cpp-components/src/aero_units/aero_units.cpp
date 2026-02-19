@@ -41,8 +41,8 @@ double AeroUnits::speed_to_mach_at_altitude(double speed, double altitude) {
     return speed / get_mach_at_altitude(altitude);
 }
 double AeroUnits::get_altitude(Node3D* node) {
-    if (node->has_method("get_altitude")) {
-        return node->call("get_altitude");
+    if (node->has_method("get_custom_altitude")) {
+        return node->call("get_custom_altitude");
     }
     return node->get_global_position().y;
 }

@@ -22,7 +22,7 @@ var vertex_buoyancy_coefficients : PackedVector3Array
 var vertex_sizes : PackedFloat64Array
 
 func _init() -> void:
-	super._init()
+	#super._init()
 	
 	buoyancy_mesh_debug = MeshInstance3D.new()
 	if buoyancy_mesh:
@@ -36,12 +36,12 @@ func _init() -> void:
 	buoyancy_mesh_debug.visible = false
 
 func _ready() -> void:
-	super._ready()
+	#super._ready()
 	
 	add_child(buoyancy_mesh_debug, INTERNAL_MODE_FRONT)
 
 func update_debug_visibility(_show_debug : bool = false) -> void:
-	super.update_debug_visibility(_show_debug)
+	#super.update_debug_visibility(_show_debug)
 	
 	buoyancy_mesh_debug.visible = show_debug and show_buoyancy_mesh_debug
 
@@ -201,7 +201,7 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 		var vertex_radius : float = vertex_sizes[vertex_index]
 		
 		var vertex_density : float = aero_body.air_density 
-		var vertex_velocity = -get_linear_velocity() + -angular_velocity.cross(vertex_position) #this has to be negative because it's air velocity, not linear velocity
+		var vertex_velocity = -get_linear_velocity_substep() + -get_angular_velocity_substep().cross(vertex_position) #this has to be negative because it's air velocity, not linear velocity
 		
 		var ambient_lift_drag_force : PackedVector3Array = calculate_mesh_lift_drag(vertex_position, vertex_velocity, vertex_buoyancy_factor, vertex_density)
 		
@@ -233,10 +233,10 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	#buoyancy_force = force_sum
 	#center_of_pressure = force_position_sum
 	
-	_current_force = force_sum
-	_current_torque = torque_sum#(relative_position + force_position_sum).cross(force_sum)
+	var force := force_sum
+	var torque := torque_sum#(relative_position + force_position_sum).cross(force_sum)
 	
-	return PackedVector3Array([force_and_torque[0] + _current_force, force_and_torque[1] + _current_torque])
+	return PackedVector3Array([force_and_torque[0] + force, force_and_torque[1] + torque])
 
 func calculate_mesh_buoyancy(vertex_position : Vector3, vertex_buoyancy_factor : Vector3, vertex_density : float, distance_to_surface : float) -> PackedVector3Array:
 	#early return when density == 0.0. Because there will be no buoyant force.

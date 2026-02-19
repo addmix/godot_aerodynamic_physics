@@ -40,21 +40,20 @@ func create_speed_control_config() -> AeroInfluencerControlConfig:
 	return config
 
 func _init():
-	super()
-	
 	show_torque = true
 	show_thrust = true
 	show_lift = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	super._ready()
 	update_configuration_warnings()
 	update_propeller_amount()
 	
 	if not Engine.is_editor_hint():
 		if propeller_speed_control_config:
 			propeller_speed_control_config = propeller_speed_control_config.duplicate(true)
+	
+	child_entered_tree.connect(on_child_enter_tree)
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var arr : PackedStringArray = PackedStringArray()#super._get_configuration_warnings()
@@ -64,8 +63,6 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return arr
 
 func on_child_enter_tree(node : Node) -> void:
-	super(node)
-	
 	if not propeller_blade and node is AeroInfluencer3D:
 		propeller_blade = node
 
@@ -100,13 +97,13 @@ func update_propeller_transforms() -> void:
 		var prop_index = i + 1 #we already have 1 surface, so we add 1
 		var new_blade : AeroInfluencer3D = propeller_instances[prop_index]
 		
-		new_blade.default_transform = base_transform.rotated(Vector3(0, 1, 0), deg_to_rad(360.0 / propeller_amount) * prop_index)
+		#new_blade.default_transform = base_transform.rotated(Vector3(0, 1, 0), deg_to_rad(360.0 / propeller_amount) * prop_index)
 		new_blade.transform = new_blade.default_transform
-		new_blade.default_transform.origin = base_transform.origin.rotated(Vector3(0, 1, 0), deg_to_rad(360.0 / propeller_amount) * prop_index)
+		#new_blade.default_transform.origin = base_transform.origin.rotated(Vector3(0, 1, 0), deg_to_rad(360.0 / propeller_amount) * prop_index)
 		new_blade.position = new_blade.default_transform.origin
 
 func _update_control_transform(substep_delta : float) -> void:
-	super._update_control_transform(substep_delta)
+	#super._update_control_transform(substep_delta)
 	
 	if propeller_speed_control_config:
 		angular_motor = propeller_speed_control_config.update(self, substep_delta)

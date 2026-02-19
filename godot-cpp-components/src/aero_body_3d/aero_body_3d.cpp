@@ -7,56 +7,13 @@ void AeroBody3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_substeps_override", "p_substeps"), &AeroBody3D::set_substeps_override);
 	ClassDB::bind_method(D_METHOD("get_substeps_override"), &AeroBody3D::get_substeps_override);
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "substeps_override"), "set_substeps_override", "get_substeps_override");
+
+	//function bindings
+	ClassDB::bind_method(D_METHOD("add_aero_atmosphere", "p_aero_atmosphere"), &AeroBody3D::add_aero_atmosphere);
+	ClassDB::bind_method(D_METHOD("remove_aero_atmosphere", "p_aero_atmosphere"), &AeroBody3D::remove_aero_atmosphere);
 	
+
 	//experimental_energy_tracking;
-	//register function so we can use it with a signal.
-	ClassDB::bind_method(D_METHOD("on_child_entered_tree", "node"), &AeroBody3D::on_child_entered_tree);
-	ClassDB::bind_method(D_METHOD("on_child_exiting_tree", "node"), &AeroBody3D::on_child_exiting_tree);
-	
-	ClassDB::bind_method(D_METHOD("get_substeps"), &AeroBody3D::get_substeps);
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "get_substeps"), "", "get_substeps");
-	//ClassDB::bind_method(D_METHOD("get_aero_influencers"), &AeroBody3D::get_aero_influencers);
-	//ADD_PROPERTY(PropertyInfo(Variant::, ""), "", "");
-	ClassDB::bind_method(D_METHOD("get_prediction_timestep_fraction"), &AeroBody3D::get_prediction_timestep_fraction);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "prediction_timestep_fraction"), "", "get_prediction_timestep_fraction");
-	ClassDB::bind_method(D_METHOD("get_current_force"), &AeroBody3D::get_current_force);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_force"), "", "get_current_force");
-	ClassDB::bind_method(D_METHOD("get_current_torque"), &AeroBody3D::get_current_torque);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_torque"), "", "get_current_torque");
-	ClassDB::bind_method(D_METHOD("get_current_gravity"), &AeroBody3D::get_current_gravity);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_gravity"), "", "get_current_gravity");
-	ClassDB::bind_method(D_METHOD("get_last_linear_velocity"), &AeroBody3D::get_last_linear_velocity);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "last_linear_velocity"), "", "get_last_linear_velocity");
-	ClassDB::bind_method(D_METHOD("get_last_angular_velocity"), &AeroBody3D::get_last_angular_velocity);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "last_angular_velocity"), "", "get_last_angular_velocity");
-	ClassDB::bind_method(D_METHOD("get_wind"), &AeroBody3D::get_wind);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "wind"), "", "get_wind");
-	ClassDB::bind_method(D_METHOD("get_air_velocity"), &AeroBody3D::get_air_velocity);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "air_velocity"), "", "get_air_velocity");
-	ClassDB::bind_method(D_METHOD("get_local_air_velocity"), &AeroBody3D::get_local_air_velocity);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "local_air_velocity"), "", "get_local_air_velocity");
-	ClassDB::bind_method(D_METHOD("get_local_angular_velocity"), &AeroBody3D::get_local_angular_velocity);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "local_angular_velocity"), "", "get_local_angular_velocity");
-	ClassDB::bind_method(D_METHOD("get_air_speed"), &AeroBody3D::get_air_speed);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "air_speed"), "", "get_air_speed");
-	ClassDB::bind_method(D_METHOD("get_mach"), &AeroBody3D::get_mach);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "mach"), "", "get_mach");
-	ClassDB::bind_method(D_METHOD("get_air_density"), &AeroBody3D::get_air_density);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "air_density"), "", "get_air_density");
-	ClassDB::bind_method(D_METHOD("get_air_pressure"), &AeroBody3D::get_air_pressure);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "air_pressure"), "", "get_air_pressure");
-	ClassDB::bind_method(D_METHOD("get_angle_of_attack"), &AeroBody3D::get_angle_of_attack);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "angle_of_attack"), "", "get_angle_of_attack");
-	ClassDB::bind_method(D_METHOD("get_sideslip_angle"), &AeroBody3D::get_sideslip_angle);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "sideslip_angle"), "", "get_sideslip_angle");
-	ClassDB::bind_method(D_METHOD("get_altitude"), &AeroBody3D::get_altitude);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "altitude"), "", "get_altitude");
-	ClassDB::bind_method(D_METHOD("get_bank_angle"), &AeroBody3D::get_bank_angle);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "bank_angle"), "", "get_bank_angle");
-	ClassDB::bind_method(D_METHOD("get_heading"), &AeroBody3D::get_heading);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "heading"), "", "get_heading");
-	ClassDB::bind_method(D_METHOD("get_inclination"), &AeroBody3D::get_inclination);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "inclination"), "", "get_inclination");
 
 	//debug bindings
 	ADD_GROUP("Debug", "");
@@ -118,8 +75,11 @@ void AeroBody3D::_bind_methods() {
 	ADD_GROUP("Do not show in inspector", "");
 	ADD_SUBGROUP("", "");
 	ClassDB::bind_method(D_METHOD("get_substeps"), &AeroBody3D::get_substeps);
-	//ADD_PROPERTY(PropertyInfo(Variant::INT, "substeps"), "", "get_substeps");
-	//ClassDB::bind_method(D_METHOD("get_aero_influencers"), &AeroBody3D::get_aero_influencers);
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "substeps"), "", "get_substeps");
+	ClassDB::bind_method(D_METHOD("get_aero_influencers"), &AeroBody3D::get_aero_influencers);
+	ClassDB::bind_method(D_METHOD("get_atmosphere_areas"), &AeroBody3D::get_atmosphere_areas);
+	
+	
 	//ADD_PROPERTY(PropertyInfo(Variant::, ""), "", "");
 	ClassDB::bind_method(D_METHOD("get_prediction_timestep_fraction"), &AeroBody3D::get_prediction_timestep_fraction);
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "prediction_timestep_fraction", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_prediction_timestep_fraction");
@@ -129,10 +89,12 @@ void AeroBody3D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_torque", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_current_torque");
 	ClassDB::bind_method(D_METHOD("get_current_gravity"), &AeroBody3D::get_current_gravity);
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_gravity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_current_gravity");
-	ClassDB::bind_method(D_METHOD("get_linear_velocity"), &AeroBody3D::get_linear_velocity);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "linear_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_linear_velocity");
-	ClassDB::bind_method(D_METHOD("get_angular_velocity"), &AeroBody3D::get_angular_velocity);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "angular_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_angular_velocity");
+	//set_linear_velocity
+	ClassDB::bind_method(D_METHOD("get_linear_velocity_substep"), &AeroBody3D::get_linear_velocity_substep);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "linear_velocity_substep", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_linear_velocity_substep");
+	//set_angular_velocity
+	ClassDB::bind_method(D_METHOD("get_angular_velocity_substep"), &AeroBody3D::get_angular_velocity_substep);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "angular_velocity_substep", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_angular_velocity_substep");
 	ClassDB::bind_method(D_METHOD("get_linear_acceleration"), &AeroBody3D::get_linear_acceleration);
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "linear_acceleration", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_linear_acceleration");
 	ClassDB::bind_method(D_METHOD("get_angular_acceleration"), &AeroBody3D::get_angular_acceleration);
@@ -180,15 +142,17 @@ AeroBody3D::AeroBody3D() {
 	set_center_of_mass_mode(CENTER_OF_MASS_MODE_CUSTOM);
 	set_collision_layer_value(ProjectSettings::get_singleton()->get_setting("physics/aerodynamics/atmosphere_area_collision_layer"), true);
 
-	linear_velocity_prediction = RigidBody3D::get_linear_velocity();
-	angular_velocity_prediction = RigidBody3D::get_angular_velocity();
+	linear_velocity_substep = get_linear_velocity();
+	angular_velocity_substep = get_angular_velocity();
 
 	if (not this->is_connected("child_entered_tree", callable_mp(this, &AeroBody3D::on_child_entered_tree))) {
-		this->connect("child_entered_tree", callable_mp(this, &AeroBody3D::on_child_entered_tree));
+		connect("child_entered_tree", callable_mp(this, &AeroBody3D::on_child_entered_tree));
 	}
 	if (not this->is_connected("child_exiting_tree", callable_mp(this, &AeroBody3D::on_child_exiting_tree))) {
-		this->connect("child_exiting_tree", callable_mp(this, &AeroBody3D::on_child_exiting_tree));
+		connect("child_exiting_tree", callable_mp(this, &AeroBody3D::on_child_exiting_tree));
 	}
+	
+
 	
 	PhysicsServer3D::get_singleton()->body_set_force_integration_callback(get_rid(), callable_mp(this, &AeroBody3D::integrate_forces));
 
@@ -287,14 +251,15 @@ void AeroBody3D::integrate_forces(PhysicsDirectBodyState3D *body_state) {
 		set_center_of_mass(body_state->get_center_of_mass());
 	}
 
-	linear_velocity_prediction = body_state->get_linear_velocity();
-	angular_velocity_prediction = body_state->get_angular_velocity();
+	linear_velocity_substep = body_state->get_linear_velocity();
+	angular_velocity_substep = body_state->get_angular_velocity();
 
 	ForceAndTorque total_force_and_torque = calculate_forces(body_state->get_step());
 
 	body_state->apply_central_force(total_force_and_torque.force);
 	body_state->apply_torque(total_force_and_torque.torque);
 
+	//TODO - should this be done every substep?
 	linear_acceleration = (body_state->get_linear_velocity() - last_linear_velocity) / body_state->get_step();
 	angular_acceleration = (body_state->get_angular_velocity() - last_angular_velocity) / body_state->get_step();
 	
@@ -305,43 +270,45 @@ void AeroBody3D::integrate_forces(PhysicsDirectBodyState3D *body_state) {
 ForceAndTorque AeroBody3D::calculate_forces(double delta) {
 	altitude = AeroUnits::get_singleton()->get_altitude(this);
 	mach = AeroUnits::get_singleton()->speed_to_mach_at_altitude(air_speed, altitude);
-	air_density = AeroUnits::get_singleton()->get_density_at_altitude(altitude); //don't forget to comment this out when AeroAtmospheres are implemented
+	air_density = AeroUnits::get_singleton()->get_density_at_altitude(altitude);
 	air_pressure = AeroUnits::get_singleton()->get_pressure_at_altitude(altitude);
 	
 	wind = Vector3();
-	//if has_node("/root/AeroUnits"):
-	//	var _AeroUnits : Node = $"/root/AeroUnits"
-	//	air_density = _AeroUnits.get_density_at_altitude(altitude)
-	//for atmosphere : AeroAtmosphere3D in atmosphere_areas:
-	//	if atmosphere.per_influencer_positioning:
-	//		continue
-	//	
-	//	wind += atmosphere.wind
-	//	if atmosphere.override_density:
-	//		air_density = atmosphere.get_density_at_position(global_position)
-	
-	air_velocity = -get_linear_velocity() + wind;
-	air_speed = air_velocity.length();
+	for (int i = 0; i < atmosphere_areas.size(); i++) {
+		Area3D* atmosphere = Object::cast_to<Area3D>(atmosphere_areas[i]);
+		if (not atmosphere) continue;
+		if (atmosphere->get("per_influencer_positioning")) continue;
 
-	local_air_velocity = get_global_transform().get_basis().xform_inv(air_velocity);
-	local_angular_velocity = get_global_transform().get_basis().xform_inv(get_angular_velocity());
-	angle_of_attack = get_global_basis().get_column(1).angle_to(-air_velocity) - (Math_PI / 2.0);
-	sideslip_angle = get_global_basis().get_column(0).angle_to(air_velocity) - (Math_PI / 2.0);
+		Variant wind_result = atmosphere->call("get_wind_at_position", get_global_position());
+		
+		wind += (Vector3) wind_result;
+		if (atmosphere->get("override_density")) {
+			air_density = atmosphere->call("get_density_at_position", get_global_position());
+		}
+	}
+	
 	bank_angle = get_rotation().z;
 	heading = get_rotation().y;
 	inclination = get_rotation().x;
 
-	relative_position = calculate_relative_position();
-	drag_direction = calculate_drag_direction();
-
+	
 	ForceAndTorque last_force_and_torque;
 	ForceAndTorque total_force_and_torque;
 
 	substep_delta = delta * prediction_timestep_fraction;
 	for (int substep = 0; substep < substeps; substep++) {
-		//air velocity and other values must be updated in substeps
-		//using the velocity predictions for this to be useful/effective
 		current_substep = substep;
+		
+		air_velocity = -get_linear_velocity_substep() + wind;
+		air_speed = air_velocity.length();
+
+		local_air_velocity = get_global_transform().get_basis().xform_inv(air_velocity);
+		local_angular_velocity = get_global_transform().get_basis().xform_inv(get_angular_velocity());
+		angle_of_attack = get_global_basis().get_column(1).angle_to(-air_velocity) - (Math_PI / 2.0);
+		sideslip_angle = get_global_basis().get_column(0).angle_to(air_velocity) - (Math_PI / 2.0);
+		relative_position = calculate_relative_position();
+		drag_direction = calculate_drag_direction();
+
 
 		if (not Engine::get_singleton()->is_editor_hint()) {
 			for (int i = 0; i < aero_influencers.size(); i++) {
@@ -353,8 +320,8 @@ ForceAndTorque AeroBody3D::calculate_forces(double delta) {
 			}
 		}
 
-		linear_velocity_prediction = predict_linear_velocity(last_force_and_torque.force) + current_gravity * prediction_timestep_fraction;
-		angular_velocity_prediction = predict_angular_velocity(last_force_and_torque.torque);
+		linear_velocity_substep = predict_linear_velocity(last_force_and_torque.force);// + current_gravity * prediction_timestep_fraction;
+		angular_velocity_substep = predict_angular_velocity(last_force_and_torque.torque);
 
 		ForceAndTorque substep_force_and_torque_sum;
 		for (int i = 0; i < aero_influencers.size(); i++) {
@@ -440,17 +407,17 @@ Vector3 AeroBody3D::calculate_drag_direction() const {
 }
 Vector3 AeroBody3D::calculate_linear_acceleration() const {
 	//TODO - Not properly implemented. last_linear_velocity is updated every frame, making this not work properly with substeps
-	return (linear_velocity_prediction - last_linear_velocity) / substep_delta;
+	return (linear_velocity_substep - last_linear_velocity) / substep_delta;
 }
 Vector3 AeroBody3D::calculate_angular_acceleration() const {
 	//TODO - Not properly implemented. last_angular_velocity is updated every frame, making this not work properly with substeps
-	return (angular_velocity_prediction - last_angular_velocity) / substep_delta;
+	return (angular_velocity_substep - last_angular_velocity) / substep_delta;
 }
 Vector3 AeroBody3D::predict_linear_velocity(const Vector3 force) const {
-	return get_linear_velocity() + (force / get_mass() * substep_delta);
+	return get_linear_velocity_substep() + (force / get_mass() * substep_delta);
 }
 Vector3 AeroBody3D::predict_angular_velocity(const Vector3 torque) const {
-	return get_angular_velocity() + (get_inverse_inertia_tensor().xform(torque) * substep_delta);
+	return get_angular_velocity_substep() + (get_inverse_inertia_tensor().xform(torque) * substep_delta);
 }
 
 
@@ -479,9 +446,19 @@ void AeroBody3D::interrupt_sleep() {
 	set_sleeping(false);
 }
 
-TypedArray<AeroInfluencer3D> AeroBody3D::get_aero_influencers() const { return aero_influencers; }
+TypedArray<AeroInfluencer3D> AeroBody3D::get_aero_influencers() const {
+	return aero_influencers;
+}
+TypedArray<Area3D> AeroBody3D::get_atmosphere_areas() const {
+	return atmosphere_areas;
+}
 
-
+void AeroBody3D::add_aero_atmosphere(const Area3D* atmosphere) {
+	atmosphere_areas.append(atmosphere);
+}
+void AeroBody3D::remove_aero_atmosphere(const Area3D* atmosphere) {
+	atmosphere_areas.erase(atmosphere);
+}
 
 
 
@@ -531,13 +508,11 @@ Vector3 AeroBody3D::get_relative_position() const {
 Vector3 AeroBody3D::get_drag_direction() const {
 	return drag_direction;
 }
-Vector3 AeroBody3D::get_linear_velocity() const {
-	//TODO - Make sure this is actually used properly. this was the cause of substeps not working in previous versions
-	return linear_velocity_prediction;
+Vector3 AeroBody3D::get_linear_velocity_substep() const {
+	return linear_velocity_substep;
 }
-Vector3 AeroBody3D::get_angular_velocity() const {
-	//TODO - Make sure this is actually used properly. this was the cause of substeps not working in previous versions
-	return angular_velocity_prediction;
+Vector3 AeroBody3D::get_angular_velocity_substep() const {
+	return angular_velocity_substep;
 }
 Vector3 AeroBody3D::get_linear_acceleration() const {return linear_acceleration;}
 Vector3 AeroBody3D::get_angular_acceleration() const {return angular_acceleration;}
@@ -593,8 +568,8 @@ void AeroBody3D::_update_debug() {
 			aero_surfaces.append(i)
 	*/
 	
-	Vector3 linear_velocity_to_use = RigidBody3D::get_linear_velocity();
-	Vector3 angular_velocity_to_use = RigidBody3D::get_angular_velocity();
+	Vector3 linear_velocity_to_use = get_linear_velocity();
+	Vector3 angular_velocity_to_use = get_angular_velocity();
 	
 	if (Engine::get_singleton()->is_editor_hint()) {
 		linear_velocity_to_use = debug_linear_velocity;

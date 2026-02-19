@@ -50,8 +50,8 @@ private:
 	double altitude;
 	double air_density = 1.225;
 	Vector3 relative_position;
-	Vector3 linear_velocity;
-	Vector3 angular_velocity;
+	Vector3 linear_velocity_substep;
+	Vector3 angular_velocity_substep;
 	Vector3 last_linear_velocity;
 	Vector3 last_angular_velocity;
 	Vector3 local_air_velocity;
@@ -100,8 +100,8 @@ public:
 
 	Vector3 calculate_relative_position();
 	Vector3 calculate_world_air_velocity();
-	Vector3 calculate_linear_velocity();
-	Vector3 calculate_angular_velocity();
+	Vector3 calculate_linear_velocity_substep();
+	Vector3 calculate_angular_velocity_substep();
 	Vector3 calculate_centrifugal_offset();
 	Vector3 calculate_linear_acceleration();
 	Vector3 calculate_angular_acceleration();
@@ -166,8 +166,8 @@ public:
 	double get_altitude();
 	double get_air_density();
 	Vector3 get_relative_position();
-	Vector3 get_linear_velocity();
-	Vector3 get_angular_velocity();
+	Vector3 get_linear_velocity_substep();
+	Vector3 get_angular_velocity_substep();
 	Vector3 get_local_air_velocity();
 	Vector3 get_world_air_velocity();
 	Vector3 get_drag_direction();

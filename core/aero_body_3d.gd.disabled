@@ -415,7 +415,7 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 		if atmosphere.per_influencer_positioning:
 			continue
 		
-		wind += atmosphere.wind
+		wind += atmosphere.get_wind_at_position(get_global_position)
 		if atmosphere.override_density:
 			desired_air_density = atmosphere.get_density_at_position(global_position)
 	

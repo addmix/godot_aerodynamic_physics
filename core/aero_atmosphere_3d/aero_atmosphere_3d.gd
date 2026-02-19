@@ -16,7 +16,9 @@ func _init() -> void:
 	
 	collision_layer = 0
 	collision_mask = 0
+	#TODO: Figure out why this get_setting() call is returning null.
 	#set_collision_mask_value(ProjectSettings.get_setting("physics/aerodynamics/atmosphere_area_collision_layer"), true) 
+	#set_collision_mask_value(ProjectSettings.get_setting("physics/aerodynamics/atmosphere_area_collision_layer", 15), true) 
 	set_collision_mask_value(15, true) 
 	
 	body_entered.connect(_on_body_entered)
@@ -25,11 +27,11 @@ func _init() -> void:
 #this isn't a great solution, but it's easier than the alternative.
 func _on_body_entered(body : PhysicsBody3D) -> void:
 	if body is AeroBody3D:
-		body.atmosphere_areas.append(self)
+		body.add_aero_atmosphere(self)
 #this isn't a great solution, but it's easier than the alternative.
 func _on_body_exited(body : PhysicsBody3D) -> void:
 	if body is AeroBody3D:
-		body.atmosphere_areas.erase(self)
+		body.remove_aero_atmosphere(self)
 
 func is_inside_atmosphere(_position : Vector3) -> bool:
 	return get_distance_to_surface(_position) < 0.0

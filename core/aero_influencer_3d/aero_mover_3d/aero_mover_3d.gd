@@ -33,10 +33,10 @@ func _update_transform_substep(substep_delta : float) -> void:
 		_angular_velocity -= angular_motor #cancel out any rotation caused by motor
 	
 	#motors
-	default_transform.origin += linear_motor * basis * substep_delta
+	#default_transform.origin += linear_motor * basis * substep_delta
 	#rotate by angular velocity
-	if not is_equal_approx(angular_motor.length_squared(), 0.0):
-		default_transform.basis = default_transform.basis * Basis((angular_motor).normalized(), angular_motor.length() * substep_delta)
+	#if not is_equal_approx(angular_motor.length_squared(), 0.0):
+		#default_transform.basis = default_transform.basis * Basis((angular_motor).normalized(), angular_motor.length() * substep_delta)
 	
 	_linear_velocity += linear_motor
 	_angular_velocity += angular_motor
@@ -44,7 +44,7 @@ func _update_transform_substep(substep_delta : float) -> void:
 	last_position = position
 	last_rotation = basis
 	
-	super._update_transform_substep(substep_delta)
+	#super._update_transform_substep(substep_delta)
 	
 
 

@@ -155,8 +155,8 @@ contribution = Vector3(-1, 0, 0)
 [sub_resource type="Resource" id="Resource_m2vdb"]
 script = ExtResource("12_njgyo")
 axis_configs = Array[ExtResource("11_1g5my")]([SubResource("Resource_m134i")])
-max_value = Vector3(0.3, 0, 0)
-min_value = Vector3(-0.3, 0, 0)
+max_value = Vector3(0.2, 0, 0)
+min_value = Vector3(-0.2, 0, 0)
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
 [sub_resource type="ManualAeroSurfaceConfig" id="ManualAeroSurfaceConfig_8brnm"]
@@ -172,11 +172,15 @@ contribution = Vector3(-1, 0, 0)
 [sub_resource type="Resource" id="Resource_8brnm"]
 script = ExtResource("12_njgyo")
 axis_configs = Array[ExtResource("11_1g5my")]([SubResource("Resource_gk5sg")])
-max_value = Vector3(0.3, 0, 0)
-min_value = Vector3(-0.3, 0, 0)
+max_value = Vector3(0.5, 0, 0)
+min_value = Vector3(-0.5, 0, 0)
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
 [sub_resource type="ManualAeroSurfaceConfig" id="ManualAeroSurfaceConfig_e07xt"]
+min_lift_coefficient = -1.5
+max_lift_coefficient = 1.5
+min_drag_coefficient = 0.02
+max_drag_coefficient = 0.5
 
 [sub_resource type="AeroSurfaceConfig" id="AeroSurfaceConfig_0lgyr"]
 span = 3.0
@@ -193,8 +197,8 @@ axis_flip_x = 1
 [sub_resource type="Resource" id="Resource_yl62e"]
 script = ExtResource("12_njgyo")
 axis_configs = Array[ExtResource("11_1g5my")]([SubResource("Resource_i3p6j")])
-max_value = Vector3(0.2, 0, 0)
-min_value = Vector3(-0.2, 0, 0)
+max_value = Vector3(0.1, 0, 0)
+min_value = Vector3(-0.1, 0, 0)
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
 [node name="AeroBody3D" type="AeroBody3D" unique_id=1435907782]
@@ -202,7 +206,6 @@ substeps_override = 16
 show_debug = true
 substeps = 16
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8844791671787666, 0)
-collision_layer = 16385
 mass = 850.0
 physics_material_override = SubResource("PhysicsMaterial_m08mi")
 can_sleep = false
@@ -224,6 +227,7 @@ shape = SubResource("CapsuleShape3D_6onr1")
 debug_scale = 1.0
 debug_width = 0.3
 show_debug = true
+show_drag = true
 default_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.29881)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.29881)
 script = ExtResource("13_qs0nt")
@@ -277,7 +281,7 @@ transform = Transform3D(0.996195, -0.0871557, 0, 0.0871558, 0.996194, 0, 0, 0, 1
 transform = Transform3D(1, 0, -5.96046e-08, 0, 1, 0, 5.96046e-08, 0, 1, -0.0699999, 0, 0.269945)
 size = Vector3(3.67285, 0.113525, 1.14014)
 
-[node name="WingR2" type="ManualAeroSurface3D" parent="." unique_id=2043891661]
+[node name="WingL" type="ManualAeroSurface3D" parent="." unique_id=2043891661]
 manual_config = SubResource("ManualAeroSurfaceConfig_e07xt")
 wing_config = SubResource("AeroSurfaceConfig_0lgyr")
 actuation_config = SubResource("Resource_yl62e")
@@ -288,7 +292,7 @@ show_drag = true
 default_transform = Transform3D(0.9961950026775503, 0.08715568181176198, 0, -0.08715576939546317, 0.9961940015912648, 0, 0, 0, 1, -1.907999999995809, 0, -0.8135999999940395)
 transform = Transform3D(0.9961950026775503, 0.08715568181176198, 0, -0.08715576939546317, 0.9961940015912648, 0, 0, 0, 1, -1.907999999995809, 0, -0.8135999999940395)
 
-[node name="CSGBox3D5" type="CSGBox3D" parent="WingR2" unique_id=196235980]
+[node name="CSGBox3D5" type="CSGBox3D" parent="WingL" unique_id=196235980]
 transform = Transform3D(1, 0, -5.96046e-08, 0, 1, 0, 5.96046e-08, 0, 1, -0.0699999, 0, 0.269945)
 size = Vector3(3.67285, 0.113525, 1.14014)
 

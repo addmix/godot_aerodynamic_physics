@@ -235,7 +235,7 @@ ForceAndTorque AeroInfluencer3D::calculate_forces(double substep_delta) {
 			air_density = atmosphere->call("get_density_at_position", get_global_position());
 		}
 		if (atmosphere->get("override_wind")) {
-			world_air_velocity += atmosphere->get("wind");
+			world_air_velocity = -linear_velocity_substep + atmosphere->get("wind");
 		}
 
 		/*
@@ -358,7 +358,7 @@ Vector3 AeroInfluencer3D::calculate_relative_position() {
 	return Vector3();
 }
 Vector3 AeroInfluencer3D::calculate_world_air_velocity() { //this function is redundant and should be removed.
-	return -get_linear_velocity_substep() + aero_body->get_wind();
+	return -linear_velocity_substep + aero_body->get_wind();
 }
 Vector3 AeroInfluencer3D::calculate_linear_velocity_substep() {
 	if (get_parent()->is_class("AeroInfluencer3D")){

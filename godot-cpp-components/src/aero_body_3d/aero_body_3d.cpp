@@ -137,7 +137,7 @@ AeroBody3D::AeroBody3D() {
 	set_linear_damp_mode(DAMP_MODE_REPLACE);
 	set_angular_damp_mode(DAMP_MODE_REPLACE);
 	set_center_of_mass_mode(CENTER_OF_MASS_MODE_CUSTOM);
-	set_collision_layer_value(ProjectSettings::get_singleton()->get_setting("physics/aerodynamics/atmosphere_area_collision_layer"), true);
+	set_collision_layer_value(ProjectSettings::get_singleton()->get_setting("physics/aerodynamics/atmosphere_area_collision_layer", 15), true);
 
 	linear_velocity_substep = get_linear_velocity();
 	angular_velocity_substep = get_angular_velocity();
@@ -294,21 +294,13 @@ ForceAndTorque AeroBody3D::calculate_forces(double delta) {
 		air_speed = air_velocity.length();
 
 		local_air_velocity = get_global_transform().get_basis().xform_inv(air_velocity);
-		local_angular_velocity = get_global_transform().get_basis().xform_inv(get_angular_velocity());
+		local_angular_velocity = get_global_transform().get_basis().xform_inv(angular_velocity_substep);
 		angle_of_attack = get_global_basis().get_column(1).angle_to(-air_velocity) - (Math_PI / 2.0);
 		sideslip_angle = get_global_basis().get_column(0).angle_to(air_velocity) - (Math_PI / 2.0);
 		relative_position = calculate_relative_position();
 		drag_direction = calculate_drag_direction();
 
-		if (not Engine::get_singleton()->is_editor_hint()) {
-			for (int i = 0; i < aero_influencers.size(); i++) {
-				AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
-				if (not influencer) continue;
-				if (influencer->is_disabled()) continue;
-
-				influencer->_update_transform_substep(substep_delta);
-			}
-		}
+		_update_transform_substep(substep_delta);
 
 		ForceAndTorque substep_force_and_torque_sum;
 		for (int i = 0; i < aero_influencers.size(); i++) {
@@ -390,6 +382,18 @@ ForceAndTorque AeroBody3D::calculate_forces(double delta) {
 
 	return total_force_and_torque;
 }
+void AeroBody3D::_update_transform_substep(double substep_delta) {
+	if (not Engine::get_singleton()->is_editor_hint()) {
+		for (int i = 0; i < aero_influencers.size(); i++) {
+			AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+			if (not influencer) continue;
+			if (influencer->is_disabled()) continue;
+
+			influencer->_update_transform_substep(substep_delta);
+		}
+	}
+}
+
 Vector3 AeroBody3D::calculate_linear_velocity_substep(const Vector3 force) const { return linear_velocity_substep + (force / get_mass() * substep_delta); }
 Vector3 AeroBody3D::calculate_angular_velocity_substep(const Vector3 torque) const { return angular_velocity_substep + (get_inverse_inertia_tensor().xform(torque) * substep_delta); }
 Vector3 AeroBody3D::calculate_relative_position() const { return get_global_basis().xform(-get_center_of_mass()); }

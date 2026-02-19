@@ -153,7 +153,7 @@ public:
 
 	
 	ForceAndTorque calculate_forces(double delta);
-
+	void _update_transform_substep(double substep_delta);
 	Vector3 calculate_relative_position() const;
 	Vector3 calculate_drag_direction() const;
 	//Vector3 calculate_linear_acceleration() const;

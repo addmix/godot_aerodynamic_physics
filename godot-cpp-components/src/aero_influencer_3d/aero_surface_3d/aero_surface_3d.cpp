@@ -30,8 +30,8 @@ ForceAndTorque AeroSurface3D::calculate_forces(double substep_delta) {
     angle_of_attack = get_global_basis().get_column(1).angle_to(-get_world_air_velocity()) - (Math_PI / 2.0);
     sweep_angle = get_global_basis().get_column(0).angle_to(-get_world_air_velocity()) - (Math_PI / 2.0);
 
-    area = (double) wing_config->get("chord") * (double) wing_config->get("span");
-    projected_wing_area = area * sin(angle_of_attack);
+    area = wing_config->get_area();
+    projected_wing_area = abs(area * sin(angle_of_attack));
 
     Vector3 right_facing_air_vector = get_world_air_velocity().cross(-get_global_basis().get_column(1)).normalized();
     lift_direction = get_drag_direction().cross(right_facing_air_vector).normalized();

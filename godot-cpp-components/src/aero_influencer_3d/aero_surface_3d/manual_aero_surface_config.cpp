@@ -52,15 +52,7 @@ double ManualAeroSurfaceConfig::get_lift_coefficient(double angle_of_attack) {
 }
 double ManualAeroSurfaceConfig::get_drag_coefficient(double angle_of_attack) {
     double sample = drag_aoa_curve->sample_baked(UtilityFunctions::remap(angle_of_attack, -Math_PI, Math_PI, drag_aoa_curve->get_min_domain(), drag_aoa_curve->get_max_domain()));
-    
-    if (sample >= 0.0) {
-        sample *= max_drag_coefficient / drag_aoa_curve->get_max_value();
-    }
-    else {
-        sample *= abs(min_drag_coefficient / drag_aoa_curve->get_min_value());
-    }
-
-    return sample;
+    return UtilityFunctions::remap(sample, drag_aoa_curve->get_min_value(), drag_aoa_curve->get_max_value(), min_drag_coefficient, max_drag_coefficient);
 }
 
 

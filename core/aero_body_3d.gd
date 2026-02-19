@@ -390,8 +390,8 @@ func integrator(state : PhysicsDirectBodyState3D) -> void:
 
 	var total_force_and_torque := calculate_forces(state.step)
 	
-	state.apply_central_force(current_force)
-	state.apply_torque(current_torque)
+	state.apply_central_force(total_force_and_torque[0])
+	state.apply_torque(total_force_and_torque[1])
 	
 	linear_acceleration = (linear_velocity - last_linear_velocity) / state.step
 	angular_acceleration = (angular_velocity - last_angular_velocity) / state.step
@@ -410,16 +410,13 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 		air_pressure = _AeroUnits.get_pressure_at_altitude(altitude)
 	
 	wind = Vector3.ZERO
-	var desired_air_density : float = 1.225
 	for atmosphere : AeroAtmosphere3D in atmosphere_areas:
 		if atmosphere.per_influencer_positioning:
 			continue
 		
 		wind += atmosphere.get_wind_at_position(global_position)
 		if atmosphere.override_density:
-			desired_air_density = atmosphere.get_density_at_position(global_position)
-	
-	air_density = desired_air_density# move_toward(air_density, desired_air_density, 100000.0 * delta)
+			air_density = atmosphere.get_density_at_position(global_position)
 	
 	bank_angle = global_rotation.z
 	heading = global_rotation.y
@@ -430,18 +427,17 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 	
 	substep_delta = delta * PREDICTION_TIMESTEP_FRACTION
 	for substep : int in SUBSTEPS:
-		#air velocity and other values must be updated in substeps
-		#using the velocity predictions for this to be useful/effective
-
+		current_substep = substep
+		
 		air_velocity = -linear_velocity_substep + wind
 		air_speed = air_velocity.length()
 
 		local_air_velocity = air_velocity * global_transform.basis
-		local_angular_velocity = angular_velocity * global_transform.basis
+		local_angular_velocity = angular_velocity_substep * global_transform.basis
 		angle_of_attack = global_basis.y.angle_to(-air_velocity) - (PI / 2.0)
 		sideslip_angle = global_basis.x.angle_to(air_velocity) - (PI / 2.0)
 
-		current_substep = substep
+		
 		#allow aeroinfluencers to update their own transforms before we calculate forces
 		if not Engine.is_editor_hint():
 			for influencer : AeroInfluencer3D in aero_influencers:
@@ -449,8 +445,6 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 					continue
 				influencer._update_transform_substep(substep_delta)
 		
-		linear_velocity_substep = calculate_linear_velocity_substep(last_force_and_torque[0]) + current_gravity * substep_delta
-		angular_velocity_substep = calculate_angular_velocity_substep(last_force_and_torque[1])
 		
 		var substep_force_and_torque_sum := PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 		for influencer : AeroInfluencer3D in aero_influencers:
@@ -468,6 +462,9 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 		
 		last_force_and_torque[0] = substep_force_and_torque_sum[0]
 		last_force_and_torque[1] = substep_force_and_torque_sum[1]
+
+		linear_velocity_substep = calculate_linear_velocity_substep(last_force_and_torque[0]) + current_gravity * substep_delta
+		angular_velocity_substep = calculate_angular_velocity_substep(last_force_and_torque[1])
 	
 	total_force_and_torque[0] = total_force_and_torque[0] / SUBSTEPS
 	total_force_and_torque[1] = total_force_and_torque[1] / SUBSTEPS
@@ -561,12 +558,12 @@ func get_angular_velocity() -> Vector3:
 	return angular_velocity_substep
 
 #this could be computed and cached once per iteration
-func get_linear_acceleration() -> Vector3:
-	return (linear_velocity_substep - last_linear_velocity) / substep_delta
+#func get_linear_acceleration() -> Vector3:
+#	return (linear_velocity_substep - last_linear_velocity) / substep_delta
 
 #this could be computed and cached once per iteration
-func get_angular_acceleration() -> Vector3:
-	return (angular_velocity_substep - last_angular_velocity) / substep_delta
+#func get_angular_acceleration() -> Vector3:
+#	return (angular_velocity_substep - last_angular_velocity) / substep_delta
 
 func get_control_command(axis_name : String = "") -> float:
 	var control_component : AeroControlComponent = AeroNodeUtils.get_first_child_of_type(self, AeroControlComponent)

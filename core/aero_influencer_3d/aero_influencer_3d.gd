@@ -99,12 +99,12 @@ var aero_influencers : Array[AeroInfluencer3D] = []
 
 @onready var default_transform := transform
 var world_air_velocity := Vector3.ZERO
-var linear_velocity := Vector3.ZERO:
-	get = get_linear_velocity
-var angular_velocity := Vector3.ZERO:
-	get = get_angular_velocity
-@onready var last_linear_velocity : Vector3 = linear_velocity
-@onready var last_angular_velocity : Vector3 = angular_velocity
+var linear_velocity_substep := Vector3.ZERO:
+	get = get_linear_velocity_substep
+var angular_velocity_substep := Vector3.ZERO:
+	get = get_angular_velocity_substep
+@onready var last_linear_velocity_substep : Vector3 = linear_velocity_substep
+@onready var last_angular_velocity_substep : Vector3 = angular_velocity_substep
 var air_density := 1.225
 var relative_position := Vector3.ZERO
 var altitude := 0.0
@@ -192,8 +192,8 @@ func _physics_process(delta : float) -> void:
 
 ##
 func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
-	linear_velocity = get_linear_velocity()
-	angular_velocity = get_angular_velocity()
+	linear_velocity_substep = get_linear_velocity_substep()
+	angular_velocity_substep = get_angular_velocity_substep()
 	
 	relative_position = get_relative_position()
 	air_density = aero_body.air_density
@@ -209,7 +209,7 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 			air_density = atmosphere.get_density_at_position(global_position)
 		
 		if atmosphere.override_wind:
-			world_air_velocity = -linear_velocity + atmosphere.wind
+			world_air_velocity = -linear_velocity_substep + atmosphere.wind
 		
 		#this is a kinda bad way to do it tbh. It's difficult to separate global
 		#effects from atmosphere-specific effects.
@@ -311,22 +311,14 @@ func get_relative_position() -> Vector3:
 
 #this could be computed and cached once per iteration
 func get_world_air_velocity() -> Vector3:
-	return -get_linear_velocity() + aero_body.wind
+	return -get_linear_velocity_substep() + aero_body.wind
 
 #this could be computed and cached once per iteration
-func get_linear_velocity() -> Vector3:
-	#wrong. using linear_velocity directly will cause substeps to not have the intended affect
-	#when the parent is an aerobody, the linear velocity prediction should be used.
-	if get_parent() is AeroBody3D:
-		return get_parent().linear_velocity_substep + get_parent().angular_velocity_substep.cross(get_parent().global_basis * position)
-	return get_parent().linear_velocity + get_parent().angular_velocity.cross(get_parent().global_basis * position)
+func get_linear_velocity_substep() -> Vector3:
+	return get_parent().linear_velocity_substep + get_parent().angular_velocity_substep.cross(get_parent().global_basis * position)
 
-func get_angular_velocity() -> Vector3:
-	#wrong. using linear_velocity directly will cause substeps to not have the intended affect
-	#when the parent is an aerobody, the linear velocity prediction should be used.
-	if get_parent() is AeroBody3D:
-		return get_parent().angular_velocity_substep
-	return get_parent().angular_velocity
+func get_angular_velocity_substep() -> Vector3:
+	return get_parent().angular_velocity_substep
 
 func get_centrifugal_offset() -> Vector3:
 	return position
@@ -336,7 +328,7 @@ func get_linear_acceleration() -> Vector3:
 	
 	var centrifugal_offset : Vector3 = get_parent().global_basis * get_centrifugal_offset()
 	
-	var axis : Vector3 = angular_velocity.normalized()
+	var axis : Vector3 = angular_velocity_substep.normalized()
 	var nearest_point_on_line : Vector3 = axis * centrifugal_offset.dot(axis.normalized())
 	var rotation_radius : float = nearest_point_on_line.distance_to(centrifugal_offset)
 	var acceleration_axis : Vector3 = nearest_point_on_line - centrifugal_offset

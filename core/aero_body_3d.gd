@@ -171,8 +171,8 @@ var linear_acceleration := Vector3.ZERO
 ## Radians per second squared
 var angular_acceleration := Vector3.ZERO
 
-var linear_velocity_prediction : Vector3 = linear_velocity
-var angular_velocity_prediction : Vector3 = angular_velocity
+var linear_velocity_substep : Vector3 = linear_velocity
+var angular_velocity_substep : Vector3 = angular_velocity
 
 ## Wind velocity in meters per second.
 var wind := Vector3.ZERO:
@@ -385,8 +385,8 @@ func integrator(state : PhysicsDirectBodyState3D) -> void:
 		center_of_mass = state.center_of_mass_local
 	
 	
-	linear_velocity_prediction = state.linear_velocity
-	angular_velocity_prediction = state.angular_velocity
+	linear_velocity_substep = state.linear_velocity
+	angular_velocity_substep = state.angular_velocity
 
 	var total_force_and_torque := calculate_forces(state.step)
 	
@@ -415,7 +415,7 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 		if atmosphere.per_influencer_positioning:
 			continue
 		
-		wind += atmosphere.wind
+		wind += atmosphere.get_wind_at_position(global_position)
 		if atmosphere.override_density:
 			desired_air_density = atmosphere.get_density_at_position(global_position)
 	
@@ -433,7 +433,7 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 		#air velocity and other values must be updated in substeps
 		#using the velocity predictions for this to be useful/effective
 
-		air_velocity = -linear_velocity + wind
+		air_velocity = -linear_velocity_substep + wind
 		air_speed = air_velocity.length()
 
 		local_air_velocity = air_velocity * global_transform.basis
@@ -449,8 +449,8 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 					continue
 				influencer._update_transform_substep(substep_delta)
 		
-		linear_velocity_prediction = predict_linear_velocity(last_force_and_torque[0]) + current_gravity * PREDICTION_TIMESTEP_FRACTION
-		angular_velocity_prediction = predict_angular_velocity(last_force_and_torque[1])
+		linear_velocity_substep = calculate_linear_velocity_substep(last_force_and_torque[0]) + current_gravity * substep_delta
+		angular_velocity_substep = calculate_angular_velocity_substep(last_force_and_torque[1])
 		
 		var substep_force_and_torque_sum := PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 		for influencer : AeroInfluencer3D in aero_influencers:
@@ -465,12 +465,10 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 		#add to total forces
 		total_force_and_torque[0] += substep_force_and_torque_sum[0]
 		total_force_and_torque[1] += substep_force_and_torque_sum[1]
-
+		
 		last_force_and_torque[0] = substep_force_and_torque_sum[0]
 		last_force_and_torque[1] = substep_force_and_torque_sum[1]
 	
-
-
 	total_force_and_torque[0] = total_force_and_torque[0] / SUBSTEPS
 	total_force_and_torque[1] = total_force_and_torque[1] / SUBSTEPS
 	
@@ -532,11 +530,11 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 	
 	return total_force_and_torque
 
-func predict_linear_velocity(force : Vector3) -> Vector3:
-	return linear_velocity_prediction + (force / mass * substep_delta)
+func calculate_linear_velocity_substep(force : Vector3) -> Vector3:
+	return linear_velocity_substep + (force / mass * substep_delta)
 
-func predict_angular_velocity(torque : Vector3) -> Vector3:
-	return angular_velocity_prediction + (get_inverse_inertia_tensor() * torque * substep_delta)
+func calculate_angular_velocity_substep(torque : Vector3) -> Vector3:
+	return angular_velocity_substep + (get_inverse_inertia_tensor() * torque * substep_delta)
 
 func get_amount_of_active_influencers() -> int:
 	var count : int = 0
@@ -556,19 +554,19 @@ func get_drag_direction() -> Vector3:
 
 #this could be computed and cached once per iteration
 func get_linear_velocity() -> Vector3:
-	return linear_velocity_prediction
+	return linear_velocity_substep
 
 #this could be computed and cached once per iteration
 func get_angular_velocity() -> Vector3:
-	return angular_velocity_prediction
+	return angular_velocity_substep
 
 #this could be computed and cached once per iteration
 func get_linear_acceleration() -> Vector3:
-	return (linear_velocity_prediction - last_linear_velocity) / substep_delta
+	return (linear_velocity_substep - last_linear_velocity) / substep_delta
 
 #this could be computed and cached once per iteration
 func get_angular_acceleration() -> Vector3:
-	return (angular_velocity_prediction - last_angular_velocity) / substep_delta
+	return (angular_velocity_substep - last_angular_velocity) / substep_delta
 
 func get_control_command(axis_name : String = "") -> float:
 	var control_component : AeroControlComponent = AeroNodeUtils.get_first_child_of_type(self, AeroControlComponent)

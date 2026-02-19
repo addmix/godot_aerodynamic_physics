@@ -318,14 +318,14 @@ func get_linear_velocity() -> Vector3:
 	#wrong. using linear_velocity directly will cause substeps to not have the intended affect
 	#when the parent is an aerobody, the linear velocity prediction should be used.
 	if get_parent() is AeroBody3D:
-		return get_parent().linear_velocity_prediction + get_parent().angular_velocity_prediction.cross(get_parent().global_basis * position)
+		return get_parent().linear_velocity_substep + get_parent().angular_velocity_substep.cross(get_parent().global_basis * position)
 	return get_parent().linear_velocity + get_parent().angular_velocity.cross(get_parent().global_basis * position)
 
 func get_angular_velocity() -> Vector3:
 	#wrong. using linear_velocity directly will cause substeps to not have the intended affect
 	#when the parent is an aerobody, the linear velocity prediction should be used.
 	if get_parent() is AeroBody3D:
-		return get_parent().angular_velocity_prediction
+		return get_parent().angular_velocity_substep
 	return get_parent().angular_velocity
 
 func get_centrifugal_offset() -> Vector3:

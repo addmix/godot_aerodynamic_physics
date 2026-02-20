@@ -294,14 +294,14 @@ func _init():
 	
 	#test that necessary functions (_ready(), _enter_tree(), _physics_process()
 	test_overrides.call_deferred()
-	
-	set_collision_layer_value(ProjectSettings.get_setting("physics/aerodynamics/atmosphere_area_collision_layer"), true) 
 
 func _enter_tree() -> void:
 	test_enter_tree_override = true
 	
 	AeroNodeUtils.connect_signal_safe(self, "child_entered_tree", on_child_enter_tree, 0, true)
 	AeroNodeUtils.connect_signal_safe(self, "child_exiting_tree", on_child_exit_tree, 0, true)
+	
+	set_collision_layer_value(ProjectSettings.get_setting("physics/aerodynamics/atmosphere_area_collision_layer", 15), true) 
 	
 	if Engine.is_editor_hint():
 		update_configuration_warnings()
@@ -426,7 +426,7 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 	var total_force_and_torque := PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 	
 	substep_delta = delta * PREDICTION_TIMESTEP_FRACTION
-	for substep : int in SUBSTEPS:
+	for substep : int in range(SUBSTEPS):
 		current_substep = substep
 		
 		air_velocity = -linear_velocity_substep + wind
@@ -436,15 +436,8 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 		local_angular_velocity = angular_velocity_substep * global_transform.basis
 		angle_of_attack = global_basis.y.angle_to(-air_velocity) - (PI / 2.0)
 		sideslip_angle = global_basis.x.angle_to(air_velocity) - (PI / 2.0)
-
 		
-		#allow aeroinfluencers to update their own transforms before we calculate forces
-		if not Engine.is_editor_hint():
-			for influencer : AeroInfluencer3D in aero_influencers:
-				if influencer.disabled:
-					continue
-				influencer._update_transform_substep(substep_delta)
-		
+		_update_transform_substep(substep_delta)
 		
 		var substep_force_and_torque_sum := PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 		for influencer : AeroInfluencer3D in aero_influencers:
@@ -527,6 +520,14 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 	
 	return total_force_and_torque
 
+func _update_transform_substep(substep_delta : float) -> void:
+	#allow aeroinfluencers to update their own transforms before we calculate forces
+	if not Engine.is_editor_hint():
+		for influencer : AeroInfluencer3D in aero_influencers:
+			if influencer.disabled:
+				continue
+			influencer._update_transform_substep(substep_delta)
+
 func calculate_linear_velocity_substep(force : Vector3) -> Vector3:
 	return linear_velocity_substep + (force / mass * substep_delta)
 
@@ -550,11 +551,11 @@ func get_drag_direction() -> Vector3:
 	return air_velocity.normalized()
 
 #this could be computed and cached once per iteration
-func get_linear_velocity() -> Vector3:
+func get_linear_velocity_substep() -> Vector3:
 	return linear_velocity_substep
 
 #this could be computed and cached once per iteration
-func get_angular_velocity() -> Vector3:
+func get_angular_velocity_substep() -> Vector3:
 	return angular_velocity_substep
 
 #this could be computed and cached once per iteration

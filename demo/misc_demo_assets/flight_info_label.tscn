@@ -1,4 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://bddf1hhmmre47"]
+[gd_scene format=3 uid="uid://bddf1hhmmre47"]
+
+[ext_resource type="Script" uid="uid://bqlqnu6j5qden" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/wind_indicator.gd" id="1_jijtv"]
 
 [sub_resource type="SystemFont" id="SystemFont_cck4l"]
 font_names = PackedStringArray("Monospace")
@@ -17,23 +19,44 @@ ALT:%-1sm
 M:   %-.2f
 a:   %-.1f
 G:   %-.1f
+Wind:%-.1fm/s
 \" % [
 		aero_body.air_speed, #(-aero_body.linear_velocity + wind_velocity).length()
 		String.num(aero_body.altitude, 0) if sign(aero_body.altitude) == -1 else \" \" + String.num(aero_body.altitude, 0), #global_position.y
 		aero_body.mach, 
 		rad_to_deg(aero_body.angle_of_attack),
-		((aero_body.linear_acceleration - aero_body.current_gravity) * aero_body.global_basis).y / 9.81
+		((aero_body.linear_acceleration - aero_body.current_gravity) * aero_body.global_basis).y / 9.81,
+		aero_body.wind.length()
 	]
 	#this is using format strings: https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_format_string.html
 "
 
-[node name="FlightInfoLabel" type="Label3D"]
+[node name="FlightInfoLabel" type="Label3D" unique_id=999423531]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.93949, 1.313, -2.986)
 modulate = Color(0, 1, 0, 1)
 text = "IAS: %-.1fm/s
 ALT: %-dm
 M:   %-.2f
-a:   %-.1f"
+a:   %-.1f
+Wind:%-1fm/s"
 font = SubResource("SystemFont_cck4l")
 horizontal_alignment = 0
 script = SubResource("GDScript_c2l24")
+
+[node name="WindIndicator" type="Node3D" parent="." unique_id=2137237120]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6185883067513422, -0.9294518918164746, -0.17217059181790972)
+script = ExtResource("1_jijtv")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="WindIndicator" unique_id=1828809402]
+cast_shadow = 0
+size = Vector3(0.1, 0.1, 0.5)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="WindIndicator" unique_id=1298657562]
+transform = Transform3D(0.7071067811865476, 0, 0.7071067811865476, 0, 1, 0, -0.7071067811865476, 0, 0.7071067811865476, 0.08586924579133548, 0, -0.14364991138586536)
+cast_shadow = 0
+size = Vector3(0.1, 0.1, 0.2)
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="WindIndicator" unique_id=510407260]
+transform = Transform3D(0.7071067811865476, 0, -0.7071067811865476, 0, 1, 0, 0.7071067811865476, 0, 0.7071067811865476, -0.08583661546605725, 0, -0.1436761410690912)
+cast_shadow = 0
+size = Vector3(0.1, 0.1, 0.2)

@@ -315,10 +315,10 @@ func get_world_air_velocity() -> Vector3:
 
 #this could be computed and cached once per iteration
 func get_linear_velocity_substep() -> Vector3:
-	return get_parent().linear_velocity_substep + get_parent().angular_velocity_substep.cross(get_parent().global_basis * position)
+	return get_parent().get_linear_velocity_substep() + get_parent().get_angular_velocity_substep().cross(get_parent().global_basis * position)
 
 func get_angular_velocity_substep() -> Vector3:
-	return get_parent().angular_velocity_substep
+	return get_parent().get_angular_velocity_substep()
 
 func get_centrifugal_offset() -> Vector3:
 	return position

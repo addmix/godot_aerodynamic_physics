@@ -48,13 +48,13 @@ func _update_transform_substep(substep_delta : float) -> void:
 	
 
 
-func get_linear_velocity() -> Vector3:
-	var velocity : Vector3 = super.get_linear_velocity() + (_linear_velocity * global_basis.inverse())
+func get_linear_velocity_substep() -> Vector3:
+	var velocity : Vector3 = super.get_linear_velocity_substep() + (_linear_velocity * global_basis.inverse())
 	
 	if disable_lift_dissymmetry:
 		velocity = global_basis.y.normalized() * velocity.dot(global_basis.y)
 	
 	return velocity
 
-func get_angular_velocity() -> Vector3:
-	return super.get_angular_velocity() + (_angular_velocity * global_basis.inverse())
+func get_angular_velocity_substep() -> Vector3:
+	return super.get_angular_velocity_substep() + (_angular_velocity * global_basis.inverse())

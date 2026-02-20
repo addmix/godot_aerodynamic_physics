@@ -30,6 +30,7 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	var lift_vector : Vector3 = lift_direction * lift_force
 	var drag_vector : Vector3 = drag_direction * drag_force
 	
+	
 	#sum of all linear forces
 	_current_force += lift_vector + drag_vector
 	#resultant torque from linear forces

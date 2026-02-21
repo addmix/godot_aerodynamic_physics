@@ -610,7 +610,7 @@ func _update_debug() -> void:
 		var original_angular_velocity := angular_velocity
 		linear_velocity = debug_linear_velocity
 		angular_velocity = debug_angular_velocity
-		substep_delta = 1.0 / float(ProjectSettings.get_setting("physics/common/physics_ticks_per_second")) / SUBSTEPS
+		substep_delta = 1.0 / float(ProjectSettings.get_setting("physics/common/physics_ticks_per_second", 60.0)) / SUBSTEPS
 		var last_force_and_torque := calculate_forces(substep_delta)
 		
 		linear_velocity = original_linear_velocity

@@ -81,4 +81,4 @@ static func ifndef(setting : String, default_value : Variant) -> Variant:
 		if not default_value == null:
 			ProjectSettings.set_initial_value(setting, default_value)
 	
-	return ProjectSettings.get_setting(setting)
+	return ProjectSettings.get_setting(setting, default_value)

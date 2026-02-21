@@ -409,6 +409,11 @@ func calculate_forces(delta : float) -> PackedVector3Array:
 		air_density = _AeroUnits.get_density_at_altitude(altitude)
 		air_pressure = _AeroUnits.get_pressure_at_altitude(altitude)
 	
+	#this is necessary to keep debug calculations correct
+	if Engine.is_editor_hint():
+		linear_velocity_substep = linear_velocity
+		angular_velocity_substep = angular_velocity
+	
 	wind = Vector3.ZERO
 	for atmosphere : AeroAtmosphere3D in atmosphere_areas:
 		if atmosphere.per_influencer_positioning:

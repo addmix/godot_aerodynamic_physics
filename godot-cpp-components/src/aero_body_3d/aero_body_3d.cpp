@@ -137,7 +137,6 @@ AeroBody3D::AeroBody3D() {
 	set_linear_damp_mode(DAMP_MODE_REPLACE);
 	set_angular_damp_mode(DAMP_MODE_REPLACE);
 	set_center_of_mass_mode(CENTER_OF_MASS_MODE_CUSTOM);
-	set_collision_layer_value(ProjectSettings::get_singleton()->get_setting("physics/aerodynamics/atmosphere_area_collision_layer", 15), true);
 
 	linear_velocity_substep = get_linear_velocity();
 	angular_velocity_substep = get_angular_velocity();
@@ -187,6 +186,7 @@ void AeroBody3D::on_child_exiting_tree(Node *p_node) {
 void AeroBody3D::_ready() {
 	set_substeps(get_substeps());
 	set_show_debug(show_debug);
+	set_collision_layer_value(ProjectSettings::get_singleton()->get_setting("physics/aerodynamics/atmosphere_area_collision_layer", 15), true);
 
 	if (Engine::get_singleton()->is_editor_hint()) {
 		update_configuration_warnings();
@@ -259,6 +259,12 @@ void AeroBody3D::integrate_forces(PhysicsDirectBodyState3D *body_state) {
 }
 
 ForceAndTorque AeroBody3D::calculate_forces(double delta) {
+	//this is necessary to prevent velocity accumulation with debug in the editor
+	if (Engine::get_singleton()->is_editor_hint()) {
+		linear_velocity_substep = get_linear_velocity();
+		angular_velocity_substep = get_angular_velocity();
+	}
+
 	altitude = AeroUnits::get_singleton()->get_altitude(this);
 	mach = AeroUnits::get_singleton()->speed_to_mach_at_altitude(air_speed, altitude);
 	air_density = AeroUnits::get_singleton()->get_density_at_altitude(altitude);

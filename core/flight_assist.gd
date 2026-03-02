@@ -139,9 +139,8 @@ var angular_rate_error := Vector3.ZERO
 @export_category("")
 
 func update(delta : float) -> void:
-	control_command = control_input
-	
 	if not enable_flight_assist:
+		control_command = control_input
 		return
 	
 	bank_angle_hold(delta)
@@ -277,8 +276,9 @@ func flight_assist(delta : float) -> void:
 	
 	angular_rate_error = angular_rates * control_input - local_angular_velocity
 	
-	#flight assist
-	#these should be adjusted when the reference frame changes.
+	#this is added to update/apply input changes from previous steps, such as target_direction
+	#without this line, controls can break when flight assist axes are disabled.
+	control_command = control_input 
 	if enable_flight_assist_x:
 		control_command.x = pitch_assist_pid.update(delta, angular_rate_error.x)
 	if enable_flight_assist_y:

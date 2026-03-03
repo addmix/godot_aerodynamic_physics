@@ -23,7 +23,10 @@ const AeroMathUtils = preload("../../utils/math_utils.gd")
 const AeroNodeUtils = preload("../../utils/node_utils.gd")
 
 ## If true, this AeroInfluencer3D will not have any effect on the simulation.
-@export var disabled : bool = false
+@export var disabled : bool = false:
+	set(x):
+		disabled = x
+		update_gizmos()
 ## Allows the current AeroInfluencer to prevent/interrupt the AeroBody's sleep. This is useful for thrust-providing
 ## nodes like AeroMovers or Propellers. Sleep is only interrupted if the AeroInfluencer sub-class triggers it.
 @export var can_override_body_sleep : bool = true

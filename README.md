@@ -14,6 +14,8 @@
 > [Getting Started](docs/getting_started/getting_started.md)
 
 ## Development Direction
+> The [C++ port](https://github.com/addmix/godot_aerodynamic_physics/tree/new-cpp) is currently functional, but further testing and automation is necessary before it's ready for a full release: [C++ port branch](https://github.com/addmix/godot_aerodynamic_physics/tree/new-cpp)
+
 1. Usability, stability, and performance.
 2. More AeroInfluencer3D derived nodes (Dynamic rotor systems, primitive shapes).
 3. Aerofoil profiles for AeroSurfaces.

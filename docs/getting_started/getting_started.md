@@ -6,16 +6,16 @@ If you haven't already, [Install the plugin](/README.md/#installation)
 The minimum requirement for an AeroBody3D is:
 - A child `CollisionShape3D` with a valid Shape
 
-Aerodynamic effects will only be calculated if there is one or more child `AeroInfluencer3D`-type nodes (i.e. `ManualAeroSurface3D`)
+Aerodynamic effects will only be calculated if there is one or more child `AeroInfluencer3D`-type node (i.e. `ManualAeroSurface3D`)
 - Basic [drag-ball example](https://github.com/addmix/godot_aerodynamic_physics/tree/main/demo/aircraft_examples/drag_ball)
 
 ## Glider example
 
-### A basic glider can be constructed with 4 AeroSurface nodes.
+A simple glider can be constructed with 4 AeroSurface nodes:
 - Right Wing
 - Left Wing
 - Elevator (horizontal tail)
-- Rudder (veritcal tail)
+- Rudder (vertical tail)
 
 > Make sure that the mass of the AeroBody is reasonable. If the mass of the AeroBody is too low, it can cause the simulation to lose stability, resulting in extreme oscillations, or simulation explosions.
 
@@ -23,7 +23,7 @@ Aerodynamic effects will only be calculated if there is one or more child `AeroI
 
 ### CSGBox3D nodes can be used to create a simple plane model that is visible in game.
 
-(insert picture here)
+![Simple glider made using CSGBox nodes](getting_started_assets/simple_glider.png)
 
 ### Balancing the glider
 
@@ -31,13 +31,13 @@ Aerodynamic effects will only be calculated if there is one or more child `AeroI
 
 - Adjust the AeroSurfaces until the center of lift is slightly above, and slightly behind the center of mass
 
-(insert picture/gif here)
+![Side view of glider showing balance of center of lift and center of mass](getting_started_assets/balance.png)
 
 > The rule of thumb is that the center of lift should be slightly behind, and slightly above the center of mass. [Why?](../advanced_concepts/aerodynamic_design.md/#static-stability)
 
 To improve the uncontrolled behavior of the glider, a slight rotation of the wings to "tilt up" (also called a [dihedral angle](../advanced_concepts/aerodynamic_design.md/#dihedral-angles))
 
-(insert picture/gif here)
+![Front view of glider showing dihedral angle](getting_started_assets/dihedral.png)
 
 ### Controlling the glider
 
@@ -75,7 +75,7 @@ Controls like roll are considered "differential controls", meaning that two oppo
 - In the example of roll, it can be configured like this:
 
 ![Roll axis config](getting_started_assets/roll_axis_config.png)
-> This works by defining that the X contribution should have it's direction flipped depending on it's relative X position to the center of mass of the AeroBody. If you had control surfaces for roll on the top and bottom of an aircraft, you would need to swap this X for a Y.
+> This works by defining that the X contribution should have its direction flipped depending on it's relative X position to the center of mass of the AeroBody. If you had control surfaces for roll on the top and bottom of an aircraft, you would need to swap this X for a Y.
 
 ### Powered flight
 
@@ -89,7 +89,7 @@ The plugin also includes an `AeroThruster3D` node, which acts as a simple force 
 
 ## Configuring Flight Assist
 
-Make sure your aircraft flies acceptably *before* trying to configure flight assist. Flight assist isn't magic, and most-likely won't be able to solve the instability present in your aircraft.
+> Make sure your aircraft flies acceptably *before* trying to configure flight assist. Flight assist isn't magic, and most likely won't be able to solve the instability present in your aircraft.
 
 - In the `AeroControlComponent`, click on the empty `flight_assist` property, and create a new flight assist.
 
@@ -114,8 +114,8 @@ The default values should provide guidance on how these PIDs should be generally
 ### General tuning guidance:
 - Slow oscillations: 
     - Ensure `clamp_integral` is enabled, and the limits are within reason (usually around -0.1 to 0.1)
-    - increase P
-    - decrease I
+    - Increase P
+    - Decrease I
 - Fast/violent oscillations:
     - Reduce D (typically, D should not be used on angular PIDs for aircraft)
     - Reduce P

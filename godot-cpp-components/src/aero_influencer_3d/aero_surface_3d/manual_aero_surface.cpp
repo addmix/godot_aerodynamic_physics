@@ -25,8 +25,9 @@ ForceAndTorque ManualAeroSurface3D::calculate_forces(double substep_delta) {
     }
 
     lift_force = get_aero_reference() * manual_config->get_lift_coefficient(get_angle_of_attack());
-    double drag_coefficient = manual_config->get_drag_coefficient(get_angle_of_attack()) * manual_config->get_drag_at_sweep_angle(get_sweep_angle()) * manual_config->get_drag_multiplier_at_mach(get_mach());
-    double form_drag = get_aero_reference() * drag_coefficient;
+    drag_force = get_aero_reference() * manual_config->get_drag_coefficient(get_angle_of_attack()) * manual_config->get_drag_at_sweep_angle(get_sweep_angle()) * manual_config->get_drag_multiplier_at_mach(get_mach());
+    
+    /*double form_drag =  drag_coefficient;
     double induced_drag = 0.0;
     if (not get_wing_config()->get_span() == 0.0 and not get_dynamic_pressure() == 0.0) {
         induced_drag = (lift_force * lift_force) / (get_dynamic_pressure() * Math_PI * get_wing_config()->get_span() * get_wing_config()->get_span());
@@ -37,8 +38,9 @@ ForceAndTorque ManualAeroSurface3D::calculate_forces(double substep_delta) {
     }
 
     drag_force = form_drag + induced_drag;
+    */
 
-    Vector3 lift_vector = lift_direction * lift_force;
+    Vector3 lift_vector = get_lift_direction() * lift_force;
     Vector3 drag_vector = get_drag_direction() * drag_force;
 
     force = lift_vector + drag_vector;

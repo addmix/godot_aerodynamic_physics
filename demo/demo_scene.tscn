@@ -10,30 +10,45 @@ script/source = "extends Node3D
 # I just don't want to add these demo-controls to the project settings
 
 func _ready():
-	add_input(\"pitch_up\", KEY_S)
-	add_input(\"pitch_down\", KEY_W)
-	add_input(\"yaw_left\", KEY_Q)
-	add_input(\"yaw_right\", KEY_E)
-	add_input(\"roll_left\", KEY_A)
-	add_input(\"roll_right\", KEY_D)
-	add_input(\"throttle_up\", KEY_SHIFT)
-	add_input(\"throttle_down\", KEY_CTRL)
-	add_input(\"brake_up\", KEY_B)
-	add_input(\"brake_down\", -1)
-	add_input(\"tilt_up\", KEY_C)
-	add_input(\"tilt_down\", KEY_V)
-	add_input(\"collective_up\", KEY_T)
-	add_input(\"collective_down\", KEY_G)
+	#TODO: Add controller button mapping
+	add_key_input(\"pitch_up\", KEY_S)
+	add_key_input(\"pitch_down\", KEY_W)
+	add_controller_axis(\"pitch_up\", JOY_AXIS_LEFT_Y)
+	add_controller_axis(\"pitch_down\", JOY_AXIS_LEFT_Y, false)
+	add_key_input(\"yaw_left\", KEY_Q)
+	add_key_input(\"yaw_right\", KEY_E)
+	add_key_input(\"roll_right\", KEY_D)
+	add_key_input(\"roll_left\", KEY_A)
+	add_controller_axis(\"roll_right\", JOY_AXIS_LEFT_X)
+	add_controller_axis(\"roll_left\", JOY_AXIS_LEFT_X, false)
+	add_key_input(\"throttle_up\", KEY_SHIFT)
+	add_key_input(\"throttle_down\", KEY_CTRL)
+	add_key_input(\"brake_up\", KEY_B)
+	add_key_input(\"brake_down\", -1)
+	add_key_input(\"tilt_up\", KEY_C)
+	add_key_input(\"tilt_down\", KEY_V)
+	add_key_input(\"collective_up\", KEY_T)
+	add_key_input(\"collective_down\", KEY_G)
 
-func add_input(_name : String, keycode : int) -> void:
-	if InputMap.has_action(_name):
-		return
-	
-	InputMap.add_action(_name)
+func ifndef(action_name : String) -> void:
+	if not InputMap.has_action(action_name):
+		InputMap.add_action(action_name)
+
+func add_key_input(_name : String, keycode : Key) -> void:
+	ifndef(_name)
 	
 	if keycode != -1:
-		var input = InputEventKey.new()
+		var input := InputEventKey.new()
 		input.keycode = keycode
+		InputMap.action_add_event(_name, input)
+
+func add_controller_axis(_name : String, axis : JoyAxis, positive : bool = true) -> void:
+	ifndef(_name)
+	
+	if axis != JOY_AXIS_INVALID:
+		var input := InputEventJoypadMotion.new()
+		input.axis = axis
+		input.axis_value = 1.0 if positive else -1.0
 		InputMap.action_add_event(_name, input)
 "
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=73 format=3 uid="uid://c3tvafxj4eep6"]
+[gd_scene format=3 uid="uid://c3tvafxj4eep6"]
 
 [ext_resource type="PackedScene" uid="uid://dyt7qkpocpbs1" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/berkut/berkut.glb" id="1_anlvu"]
 [ext_resource type="Script" uid="uid://cc5dwx5pqkaur" path="res://addons/godot_aerodynamic_physics/core/controls/aero_control_component.gd" id="2_ru4cv"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" uid="uid://d1725od371u4a" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd" id="5_vfc5r"]
 [ext_resource type="Script" uid="uid://ctbwb7xlhft6t" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_config.gd" id="6_k5k50"]
 [ext_resource type="Script" uid="uid://c3n4g48jfeemj" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_influencer_3d.gd" id="8_2kj11"]
+[ext_resource type="Script" uid="uid://cii4ohipynhcc" path="res://addons/godot_aerodynamic_physics/core/easy_lift_curve.gd" id="8_maaxn"]
 [ext_resource type="Script" uid="uid://c46td0go5kvp6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_axis_config.gd" id="8_xamb0"]
 [ext_resource type="Script" uid="uid://crkbhmxpjff4o" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="9_iktab"]
 [ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_config.gd" id="9_vfc5r"]
@@ -177,11 +178,12 @@ bake_resolution = 23
 _data = [Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 2), 0.0, 0.0, 0, 0, Vector2(2, 1.2), 0.181, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="Curve" id="Curve_lbuia"]
-_limits = [-1.0, 1.0, -180.0, 180.0]
-bake_resolution = 36
-_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-148, 1), 0.0, 0.0, 0, 0, Vector2(-145, 0.7), 0.0, 0.0, 0, 0, Vector2(-35, -0.7), 0.0, 0.0, 0, 0, Vector2(-32, -1), 0.0, 0.0, 0, 0, Vector2(32, 1), 0.0, 0.0, 0, 0, Vector2(35, 0.7), 0.0, 0.0, 0, 0, Vector2(137.426, -0.7), 0.0, 0.0, 0, 0, Vector2(148, -1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+[sub_resource type="Curve" id="Curve_xm78o"]
+_limits = [-1.2, 1.2, -180.0, 180.0]
+_data = [Vector2(-180, 0), 0.0, 0.07999999999999999, 1, 1, Vector2(-169.5, 0.84), 0.07999999999999999, 0.0, 1, 0, Vector2(-135, 0.42), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-15, -1.2), 0.0, 0.08, 0, 1, Vector2(15, 1.2), 0.08, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.42), 0.0, 0.0, 0, 0, Vector2(169.5, -0.84), 0.0, 0.07999999999999999, 0, 1, Vector2(180, 0), 0.07999999999999999, 0.0, 1, 1]
 point_count = 10
+script = ExtResource("8_maaxn")
+metadata/_custom_type_script = "uid://cii4ohipynhcc"
 
 [sub_resource type="Curve" id="Curve_flhrg"]
 _limits = [0.0, 1.0, 0.0, 90.0]
@@ -191,7 +193,7 @@ point_count = 3
 
 [sub_resource type="Resource" id="Resource_3aslk"]
 script = ExtResource("6_k5k50")
-lift_aoa_curve = SubResource("Curve_lbuia")
+lift_aoa_curve = SubResource("Curve_xm78o")
 min_drag_coefficient = 0.005
 max_drag_coefficient = 0.4
 drag_aoa_curve = SubResource("Curve_xk6t7")
@@ -326,11 +328,16 @@ bake_resolution = 23
 _data = [Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 2), 0.0, 0.0, 0, 0, Vector2(2, 1.2), 0.181, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="Curve" id="Curve_4ifhy"]
-_limits = [-1.0, 1.0, -180.0, 180.0]
-bake_resolution = 36
-_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-148, 1), 0.0, 0.0, 0, 0, Vector2(-145, 0.7), 0.0, 0.0, 0, 0, Vector2(-35, -0.7), 0.0, 0.0, 0, 0, Vector2(-32, -1), 0.0, 0.0, 0, 0, Vector2(32, 1), 0.0, 0.0, 0, 0, Vector2(35, 0.7), 0.0, 0.0, 0, 0, Vector2(137.426, -0.7), 0.0, 0.0, 0, 0, Vector2(148, -1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+[sub_resource type="Curve" id="Curve_maaxn"]
+_limits = [-0.6, 0.6, -180.0, 180.0]
+_data = [Vector2(-180, 0), 0.0, 0.02, 1, 1, Vector2(-160, 0.4), 0.02, 0.0, 1, 0, Vector2(-135, 0.54), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-22.5, -0.45), 0.0, 0.02, 0, 1, Vector2(27.5, 0.55), 0.02, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.54), 0.0, 0.0, 0, 0, Vector2(155, -0.5), 0.0, 0.02, 0, 1, Vector2(180, 0), 0.02, 0.0, 1, 1]
 point_count = 10
+script = ExtResource("8_maaxn")
+lift_coefficient = 0.5
+lift_slope = 25.0
+camber = 0.1
+reverse_lift_penalty = 0.1
+metadata/_custom_type_script = "uid://cii4ohipynhcc"
 
 [sub_resource type="Curve" id="Curve_eh7vn"]
 _limits = [0.0, 1.0, 0.0, 90.0]
@@ -340,9 +347,7 @@ point_count = 3
 
 [sub_resource type="Resource" id="Resource_akoyd"]
 script = ExtResource("6_k5k50")
-min_lift_coefficient = -1.0
-max_lift_coefficient = 1.0
-lift_aoa_curve = SubResource("Curve_4ifhy")
+lift_aoa_curve = SubResource("Curve_maaxn")
 min_drag_coefficient = 0.01
 max_drag_coefficient = 0.5
 drag_aoa_curve = SubResource("Curve_pncr3")
@@ -378,58 +383,57 @@ axis_configs = Array[ExtResource("8_xamb0")]([SubResource("Resource_xligm")])
 use_separate_minmax = true
 min_value = Vector3(0, 0, -1)
 
-[node name="berkut" instance=ExtResource("1_anlvu")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9324358432048339, 0)
-collision_layer = 16385
+[node name="berkut" unique_id=680196793 instance=ExtResource("1_anlvu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.932435843204834, 0)
 mass = 25670.0
 physics_material_override = SubResource("PhysicsMaterial_k5k50")
 center_of_mass = Vector3(0, 0, 3.16)
 can_sleep = false
 show_debug = true
 
-[node name="AeroControlComponent" type="Node" parent="." index="0"]
+[node name="AeroControlComponent" type="Node" parent="." index="0" unique_id=1165399730]
 script = ExtResource("2_ru4cv")
 flight_assist = SubResource("Resource_iktab")
 control_config = SubResource("Resource_maaxn")
 metadata/_custom_type_script = "uid://cc5dwx5pqkaur"
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="2"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="2" unique_id=100287743]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.99608)
 shape = SubResource("BoxShape3D_bibfa")
 
-[node name="CollisionShape3D6" type="CollisionShape3D" parent="." index="3"]
+[node name="CollisionShape3D6" type="CollisionShape3D" parent="." index="3" unique_id=587730759]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125964, 8.25895)
 shape = SubResource("BoxShape3D_anlvu")
 
-[node name="CollisionShape3D8" type="CollisionShape3D" parent="." index="4"]
+[node name="CollisionShape3D8" type="CollisionShape3D" parent="." index="4" unique_id=1381717698]
 transform = Transform3D(0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, 1.36013, 0.125964, -2.27298)
 shape = SubResource("BoxShape3D_2j7hr")
 
-[node name="CollisionShape3D9" type="CollisionShape3D" parent="." index="5"]
+[node name="CollisionShape3D9" type="CollisionShape3D" parent="." index="5" unique_id=1439177608]
 transform = Transform3D(0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, -1.3601, 0.126, -2.273)
 shape = SubResource("BoxShape3D_2j7hr")
 
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="." index="6"]
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="." index="6" unique_id=1038771644]
 transform = Transform3D(1, 0, 0, 0, 0.141038, -0.990004, 0, 0.990004, 0.141038, 0, -0.476299, -7.47342)
 shape = SubResource("CapsuleShape3D_2j7hr")
 
-[node name="CollisionShape3D3" type="CollisionShape3D" parent="." index="7"]
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="." index="7" unique_id=2144598312]
 transform = Transform3D(1, 0, 0, 0, 0.0882702, -0.996097, 0, 0.996097, 0.0882702, 0, 0.284222, -5.5408)
 shape = SubResource("CapsuleShape3D_g4m0n")
 
-[node name="CollisionShape3D4" type="CollisionShape3D" parent="." index="8"]
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="." index="8" unique_id=183634516]
 transform = Transform3D(0.930164, 0, 0.367144, 0, 1, 0, -0.367144, 0, 0.930164, 4.52139, 0.125964, 3.81087)
 shape = SubResource("BoxShape3D_g4m0n")
 
-[node name="CollisionShape3D5" type="CollisionShape3D" parent="." index="9"]
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="." index="9" unique_id=270434974]
 transform = Transform3D(0.930418, 0, -0.366501, 0, 1, 0, 0.366501, 0, 0.930418, -4.5214, 0.125964, 3.8109)
 shape = SubResource("BoxShape3D_g4m0n")
 
-[node name="CollisionShape3D7" type="CollisionShape3D" parent="." index="10"]
+[node name="CollisionShape3D7" type="CollisionShape3D" parent="." index="10" unique_id=1064366434]
 transform = Transform3D(0.991865, 0.0932938, -0.0866066, -0.127297, 0.726923, -0.674818, 0, 0.680353, 0.732885, 2.82462, 1.18151, 7.60644)
 shape = SubResource("BoxShape3D_evj55")
 
-[node name="WingR" type="Node3D" parent="." index="11"]
+[node name="WingR" type="Node3D" parent="." index="11" unique_id=271328262]
 transform = Transform3D(0.939693, 0, 0.34202, 0, 1, 0, -0.34202, 0, 0.939693, 4.52924, 0, 2.6191085208624307)
 script = ExtResource("5_vfc5r")
 manual_config = SubResource("Resource_3aslk")
@@ -437,7 +441,7 @@ wing_config = SubResource("Resource_xm78o")
 mirror_axis = 1
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="AileronR" type="Node3D" parent="WingR" index="0"]
+[node name="AileronR" type="Node3D" parent="WingR" index="0" unique_id=841610577]
 transform = Transform3D(0.950158, 0, 0.31176899999999996, 0, 1, 0, -0.31176899999999996, 0, 0.950158, 1.3137939366365208, 0, 1.176973331823338)
 script = ExtResource("5_vfc5r")
 manual_config = SubResource("Resource_3aslk")
@@ -445,29 +449,29 @@ wing_config = SubResource("Resource_kx8cy")
 actuation_config = SubResource("Resource_v3sf0")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="WingR/AileronR" index="0"]
+[node name="CSGBox3D" type="CSGBox3D" parent="WingR/AileronR" index="0" unique_id=271991126]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.22045e-15, 0, 0.54)
 size = Vector3(1.78967, 0.0777806, 1.45473)
 
-[node name="CanardRRotate" type="Node3D" parent="." index="12"]
+[node name="CanardRRotate" type="Node3D" parent="." index="12" unique_id=299556968]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.06333, 0, -0.961261)
 script = ExtResource("8_2kj11")
 mirror_axis = 1
 actuation_config = SubResource("Resource_tso66")
 metadata/_custom_type_script = "uid://c3n4g48jfeemj"
 
-[node name="CanardR" type="Node3D" parent="CanardRRotate" index="0"]
+[node name="CanardR" type="Node3D" parent="CanardRRotate" index="0" unique_id=451870981]
 transform = Transform3D(0.503572, 0, -0.863953, 0, 1, 0, 0.863953, 0, 0.503572, 0.9854160574002476, 0, 0.275143)
 script = ExtResource("5_vfc5r")
 manual_config = SubResource("Resource_3aslk")
 wing_config = SubResource("Resource_435wi")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="CanardRRotate/CanardR" index="0"]
+[node name="CSGBox3D" type="CSGBox3D" parent="CanardRRotate/CanardR" index="0" unique_id=1076272833]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.523739, 0, 0.224015)
 size = Vector3(1.78967, 0.0777806, 1.45473)
 
-[node name="VerticalStabR" type="Node3D" parent="." index="13"]
+[node name="VerticalStabR" type="Node3D" parent="." index="13" unique_id=1979914479]
 transform = Transform3D(0.10002800000000008, -0.9905090793343412, -0.09426234989931362, 0.720866, 0.13744442826808292, -0.6793095851898523, 0.6858180000000001, -5.43934752814077e-07, 0.7277733418679541, 2.8631, 1.4713, 7.6651)
 script = ExtResource("5_vfc5r")
 manual_config = SubResource("Resource_3aslk")
@@ -475,7 +479,7 @@ wing_config = SubResource("Resource_f8ilg")
 mirror_axis = 1
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="RudderR" type="Node3D" parent="VerticalStabR" index="0"]
+[node name="RudderR" type="Node3D" parent="VerticalStabR" index="0" unique_id=1012033802]
 transform = Transform3D(0.7431449999999999, 0, 0.669131, 0, 1, 0, -0.669131, 0, 0.7431449999999999, 0.9699, 0, 0.5558)
 script = ExtResource("5_vfc5r")
 manual_config = SubResource("Resource_3aslk")
@@ -483,11 +487,11 @@ wing_config = SubResource("Resource_n8r76")
 actuation_config = SubResource("Resource_qcywl")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="VerticalStabR/RudderR" index="0"]
+[node name="CSGBox3D" type="CSGBox3D" parent="VerticalStabR/RudderR" index="0" unique_id=482646407]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.22045e-15, 0, 0.54)
 size = Vector3(1.78967, 0.0777806, 1.45473)
 
-[node name="HorizontalStabR" type="Node3D" parent="." index="14"]
+[node name="HorizontalStabR" type="Node3D" parent="." index="14" unique_id=375728107]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.81934, 0, 8.98568)
 script = ExtResource("5_vfc5r")
 manual_config = SubResource("Resource_3aslk")
@@ -496,29 +500,29 @@ mirror_axis = 1
 actuation_config = SubResource("Resource_lbuia")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="HorizontalStabR" index="0"]
+[node name="CSGBox3D" type="CSGBox3D" parent="HorizontalStabR" index="0" unique_id=1953905561]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.819101)
 size = Vector3(1, 0.0954192, 2.6382)
 
-[node name="Body" type="Node3D" parent="." index="15"]
+[node name="Body" type="Node3D" parent="." index="15" unique_id=731583841]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.608592281542396)
 script = ExtResource("5_vfc5r")
 manual_config = SubResource("Resource_akoyd")
 wing_config = SubResource("Resource_tbqwi")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="Body2" type="Node3D" parent="." index="16"]
+[node name="Body2" type="Node3D" parent="." index="16" unique_id=754365591]
 transform = Transform3D(6.12303e-17, -1, 0, 1, 6.12303e-17, 0, 0, 0, 1, 0, 0, 2.608592281542396)
 script = ExtResource("5_vfc5r")
 manual_config = SubResource("Resource_akoyd")
 wing_config = SubResource("Resource_gdnov")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="Camera3D" type="Camera3D" parent="." index="17"]
+[node name="Camera3D" type="Camera3D" parent="." index="17" unique_id=1546900829]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.77636e-15, 4.45414, 21.1931)
 far = 100000.0
 
-[node name="Label3D" type="Label3D" parent="Camera3D" index="0"]
+[node name="Label3D" type="Label3D" parent="Camera3D" index="0" unique_id=1915351549]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.313, -2.986)
 text = "Controls:
 Pitch: W/A
@@ -527,27 +531,27 @@ Roll: A/D
 Throttle: Shift/Ctrl
 Launch Ball: Space"
 
-[node name="FlightInfoLabel" parent="Camera3D" index="1" instance=ExtResource("13_2kj11")]
+[node name="FlightInfoLabel" parent="Camera3D" index="1" unique_id=1498651923 instance=ExtResource("13_2kj11")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5125, 1.313, -2.986)
 
-[node name="CollisionShape3D10" type="CollisionShape3D" parent="." index="18"]
+[node name="CollisionShape3D10" type="CollisionShape3D" parent="." index="18" unique_id=1103241291]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.713567, -0.272352)
 shape = SubResource("BoxShape3D_a3l80")
 
-[node name="AeroThruster3D" type="Node3D" parent="." index="19"]
+[node name="AeroThruster3D" type="Node3D" parent="." index="19" unique_id=2115874343]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.736963, 0, 9.98938)
 script = ExtResource("13_a3l80")
 throttle_control_config = SubResource("Resource_gkkrv")
 max_thrust_force = 93100.0
 metadata/_custom_type_script = "uid://3kjm0rdymoth"
 
-[node name="AeroThruster3D2" type="Node3D" parent="." index="20"]
+[node name="AeroThruster3D2" type="Node3D" parent="." index="20" unique_id=565993834]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.737, 0, 9.98936)
 script = ExtResource("13_a3l80")
 throttle_control_config = SubResource("Resource_gkkrv")
 max_thrust_force = 93100.0
 metadata/_custom_type_script = "uid://3kjm0rdymoth"
 
-[node name="BallLauncher" type="Marker3D" parent="." index="21"]
+[node name="BallLauncher" type="Marker3D" parent="." index="21" unique_id=1656604618]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.93934, -7.60912)
 script = ExtResource("15_iktab")

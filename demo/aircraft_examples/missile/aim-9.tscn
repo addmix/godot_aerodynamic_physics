@@ -1,4 +1,4 @@
-[gd_scene load_steps=51 format=3 uid="uid://c0siq8jp4uosk"]
+[gd_scene format=3 uid="uid://c0siq8jp4uosk"]
 
 [ext_resource type="PackedScene" uid="uid://c20ixeymwlf0" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/missile/aim-9.glb" id="1_4ptsi"]
 [ext_resource type="Script" uid="uid://d1725od371u4a" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd" id="2_d8vsk"]
@@ -16,7 +16,7 @@
 [ext_resource type="Script" uid="uid://3kjm0rdymoth" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_thruster_3d/aero_thruster_3d.gd" id="12_dsv8w"]
 [ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_config.gd" id="13_j4104"]
 [ext_resource type="Script" uid="uid://blp6761y154ht" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_buoyancy_3d/aero_buoyancy_mesh_3d.gd" id="16_b4ni8"]
-[ext_resource type="ArrayMesh" uid="uid://7wx2h3aim0dg" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/missile/fueslage_aero_mesh.res" id="17_6g6ll"]
+[ext_resource type="ArrayMesh" uid="uid://cnc5tcxdletkg" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/missile/fueslage_aero_mesh.res" id="17_6g6ll"]
 
 [sub_resource type="Resource" id="Resource_00mgn"]
 script = ExtResource("3_egaj7")
@@ -156,8 +156,6 @@ point_count = 3
 
 [sub_resource type="Resource" id="Resource_renod"]
 script = ExtResource("3_jfvgg")
-min_lift_coefficient = -1.5
-max_lift_coefficient = 1.5
 lift_aoa_curve = SubResource("Curve_nxse0")
 max_drag_coefficient = 0.6
 drag_aoa_curve = SubResource("Curve_8m5r3")
@@ -234,61 +232,62 @@ axis_configs = Array[ExtResource("12_157nr")]([SubResource("Resource_28v4o")])
 use_separate_minmax = true
 min_value = Vector3(0, 0, -1)
 
-[node name="aim-9" instance=ExtResource("1_4ptsi")]
+[node name="aim-9" unique_id=1565931003 instance=ExtResource("1_4ptsi")]
 transform = Transform3D(1, 0, 0, 0, 0, -1.0000000000000009, 0, 1.0000000000000009, 0, 0, 1.5236021709088494, 0)
 mass = 85.0
 can_sleep = false
+angular_damp = 2.0
 show_debug = true
 debug_scale = 0.02
 debug_width = 0.0801
 influencer_debug_width = 0.0213
 debug_center_width = 0.1
 
-[node name="AeroControlComponent" type="Node" parent="." index="0"]
+[node name="AeroControlComponent" type="Node" parent="." index="0" unique_id=711693135]
 script = ExtResource("4_1b4mt")
 flight_assist = SubResource("Resource_p8htk")
 control_config = SubResource("Resource_nxse0")
 metadata/_custom_type_script = "uid://cc5dwx5pqkaur"
 
-[node name="MouseControl" type="Node" parent="AeroControlComponent" index="0"]
+[node name="MouseControl" type="Node" parent="AeroControlComponent" index="0" unique_id=124207897]
 script = ExtResource("7_nxse0")
 
-[node name="CameraWithoutRotation" parent="." index="1" instance=ExtResource("8_00mgn")]
+[node name="CameraWithoutRotation" parent="." index="1" unique_id=1299319465 instance=ExtResource("8_00mgn")]
 right_click_to_move = false
 camera_distance = 5.0
 camera_height = 0.6
 camera_fov = 75.0
 
-[node name="Label3D" type="Label3D" parent="CameraWithoutRotation/Camera3D" index="0"]
+[node name="Label3D" type="Label3D" parent="CameraWithoutRotation/Camera3D" index="0" unique_id=875369512]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.313, -2.986)
 text = "Throttle: Shift/Ctrl"
 
-[node name="FlightInfoLabel" parent="CameraWithoutRotation/Camera3D" index="1" instance=ExtResource("7_b4ni8")]
+[node name="FlightInfoLabel" parent="CameraWithoutRotation/Camera3D" index="1" unique_id=224437334 instance=ExtResource("7_b4ni8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5125, 1.313, -2.986)
 
-[node name="CanardLR" parent="." index="4"]
+[node name="CanardLR" parent="." index="4" unique_id=772763563]
 rotation_order = 3
 
-[node name="CanardLL" parent="." index="5"]
+[node name="CanardLL" parent="." index="5" unique_id=424848713]
 transform = Transform3D(-0.707107, 0.707107, 0, -0.707107, -0.707107, 0, 0, 0, 1, 0, 0, -1.00634)
 rotation_order = 3
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="6"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="6" unique_id=1767057960]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 8.84552e-05)
 shape = SubResource("CapsuleShape3D_inpsn")
 
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="." index="7"]
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="." index="7" unique_id=1554375279]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 6.63781e-09, 1.2637)
 shape = SubResource("BoxShape3D_dsv8w")
 
-[node name="CanardUL" parent="." index="8"]
+[node name="CanardUL" parent="." index="8" unique_id=2055914672]
 transform = Transform3D(-0.707107, -0.707107, -1.05529e-07, 0.707107, -0.707107, 4.37114e-08, -1.05529e-07, -4.37114e-08, 1, 0, 0, -1.00634)
 rotation_order = 3
 
-[node name="CanardUR" parent="." index="9"]
+[node name="CanardUR" parent="." index="9" unique_id=1050915076]
 rotation_order = 3
 
-[node name="CanardR" type="Node3D" parent="." index="10"]
+[node name="CanardR" type="Node3D" parent="." index="10" unique_id=1195741032]
 transform = Transform3D(0.7071072188135197, 0.7071072188135202, -3.0908627355157625e-08, -0.7071072188135169, 0.7071072188135196, 7.462002735515752e-08, 7.462007353734321e-08, -3.090864648444529e-08, 0.9999999999999968, 0, 0, -1)
 rotation_order = 4
 script = ExtResource("2_d8vsk")
@@ -296,11 +295,11 @@ manual_config = SubResource("Resource_renod")
 wing_config = SubResource("Resource_1afel")
 actuation_config = SubResource("Resource_nufgv")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="CanardR" index="0"]
+[node name="CSGBox3D" type="CSGBox3D" parent="CanardR" index="0" unique_id=1970935886]
 transform = Transform3D(1, 0, -3.55271e-15, 0, 1, 3.55271e-15, 0, 0, 1, 0, 0, 0)
 size = Vector3(0.798828, 0.0527344, 0.25)
 
-[node name="CanardL" type="Node3D" parent="." index="11"]
+[node name="CanardL" type="Node3D" parent="." index="11" unique_id=705013824]
 transform = Transform3D(0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0, 1, 0, 0, -1)
 rotation_order = 4
 script = ExtResource("2_d8vsk")
@@ -308,32 +307,32 @@ manual_config = SubResource("Resource_renod")
 wing_config = SubResource("Resource_1afel")
 actuation_config = SubResource("Resource_1so5l")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="CanardL" index="0"]
+[node name="CSGBox3D" type="CSGBox3D" parent="CanardL" index="0" unique_id=1711278161]
 transform = Transform3D(1, 0, -3.55271e-15, 0, 1, 3.55271e-15, 0, 0, 1, 0, 0, 0)
 size = Vector3(0.798828, 0.0527344, 0.25)
 
-[node name="Fins2" type="Node3D" parent="." index="12"]
+[node name="Fins2" type="Node3D" parent="." index="12" unique_id=1224211962]
 transform = Transform3D(0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 0, 0, 1, 0, 0, 0.92699)
 script = ExtResource("2_d8vsk")
 manual_config = SubResource("Resource_renod")
 wing_config = SubResource("Resource_vhgb1")
 
-[node name="Fins3" type="Node3D" parent="." index="13"]
+[node name="Fins3" type="Node3D" parent="." index="13" unique_id=609094168]
 transform = Transform3D(0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0, 1, 0, 0, 0.92699)
 script = ExtResource("2_d8vsk")
 manual_config = SubResource("Resource_renod")
 wing_config = SubResource("Resource_vhgb1")
 
-[node name="AeroThruster3D" type="Node3D" parent="." index="14"]
+[node name="AeroThruster3D" type="Node3D" parent="." index="14" unique_id=1492489952]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.37386e-08, 1.45817)
 script = ExtResource("12_dsv8w")
 throttle_control_config = SubResource("Resource_mbj8a")
 metadata/_custom_type_script = "uid://3kjm0rdymoth"
 
-[node name="fueslage_aero" parent="." index="15"]
+[node name="fueslage_aero" parent="." index="15" unique_id=551349452]
 visible = false
 
-[node name="AeroBuoyancyMesh3D" type="Node3D" parent="." index="16"]
+[node name="AeroBuoyancyMesh3D" type="Node3D" parent="." index="16" unique_id=525158980]
 script = ExtResource("16_b4ni8")
 buoyancy_mesh = ExtResource("17_6g6ll")
 metadata/_custom_type_script = "uid://blp6761y154ht"

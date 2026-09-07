@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://dfbhcpt1rr3ai" path="res://addons/godot_aerodynamic_physics/core/controls/aero_control_config_axis.gd" id="5_hj20f"]
 [ext_resource type="Script" uid="uid://cbgqb7g7mmwtu" path="res://addons/godot_aerodynamic_physics/core/controls/aero_control_config.gd" id="5_x51t6"]
 [ext_resource type="Script" uid="uid://c46td0go5kvp6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_axis_config.gd" id="11_1g5my"]
+[ext_resource type="Script" uid="uid://cii4ohipynhcc" path="res://addons/godot_aerodynamic_physics/core/easy_lift_curve.gd" id="11_m134i"]
 [ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_config.gd" id="12_njgyo"]
 [ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/flight_info_label.tscn" id="13_m134i"]
 [ext_resource type="Script" uid="uid://j11128f5e4xl" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_thruster_3d/aero_jet_thruster_3d.gd" id="13_qs0nt"]
@@ -152,10 +153,12 @@ bake_resolution = 23
 _data = [Vector2(0.07, 1), 0.0, 0.0, 0, 0, Vector2(0.088, 1.519), 0.0, 0.0, 0, 0, Vector2(0.119, 1), 0.0, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="Curve" id="Curve_cmcrd"]
-_limits = [-1.0, 1.0, 0.0, 1.0]
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.25, -0.571), 0.0, 0.0, 0, 0, Vector2(0.375, -0.4), 0.0, 0.0, 0, 0, Vector2(0.403, -1), 0.0, 0.0, 0, 0, Vector2(0.597, 1), 0.0, 0.0, 0, 0, Vector2(0.625, 0.4), 0.0, 0.0, 0, 0, Vector2(0.75, 0.571), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
-point_count = 8
+[sub_resource type="Curve" id="Curve_rvvp2"]
+_limits = [-1.2, 1.2, -180.0, 180.0]
+_data = [Vector2(-180, 0), 0.0, 0.07999999999999999, 1, 1, Vector2(-169.5, 0.84), 0.07999999999999999, 0.0, 1, 0, Vector2(-135, 0.6), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-15, -1.2), 0.0, 0.08, 0, 1, Vector2(15, 1.2), 0.08, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.6), 0.0, 0.0, 0, 0, Vector2(169.5, -0.84), 0.0, 0.07999999999999999, 0, 1, Vector2(180, 0), 0.07999999999999999, 0.0, 1, 1]
+point_count = 10
+script = ExtResource("11_m134i")
+metadata/_custom_type_script = "uid://cii4ohipynhcc"
 
 [sub_resource type="Curve" id="Curve_l1ihd"]
 bake_resolution = 4
@@ -164,9 +167,7 @@ point_count = 3
 
 [sub_resource type="Resource" id="Resource_raxm3"]
 script = ExtResource("3_dhflf")
-min_lift_coefficient = -1.5
-max_lift_coefficient = 1.5
-lift_aoa_curve = SubResource("Curve_cmcrd")
+lift_aoa_curve = SubResource("Curve_rvvp2")
 max_drag_coefficient = 0.5
 drag_aoa_curve = SubResource("Curve_v5kpe")
 sweep_drag_multiplier_curve = SubResource("Curve_l1ihd")

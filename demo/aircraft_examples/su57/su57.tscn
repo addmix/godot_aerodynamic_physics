@@ -1,4 +1,4 @@
-[gd_scene load_steps=72 format=3 uid="uid://bhcf56o8msjwq"]
+[gd_scene format=3 uid="uid://bhcf56o8msjwq"]
 
 [ext_resource type="PackedScene" uid="uid://bh0obl3q2wyuv" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/su57/su57.glb" id="1_6jmm2"]
 [ext_resource type="Script" uid="uid://3kjm0rdymoth" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_thruster_3d/aero_thruster_3d.gd" id="2_5b6kh"]
@@ -13,7 +13,9 @@
 [ext_resource type="Script" uid="uid://cbgqb7g7mmwtu" path="res://addons/godot_aerodynamic_physics/core/controls/aero_control_config.gd" id="6_1uofs"]
 [ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/flight_info_label.tscn" id="7_gdxys"]
 [ext_resource type="Script" uid="uid://crkbhmxpjff4o" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="7_u36rk"]
+[ext_resource type="Script" uid="uid://cii4ohipynhcc" path="res://addons/godot_aerodynamic_physics/core/easy_lift_curve.gd" id="12_2cb04"]
 [ext_resource type="Script" uid="uid://cy2j3ls8g16s2" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/ball_launcher.gd" id="14_myln2"]
+[ext_resource type="Script" uid="uid://c3n4g48jfeemj" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_influencer_3d.gd" id="15_1uofs"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_dne2k"]
 friction = 0.0
@@ -214,11 +216,12 @@ bake_resolution = 23
 _data = [Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 2), 0.0, 0.0, 0, 0, Vector2(2, 1.2), 0.181, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="Curve" id="Curve_dne2k"]
-_limits = [-1.0, 1.0, -180.0, 180.0]
-bake_resolution = 36
-_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-148, 1), 0.0, 0.0, 0, 0, Vector2(-145, 0.7), 0.0, 0.0, 0, 0, Vector2(-35, -0.7), 0.0, 0.0, 0, 0, Vector2(-32, -1), 0.0, 0.0, 0, 0, Vector2(32, 1), 0.0, 0.0, 0, 0, Vector2(35, 0.7), 0.0, 0.0, 0, 0, Vector2(137.426, -0.7), 0.0, 0.0, 0, 0, Vector2(148, -1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+[sub_resource type="Curve" id="Curve_e5uxm"]
+_limits = [-1.2, 1.2, -180.0, 180.0]
+_data = [Vector2(-180, 0), 0.0, 0.07999999999999999, 1, 1, Vector2(-169.5, 0.84), 0.07999999999999999, 0.0, 1, 0, Vector2(-135, 0.6), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-15, -1.2), 0.0, 0.08, 0, 1, Vector2(15, 1.2), 0.08, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.6), 0.0, 0.0, 0, 0, Vector2(169.5, -0.84), 0.0, 0.07999999999999999, 0, 1, Vector2(180, 0), 0.07999999999999999, 0.0, 1, 1]
 point_count = 10
+script = ExtResource("12_2cb04")
+metadata/_custom_type_script = "uid://cii4ohipynhcc"
 
 [sub_resource type="Curve" id="Curve_2cb04"]
 bake_resolution = 4
@@ -227,9 +230,7 @@ point_count = 3
 
 [sub_resource type="Resource" id="Resource_13llr"]
 script = ExtResource("6_1gcqf")
-min_lift_coefficient = -2.0
-max_lift_coefficient = 2.0
-lift_aoa_curve = SubResource("Curve_dne2k")
+lift_aoa_curve = SubResource("Curve_e5uxm")
 max_drag_coefficient = 0.5
 drag_aoa_curve = SubResource("Curve_1uofs")
 sweep_drag_multiplier_curve = SubResource("Curve_2cb04")
@@ -241,17 +242,6 @@ chord = 3.875
 span = 5.155
 area = 19.975625
 aspect_ratio = 1.3303225806451613
-
-[sub_resource type="Resource" id="Resource_e5uxm"]
-script = ExtResource("6_1gcqf")
-min_lift_coefficient = -2.0
-max_lift_coefficient = 2.0
-lift_aoa_curve = SubResource("Curve_dne2k")
-min_drag_coefficient = 0.0
-max_drag_coefficient = 0.5
-drag_aoa_curve = SubResource("Curve_1uofs")
-sweep_drag_multiplier_curve = SubResource("Curve_2cb04")
-drag_at_mach_multiplier_curve = SubResource("Curve_gdxys")
 
 [sub_resource type="Resource" id="Resource_qyjay"]
 script = ExtResource("7_u36rk")
@@ -275,24 +265,6 @@ max_value = Vector3(0.5, 0, 0)
 min_value = Vector3(-0.5, 0, 0)
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
-[sub_resource type="Resource" id="Resource_5vt4r"]
-script = ExtResource("6_1gcqf")
-min_lift_coefficient = -2.0
-max_lift_coefficient = 2.0
-lift_aoa_curve = SubResource("Curve_dne2k")
-min_drag_coefficient = 0.01
-max_drag_coefficient = 0.5
-drag_aoa_curve = SubResource("Curve_1uofs")
-sweep_drag_multiplier_curve = SubResource("Curve_2cb04")
-drag_at_mach_multiplier_curve = SubResource("Curve_gdxys")
-
-[sub_resource type="Resource" id="Resource_6hon5"]
-script = ExtResource("7_u36rk")
-chord = 2.616
-span = 2.8649999999999998
-area = 7.49484
-aspect_ratio = 1.095183486238532
-
 [sub_resource type="Resource" id="Resource_r2kyo"]
 resource_name = "pitch"
 script = ExtResource("3_4gyjs")
@@ -315,6 +287,13 @@ max_value = Vector3(0.8, 0, 0)
 min_value = Vector3(-0.8, 0, 0)
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
+[sub_resource type="Resource" id="Resource_6hon5"]
+script = ExtResource("7_u36rk")
+chord = 2.616
+span = 2.8649999999999998
+area = 7.49484
+aspect_ratio = 1.095183486238532
+
 [sub_resource type="Curve" id="Curve_5f3f6"]
 _limits = [0.0, 1.0, -180.0, 180.0]
 bake_resolution = 21
@@ -327,11 +306,14 @@ bake_resolution = 23
 _data = [Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 2), 0.0, 0.0, 0, 0, Vector2(2, 1.2), 0.181, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="Curve" id="Curve_myln2"]
-_limits = [-1.0, 1.0, -180.0, 180.0]
-bake_resolution = 36
-_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-148, 1), 0.0, 0.0, 0, 0, Vector2(-145, 0.7), 0.0, 0.0, 0, 0, Vector2(-35, -0.7), 0.0, 0.0, 0, 0, Vector2(-32, -1), 0.0, 0.0, 0, 0, Vector2(32, 1), 0.0, 0.0, 0, 0, Vector2(35, 0.7), 0.0, 0.0, 0, 0, Vector2(137.426, -0.7), 0.0, 0.0, 0, 0, Vector2(148, -1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+[sub_resource type="Curve" id="Curve_uxcik"]
+_limits = [-0.6, 0.6, -180.0, 180.0]
+_data = [Vector2(-180, 0), 0.0, 0.019999999999999997, 1, 1, Vector2(-162.5, 0.35), 0.019999999999999997, 0.0, 1, 0, Vector2(-135, 0.6), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-25, -0.5), 0.0, 0.02, 0, 1, Vector2(25, 0.5), 0.02, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.6), 0.0, 0.0, 0, 0, Vector2(162.5, -0.35), 0.0, 0.019999999999999997, 0, 1, Vector2(180, 0), 0.019999999999999997, 0.0, 1, 1]
 point_count = 10
+script = ExtResource("12_2cb04")
+lift_coefficient = 0.5
+lift_slope = 25.0
+metadata/_custom_type_script = "uid://cii4ohipynhcc"
 
 [sub_resource type="Curve" id="Curve_f17xe"]
 bake_resolution = 4
@@ -340,9 +322,7 @@ point_count = 3
 
 [sub_resource type="Resource" id="Resource_1ghes"]
 script = ExtResource("6_1gcqf")
-min_lift_coefficient = -0.7
-max_lift_coefficient = 0.7
-lift_aoa_curve = SubResource("Curve_myln2")
+lift_aoa_curve = SubResource("Curve_uxcik")
 max_drag_coefficient = 0.5
 drag_aoa_curve = SubResource("Curve_5f3f6")
 sweep_drag_multiplier_curve = SubResource("Curve_f17xe")
@@ -377,26 +357,25 @@ max_value = Vector3(0.4, 0, 0)
 min_value = Vector3(-0.4, 0, 0)
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
-[node name="su57" instance=ExtResource("1_6jmm2")]
+[node name="su57" unique_id=1771813896 instance=ExtResource("1_6jmm2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.874373187240769, 0)
-collision_layer = 16385
 mass = 26700.0
 physics_material_override = SubResource("PhysicsMaterial_dne2k")
 center_of_mass = Vector3(0, 0, 2.5)
 can_sleep = false
 show_debug = true
 
-[node name="AeroControlComponent" type="Node" parent="." index="0"]
+[node name="AeroControlComponent" type="Node" parent="." index="0" unique_id=44939361]
 script = ExtResource("2_dne2k")
 flight_assist = SubResource("Resource_f17xe")
 control_config = SubResource("Resource_hd44f")
 metadata/_custom_type_script = "uid://cc5dwx5pqkaur"
 
-[node name="Camera3D" type="Camera3D" parent="." index="1"]
+[node name="Camera3D" type="Camera3D" parent="." index="1" unique_id=452545853]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.22123, 19.438)
 far = 100000.0
 
-[node name="Label3D" type="Label3D" parent="Camera3D" index="0"]
+[node name="Label3D" type="Label3D" parent="Camera3D" index="0" unique_id=897071040]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.57529, -2.9862)
 text = "Controls:
 Pitch: W/A
@@ -405,63 +384,63 @@ Roll: A/D
 Throttle: Shift/Ctrl
 Launch Ball: Space"
 
-[node name="FlightInfoLabel" parent="Camera3D" index="1" instance=ExtResource("7_gdxys")]
+[node name="FlightInfoLabel" parent="Camera3D" index="1" unique_id=2095143955 instance=ExtResource("7_gdxys")]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="9"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="9" unique_id=1094246872]
 transform = Transform3D(1, 0, 0, 0, 0.133606, 0.991035, 0, -0.991035, 0.133606, 0, 0.353375, -3.73247)
 visible = false
 shape = SubResource("CapsuleShape3D_tc445")
 
-[node name="CollisionShape3D11" type="CollisionShape3D" parent="." index="10"]
+[node name="CollisionShape3D11" type="CollisionShape3D" parent="." index="10" unique_id=1768495854]
 transform = Transform3D(6.12303e-17, -1, 0, 1, 6.12303e-17, 0, 0, 0, 1, 0, -1.37836, -2.43463)
 shape = SubResource("CapsuleShape3D_dne2k")
 
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="." index="11"]
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="." index="11" unique_id=1016081695]
 transform = Transform3D(1, 0, 0, 0, -0.0053582, 0.999986, 0, -0.999986, -0.0053582, 0, 0.0623442, -6.59913)
 visible = false
 shape = SubResource("CapsuleShape3D_1gcqf")
 
-[node name="CollisionShape3D3" type="CollisionShape3D" parent="." index="12"]
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="." index="12" unique_id=1055096383]
 transform = Transform3D(1, 0, 0, 0, -0.0432881, 0.999062, 0, -0.999062, -0.0432881, 1.35211, -0.0116499, 3.34535)
 visible = false
 shape = SubResource("CapsuleShape3D_u36rk")
 
-[node name="CollisionShape3D4" type="CollisionShape3D" parent="." index="13"]
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="." index="13" unique_id=1445426270]
 transform = Transform3D(1, 0, 0, 0, -0.0432881, 0.999062, 0, -0.999062, -0.0432881, -1.352, -0.012, 3.345)
 visible = false
 shape = SubResource("CapsuleShape3D_u36rk")
 
-[node name="CollisionShape3D5" type="CollisionShape3D" parent="." index="14"]
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="." index="14" unique_id=1724299715]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.137207, 2.64088)
 visible = false
 shape = SubResource("BoxShape3D_6o7h7")
 
-[node name="CollisionShape3D6" type="CollisionShape3D" parent="." index="15"]
+[node name="CollisionShape3D6" type="CollisionShape3D" parent="." index="15" unique_id=756316704]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.137207, 5.40478)
 visible = false
 shape = SubResource("BoxShape3D_n4vvt")
 
-[node name="CollisionShape3D7" type="CollisionShape3D" parent="." index="16"]
+[node name="CollisionShape3D7" type="CollisionShape3D" parent="." index="16" unique_id=1275291657]
 transform = Transform3D(0.654187, 0, -0.756333, 0, 1, 0, 0.756333, 0, 0.654187, 3.24416, 0.137207, 1.93217)
 visible = false
 shape = SubResource("BoxShape3D_x87ek")
 
-[node name="CollisionShape3D8" type="CollisionShape3D" parent="." index="17"]
+[node name="CollisionShape3D8" type="CollisionShape3D" parent="." index="17" unique_id=849738351]
 transform = Transform3D(0.654741, 0, 0.755853, 0, 1, 0, -0.755853, 0, 0.654741, -3.244, 0.137, 1.932)
 visible = false
 shape = SubResource("BoxShape3D_x87ek")
 
-[node name="CollisionShape3D9" type="CollisionShape3D" parent="." index="18"]
+[node name="CollisionShape3D9" type="CollisionShape3D" parent="." index="18" unique_id=94895015]
 transform = Transform3D(0.906308, -0.317293, 0.279161, 0.422618, 0.680438, -0.598664, -7.44872e-09, 0.660552, 0.75078, -2.78259, 1.21385, 5.94426)
 visible = false
 shape = SubResource("BoxShape3D_sknif")
 
-[node name="CollisionShape3D10" type="CollisionShape3D" parent="." index="19"]
+[node name="CollisionShape3D10" type="CollisionShape3D" parent="." index="19" unique_id=192941209]
 transform = Transform3D(0.906619, 0.316446, -0.279113, -0.42195, 0.680536, -0.599024, 0.000387371, 0.660858, 0.750511, 2.783, 1.214, 5.944)
 visible = false
 shape = SubResource("BoxShape3D_sknif")
 
-[node name="AeroThruster3DR" type="Node3D" parent="." index="20"]
+[node name="AeroThruster3DR" type="Node3D" parent="." index="20" unique_id=1829340051]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.41904, 0, 8.09758)
 script = ExtResource("2_5b6kh")
 throttle_control_config = SubResource("Resource_vl4uj")
@@ -470,10 +449,10 @@ actuation_config = SubResource("Resource_prjxi")
 show_thrust = true
 metadata/_custom_type_script = "uid://3kjm0rdymoth"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="AeroThruster3DR" index="0"]
+[node name="CSGBox3D" type="CSGBox3D" parent="AeroThruster3DR" index="0" unique_id=1808945409]
 size = Vector3(0.25, 0.25, 3)
 
-[node name="AeroThruster3DL" type="Node3D" parent="." index="21"]
+[node name="AeroThruster3DL" type="Node3D" parent="." index="21" unique_id=1260127392]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.419, 0, 8.098)
 script = ExtResource("2_5b6kh")
 throttle_control_config = SubResource("Resource_vl4uj")
@@ -482,10 +461,10 @@ actuation_config = SubResource("Resource_prjxi")
 show_thrust = true
 metadata/_custom_type_script = "uid://3kjm0rdymoth"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="AeroThruster3DL" index="0"]
+[node name="CSGBox3D" type="CSGBox3D" parent="AeroThruster3DL" index="0" unique_id=1660334401]
 size = Vector3(0.25, 0.25, 3)
 
-[node name="WingR" type="Node3D" parent="." index="22"]
+[node name="WingR" type="Node3D" parent="." index="22" unique_id=2121405014]
 transform = Transform3D(0.675204, 0, -0.737631, 0, 1, 0, 0.737631, 0, 0.675204, 3.83881, 0, 2.18251)
 script = ExtResource("5_tc445")
 manual_config = SubResource("Resource_13llr")
@@ -493,40 +472,45 @@ wing_config = SubResource("Resource_ekjou")
 mirror_axis = 1
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="AileronR" type="Node3D" parent="WingR" index="0"]
+[node name="AileronR" type="Node3D" parent="WingR" index="0" unique_id=284281997]
 transform = Transform3D(0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, 3.33325, 0, 1.52311)
 script = ExtResource("5_tc445")
-manual_config = SubResource("Resource_e5uxm")
+manual_config = SubResource("Resource_13llr")
 wing_config = SubResource("Resource_qyjay")
 actuation_config = SubResource("Resource_f02ck")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="WingR/AileronR" index="0"]
+[node name="CSGBox3D" type="CSGBox3D" parent="WingR/AileronR" index="0" unique_id=1996630882]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.695391)
 size = Vector3(3.19043, 0.25, 1.83203)
 
-[node name="ElevonR2" type="Node3D" parent="." index="23"]
-transform = Transform3D(0.707107, -3.09086e-08, -0.707107, 1.28028e-08, 1, -3.09086e-08, 0.707107, 1.28027e-08, 0.707107, 3.84164, -8.88178e-16, 7.51748)
-rotation_order = 4
-script = ExtResource("5_tc445")
-manual_config = SubResource("Resource_5vt4r")
-wing_config = SubResource("Resource_6hon5")
+[node name="ElevonControl" type="Node3D" parent="." index="23" unique_id=1508430274]
+transform = Transform3D(1.0000003094489522, 0, 0, 0, 1.0000000000000002, 0, 0, 0, 1.0000003094489527, 2.850926884472843, -8.881784e-16, 7.51748)
+script = ExtResource("15_1uofs")
 mirror_axis = 1
 actuation_config = SubResource("Resource_dne2k")
+metadata/_custom_type_script = "uid://c3n4g48jfeemj"
+
+[node name="ElevonR2" type="Node3D" parent="ElevonControl" index="5" unique_id=702346979]
+transform = Transform3D(0.7071067811865481, -1.2802792076377592e-08, -0.7071067811865472, -1.2802710065032828e-08, 0.9999999999999994, -3.090860346138312e-08, 0.7071067811865467, 3.090854707986201e-08, 0.7071067811865476, 0.9907128089521167, 0, 0)
+rotation_order = 4
+script = ExtResource("5_tc445")
+manual_config = SubResource("Resource_13llr")
+wing_config = SubResource("Resource_6hon5")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="ElevonR2" index="0"]
+[node name="CSGBox3D" type="CSGBox3D" parent="ElevonControl/ElevonR2" index="0" unique_id=1458696644]
 transform = Transform3D(1, 1.24345e-14, 0, -1.13687e-13, 1, 8.88178e-16, 0, -2.66454e-13, 1, 1.1044099999999999e-29, 1.79399e-15, 1.01986)
 size = Vector3(2.75366, 0.408203, 1.51563)
 
-[node name="Body" type="Node3D" parent="." index="24"]
+[node name="Body" type="Node3D" parent="." index="24" unique_id=1172682670]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.829038)
 script = ExtResource("5_tc445")
 manual_config = SubResource("Resource_1ghes")
 wing_config = SubResource("Resource_dfwn2")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="RudderR2" type="Node3D" parent="." index="25"]
+[node name="RudderR2" type="Node3D" parent="." index="25" unique_id=323722456]
 transform = Transform3D(0.320158, -0.907044, -0.273441, 0.689722, 0.421036, -0.589078, 0.649448, 0, 0.760406, 2.853, 1.338, 6.216)
 rotation_order = 5
 script = ExtResource("5_tc445")
@@ -536,10 +520,10 @@ mirror_axis = 1
 actuation_config = SubResource("Resource_qc6jj")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="RudderR2" index="0"]
+[node name="CSGBox3D" type="CSGBox3D" parent="RudderR2" index="0" unique_id=1620122300]
 transform = Transform3D(1, 1.13705e-07, -1.01328e-06, 7.97294e-08, 0.999999, 3.68959e-07, 4.17233e-07, -2.36298e-06, 0.999999, -4.76837e-07, 0, 0.403564)
 size = Vector3(2.42773, 0.117432, 1.80713)
 
-[node name="BallLauncher" type="Marker3D" parent="." index="26"]
+[node name="BallLauncher" type="Marker3D" parent="." index="26" unique_id=338343263]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.12893, -7.60912)
 script = ExtResource("14_myln2")

@@ -13,6 +13,7 @@
 [ext_resource type="Script" uid="uid://bsu5rdrtiqph7" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_mover_3d/aero_propeller_3d.gd" id="5_keinb"]
 [ext_resource type="Script" uid="uid://c46td0go5kvp6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_axis_config.gd" id="5_o4ret"]
 [ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/flight_info_label.tscn" id="7_ey0gl"]
+[ext_resource type="Script" uid="uid://cii4ohipynhcc" path="res://addons/godot_aerodynamic_physics/core/easy_lift_curve.gd" id="12_i32vb"]
 [ext_resource type="Script" uid="uid://blp6761y154ht" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_buoyancy_3d/aero_buoyancy_mesh_3d.gd" id="14_lo3t1"]
 [ext_resource type="ArrayMesh" uid="uid://cs0vlbs2pbabv" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/cessna172/fueslage_aero_mesh.res" id="15_op60t"]
 
@@ -188,36 +189,42 @@ axis_configs = Array[ExtResource("5_o4ret")]([SubResource("Resource_afw6h")])
 use_separate_minmax = true
 max_value = Vector3(0, 250, 0)
 
-[sub_resource type="Curve" id="Curve_scrto"]
+[sub_resource type="Curve" id="Curve_op60t"]
+_limits = [0.0, 1.0, -180.0, 180.0]
 bake_resolution = 21
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.25, 1), 0.0, 0.0, 0, 0, Vector2(0.5, 0), 0.0, 0.0, 0, 0, Vector2(0.75, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-90, 1), 0.0, 0.0, 0, 0, Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(90, 1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
 point_count = 5
 
-[sub_resource type="Curve" id="Curve_iyp87"]
-_limits = [0.99, 1.69, 0.0, 1.0]
+[sub_resource type="Curve" id="Curve_i32vb"]
+_limits = [1.0, 2.0, 0.0, 2.0]
 bake_resolution = 23
-_data = [Vector2(0.053, 1), 0.0, 0.0, 0, 0, Vector2(0.088, 1.324), 4.057, 4.057, 0, 0, Vector2(0.256, 1), 0.181, 0.0, 0, 0]
+_data = [Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 2), 0.0, 0.0, 0, 0, Vector2(2, 1.2), 0.181, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="Curve" id="Curve_4yv37"]
-_limits = [-1.0, 1.0, -180.0, 180.0]
-bake_resolution = 36
-_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-165, 1), 0.0, 0.0, 0, 0, Vector2(-163, 0.7), 0.0, 0.0, 0, 0, Vector2(-17, -0.7), 0.0, 0.0, 0, 0, Vector2(-15, -1), 0.0, 0.0, 0, 0, Vector2(15, 1), 0.0, 0.0, 0, 0, Vector2(17, 0.7), 0.0, 0.0, 0, 0, Vector2(163, -0.7), 0.0, 0.0, 0, 0, Vector2(165, -1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+[sub_resource type="Curve" id="Curve_cp2h5"]
+_limits = [-1.08, 1.08, -180.0, 180.0]
+_data = [Vector2(-180, 0), 0.0, 0.05999999999999999, 1, 1, Vector2(-171, 0.5399999999999999), 0.05999999999999999, 0.0, 1, 0, Vector2(-135, 0.5599999999999999), 0.0, 0.0, 0, 0, Vector2(-45, -0.7), 0.0, 0.0, 0, 0, Vector2(-12, -0.72), 0.0, 0.06, 0, 1, Vector2(18, 1.08), 0.06, 0.0, 1, 0, Vector2(45, 0.7), 0.0, 0.0, 0, 0, Vector2(135, -0.5599999999999999), 0.0, 0.0, 0, 0, Vector2(165, -0.9), 0.0, 0.06, 0, 1, Vector2(180, 0), 0.06, 0.0, 1, 1]
 point_count = 10
+script = ExtResource("12_i32vb")
+lift_coefficient = 0.9
+camber = 0.2
+post_stall_lift = 0.7
+reverse_lift_penalty = 0.2
+metadata/_custom_type_script = "uid://cii4ohipynhcc"
 
-[sub_resource type="Curve" id="Curve_nx8vk"]
+[sub_resource type="Curve" id="Curve_7qotf"]
+_limits = [0.0, 1.0, 0.0, 90.0]
 bake_resolution = 4
-_data = [Vector2(0, 1), 0.0, -2.09824, 0, 0, Vector2(0.406542, 0.490909), -0.666575, -0.666575, 0, 0, Vector2(1, 0.290909), 0.0, 0.0, 0, 0]
+_data = [Vector2(0, 1), 0.0, -0.015519453, 0, 0, Vector2(35, 0.6), -0.0035805835, -0.0035805835, 0, 0, Vector2(90, 0.5), 0.0, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="Resource" id="Resource_5oq5f"]
+[sub_resource type="Resource" id="Resource_8ihwy"]
 script = ExtResource("3_5fm2q")
-lift_aoa_curve = SubResource("Curve_4yv37")
-min_drag_coefficient = 0.03
-max_drag_coefficient = 1.0
-drag_aoa_curve = SubResource("Curve_scrto")
-sweep_drag_multiplier_curve = SubResource("Curve_nx8vk")
-drag_at_mach_multiplier_curve = SubResource("Curve_iyp87")
+lift_aoa_curve = SubResource("Curve_cp2h5")
+drag_aoa_curve = SubResource("Curve_op60t")
+sweep_drag_multiplier_curve = SubResource("Curve_7qotf")
+drag_at_mach_multiplier_curve = SubResource("Curve_i32vb")
+metadata/_custom_type_script = "uid://ctbwb7xlhft6t"
 
 [sub_resource type="Resource" id="Resource_fnaxt"]
 script = ExtResource("4_o4ret")
@@ -321,6 +328,22 @@ axis_configs = Array[ExtResource("5_o4ret")]([SubResource("Resource_3s2tp")])
 max_value = Vector3(0.4, 0, 0)
 min_value = Vector3(-0.4, 0, 0)
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
+
+[sub_resource type="Curve" id="Curve_snyt3"]
+_limits = [-1.2, 1.2, -180.0, 180.0]
+_data = [Vector2(-180, 0), 0.0, 0.08, 1, 1, Vector2(-171, 0.72), 0.08, 0.0, 1, 0, Vector2(-135, 0.6), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-15, -1.2), 0.0, 0.08, 0, 1, Vector2(15, 1.2), 0.08, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.6), 0.0, 0.0, 0, 0, Vector2(171, -0.72), 0.0, 0.08, 0, 1, Vector2(180, 0), 0.08, 0.0, 1, 1]
+point_count = 10
+script = ExtResource("12_i32vb")
+reverse_lift_penalty = 0.4
+metadata/_custom_type_script = "uid://cii4ohipynhcc"
+
+[sub_resource type="Resource" id="Resource_rvxpo"]
+script = ExtResource("3_5fm2q")
+lift_aoa_curve = SubResource("Curve_snyt3")
+drag_aoa_curve = SubResource("Curve_op60t")
+sweep_drag_multiplier_curve = SubResource("Curve_7qotf")
+drag_at_mach_multiplier_curve = SubResource("Curve_i32vb")
+metadata/_custom_type_script = "uid://ctbwb7xlhft6t"
 
 [sub_resource type="Resource" id="Resource_3wa4j"]
 script = ExtResource("4_o4ret")
@@ -441,9 +464,9 @@ show_lift = false
 show_thrust = true
 
 [node name="ManualAeroSurface3D" type="Node3D" parent="AeroPropeller3D" index="0" unique_id=466152667]
-transform = Transform3D(1, 0, 0, 0, 0.766044, -0.642787, 0, 0.642787, 0.766044, 0.555826, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 0.7986349259669956, -0.6018145830159747, 0, 0.6018145830159747, 0.7986349259669956, 0.555826, 0, 0)
 script = ExtResource("2_iyyha")
-manual_config = SubResource("Resource_5oq5f")
+manual_config = SubResource("Resource_8ihwy")
 wing_config = SubResource("Resource_fnaxt")
 actuation_config = SubResource("Resource_03obi")
 show_force = false
@@ -457,7 +480,7 @@ size = Vector3(1.09857, 0.0454879, 0.144012)
 [node name="WingR1" type="Node3D" parent="." index="13" unique_id=73205138]
 transform = Transform3D(0.999858, -0.0168242, 0, 0.0168242, 0.999858, 0, 0, 0, 1, 1.50973, 0.675157, -1.85714)
 script = ExtResource("2_iyyha")
-manual_config = SubResource("Resource_5oq5f")
+manual_config = SubResource("Resource_8ihwy")
 wing_config = SubResource("Resource_4u4b6")
 mirror_axis = 1
 metadata/_custom_type_script = "uid://d1725od371u4a"
@@ -465,7 +488,7 @@ metadata/_custom_type_script = "uid://d1725od371u4a"
 [node name="Flap" type="Node3D" parent="WingR1" index="0" unique_id=1537120116]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.01053)
 script = ExtResource("2_iyyha")
-manual_config = SubResource("Resource_5oq5f")
+manual_config = SubResource("Resource_8ihwy")
 wing_config = SubResource("Resource_snyt3")
 actuation_config = SubResource("Resource_cp2h5")
 metadata/_custom_type_script = "uid://d1725od371u4a"
@@ -478,14 +501,14 @@ size = Vector3(1.99478, 0.0454879, 0.510548)
 [node name="WingR2" type="Node3D" parent="WingR1" index="1" unique_id=1891188101]
 transform = Transform3D(0.9989359518124928, -0.04613015224113451, 0, 0.04613015224113451, 0.9989359518124928, 0, 0, 0, 1, 2.4704969031905866, 0.075848636507725, 0.04244418146555129)
 script = ExtResource("2_iyyha")
-manual_config = SubResource("Resource_5oq5f")
+manual_config = SubResource("Resource_8ihwy")
 wing_config = SubResource("Resource_i3e03")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
 [node name="Aileron" type="Node3D" parent="WingR1/WingR2" index="0" unique_id=536402308]
 transform = Transform3D(0.989364, 0, 0.145461, 0, 1, -1.7347234759768067e-18, -0.145461, 0, 0.989364, -0.07505819999999996, -1.1102230246251563e-16, 0.8491647939709599)
 script = ExtResource("2_iyyha")
-manual_config = SubResource("Resource_5oq5f")
+manual_config = SubResource("Resource_8ihwy")
 wing_config = SubResource("Resource_keinb")
 actuation_config = SubResource("Resource_4mn0n")
 metadata/_custom_type_script = "uid://d1725od371u4a"
@@ -498,14 +521,14 @@ size = Vector3(2.83724, 0.146557, 0.400159)
 [node name="HorizontalStab" type="Node3D" parent="." index="14" unique_id=1295677440]
 transform = Transform3D(1, 0, 0, 0, 0.99889, 0.0471065, 0, -0.0471065, 0.99889, 0, 0.210207, 2.68076)
 script = ExtResource("2_iyyha")
-manual_config = SubResource("Resource_5oq5f")
+manual_config = SubResource("Resource_8ihwy")
 wing_config = SubResource("Resource_g185g")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
 [node name="Elevator2" type="Node3D" parent="." index="15" unique_id=1852727079]
 transform = Transform3D(1, 0, 0, 0, 0.99889, 0.0471065, 0, -0.0471065, 0.99889, 0, 0.23602, 3.22812)
 script = ExtResource("2_iyyha")
-manual_config = SubResource("Resource_5oq5f")
+manual_config = SubResource("Resource_8ihwy")
 wing_config = SubResource("Resource_2trr8")
 actuation_config = SubResource("Resource_qhb2b")
 metadata/_custom_type_script = "uid://d1725od371u4a"
@@ -518,20 +541,20 @@ size = Vector3(3.43267, 0.0454879, 0.510548)
 [node name="VerticalStab" type="Node3D" parent="." index="16" unique_id=2079185050]
 transform = Transform3D(3.70173e-17, 1, 3.94809e-17, -0.762205, 6.15827e-17, -0.647335, -0.647335, -1.38778e-17, 0.762205, 0, 0.727, 2.911)
 script = ExtResource("2_iyyha")
-manual_config = SubResource("Resource_5oq5f")
+manual_config = SubResource("Resource_rvxpo")
 wing_config = SubResource("Resource_3wa4j")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
 [node name="Rudder" type="Node3D" parent="VerticalStab" index="0" unique_id=994628575]
 transform = Transform3D(0.908829, 1.5407400000000001e-33, -0.417169, 4.24757e-33, 1, 1.6940700000000002e-33, 0.417169, 3.08149e-33, 0.908829, -0.52477, -2.9501300000000003e-19, 0.499497)
 script = ExtResource("2_iyyha")
-manual_config = SubResource("Resource_5oq5f")
+manual_config = SubResource("Resource_rvxpo")
 wing_config = SubResource("Resource_uei0l")
 actuation_config = SubResource("Resource_dufvg")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
 [node name="CSGBox3D" type="CSGBox3D" parent="VerticalStab/Rudder" index="0" unique_id=862024946]
-transform = Transform3D(1, -5.551120000000009e-16, 0, 5.55112e-16, 0.999999999999992, -4.614528e-31, -7.771561172376097e-16, 1.5777218e-30, 1, -8.881784e-16, 8.881779999999998e-16, 0.32276313112239796)
+transform = Transform3D(1, -5.551120000000009e-16, 0, 5.55112e-16, 0.999999999999992, -4.614528e-31, -7.771561172376101e-16, 1.5777218e-30, 1, -8.881784e-16, 8.881779999999998e-16, 0.32276313112239796)
 visible = false
 size = Vector3(1.57572, 0.0454879, 0.8638856751504136)
 

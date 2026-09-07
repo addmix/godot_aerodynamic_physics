@@ -1,10 +1,10 @@
-[gd_scene load_steps=39 format=3 uid="uid://ca7gwywplc00p"]
+[gd_scene format=3 uid="uid://ca7gwywplc00p"]
 
 [ext_resource type="PackedScene" uid="uid://isluevpxgivx" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/boat/boat.glb" id="1_annr2"]
 [ext_resource type="Script" uid="uid://blp6761y154ht" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_buoyancy_3d/aero_buoyancy_mesh_3d.gd" id="2_ojow4"]
 [ext_resource type="ArrayMesh" uid="uid://doft1hjfsl7yu" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/boat/hull.res" id="3_6e2ia"]
 [ext_resource type="PackedScene" uid="uid://bm03tdt5so3wj" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/camera without rotation.tscn" id="4_6e2ia"]
-[ext_resource type="Script" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_mover_3d/aero_propeller_3d.gd" id="6_8u34d"]
+[ext_resource type="Script" uid="uid://bsu5rdrtiqph7" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_mover_3d/aero_propeller_3d.gd" id="6_8u34d"]
 [ext_resource type="Script" uid="uid://c46td0go5kvp6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_axis_config.gd" id="7_fbcns"]
 [ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_config.gd" id="8_bx2ck"]
 [ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/flight_info_label.tscn" id="8_gp0bn"]
@@ -14,6 +14,7 @@
 [ext_resource type="Script" uid="uid://crkbhmxpjff4o" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="11_tufii"]
 [ext_resource type="Script" uid="uid://cc5dwx5pqkaur" path="res://addons/godot_aerodynamic_physics/core/controls/aero_control_component.gd" id="12_pyde1"]
 [ext_resource type="Script" uid="uid://dfbhcpt1rr3ai" path="res://addons/godot_aerodynamic_physics/core/controls/aero_control_config_axis.gd" id="13_gp0bn"]
+[ext_resource type="Script" uid="uid://cii4ohipynhcc" path="res://addons/godot_aerodynamic_physics/core/easy_lift_curve.gd" id="13_tufii"]
 [ext_resource type="Script" uid="uid://cbgqb7g7mmwtu" path="res://addons/godot_aerodynamic_physics/core/controls/aero_control_config.gd" id="14_tufii"]
 
 [sub_resource type="Resource" id="Resource_3h27b"]
@@ -46,7 +47,7 @@ script = ExtResource("14_tufii")
 axis_configs = Array[ExtResource("13_gp0bn")]([SubResource("Resource_3h27b"), SubResource("Resource_qvpob"), SubResource("Resource_58016")])
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_gp0bn"]
-points = PackedVector3Array(1.0513176918029783, 0.615614116191864, 1.7668290537787117, -1.0513176918029783, 0.615614116191864, 1.7668290537787117, 0.9414109479848912, 0.27855819625927314, 1.7668290537787117, 1.0513176918029783, 0.615614116191864, -1.6008801516276745, -0.9416167658572095, 0.27855819625927314, 1.7668290537787117, -1.0513176918029783, 0.615614116191864, -1.6008801516276745, 0.8238889428910188, -0.07049329608632143, 1.7668290537787117, 0.9414109479848912, 0.27855819625927314, 0.6669070996991713, 0.8238889428910188, -0.07049329608632143, -0.02820556501718618, 0.8238889428910188, -0.0573178313048257, -0.775107211588693, 0.7998082518297522, -0.02260933079834831, -1.6008801516276745, 0.5806122178105331, 0.12782694618440082, -2.337328976173371, 0.7382687080065162, 0.615614116191864, -2.3378041044472715, -0.8240947607633371, -0.07049329608632143, 1.7668290537787117, -0.9416167658572095, 0.27855819625927314, 0.6669070996991713, -0.7384745258788346, 0.615614116191864, -2.3378041044472715, -0.5808180356828514, 0.12782694618440082, -2.337328976173371, -0.8000140697020708, -0.02260933079834831, -1.6008801516276745, -0.8240947607633371, -0.0573178313048257, -0.775107211588693, -0.8240947607633371, -0.07049329608632143, -0.02820556501718618, 0, -0.38886758685112, 1.7668290537787117, 0.3776757957044765, -0.2429542306142574, -0.03105633466058899, 0.3776757957044765, -0.22977876583276172, -0.778433109505996, 0, -0.3722507693281889, -0.775107211588693, 0, -0.3199422076583702, -1.6008801516276745, 0, -0.1196554781068277, -2.339704617542873, 0.30440463315908484, 0.01023100679134986, -2.341605130638475, 0, 0.615614116191864, -3.08660626411438, -0.25562579741959657, -0.2901499253539434, 1.766353925504812, -0.37788161357679495, -0.2429542306142574, -0.03105633466058899, -0.3046104510314033, 0.01023100679134986, -2.341605130638475, -0.37788161357679495, -0.22977876583276172, -0.778433109505996, 0, -0.38886758685112, -0.02820556501718618)
+points = PackedVector3Array(1.0513176918029783, 0.6156141, 1.7668290537787117, -1.0513176918029783, 0.6156141, 1.7668290537787117, 0.9414109479848912, 0.27855819625927314, 1.7668290537787117, 1.0513176918029783, 0.6156141, -1.6008801516276745, -0.9416167658572095, 0.27855819625927314, 1.7668290537787117, -1.0513176918029783, 0.6156141, -1.6008801516276745, 0.8238889428910188, -0.07049329608632143, 1.7668290537787117, 0.9414109479848912, 0.27855819625927314, 0.6669070996991713, 0.8238889428910188, -0.07049329608632143, -0.02820556501718618, 0.8238889428910188, -0.0573178313048257, -0.775107211588693, 0.7998082518297522, -0.02260933079834831, -1.6008801516276745, 0.5806122178105331, 0.12782694618440082, -2.337328976173371, 0.7382687080065162, 0.6156141, -2.3378041044472715, -0.8240947607633371, -0.07049329608632143, 1.7668290537787117, -0.9416167658572095, 0.27855819625927314, 0.6669070996991713, -0.7384745258788346, 0.6156141, -2.3378041044472715, -0.5808180356828514, 0.12782694618440082, -2.337328976173371, -0.8000140697020708, -0.02260933079834831, -1.6008801516276745, -0.8240947607633371, -0.0573178313048257, -0.775107211588693, -0.8240947607633371, -0.07049329608632143, -0.02820556501718618, 0, -0.3888676, 1.7668290537787117, 0.3776757957044765, -0.2429542306142574, -0.03105633466058899, 0.3776757957044765, -0.22977876583276172, -0.778433109505996, 0, -0.3722507693281889, -0.775107211588693, 0, -0.3199422076583702, -1.6008801516276745, 0, -0.1196554781068277, -2.339704617542873, 0.30440463315908484, 0.01023100679134986, -2.341605130638475, 0, 0.6156141, -3.0866063, -0.25562579741959657, -0.2901499253539434, 1.766353925504812, -0.37788161357679495, -0.2429542306142574, -0.03105633466058899, -0.3046104510314033, 0.01023100679134986, -2.341605130638475, -0.37788161357679495, -0.22977876583276172, -0.778433109505996, 0, -0.3888676, -0.02820556501718618)
 
 [sub_resource type="Resource" id="Resource_tufii"]
 resource_name = "steering"
@@ -80,11 +81,14 @@ bake_resolution = 23
 _data = [Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 2), 0.0, 0.0, 0, 0, Vector2(2, 1.2), 0.181, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="Curve" id="Curve_3qcjo"]
-_limits = [-1.0, 1.0, -180.0, 180.0]
-bake_resolution = 36
-_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-148, 1), 0.0, 0.0, 0, 0, Vector2(-145, 0.7), 0.0, 0.0, 0, 0, Vector2(-35, -0.7), 0.0, 0.0, 0, 0, Vector2(-32, -1), 0.0, 0.0, 0, 0, Vector2(32, 1), 0.0, 0.0, 0, 0, Vector2(35, 0.7), 0.0, 0.0, 0, 0, Vector2(137.426, -0.7), 0.0, 0.0, 0, 0, Vector2(148, -1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+[sub_resource type="Curve" id="Curve_nof2j"]
+_limits = [-1.2, 1.2, -180.0, 180.0]
+_data = [Vector2(-180, 0), 0.0, 0.08, 1, 1, Vector2(-171, 0.72), 0.08, 0.0, 1, 0, Vector2(-135, 0.36), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-15, -1.2), 0.0, 0.08, 0, 1, Vector2(15, 1.2), 0.08, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.36), 0.0, 0.0, 0, 0, Vector2(171, -0.72), 0.0, 0.08, 0, 1, Vector2(180, 0), 0.08, 0.0, 1, 1]
 point_count = 10
+script = ExtResource("13_tufii")
+camber = 0.0
+reverse_lift_penalty = 0.4
+metadata/_custom_type_script = "uid://cii4ohipynhcc"
 
 [sub_resource type="Curve" id="Curve_n664u"]
 _limits = [0.0, 1.0, 0.0, 90.0]
@@ -94,7 +98,7 @@ point_count = 3
 
 [sub_resource type="Resource" id="Resource_85l1x"]
 script = ExtResource("10_gp0bn")
-lift_aoa_curve = SubResource("Curve_3qcjo")
+lift_aoa_curve = SubResource("Curve_nof2j")
 drag_aoa_curve = SubResource("Curve_2ou3h")
 sweep_drag_multiplier_curve = SubResource("Curve_n664u")
 drag_at_mach_multiplier_curve = SubResource("Curve_xiynb")
@@ -136,11 +140,15 @@ bake_resolution = 23
 _data = [Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 2), 0.0, 0.0, 0, 0, Vector2(2, 1.2), 0.181, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="Curve" id="Curve_58016"]
-_limits = [-1.0, 1.0, -180.0, 180.0]
-bake_resolution = 36
-_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-148, 1), 0.0, 0.0, 0, 0, Vector2(-145, 0.7), 0.0, 0.0, 0, 0, Vector2(-35, -0.7), 0.0, 0.0, 0, 0, Vector2(-32, -1), 0.0, 0.0, 0, 0, Vector2(32, 1), 0.0, 0.0, 0, 0, Vector2(35, 0.7), 0.0, 0.0, 0, 0, Vector2(137.426, -0.7), 0.0, 0.0, 0, 0, Vector2(148, -1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+[sub_resource type="Curve" id="Curve_uiicu"]
+_limits = [-1.7999999999999998, 1.7999999999999998, -180.0, 180.0]
+_data = [Vector2(-180, 0), 0.0, 0.1714285714285742, 1, 1, Vector2(-179.3, 0.12), 0.1714285714285742, 0.0, 1, 0, Vector2(-135, 0.36), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-3.5, -0.6), 0.0, 0.17142857142857143, 0, 1, Vector2(10.5, 1.7999999999999998), 0.17142857142857143, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.36), 0.0, 0.0, 0, 0, Vector2(172.3, -1.3199999999999998), 0.0, 0.17142857142857165, 0, 1, Vector2(180, 0), 0.17142857142857165, 0.0, 1, 1]
 point_count = 10
+script = ExtResource("13_tufii")
+lift_slope = 7.0
+camber = 0.5
+reverse_lift_penalty = 0.4
+metadata/_custom_type_script = "uid://cii4ohipynhcc"
 
 [sub_resource type="Curve" id="Curve_hcphs"]
 _limits = [0.0, 1.0, 0.0, 90.0]
@@ -150,7 +158,7 @@ point_count = 3
 
 [sub_resource type="Resource" id="Resource_jhqwu"]
 script = ExtResource("10_gp0bn")
-lift_aoa_curve = SubResource("Curve_58016")
+lift_aoa_curve = SubResource("Curve_uiicu")
 min_drag_coefficient = 0.01
 max_drag_coefficient = 0.6
 drag_aoa_curve = SubResource("Curve_3h27b")
@@ -164,7 +172,7 @@ span = 0.2
 area = 0.04000000000000001
 aspect_ratio = 1.0
 
-[node name="Boat" instance=ExtResource("1_annr2")]
+[node name="Boat" unique_id=1811329416 instance=ExtResource("1_annr2")]
 mass = 1800.0
 center_of_mass = Vector3(0, 0.09999999999999964, 0.1999999999999993)
 show_debug = true
@@ -172,53 +180,53 @@ debug_width = 0.075
 influencer_debug_width = 0.025
 debug_center_width = 0.15
 
-[node name="AeroControlComponent" type="Node" parent="." index="0"]
+[node name="AeroControlComponent" type="Node" parent="." index="0" unique_id=1428905032]
 script = ExtResource("12_pyde1")
 control_config = SubResource("Resource_u0ult")
 metadata/_custom_type_script = "uid://cc5dwx5pqkaur"
 
-[node name="CameraWithoutRotation" parent="." index="1" instance=ExtResource("4_6e2ia")]
+[node name="CameraWithoutRotation" parent="." index="1" unique_id=94051619 instance=ExtResource("4_6e2ia")]
 camera_distance = 5.0
 
-[node name="Label3D" type="Label3D" parent="CameraWithoutRotation/Camera3D" index="0"]
+[node name="Label3D" type="Label3D" parent="CameraWithoutRotation/Camera3D" index="0" unique_id=1561218374]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.57529, -2.9862)
 text = "Controls:
 Motor trim: W/A
 Steering: A/D
 Throttle: Shift/Ctrl"
 
-[node name="FlightInfoLabel" parent="CameraWithoutRotation/Camera3D" index="1" instance=ExtResource("8_gp0bn")]
+[node name="FlightInfoLabel" parent="CameraWithoutRotation/Camera3D" index="1" unique_id=782261310 instance=ExtResource("8_gp0bn")]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="3"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="3" unique_id=1255831432]
 visible = false
 shape = SubResource("ConvexPolygonShape3D_gp0bn")
 
-[node name="AeroBuoyancyMesh3D" type="Node3D" parent="." index="4"]
+[node name="AeroBuoyancyMesh3D" type="Node3D" parent="." index="4" unique_id=816207710]
 script = ExtResource("2_ojow4")
 buoyancy_mesh = ExtResource("3_6e2ia")
 metadata/_custom_type_script = "uid://blp6761y154ht"
 
-[node name="OutboardRotate" type="Node3D" parent="." index="5"]
+[node name="OutboardRotate" type="Node3D" parent="." index="5" unique_id=318137762]
 transform = Transform3D(0.9998476951563912, 0.00152107744577545, 0.01738599476176408, 0, 0.9961946980917455, -0.08715574274765817, -0.01745240643728351, 0.08714246850588939, 0.9960429728140489, 0, 0.3721159610864453, 1.946746907040108)
 script = ExtResource("9_gp0bn")
 actuation_config = SubResource("Resource_yuxf8")
 metadata/_custom_type_script = "uid://c3n4g48jfeemj"
 
-[node name="Rudder" type="Node3D" parent="OutboardRotate" index="0"]
+[node name="Rudder" type="Node3D" parent="OutboardRotate" index="0" unique_id=996687812]
 transform = Transform3D(6.09317952840239e-17, 1, -6.059354761065439e-18, -0.9239376299075744, 5.861514313387751e-17, 0.3825431427182732, 0.3825431427182732, -1.7710574582708975e-17, 0.9239376299075744, 2.1885573832565102e-17, -1.0565670071897624, 0.00679333678503724)
 script = ExtResource("9_pyde1")
 manual_config = SubResource("Resource_85l1x")
 wing_config = SubResource("Resource_j3mod")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="Rudder2" type="Node3D" parent="OutboardRotate" index="1"]
+[node name="Rudder2" type="Node3D" parent="OutboardRotate" index="1" unique_id=5784558]
 transform = Transform3D(-1, 1.224646799147353e-16, 0, -1.2246467991473535e-16, -1, 0, 0, 0, 1, 2.1885573832565102e-17, -0.8459867015728342, 0.21029735987245912)
 script = ExtResource("9_pyde1")
 manual_config = SubResource("Resource_85l1x")
 wing_config = SubResource("Resource_hcphs")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="AeroPropeller3D" type="Node3D" parent="OutboardRotate" index="2" node_paths=PackedStringArray("propeller_blade")]
+[node name="AeroPropeller3D" type="Node3D" parent="OutboardRotate" index="2" unique_id=853248349 node_paths=PackedStringArray("propeller_blade")]
 transform = Transform3D(1, 0, 0, 0, 0.08715574274765812, 0.9961946980917454, 0, -0.9961946980917454, 0.08715574274765812, 0, -1.00819209637935, 0.2289692561721881)
 script = ExtResource("6_8u34d")
 propeller_amount = 3
@@ -229,7 +237,7 @@ show_torque = true
 show_lift = false
 show_thrust = true
 
-[node name="ManualAeroSurface3D" type="Node3D" parent="OutboardRotate/AeroPropeller3D" index="0"]
+[node name="ManualAeroSurface3D" type="Node3D" parent="OutboardRotate/AeroPropeller3D" index="0" unique_id=540653217]
 transform = Transform3D(1, 0, 0, 0, 0.9063077870366502, -0.4226182617406995, 0, 0.4226182617406995, 0.9063077870366502, 0.12213315501424946, 0, 0)
 script = ExtResource("9_pyde1")
 manual_config = SubResource("Resource_jhqwu")
@@ -239,20 +247,20 @@ show_lift = false
 show_drag = false
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="OutboardRotate/AeroPropeller3D/ManualAeroSurface3D" index="0"]
-transform = Transform3D(1, 0, 0, 0, 1.0000000000000022, 5.551115123125783e-17, 0, -5.551115123125783e-17, 1.0000000000000022, 0, 0, 0.04941531829536017)
+[node name="CSGBox3D" type="CSGBox3D" parent="OutboardRotate/AeroPropeller3D/ManualAeroSurface3D" index="0" unique_id=845171662]
+transform = Transform3D(1, 0, 0, 0, 1.0000000000000022, 5.551115e-17, 0, -5.551115e-17, 1.0000000000000022, 0, 0, 0.04941531829536017)
 size = Vector3(0.1967637893067149, 0.01187669383898537, 0.19131065197871067)
 
-[node name="CSGCylinder3D" type="CSGCylinder3D" parent="OutboardRotate/AeroPropeller3D" index="1"]
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="OutboardRotate/AeroPropeller3D" index="1" unique_id=1084973412]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.01319748675450682, 0)
 radius = 0.03205869
 height = 0.113940015
 
-[node name="CSGBox3D" type="CSGBox3D" parent="OutboardRotate" index="3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.11371392756700516, 0.04976937919855118)
+[node name="CSGBox3D" type="CSGBox3D" parent="OutboardRotate" index="3" unique_id=104128287]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.11371393, 0.04976938)
 size = Vector3(0.3051432223910524, 0.5555105119756263, 0.46904054573883514)
 
-[node name="CSGBox3D2" type="CSGBox3D" parent="OutboardRotate" index="4"]
+[node name="CSGBox3D2" type="CSGBox3D" parent="OutboardRotate" index="4" unique_id=1881478216]
 transform = Transform3D(1, 0, 0, 0, 0.996007793875625, 0.08926631245333552, 0, -0.08926631245333552, 0.996007793875625, 0, -0.6239883985798936, 0.03499681120693454)
 size = Vector3(0.09501928310100992, 1.164965463433873, 0.2204151855348755)
 

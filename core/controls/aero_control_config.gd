@@ -26,6 +26,17 @@ func update(delta : float) -> void:
 	for config : AeroControlConfigAxis in axis_configs:
 		config.update(delta)
 
+func set_control_input(axis_name : String = "", value : float = 0.0) -> void:
+	var axis := get_axis_config_with_name(axis_name)
+	if axis:
+		axis.input = value
+
+func get_control_input(axis_name : String = "") -> float:
+	var axis := get_axis_config_with_name(axis_name)
+	if axis:
+		return axis.input
+	return 0.0
+
 func set_control_command(axis_name : String = "", value : float = 0.0) -> void:
 	var axis := get_axis_config_with_name(axis_name)
 	if axis:
@@ -37,15 +48,15 @@ func get_control_command(axis_name : String = "") -> float:
 		return axis.command
 	return 0.0
 
-func set_control_input(axis_name : String = "", value : float = 0.0) -> void:
+func set_cumulative_control_command(axis_name : String = "", value : float = 0.0) -> void:
 	var axis := get_axis_config_with_name(axis_name)
 	if axis:
-		axis.input = value
+		axis.cumulative_command = value
 
-func get_control_input(axis_name : String = "") -> float:
+func get_cumulative_control_command(axis_name : String = "") -> float:
 	var axis := get_axis_config_with_name(axis_name)
 	if axis:
-		return axis.input
+		return axis.cumulative_command
 	return 0.0
 
 func get_axis_config_with_name(name : String = "") -> AeroControlConfigAxis:

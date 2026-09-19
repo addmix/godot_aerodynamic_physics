@@ -76,7 +76,16 @@ func set_control_command(axis_name : String = "", value : float = 0.0) -> void:
 ## used by AeroInfluencer3Ds for controls.
 func get_control_command(axis_name : String = "") -> float:
 	if control_config:
-		#if axis_name == "throttle":
-			#print(control_config.get_control_command(axis_name))
 		return control_config.get_control_command(axis_name)
+	return 0.0
+
+## Used to set the cumulative command. This allows setting initial values for
+## cumulative control axes.
+func set_cumulative_control_command(axis_name : String = "", value : float = 0.0) -> void:
+	control_config.set_cumulative_control_command(axis_name, value)
+
+## Used to get the cumulative command value (which does not get modified). 
+func get_cumulative_control_command(axis_name : String = "") -> float:
+	if control_config:
+		return control_config.get_cumulative_control_command(axis_name)
 	return 0.0

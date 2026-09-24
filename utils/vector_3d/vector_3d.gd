@@ -16,11 +16,10 @@ class_name AeroDebugVector3D
 			basis = Basis()
 			return
 		
-		var up = Vector3(0, 1, 0)
-		var dot := value.dot(up)
-		var dot_squared := dot * dot
-		
-		if is_equal_approx(dot_squared, length_squared):
+		#prevent error when the value is colinear with the up axis
+		var up := Vector3(0, 1, 0)
+		var cross := value.cross(up)
+		if is_equal_approx(cross.length_squared(), 0.0):
 			up = Vector3(1, 0, 0)
 		
 		transform.basis = transform.basis.looking_at(value, up)

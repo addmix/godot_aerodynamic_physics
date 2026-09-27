@@ -58,6 +58,7 @@ control_command.z = roll_assist_pid.update(delta, angular_rate_error.z)
 
 While it would be possible to configure a PID that tracks and responds to G forces, it would show a few of the downsides to PIDs. Instead, there is a relationship between linear velocity and angular rate that makes a smarter G limiter. Linear and angular velocity determine the radius of the turn circle, and therefore G-force.
 
+This means that limiting G-force is simply limiting the maximum angular rate in the flight assist:
 ```gdscript
 g_limited_angular_rate = g_limit * 9.81 / air_speed
 ```

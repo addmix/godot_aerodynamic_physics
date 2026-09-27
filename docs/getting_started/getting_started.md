@@ -2,6 +2,16 @@
 
 If you haven't already, [Install the plugin](/README.md/#installation)
 
+## Demo Scene/Demo Aircraft
+
+There is a demo scene built into the plugin, with a handful of premade aircraft. The demo scene is located at: `res://addons/godot_aerodynamic_physics/demo/demo_scene.tscn`
+
+With the scene open, press the "Play the currently edited scene" (F6 hotkey) button in the top-right.
+
+These demo aircraft are located at: `res://addons/godot_aerodynamic_physics/demo/aircraft_examples/`, and serve as a great reference on how to use various nodes, and how to properly configure your own aircraft. You can use these aircraft as a starting point for your own designs.
+
+# Creating Custom Aircraft
+
 ## Basic AeroBody3D
 The minimum requirement for an AeroBody3D is:
 - A child `CollisionShape3D` with a valid Shape
@@ -136,5 +146,10 @@ The AOA limiter serves to prevent the aircraft from stalling, by reducing the co
 
 ![AOA Limiter](getting_started_assets/aoa_limiter.png)
 
+# Modeled aircraft workflow
+
+Now that you have created a basic aircraft, follow these steps to create an aircraft using a model: [Model Import Worflow](workflow.md)
+
 ## Further reference
-[Getting familiar with Aero Nodes](getting_familiar_with_aero_nodes.md)
+
+You can learn more about how the Aero nodes work, and how to properly use them here: [Getting familiar with Aero Nodes](getting_familiar_with_aero_nodes.md)

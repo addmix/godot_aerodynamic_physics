@@ -499,19 +499,18 @@ wing_config = SubResource("Resource_8a4f4")
 actuation_config = SubResource("Resource_0thx8")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="EngineR" type="Node3D" parent="Wing" index="1" unique_id=447216322 node_paths=PackedStringArray("propeller_blade")]
-transform = Transform3D(0.9999999999999998, 0, 0, 0, -0.09410831331851396, 0.99556196460308, 0, -0.99556196460308, -0.09410831331851396, 4.255958564061166, -0.22866046489026243, -5.942324614898082)
+[node name="EngineR" type="Node3D" parent="Wing/Wing2" index="1" unique_id=447216322 node_paths=PackedStringArray("propeller_blade")]
+transform = Transform3D(0.998171886552097, -0.04806095952755912, 0.036647360973442004, -0.04358112575163286, -0.15223295067801623, 0.9873833167549899, -0.04187565372919919, -0.987175401282444, -0.15404920229458252, -18.442901590048216, 0.16904058993919868, -4.840144150267356)
 script = ExtResource("11_h0te8")
 propeller_amount = 3
 propeller_blade = NodePath("Blade")
 propeller_speed_control_config = SubResource("Resource_segqd")
-mirror_only_position = true
-mirror_axis = 1
+mirror_scaling_fix_axis = 1
 show_torque = true
 show_lift = false
 show_thrust = true
 
-[node name="Blade" type="Node3D" parent="Wing/EngineR" index="0" unique_id=839777504]
+[node name="Blade" type="Node3D" parent="Wing/Wing2/EngineR" index="0" unique_id=839777504]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.804408776796484, 0, 0)
 script = ExtResource("6_kigpq")
 manual_config = SubResource("Resource_ejmvr")
@@ -519,7 +518,7 @@ wing_config = SubResource("Resource_rca78")
 actuation_config = SubResource("Resource_kigpq")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="CSGBox3D" type="CSGBox3D" parent="Wing/EngineR/Blade" index="0" unique_id=579484031]
+[node name="CSGBox3D" type="CSGBox3D" parent="Wing/Wing2/EngineR/Blade" index="0" unique_id=579484031]
 transform = Transform3D(1, 0, 0, 0, 1.0000000000000764, -3.4347525000000003e-16, 0, 3.4347525000000003e-16, 1.0000000000000764, 0, 5.3290705e-15, 0.09529135376214626)
 size = Vector3(3.537813784316313, 0.06311671097091676, 0.37421620171153336)
 
@@ -593,4 +592,4 @@ shape = SubResource("ConvexPolygonShape3D_mrqkl")
 transform = Transform3D(-0.9999999999999244, 2.3533003005715792e-08, -3.879870103159141e-07, -2.3533003005715792e-08, 0.9926691299378396, 0.12086355310204838, 3.879870103159141e-07, 0.12086355310204838, -0.9926691299377643, 0, 4.272989, -6.219122)
 shape = SubResource("ConvexPolygonShape3D_km0hj")
 
-[node name="FloatingHUD" parent="." index="18" unique_id=1323450826 instance=ExtResource("19_65nru")]
+[node name="FloatingHUD" parent="." index="17" unique_id=1323450826 instance=ExtResource("19_65nru")]

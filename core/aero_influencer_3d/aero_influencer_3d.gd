@@ -31,7 +31,6 @@ const AeroNodeUtils = preload("../../utils/node_utils.gd")
 ## nodes like AeroMovers or Propellers. Sleep is only interrupted if the AeroInfluencer sub-class triggers it.
 @export var can_override_body_sleep : bool = true
 
-@export var mirror_only_position : bool = false
 @export_enum("None", "X", "Y", "Z") var mirror_axis : int = 0:
 	set(x):
 		mirror_axis = x
@@ -45,6 +44,7 @@ const AeroNodeUtils = preload("../../utils/node_utils.gd")
 		mirror_axis = 0
 		mirror_duplicate = duplicate()
 		mirror_duplicate.is_duplicate = true
+		mirror_duplicate.mirror_duplicate = null
 		mirror_duplicate.name = name + "Mirror"
 		mirror_axis = x
 		mirror_duplicate.mirror_axis = x
@@ -66,8 +66,32 @@ const AeroNodeUtils = preload("../../utils/node_utils.gd")
 				if not mirror_only_position:
 					mirror_duplicate.basis = Basis(Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, -1)) * mirror_duplicate.basis
 		
+		mirror_duplicate.default_transform = mirror_duplicate.transform
+		
 		get_parent().add_child(mirror_duplicate)
+@export_enum("None", "X", "Y", "Z") var mirror_scaling_fix_axis : int = 0:
+	set(x):
+		mirror_scaling_fix_axis = x
+		
+		if is_duplicate:
+			match mirror_scaling_fix_axis:
+				1: #X
+					basis.x *= -1
+				2: #Y
+					basis.y *= -1
+				3: #Z
+					basis.z *= -1
+			
+			default_transform = basis
+
+@export var mirror_only_position : bool = false
 var is_duplicate : bool = false
+func set_duplicate_recursive(value : bool) -> void:
+	is_duplicate = value
+	for influencer : AeroInfluencer3D in aero_influencers:
+		#this logic would potentially have issues if is_duplicate is set to false
+		#however currently, duplicates are freed and recreated when modified, so that should never happen
+		influencer.is_duplicate = is_duplicate
 var mirror_duplicate : AeroInfluencer3D = null
 
 
@@ -165,6 +189,15 @@ func _ready() -> void:
 	add_child(lift_debug_vector, INTERNAL_MODE_FRONT)
 	add_child(drag_debug_vector, INTERNAL_MODE_FRONT)
 	add_child(thrust_debug_vector, INTERNAL_MODE_FRONT)
+	
+	if is_duplicate:
+		set_duplicate_recursive(is_duplicate)
+	
+	var deferred = func():
+		mirror_scaling_fix_axis = mirror_scaling_fix_axis
+		default_transform = transform
+	
+	deferred.call_deferred()
 
 func _enter_tree() -> void:
 	AeroNodeUtils.connect_signal_safe(self, "child_entered_tree", on_child_enter_tree, 0, true)

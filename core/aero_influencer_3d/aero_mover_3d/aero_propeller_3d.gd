@@ -45,6 +45,9 @@ func _init():
 	show_torque = true
 	show_thrust = true
 	show_lift = false
+	
+	if Engine.is_editor_hint():
+		update_gizmos()
 
 # Called when the node enters the scene tree for the first time.
 func _ready():

@@ -17,8 +17,10 @@ const aeropropeller3d_icon = preload("./icons/AeroPropeller3D.svg")
 const aerothruster3d_icon = preload("./icons/JetThrusterComponent.svg")
 
 #plugin gizmos
-const gizmo_plugin = preload("./core/gizmos/aero_surface_gizmo.gd")
-var gizmo_plugin_instance = gizmo_plugin.new()
+const surface_gizmo = preload("./core/gizmos/aero_surface_3d_gizmo.gd")
+var surface_gizmo_instance = surface_gizmo.new()
+const propeller_gizmo = preload("./core/gizmos/aero_propeller_3d_gizmo.gd")
+var propeller_gizmo_instance = propeller_gizmo.new()
 
 #nodes
 const aero_body_3d = preload("./core/aero_body_3d.gd")
@@ -42,7 +44,8 @@ func _enter_tree():
 		ProjectSettings.set_setting("layer_names/3d_physics/layer_15", "Atmosphere Areas")
 	
 	add_autoload_singleton("AeroUnits", path + "/core/singletons/aero_units.gd")
-	add_node_3d_gizmo_plugin(gizmo_plugin_instance)
+	add_node_3d_gizmo_plugin(surface_gizmo_instance)
+	add_node_3d_gizmo_plugin(propeller_gizmo_instance)
 	
 	add_custom_type("AeroBody3D", "VehicleBody3D", aero_body_3d, aerobody3d_icon)
 	add_custom_type("AeroInfluencer3D", "Node3D", aero_influencer_3d, aeroinfluencer3d_icon)
@@ -73,7 +76,8 @@ func _exit_tree():
 	remove_custom_type("FlightAssist")
 	
 	remove_autoload_singleton("AeroUnits")
-	remove_node_3d_gizmo_plugin(gizmo_plugin_instance)
+	remove_node_3d_gizmo_plugin(surface_gizmo_instance)
+	remove_node_3d_gizmo_plugin(propeller_gizmo_instance)
 
 static func ifndef(setting : String, default_value : Variant) -> Variant:
 	if not ProjectSettings.has_setting(setting):

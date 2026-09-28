@@ -15,7 +15,9 @@
 [ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_config.gd" id="9_vfc5r"]
 [ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/flight_info_label.tscn" id="13_2kj11"]
 [ext_resource type="Script" uid="uid://3kjm0rdymoth" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_thruster_3d/aero_thruster_3d.gd" id="13_a3l80"]
+[ext_resource type="Script" uid="uid://8vqexybqvob4" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/camera_rotator.gd" id="14_xm78o"]
 [ext_resource type="Script" uid="uid://cy2j3ls8g16s2" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/ball_launcher.gd" id="15_iktab"]
+[ext_resource type="PackedScene" uid="uid://ctn1rdc7k7icw" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/floating_hud.tscn" id="18_kx8cy"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_k5k50"]
 friction = 0.0
@@ -180,7 +182,7 @@ point_count = 3
 
 [sub_resource type="Curve" id="Curve_xm78o"]
 _limits = [-1.2, 1.2, -180.0, 180.0]
-_data = [Vector2(-180, 0), 0.0, 0.07999999999999999, 1, 1, Vector2(-169.5, 0.84), 0.07999999999999999, 0.0, 1, 0, Vector2(-135, 0.42), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-15, -1.2), 0.0, 0.08, 0, 1, Vector2(15, 1.2), 0.08, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.42), 0.0, 0.0, 0, 0, Vector2(169.5, -0.84), 0.0, 0.07999999999999999, 0, 1, Vector2(180, 0), 0.07999999999999999, 0.0, 1, 1]
+_data = [Vector2(-180, 0), 0.0, 0.07999999999999999, 1, 1, Vector2(-169.5, 0.84), 0.07999999999999999, 0.0, 1, 0, Vector2(-135, 0.6), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-15, -1.2), 0.0, 0.08, 0, 1, Vector2(15, 1.2), 0.08, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.6), 0.0, 0.0, 0, 0, Vector2(169.5, -0.84), 0.0, 0.07999999999999999, 0, 1, Vector2(180, 0), 0.07999999999999999, 0.0, 1, 1]
 point_count = 10
 script = ExtResource("8_maaxn")
 metadata/_custom_type_script = "uid://cii4ohipynhcc"
@@ -330,7 +332,7 @@ point_count = 3
 
 [sub_resource type="Curve" id="Curve_maaxn"]
 _limits = [-0.6, 0.6, -180.0, 180.0]
-_data = [Vector2(-180, 0), 0.0, 0.02, 1, 1, Vector2(-160, 0.4), 0.02, 0.0, 1, 0, Vector2(-135, 0.54), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-22.5, -0.45), 0.0, 0.02, 0, 1, Vector2(27.5, 0.55), 0.02, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.54), 0.0, 0.0, 0, 0, Vector2(155, -0.5), 0.0, 0.02, 0, 1, Vector2(180, 0), 0.02, 0.0, 1, 1]
+_data = [Vector2(-180, 0), 0.0, 0.02, 1, 1, Vector2(-160, 0.4), 0.02, 0.0, 1, 0, Vector2(-135, 0.6), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-22.5, -0.45), 0.0, 0.02, 0, 1, Vector2(27.5, 0.55), 0.02, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.6), 0.0, 0.0, 0, 0, Vector2(155, -0.5), 0.0, 0.02, 0, 1, Vector2(180, 0), 0.02, 0.0, 1, 1]
 point_count = 10
 script = ExtResource("8_maaxn")
 lift_coefficient = 0.5
@@ -518,11 +520,14 @@ manual_config = SubResource("Resource_akoyd")
 wing_config = SubResource("Resource_gdnov")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="Camera3D" type="Camera3D" parent="." index="17" unique_id=1546900829]
+[node name="CameraRotator" type="Node3D" parent="." index="17" unique_id=991116405]
+script = ExtResource("14_xm78o")
+
+[node name="Camera3D" type="Camera3D" parent="CameraRotator" index="0" unique_id=1546900829]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.77636e-15, 4.45414, 21.1931)
 far = 100000.0
 
-[node name="Label3D" type="Label3D" parent="Camera3D" index="0" unique_id=1915351549]
+[node name="Label3D" type="Label3D" parent="CameraRotator/Camera3D" index="0" unique_id=1915351549]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.313, -2.986)
 text = "Controls:
 Pitch: W/A
@@ -531,7 +536,7 @@ Roll: A/D
 Throttle: Shift/Ctrl
 Launch Ball: Space"
 
-[node name="FlightInfoLabel" parent="Camera3D" index="1" unique_id=1498651923 instance=ExtResource("13_2kj11")]
+[node name="FlightInfoLabel" parent="CameraRotator/Camera3D" index="1" unique_id=1498651923 instance=ExtResource("13_2kj11")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5125, 1.313, -2.986)
 
 [node name="CollisionShape3D10" type="CollisionShape3D" parent="." index="18" unique_id=1103241291]
@@ -555,3 +560,5 @@ metadata/_custom_type_script = "uid://3kjm0rdymoth"
 [node name="BallLauncher" type="Marker3D" parent="." index="21" unique_id=1656604618]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.93934, -7.60912)
 script = ExtResource("15_iktab")
+
+[node name="FloatingHUD" parent="." index="24" unique_id=1323450826 instance=ExtResource("18_kx8cy")]

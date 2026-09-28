@@ -14,6 +14,8 @@
 [ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_config.gd" id="12_njgyo"]
 [ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/flight_info_label.tscn" id="13_m134i"]
 [ext_resource type="Script" uid="uid://j11128f5e4xl" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_thruster_3d/aero_jet_thruster_3d.gd" id="13_qs0nt"]
+[ext_resource type="Script" uid="uid://8vqexybqvob4" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/camera_rotator.gd" id="14_rvvp2"]
+[ext_resource type="PackedScene" uid="uid://ctn1rdc7k7icw" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/floating_hud.tscn" id="16_blosn"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_m08mi"]
 friction = 0.0
@@ -300,11 +302,14 @@ actuation_config = SubResource("Resource_hl3vl")
 transform = Transform3D(1, 0, -5.96046e-08, 0, 1, 0, 5.96046e-08, 0, 1, -0.0699999, 0, 0.269945)
 size = Vector3(3.67285, 0.113525, 1.14014)
 
-[node name="Camera3D" type="Camera3D" parent="." unique_id=264231530]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55771, 8.71651)
+[node name="CameraRotator" type="Node3D" parent="." unique_id=1783205942]
+script = ExtResource("14_rvvp2")
+
+[node name="Camera3D" type="Camera3D" parent="CameraRotator" unique_id=264231530]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5577100000000002, 8.71651)
 far = 100000.0
 
-[node name="Label3D" type="Label3D" parent="Camera3D" unique_id=284383959]
+[node name="Label3D" type="Label3D" parent="CameraRotator/Camera3D" unique_id=284383959]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.57529, -2.9862)
 text = "Controls:
 Pitch: W/A
@@ -312,8 +317,10 @@ Yaw: Q/E
 Roll: A/D
 Throttle: Shift/Ctrl"
 
-[node name="FlightInfoLabel" parent="Camera3D" unique_id=758165330 instance=ExtResource("13_m134i")]
+[node name="FlightInfoLabel" parent="CameraRotator/Camera3D" unique_id=758165330 instance=ExtResource("13_m134i")]
 
 [node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=240306869]
 transform = Transform3D(1, 0, 0, 0, 0.998193, 0.0600904, 0, -0.0600904, 0.998193, 0, -0.155863, 1.06391)
 size = Vector3(0.25, 0.25, 4.2828)
+
+[node name="FloatingHUD" parent="." unique_id=1323450826 instance=ExtResource("16_blosn")]

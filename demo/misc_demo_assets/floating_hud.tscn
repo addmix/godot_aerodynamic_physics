@@ -1,0 +1,92 @@
+[gd_scene format=3 uid="uid://ctn1rdc7k7icw"]
+
+[ext_resource type="Script" uid="uid://bwv1droi7w06b" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/flightpath_indicator.gd" id="1_1g8n1"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_ryexn"]
+viewport_path = NodePath("MeshInstance3D/SubViewport")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ryexn"]
+resource_local_to_scene = true
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+no_depth_test = true
+shading_mode = 0
+albedo_texture = SubResource("ViewportTexture_ryexn")
+fixed_size = true
+point_size = 100.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_tscia"]
+resource_local_to_scene = true
+material = SubResource("StandardMaterial3D_ryexn")
+size = Vector2(0.05, 0.05)
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_tscia"]
+viewport_path = NodePath("flightpath_indicator/flightpath_indicator/SubViewport")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_58hhq"]
+resource_local_to_scene = true
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+no_depth_test = true
+shading_mode = 0
+albedo_texture = SubResource("ViewportTexture_tscia")
+fixed_size = true
+point_size = 100.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_qbdpc"]
+resource_local_to_scene = true
+material = SubResource("StandardMaterial3D_58hhq")
+size = Vector2(0.05, 0.05)
+
+[node name="FloatingHUD" type="Node3D" unique_id=1323450826]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=341386036]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -497.3487235954283)
+mesh = SubResource("QuadMesh_tscia")
+skeleton = NodePath("../..")
+
+[node name="SubViewport" type="SubViewport" parent="MeshInstance3D" unique_id=867615200]
+disable_3d = true
+transparent_bg = true
+size = Vector2i(210, 210)
+render_target_update_mode = 4
+
+[node name="Line2D" type="Line2D" parent="MeshInstance3D/SubViewport" unique_id=1672378749]
+points = PackedVector2Array(-100, 0, -50, 0, -25, 50, 0, 0, 25, 50, 50, 0, 100, 0)
+width = 16.0
+default_color = Color(0, 1, 0, 1)
+
+[node name="Camera2D" type="Camera2D" parent="MeshInstance3D/SubViewport" unique_id=1617783035]
+
+[node name="flightpath_indicator" type="Node3D" parent="." unique_id=1632927844]
+script = ExtResource("1_1g8n1")
+
+[node name="flightpath_indicator" type="MeshInstance3D" parent="flightpath_indicator" unique_id=860527032]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -497.3487235954283)
+mesh = SubResource("QuadMesh_qbdpc")
+skeleton = NodePath("../../..")
+
+[node name="SubViewport" type="SubViewport" parent="flightpath_indicator/flightpath_indicator" unique_id=1960018919]
+disable_3d = true
+transparent_bg = true
+size = Vector2i(210, 210)
+render_target_update_mode = 4
+
+[node name="Line2D" type="Line2D" parent="flightpath_indicator/flightpath_indicator/SubViewport" unique_id=1033963777]
+points = PackedVector2Array(-100, 0, -50, 0, -35, 35, 0, 50, 35, 35, 50, 0, 100, 0)
+width = 16.0
+default_color = Color(0, 1, 0, 1)
+
+[node name="Line2D2" type="Line2D" parent="flightpath_indicator/flightpath_indicator/SubViewport" unique_id=845636375]
+points = PackedVector2Array(-50, 0, -35, -35, 0, -50, 35, -35, 50, 0)
+width = 16.0
+default_color = Color(0, 1, 0, 1)
+
+[node name="Line2D3" type="Line2D" parent="flightpath_indicator/flightpath_indicator/SubViewport" unique_id=248420767]
+points = PackedVector2Array(0, -50, 0, -80)
+width = 16.0
+default_color = Color(0, 1, 0, 1)
+
+[node name="Camera2D" type="Camera2D" parent="flightpath_indicator/flightpath_indicator/SubViewport" unique_id=1649990927]

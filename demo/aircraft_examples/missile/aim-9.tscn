@@ -17,6 +17,7 @@
 [ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_config.gd" id="13_j4104"]
 [ext_resource type="Script" uid="uid://blp6761y154ht" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_buoyancy_3d/aero_buoyancy_mesh_3d.gd" id="16_b4ni8"]
 [ext_resource type="ArrayMesh" uid="uid://cnc5tcxdletkg" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/missile/fueslage_aero_mesh.res" id="17_6g6ll"]
+[ext_resource type="PackedScene" uid="uid://ctn1rdc7k7icw" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/floating_hud.tscn" id="18_6g6ll"]
 
 [sub_resource type="Resource" id="Resource_00mgn"]
 script = ExtResource("3_egaj7")
@@ -122,6 +123,25 @@ cumulative_negative_event = &"throttle_down"
 [sub_resource type="Resource" id="Resource_nxse0"]
 script = ExtResource("5_m1u2p")
 axis_configs = Array[ExtResource("5_1iei2")]([SubResource("Resource_5yd0i"), SubResource("Resource_r7djj"), SubResource("Resource_3jirj")])
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_h7w54"]
+viewport_path = NodePath("Camera3D/MeshInstance3D/SubViewport")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_28v4o"]
+resource_local_to_scene = true
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+no_depth_test = true
+shading_mode = 0
+albedo_texture = SubResource("ViewportTexture_h7w54")
+fixed_size = true
+point_size = 100.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_mbj8a"]
+resource_local_to_scene = true
+material = SubResource("StandardMaterial3D_28v4o")
+size = Vector2(0.05, 0.05)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_inpsn"]
 radius = 0.0650153
@@ -253,17 +273,21 @@ metadata/_custom_type_script = "uid://cc5dwx5pqkaur"
 script = ExtResource("7_nxse0")
 
 [node name="CameraWithoutRotation" parent="." index="1" unique_id=1299319465 instance=ExtResource("8_00mgn")]
+show_crosshair = true
 right_click_to_move = false
 camera_distance = 5.0
 camera_height = 0.6
 camera_fov = 75.0
 
-[node name="Label3D" type="Label3D" parent="CameraWithoutRotation/Camera3D" index="0" unique_id=875369512]
+[node name="Label3D" type="Label3D" parent="CameraWithoutRotation/Camera3D" parent_id_path=PackedInt32Array(1299319465, 906426946) index="0" unique_id=875369512]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.313, -2.986)
 text = "Throttle: Shift/Ctrl"
 
-[node name="FlightInfoLabel" parent="CameraWithoutRotation/Camera3D" index="1" unique_id=224437334 instance=ExtResource("7_b4ni8")]
+[node name="FlightInfoLabel" parent="CameraWithoutRotation/Camera3D" parent_id_path=PackedInt32Array(1299319465, 906426946) index="1" unique_id=224437334 instance=ExtResource("7_b4ni8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5125, 1.313, -2.986)
+
+[node name="MeshInstance3D" parent="CameraWithoutRotation/Camera3D" parent_id_path=PackedInt32Array(1299319465, 906426946) index="2" unique_id=181835651]
+mesh = SubResource("QuadMesh_mbj8a")
 
 [node name="CanardLR" parent="." index="4" unique_id=772763563]
 rotation_order = 3
@@ -336,5 +360,7 @@ visible = false
 script = ExtResource("16_b4ni8")
 buoyancy_mesh = ExtResource("17_6g6ll")
 metadata/_custom_type_script = "uid://blp6761y154ht"
+
+[node name="FloatingHUD" parent="." index="18" unique_id=1323450826 instance=ExtResource("18_6g6ll")]
 
 [editable path="CameraWithoutRotation"]

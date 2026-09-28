@@ -12,11 +12,13 @@
 [ext_resource type="Script" uid="uid://cbgqb7g7mmwtu" path="res://addons/godot_aerodynamic_physics/core/controls/aero_control_config.gd" id="6_16k3l"]
 [ext_resource type="Script" uid="uid://d1725od371u4a" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd" id="6_kigpq"]
 [ext_resource type="Script" uid="uid://ctbwb7xlhft6t" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_config.gd" id="7_35f7f"]
+[ext_resource type="Script" uid="uid://8vqexybqvob4" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/camera_rotator.gd" id="7_jduiy"]
 [ext_resource type="Script" uid="uid://crkbhmxpjff4o" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd" id="8_yinxf"]
 [ext_resource type="Script" uid="uid://c46td0go5kvp6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_axis_config.gd" id="9_n73q8"]
 [ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_config.gd" id="10_0pbsb"]
 [ext_resource type="Script" uid="uid://bsu5rdrtiqph7" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_mover_3d/aero_propeller_3d.gd" id="11_h0te8"]
 [ext_resource type="Script" uid="uid://cii4ohipynhcc" path="res://addons/godot_aerodynamic_physics/core/easy_lift_curve.gd" id="12_h0te8"]
+[ext_resource type="PackedScene" uid="uid://ctn1rdc7k7icw" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/floating_hud.tscn" id="19_65nru"]
 
 [sub_resource type="Resource" id="Resource_rrmb4"]
 script = ExtResource("3_h0te8")
@@ -152,7 +154,7 @@ point_count = 3
 
 [sub_resource type="Curve" id="Curve_16k3l"]
 _limits = [-1.44, 1.44, -180.0, 180.0]
-_data = [Vector2(-180, 0), 0.0, 0.08, 1, 1, Vector2(-172.5, 0.6), 0.08, 0.0, 1, 0, Vector2(-135, 0.42), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-12, -0.96), 0.0, 0.08, 0, 1, Vector2(18, 1.44), 0.08, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.42), 0.0, 0.0, 0, 0, Vector2(166.5, -1.08), 0.0, 0.08, 0, 1, Vector2(180, 0), 0.08, 0.0, 1, 1]
+_data = [Vector2(-180, 0), 0.0, 0.08, 1, 1, Vector2(-172.5, 0.6), 0.08, 0.0, 1, 0, Vector2(-135, 0.6), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-12, -0.96), 0.0, 0.08, 0, 1, Vector2(18, 1.44), 0.08, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.6), 0.0, 0.0, 0, 0, Vector2(166.5, -1.08), 0.0, 0.08, 0, 1, Vector2(180, 0), 0.08, 0.0, 1, 1]
 point_count = 10
 script = ExtResource("12_h0te8")
 camber = 0.2
@@ -200,7 +202,7 @@ point_count = 3
 
 [sub_resource type="Curve" id="Curve_vwm3g"]
 _limits = [-1.2, 1.2, -180.0, 180.0]
-_data = [Vector2(-180, 0), 0.0, 0.07999999999999999, 1, 1, Vector2(-169.5, 0.84), 0.07999999999999999, 0.0, 1, 0, Vector2(-135, 0.42), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-15, -1.2), 0.0, 0.08, 0, 1, Vector2(15, 1.2), 0.08, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.42), 0.0, 0.0, 0, 0, Vector2(169.5, -0.84), 0.0, 0.07999999999999999, 0, 1, Vector2(180, 0), 0.07999999999999999, 0.0, 1, 1]
+_data = [Vector2(-180, 0), 0.0, 0.07999999999999999, 1, 1, Vector2(-169.5, 0.84), 0.07999999999999999, 0.0, 1, 0, Vector2(-135, 0.6), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-15, -1.2), 0.0, 0.08, 0, 1, Vector2(15, 1.2), 0.08, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.6), 0.0, 0.0, 0, 0, Vector2(169.5, -0.84), 0.0, 0.07999999999999999, 0, 1, Vector2(180, 0), 0.07999999999999999, 0.0, 1, 1]
 point_count = 10
 script = ExtResource("12_h0te8")
 metadata/_custom_type_script = "uid://cii4ohipynhcc"
@@ -220,9 +222,9 @@ drag_at_mach_multiplier_curve = SubResource("Curve_8ix2c")
 
 [sub_resource type="Resource" id="Resource_8a4f4"]
 script = ExtResource("8_yinxf")
-chord = 3.133
+chord = 3.1330000000000005
 span = 17.069
-area = 53.477177
+area = 53.477177000000005
 aspect_ratio = 5.448132780082987
 
 [sub_resource type="Resource" id="Resource_ejoba"]
@@ -265,7 +267,7 @@ point_count = 3
 
 [sub_resource type="Curve" id="Curve_6qk7s"]
 _limits = [-1.2, 1.2, -180.0, 180.0]
-_data = [Vector2(-180, 0), 0.0, 0.07999999999999999, 1, 1, Vector2(-169.5, 0.84), 0.07999999999999999, 0.0, 1, 0, Vector2(-135, 0.42), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-15, -1.2), 0.0, 0.08, 0, 1, Vector2(15, 1.2), 0.08, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.42), 0.0, 0.0, 0, 0, Vector2(169.5, -0.84), 0.0, 0.07999999999999999, 0, 1, Vector2(180, 0), 0.07999999999999999, 0.0, 1, 1]
+_data = [Vector2(-180, 0), 0.0, 0.07999999999999999, 1, 1, Vector2(-169.5, 0.84), 0.07999999999999999, 0.0, 1, 0, Vector2(-135, 0.6), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-15, -1.2), 0.0, 0.08, 0, 1, Vector2(15, 1.2), 0.08, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.6), 0.0, 0.0, 0, 0, Vector2(169.5, -0.84), 0.0, 0.07999999999999999, 0, 1, Vector2(180, 0), 0.07999999999999999, 0.0, 1, 1]
 point_count = 10
 script = ExtResource("12_h0te8")
 metadata/_custom_type_script = "uid://cii4ohipynhcc"
@@ -317,7 +319,7 @@ point_count = 3
 
 [sub_resource type="Curve" id="Curve_hsuvl"]
 _limits = [-1.2, 1.2, -180.0, 180.0]
-_data = [Vector2(-180, 0), 0.0, 0.07999999999999999, 1, 1, Vector2(-169.5, 0.84), 0.07999999999999999, 0.0, 1, 0, Vector2(-135, 0.42), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-15, -1.2), 0.0, 0.08, 0, 1, Vector2(15, 1.2), 0.08, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.42), 0.0, 0.0, 0, 0, Vector2(169.5, -0.84), 0.0, 0.07999999999999999, 0, 1, Vector2(180, 0), 0.07999999999999999, 0.0, 1, 1]
+_data = [Vector2(-180, 0), 0.0, 0.07999999999999999, 1, 1, Vector2(-169.5, 0.84), 0.07999999999999999, 0.0, 1, 0, Vector2(-135, 0.6), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-15, -1.2), 0.0, 0.08, 0, 1, Vector2(15, 1.2), 0.08, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.6), 0.0, 0.0, 0, 0, Vector2(169.5, -0.84), 0.0, 0.07999999999999999, 0, 1, Vector2(180, 0), 0.07999999999999999, 0.0, 1, 1]
 point_count = 10
 script = ExtResource("12_h0te8")
 metadata/_custom_type_script = "uid://cii4ohipynhcc"
@@ -438,11 +440,14 @@ flight_assist = SubResource("Resource_utkc8")
 control_config = SubResource("Resource_cvjw4")
 metadata/_custom_type_script = "uid://cc5dwx5pqkaur"
 
-[node name="Camera3D" type="Camera3D" parent="." index="1" unique_id=696354523]
+[node name="CameraRotator" type="Node3D" parent="." index="1" unique_id=547095534]
+script = ExtResource("7_jduiy")
+
+[node name="Camera3D" type="Camera3D" parent="CameraRotator" index="0" unique_id=696354523]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 32)
 far = 100000.0
 
-[node name="Label3D" type="Label3D" parent="Camera3D" index="0" unique_id=198793541]
+[node name="Label3D" type="Label3D" parent="CameraRotator/Camera3D" index="0" unique_id=198793541]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.313, -2.986)
 text = "Controls:
 Pitch: W/A
@@ -451,7 +456,7 @@ Roll: A/D
 Throttle: Shift/Ctrl
 Propeller Pitch: T/G"
 
-[node name="FlightInfoLabel" parent="Camera3D" index="1" unique_id=1224388868 instance=ExtResource("2_km0hj")]
+[node name="FlightInfoLabel" parent="CameraRotator/Camera3D" index="1" unique_id=1224388868 instance=ExtResource("2_km0hj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5125, 1.313, -2.986)
 
 [node name="FueslageBuoyancy" type="Node3D" parent="." index="2" unique_id=384960125]
@@ -587,3 +592,5 @@ shape = SubResource("ConvexPolygonShape3D_mrqkl")
 [node name="CollisionShape3D8" type="CollisionShape3D" parent="." index="16" unique_id=360007171]
 transform = Transform3D(-0.9999999999999244, 2.3533003005715792e-08, -3.879870103159141e-07, -2.3533003005715792e-08, 0.9926691299378396, 0.12086355310204838, 3.879870103159141e-07, 0.12086355310204838, -0.9926691299377643, 0, 4.272989, -6.219122)
 shape = SubResource("ConvexPolygonShape3D_km0hj")
+
+[node name="FloatingHUD" parent="." index="18" unique_id=1323450826 instance=ExtResource("19_65nru")]

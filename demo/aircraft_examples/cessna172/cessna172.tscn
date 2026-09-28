@@ -12,10 +12,12 @@
 [ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_config.gd" id="5_5fm2q"]
 [ext_resource type="Script" uid="uid://bsu5rdrtiqph7" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_mover_3d/aero_propeller_3d.gd" id="5_keinb"]
 [ext_resource type="Script" uid="uid://c46td0go5kvp6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_axis_config.gd" id="5_o4ret"]
+[ext_resource type="Script" uid="uid://8vqexybqvob4" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/camera_rotator.gd" id="7_cp2h5"]
 [ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/flight_info_label.tscn" id="7_ey0gl"]
 [ext_resource type="Script" uid="uid://cii4ohipynhcc" path="res://addons/godot_aerodynamic_physics/core/easy_lift_curve.gd" id="12_i32vb"]
 [ext_resource type="Script" uid="uid://blp6761y154ht" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_buoyancy_3d/aero_buoyancy_mesh_3d.gd" id="14_lo3t1"]
 [ext_resource type="ArrayMesh" uid="uid://cs0vlbs2pbabv" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/cessna172/fueslage_aero_mesh.res" id="15_op60t"]
+[ext_resource type="PackedScene" uid="uid://ctn1rdc7k7icw" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/floating_hud.tscn" id="18_7qotf"]
 
 [sub_resource type="Resource" id="Resource_scrto"]
 script = ExtResource("3_4yv37")
@@ -203,7 +205,7 @@ point_count = 3
 
 [sub_resource type="Curve" id="Curve_cp2h5"]
 _limits = [-1.08, 1.08, -180.0, 180.0]
-_data = [Vector2(-180, 0), 0.0, 0.05999999999999999, 1, 1, Vector2(-171, 0.5399999999999999), 0.05999999999999999, 0.0, 1, 0, Vector2(-135, 0.5599999999999999), 0.0, 0.0, 0, 0, Vector2(-45, -0.7), 0.0, 0.0, 0, 0, Vector2(-12, -0.72), 0.0, 0.06, 0, 1, Vector2(18, 1.08), 0.06, 0.0, 1, 0, Vector2(45, 0.7), 0.0, 0.0, 0, 0, Vector2(135, -0.5599999999999999), 0.0, 0.0, 0, 0, Vector2(165, -0.9), 0.0, 0.06, 0, 1, Vector2(180, 0), 0.06, 0.0, 1, 1]
+_data = [Vector2(-180, 0), 0.0, 0.05999999999999999, 1, 1, Vector2(-171, 0.5399999999999999), 0.05999999999999999, 0.0, 1, 0, Vector2(-135, 0.7), 0.0, 0.0, 0, 0, Vector2(-45, -0.7), 0.0, 0.0, 0, 0, Vector2(-12, -0.72), 0.0, 0.06, 0, 1, Vector2(18, 1.08), 0.06, 0.0, 1, 0, Vector2(45, 0.7), 0.0, 0.0, 0, 0, Vector2(135, -0.7), 0.0, 0.0, 0, 0, Vector2(165, -0.9), 0.0, 0.06, 0, 1, Vector2(180, 0), 0.06, 0.0, 1, 1]
 point_count = 10
 script = ExtResource("12_i32vb")
 lift_coefficient = 0.9
@@ -390,11 +392,14 @@ flight_assist = SubResource("Resource_t1hlr")
 control_config = SubResource("Resource_lo3t1")
 metadata/_custom_type_script = "uid://cc5dwx5pqkaur"
 
-[node name="Camera3D" type="Camera3D" parent="." index="1" unique_id=1364845764]
+[node name="CameraRotator" type="Node3D" parent="." index="1" unique_id=1059591262]
+script = ExtResource("7_cp2h5")
+
+[node name="Camera3D" type="Camera3D" parent="CameraRotator" index="0" unique_id=1364845764]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.52, 8.221)
 far = 100000.0
 
-[node name="Label3D" type="Label3D" parent="Camera3D" index="0" unique_id=928040637]
+[node name="Label3D" type="Label3D" parent="CameraRotator/Camera3D" index="0" unique_id=928040637]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.57529, -2.9862)
 text = "Controls:
 Pitch: W/A
@@ -403,7 +408,7 @@ Roll: A/D
 Throttle: Shift/Ctrl
 Flaps: T/G"
 
-[node name="FlightInfoLabel" parent="Camera3D" index="1" unique_id=1734181071 instance=ExtResource("7_ey0gl")]
+[node name="FlightInfoLabel" parent="CameraRotator/Camera3D" index="1" unique_id=1734181071 instance=ExtResource("7_ey0gl")]
 
 [node name="Fueslage" parent="." index="2" unique_id=595642887]
 script = SubResource("GDScript_op60t")
@@ -554,7 +559,7 @@ actuation_config = SubResource("Resource_dufvg")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
 [node name="CSGBox3D" type="CSGBox3D" parent="VerticalStab/Rudder" index="0" unique_id=862024946]
-transform = Transform3D(1, -5.551120000000009e-16, 0, 5.55112e-16, 0.999999999999992, -4.614528e-31, -7.771561172376101e-16, 1.5777218e-30, 1, -8.881784e-16, 8.881779999999998e-16, 0.32276313112239796)
+transform = Transform3D(1, -5.551120000000009e-16, 0, 5.55112e-16, 0.999999999999992, -4.614528e-31, -7.771561172376103e-16, 1.5777218e-30, 1, -8.881784e-16, 8.881779999999998e-16, 0.32276313112239796)
 visible = false
 size = Vector3(1.57572, 0.0454879, 0.8638856751504136)
 
@@ -605,3 +610,5 @@ material = SubResource("StandardMaterial3D_4tt3o")
 script = ExtResource("14_lo3t1")
 buoyancy_mesh = ExtResource("15_op60t")
 metadata/_custom_type_script = "uid://blp6761y154ht"
+
+[node name="FloatingHUD" parent="." index="22" unique_id=1323450826 instance=ExtResource("18_7qotf")]

@@ -58,6 +58,9 @@ func _ready():
 	if not Engine.is_editor_hint():
 		if propeller_speed_control_config:
 			propeller_speed_control_config = propeller_speed_control_config.duplicate(true)
+	
+	AeroNodeUtils.connect_signal_safe(self, "child_entered_tree", on_child_enter_tree, 0, true)
+
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var arr : PackedStringArray = PackedStringArray()#super._get_configuration_warnings()
@@ -67,8 +70,6 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return arr
 
 func on_child_enter_tree(node : Node) -> void:
-	super(node)
-	
 	if not propeller_blade and node is AeroInfluencer3D:
 		propeller_blade = node
 

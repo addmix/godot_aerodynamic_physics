@@ -50,21 +50,10 @@ const AeroNodeUtils = preload("../../utils/node_utils.gd")
 		mirror_duplicate.mirror_axis = x
 		
 		
-		match mirror_axis:
-			#an adjustment can be made to this basis calculation to avoid having a negative scale
-			#could also be adjusted to allow arbitrary mirror axis??
-			1: #X
-				mirror_duplicate.position *= Vector3(-1, 1, 1)
-				if not mirror_only_position:
-					mirror_duplicate.basis = Basis(Vector3(-1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1)) * mirror_duplicate.basis
-			2: #Y
-				mirror_duplicate.position *= Vector3(1, -1, 1)
-				if not mirror_only_position:
-					mirror_duplicate.basis = Basis(Vector3(1, 0, 0), Vector3(0, -1, 0), Vector3(0, 0, 1)) * mirror_duplicate.basis
-			3: #Z
-				mirror_duplicate.position *= Vector3(1, 1, -1)
-				if not mirror_only_position:
-					mirror_duplicate.basis = Basis(Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, -1)) * mirror_duplicate.basis
+		var flip := Vector3.ONE
+		flip[mirror_axis - 1] = -1.0
+		mirror_duplicate.position *= flip
+		mirror_duplicate.basis = Basis.from_scale(flip) * mirror_duplicate.basis
 		
 		mirror_duplicate.default_transform = mirror_duplicate.transform
 		
@@ -73,18 +62,10 @@ const AeroNodeUtils = preload("../../utils/node_utils.gd")
 	set(x):
 		mirror_scaling_fix_axis = x
 		
-		if is_duplicate:
-			match mirror_scaling_fix_axis:
-				1: #X
-					basis.x *= -1
-				2: #Y
-					basis.y *= -1
-				3: #Z
-					basis.z *= -1
-			
+		if is_duplicate and mirror_scaling_fix_axis != 0:
+			basis[mirror_scaling_fix_axis - 1] *= -1.0
 			default_transform = basis
 
-@export var mirror_only_position : bool = false
 var is_duplicate : bool = false
 func set_duplicate_recursive(value : bool) -> void:
 	is_duplicate = value
@@ -200,24 +181,22 @@ func _ready() -> void:
 	deferred.call_deferred()
 
 func _enter_tree() -> void:
-	AeroNodeUtils.connect_signal_safe(self, "child_entered_tree", on_child_enter_tree, 0, true)
-	AeroNodeUtils.connect_signal_safe(self, "child_exiting_tree", on_child_exit_tree, 0, true)
+	var parent := get_parent()
+	if get_parent() is AeroBody3D:
+		aero_body = parent
+		parent.aero_influencers.append(self)
+	elif parent is AeroInfluencer3D:
+		aero_body = parent.aero_body
+		parent.aero_influencers.append(self)
 	
 	set_deferred("mirror_axis", mirror_axis) #ensures that mirrored version is reliably created when nodes are changed
 
 func _exit_tree() -> void:
-	if mirror_duplicate: 
-		mirror_duplicate.queue_free()
-
-func on_child_enter_tree(node : Node) -> void:
-	if node is AeroInfluencer3D:
-		aero_influencers.append(node)
-		node.aero_body = aero_body
-
-func on_child_exit_tree(node : Node) -> void:
-	if node is AeroInfluencer3D and aero_influencers.has(node):
-		aero_influencers.erase(node)
-		node.aero_body = null
+	var parent := get_parent()
+	if parent is AeroInfluencer3D or parent is AeroBody3D:
+		parent.aero_influencers.erase(self)
+	
+	aero_body = null
 
 func _physics_process(delta : float) -> void:
 	if Engine.is_editor_hint():

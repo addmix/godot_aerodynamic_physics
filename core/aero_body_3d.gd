@@ -294,23 +294,10 @@ func _init():
 func _enter_tree() -> void:
 	test_enter_tree_override = true
 	
-	AeroNodeUtils.connect_signal_safe(self, "child_entered_tree", on_child_enter_tree, 0, true)
-	AeroNodeUtils.connect_signal_safe(self, "child_exiting_tree", on_child_exit_tree, 0, true)
-	
 	set_collision_layer_value(ProjectSettings.get_setting("physics/aerodynamics/atmosphere_area_collision_layer", 15), true) 
 	
 	if Engine.is_editor_hint():
 		update_configuration_warnings()
-
-func on_child_enter_tree(node : Node) -> void:
-	if node is AeroInfluencer3D:
-		aero_influencers.append(node)
-		node.aero_body = self
-
-func on_child_exit_tree(node : Node) -> void:
-	if node is AeroInfluencer3D and aero_influencers.has(node):
-		aero_influencers.erase(node)
-		node.aero_body = null
 
 func _ready() -> void:
 	test_ready_override = true

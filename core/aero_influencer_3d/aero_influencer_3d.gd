@@ -34,45 +34,56 @@ const AeroNodeUtils = preload("../../utils/node_utils.gd")
 @export_enum("None", "X", "Y", "Z") var mirror_axis : int = 0:
 	set(x):
 		mirror_axis = x
-		
-		if mirror_duplicate: 
-			mirror_duplicate.queue_free()
-		
-		if mirror_axis == 0 or is_duplicate or not is_inside_tree():
-			return # no duplication
-		
-		mirror_axis = 0
-		mirror_duplicate = duplicate()
-		mirror_duplicate.is_duplicate = true
-		mirror_duplicate.mirror_duplicate = null
-		mirror_duplicate.name = name + "Mirror"
-		mirror_axis = x
-		mirror_duplicate.mirror_axis = x
-		
-		
-		var flip := Vector3.ONE
-		flip[mirror_axis - 1] = -1.0
-		mirror_duplicate.position *= flip
-		mirror_duplicate.basis = Basis.from_scale(flip) * mirror_duplicate.basis
-		
-		mirror_duplicate.default_transform = mirror_duplicate.transform
-		
-		get_parent().add_child(mirror_duplicate)
+
+func generate_mirror():
+	if mirror_axis == 0 or is_duplicate:
+		return # no duplication
+	
+	if mirror_duplicate: 
+		mirror_duplicate.queue_free()
+	
+	
+	var x = mirror_axis
+	mirror_axis = 0
+	mirror_duplicate = duplicate()
+	mirror_duplicate.is_duplicate = true
+	mirror_duplicate.mirror_duplicate = null
+	mirror_duplicate.name = name + "Mirror"
+	mirror_axis = x
+	mirror_duplicate.mirror_axis = x
+	
+	
+	var flip := Vector3.ONE
+	flip[mirror_axis - 1] = -1.0
+	mirror_duplicate.position *= flip
+	mirror_duplicate.basis = Basis.from_scale(flip) * mirror_duplicate.basis
+	
+	mirror_duplicate.default_transform = mirror_duplicate.transform
+	
+	get_parent().add_child(mirror_duplicate)
+
+## When set, scale will be inverted on the selected axis.
+## This is useful to counteract the inverted scale caused by mirroring.
+## Useful for propellers and other chirality-dependent nodes.
 @export_enum("None", "X", "Y", "Z") var mirror_scaling_fix_axis : int = 0:
 	set(x):
 		mirror_scaling_fix_axis = x
+		if is_inside_tree():
+			_mirror_scaling_fix_axis = mirror_scaling_fix_axis
+var _mirror_scaling_fix_axis : int = 0:
+	set(x):
+		#undo previous mirroring
+		if is_duplicate and _mirror_scaling_fix_axis != 0:
+			basis[_mirror_scaling_fix_axis - 1] *= -1.0
 		
-		if is_duplicate and mirror_scaling_fix_axis != 0:
-			basis[mirror_scaling_fix_axis - 1] *= -1.0
+		_mirror_scaling_fix_axis = x
+		
+		#do new mirroring
+		if is_duplicate and _mirror_scaling_fix_axis != 0:
+			basis[_mirror_scaling_fix_axis - 1] *= -1.0
 			default_transform = basis
 
 var is_duplicate : bool = false
-func set_duplicate_recursive(value : bool) -> void:
-	is_duplicate = value
-	for influencer : AeroInfluencer3D in aero_influencers:
-		#this logic would potentially have issues if is_duplicate is set to false
-		#however currently, duplicates are freed and recreated when modified, so that should never happen
-		influencer.is_duplicate = is_duplicate
 var mirror_duplicate : AeroInfluencer3D = null
 
 
@@ -158,7 +169,8 @@ func _init():
 func _notification(what: int) -> void:
 	match what:
 		NOTIFICATION_TRANSFORM_CHANGED:
-			mirror_axis = mirror_axis
+			if is_inside_tree():
+				generate_mirror()
 
 func _ready() -> void:
 	if not Engine.is_editor_hint():
@@ -171,25 +183,23 @@ func _ready() -> void:
 	add_child(drag_debug_vector, INTERNAL_MODE_FRONT)
 	add_child(thrust_debug_vector, INTERNAL_MODE_FRONT)
 	
-	if is_duplicate:
-		set_duplicate_recursive(is_duplicate)
-	
-	var deferred = func():
-		mirror_scaling_fix_axis = mirror_scaling_fix_axis
-		default_transform = transform
-	
-	deferred.call_deferred()
+	for influencer : AeroInfluencer3D in aero_influencers:
+		influencer.generate_mirror()
 
 func _enter_tree() -> void:
 	var parent := get_parent()
 	if get_parent() is AeroBody3D:
 		aero_body = parent
-		parent.aero_influencers.append(self)
 	elif parent is AeroInfluencer3D:
 		aero_body = parent.aero_body
+		if parent.is_duplicate:
+			is_duplicate = true
+	
+	if get_parent() is AeroBody3D or parent is AeroInfluencer3D:
 		parent.aero_influencers.append(self)
 	
-	set_deferred("mirror_axis", mirror_axis) #ensures that mirrored version is reliably created when nodes are changed
+	if mirror_scaling_fix_axis != 0:
+		mirror_scaling_fix_axis = mirror_scaling_fix_axis
 
 func _exit_tree() -> void:
 	var parent := get_parent()

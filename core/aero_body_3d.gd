@@ -313,6 +313,9 @@ func _ready() -> void:
 	mass_debug_point.add_child(linear_velocity_vector, INTERNAL_MODE_FRONT)
 	mass_debug_point.add_child(angular_velocity_vector, INTERNAL_MODE_FRONT)
 	
+	for influencer : AeroInfluencer3D in aero_influencers:
+		influencer.generate_mirror()
+	
 	_update_debug_visibility()
 	
 	if Engine.is_editor_hint():

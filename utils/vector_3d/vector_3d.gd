@@ -4,25 +4,15 @@
 extends MeshInstance3D
 class_name AeroDebugVector3D
 
+const AeroTransformUtils = preload("res://addons/godot_aerodynamic_physics/utils/transform_utils.gd")
+
 @export var value := Vector3.ZERO:
 	set(x):
 		value = x
 		material.set_shader_parameter("_length", value.length())
-
-		#prevent error when value is 0
-		var length_squared := value.length_squared()
-		if is_equal_approx(length_squared, 0.0):
-			#reset rotation
-			basis = Basis()
-			return
 		
-		#prevent error when the value is colinear with the up axis
-		var up := Vector3(0, 1, 0)
-		var cross := value.cross(up)
-		if is_equal_approx(cross.length_squared(), 0.0):
-			up = Vector3(1, 0, 0)
-		
-		transform.basis = transform.basis.looking_at(value, up)
+		#TODO: change this so that "up" uses thes scene's camera up vector instead
+		transform.basis = AeroTransformUtils.looking_at_safe(value, Vector3(0, 1, 0), Vector3(1, 0, 0))
 @export var color := Color(1, 1, 1):
 	set(x):
 		color = x

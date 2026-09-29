@@ -2,14 +2,11 @@ extends Node3D
 
 @export var rotation_speed : float = deg_to_rad(180)
 
-const aero_math_utils = preload("res://addons/godot_aerodynamic_physics/utils/math_utils.gd")
+const AeroTransformUtils = preload("res://addons/godot_aerodynamic_physics/utils/transform_utils.gd")
 
 func _process(delta: float) -> void:
-	var flightpath_basis : Basis = get_parent().global_basis
-	if not is_equal_approx(get_parent().linear_velocity.length(), 0.0):
-		flightpath_basis = Basis.looking_at(get_parent().linear_velocity, get_parent().global_basis.y)
+	var flightpath_basis : Basis = AeroTransformUtils.looking_at_safe(get_parent().linear_velocity, get_parent().global_basis.y, get_parent().global_basis.z, get_parent().global_basis)
 	var aerobody_basis : Basis = get_parent().global_basis
-	
 	var current_basis := global_basis
 	
 	# use aerobody's velocity as a lerp factor, so that the camera faces forward when not moving or slowing down

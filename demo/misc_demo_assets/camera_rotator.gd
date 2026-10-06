@@ -5,16 +5,23 @@ extends Node3D
 const AeroTransformUtils = preload("res://addons/godot_aerodynamic_physics/utils/transform_utils.gd")
 
 func _process(delta: float) -> void:
-	var flightpath_basis : Basis = AeroTransformUtils.looking_at_safe(get_parent().linear_velocity, get_parent().global_basis.y, get_parent().global_basis.z, get_parent().global_basis)
 	var aerobody_basis : Basis = get_parent().global_basis
+	
+	#look towareds which is closer, linear velocity or negative linear velocity
+	var direction_to_look : Vector3 = get_parent().linear_velocity
+	
+	if direction_to_look.normalized().dot(-aerobody_basis.z.normalized()) < 0.0:
+		direction_to_look = -get_parent().linear_velocity
+	
+	var flightpath_basis : Basis = AeroTransformUtils.looking_at_safe(direction_to_look, get_parent().global_basis.y, get_parent().global_basis.z, get_parent().global_basis)
 	var current_basis := global_basis
 	
 	# use aerobody's velocity as a lerp factor, so that the camera faces forward when not moving or slowing down
-	var lerp_factor : float = clamp(remap(get_parent().linear_velocity.length(), 10, 40, 0, 0.5), 0, 0.5)
+	var lerp_factor : float = clamp(remap(direction_to_look.length(), 10, 40, 0, 0.5), 0, 0.5)
 	var target_basis := aerobody_basis.slerp(flightpath_basis, lerp_factor)
 	
 	#the rotation required to rotate the camera from it's current rotation to the desired rotation
-	var necessary_rotation := Quaternion(current_basis.inverse() * target_basis)
+	var necessary_rotation := Quaternion((current_basis.inverse() * target_basis).get_rotation_quaternion())
 	#using the quaternion's axis and angle, we can get real linear interpolation using move_toward() at a constant speed
 	var amount_to_rotate : float = move_toward(0.0, necessary_rotation.get_angle(), rotation_speed * delta)
 	

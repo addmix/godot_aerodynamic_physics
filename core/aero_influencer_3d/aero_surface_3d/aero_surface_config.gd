@@ -15,7 +15,7 @@ class_name AeroSurfaceConfig
 		span = abs(value)
 		emit_changed()
 ##Aspect ratio of the AeroSurface. This is the ratio of span and chord.
-@export_range(0.0, 1000.0, 0.01, "or_greater", "exp", "suffix:m^2") var area : float = 2.0:
+@export_custom(PROPERTY_HINT_NONE, "suffix:m^2", PROPERTY_USAGE_EDITOR) var area : float = 2.0:
 	set = set_area, get = get_area
 func get_area() -> float:
 	return span * chord
@@ -30,7 +30,7 @@ func set_area(_area : float) -> void:
 	
 	span = _span
 	chord = _chord
-@export_range(0.0, 100.0, 0.001, "or_greater", "exp", "suffix:%") var aspect_ratio : float = 2.0:
+@export_custom(PROPERTY_HINT_NONE, "suffix:%", PROPERTY_USAGE_EDITOR) var aspect_ratio : float = 2.0:
 	set = set_aspect_ratio, get = get_aspect_ratio
 func set_aspect_ratio(_aspect_ratio : float) -> void:
 	var _area := area

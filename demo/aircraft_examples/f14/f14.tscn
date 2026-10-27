@@ -241,15 +241,11 @@ drag_at_mach_multiplier_curve = SubResource("Curve_ryexn")
 script = ExtResource("5_pic3w")
 chord = 2.9249999999999994
 span = 7.59
-area = 22.200749999999996
-aspect_ratio = 2.5948717948717954
 
 [sub_resource type="Resource" id="Resource_2l6s8"]
 script = ExtResource("5_pic3w")
 chord = 0.575
 span = 3.8300000000000005
-area = 2.2022500000000003
-aspect_ratio = 6.660869565217393
 
 [sub_resource type="Resource" id="Resource_08xei"]
 resource_name = "roll"
@@ -292,8 +288,6 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 script = ExtResource("5_pic3w")
 chord = 2.31
 span = 3.3150000000000004
-area = 7.657650000000001
-aspect_ratio = 1.4350649350649352
 
 [sub_resource type="Curve" id="Curve_e2ywv"]
 _limits = [-1.2, 1.2, -180.0, 180.0]
@@ -315,8 +309,6 @@ drag_at_mach_multiplier_curve = SubResource("Curve_ryexn")
 script = ExtResource("5_pic3w")
 chord = 1.38
 span = 2.57
-area = 3.5465999999999993
-aspect_ratio = 1.8623188405797102
 
 [sub_resource type="Resource" id="Resource_vtdjn"]
 script = ExtResource("4_2npbo")
@@ -331,8 +323,6 @@ drag_at_mach_multiplier_curve = SubResource("Curve_ryexn")
 script = ExtResource("5_pic3w")
 chord = 0.5600000000000002
 span = 2.49
-area = 1.3944000000000005
-aspect_ratio = 4.44642857142857
 
 [sub_resource type="Resource" id="Resource_xvduk"]
 resource_name = "yaw"
@@ -385,8 +375,6 @@ drag_at_mach_multiplier_curve = SubResource("Curve_rj6ac")
 script = ExtResource("5_pic3w")
 chord = 2.7350000000000003
 span = 1.5000000000000002
-area = 4.102500000000001
-aspect_ratio = 0.5484460694698354
 
 [sub_resource type="Resource" id="Resource_u1i2l"]
 resource_name = "brake"
@@ -450,6 +438,7 @@ height = 7.89659
 
 [node name="f14" unique_id=275117473 instance=ExtResource("1_6mwa3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4653842452275496, 0)
+collision_layer = 16385
 mass = 27500.0
 physics_material_override = SubResource("PhysicsMaterial_3wjhu")
 center_of_mass = Vector3(0, 0, 2.5700000000000003)
@@ -489,18 +478,18 @@ Launch Ball: Space"
 [node name="FlightInfoLabel" parent="CameraRotator/Camera3D" index="1" unique_id=807166952 instance=ExtResource("7_cck4l")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5125, 1.313, -2.986)
 
-[node name="Fueslage" parent="." index="2" unique_id=1986219955]
+[node name="Fueslage" parent="." index="2" unique_id=1023233946]
 script = SubResource("GDScript_yuw0c")
 
-[node name="RudderL" parent="VerticalStabilizer" parent_id_path=PackedInt32Array(906298762) index="0" unique_id=1556609984]
+[node name="RudderL" parent="VerticalStabilizer" parent_id_path=PackedInt32Array(449052051) index="0" unique_id=151555582]
 transform = Transform3D(1, 0, 0, 0, 0.8910065109719711, -0.45399052567818454, 0, 0.45399052567818454, 0.8910065109719711, -1.77549, 2.4004982, 8.694992)
 rotation_order = 0
 
-[node name="RudderR" parent="VerticalStabilizer" parent_id_path=PackedInt32Array(906298762) index="1" unique_id=552173232]
+[node name="RudderR" parent="VerticalStabilizer" parent_id_path=PackedInt32Array(449052051) index="1" unique_id=367294230]
 transform = Transform3D(1, 0, 0, 0, 0.8910065109719711, -0.45399052567818454, 0, 0.45399052567818454, 0.8910065109719711, 1.7754871, 2.4004982, 8.694992)
 rotation_order = 0
 
-[node name="Fueslage_aero" parent="." index="4" unique_id=812908368]
+[node name="Fueslage_aero" parent="." index="4" unique_id=1309221121]
 visible = false
 
 [node name="SwingR" type="Node3D" parent="." index="5" unique_id=1220823582]

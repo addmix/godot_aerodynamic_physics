@@ -232,8 +232,6 @@ metadata/_custom_type_script = "uid://ctbwb7xlhft6t"
 script = ExtResource("4_o4ret")
 chord = 0.167
 span = 1.0999997499999716
-area = 0.18369995824999527
-aspect_ratio = 6.586824850299231
 
 [sub_resource type="Resource" id="Resource_gsj65"]
 resource_name = "collective"
@@ -250,14 +248,10 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 script = ExtResource("4_o4ret")
 chord = 1.1950000597500046
 span = 1.9999998999999975
-area = 2.39
-aspect_ratio = 1.6736399999999998
 
 [sub_resource type="Resource" id="Resource_snyt3"]
 script = ExtResource("4_o4ret")
 chord = 0.5
-area = 1.0
-aspect_ratio = 4.0
 
 [sub_resource type="Resource" id="Resource_op60t"]
 resource_name = "flaps"
@@ -278,15 +272,11 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 script = ExtResource("4_o4ret")
 chord = 1.1969991482893705
 span = 2.860002034999276
-area = 3.4234199999999997
-aspect_ratio = 2.38931
 
 [sub_resource type="Resource" id="Resource_keinb"]
 script = ExtResource("4_o4ret")
 chord = 0.39999999999999997
 span = 2.869999999999999
-area = 1.1479999999999997
-aspect_ratio = 7.174999999999999
 
 [sub_resource type="Resource" id="Resource_1hx5l"]
 resource_name = "roll"
@@ -307,15 +297,11 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 script = ExtResource("4_o4ret")
 chord = 0.669000035118113
 span = 3.4289998199999956
-area = 2.294001
-aspect_ratio = 5.12556
 
 [sub_resource type="Resource" id="Resource_2trr8"]
 script = ExtResource("4_o4ret")
 chord = 0.4470000273753307
 span = 3.428999789999994
-area = 1.5327630000000005
-aspect_ratio = 7.671139999999999
 
 [sub_resource type="Resource" id="Resource_3s2tp"]
 resource_name = "pitch"
@@ -351,15 +337,11 @@ metadata/_custom_type_script = "uid://ctbwb7xlhft6t"
 script = ExtResource("4_o4ret")
 chord = 0.7669993466933126
 span = 1.8080015399993443
-area = 1.3867360000000002
-aspect_ratio = 2.35724
 
 [sub_resource type="Resource" id="Resource_uei0l"]
 script = ExtResource("4_o4ret")
 chord = 0.507
 span = 1.5830001599999917
-area = 0.8025810811199958
-aspect_ratio = 3.1222882840236523
 
 [sub_resource type="Resource" id="Resource_f4i16"]
 resource_name = "yaw"
@@ -381,6 +363,7 @@ roughness = 0.8
 
 [node name="cessna172" unique_id=1150691566 instance=ExtResource("1_7rcro")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.300238504398001, 0)
+collision_layer = 16385
 mass = 1111.0
 center_of_mass = Vector3(0, 0.00999999999999978, -1.59)
 can_sleep = false
@@ -410,21 +393,21 @@ Flaps: T/G"
 
 [node name="FlightInfoLabel" parent="CameraRotator/Camera3D" index="1" unique_id=1734181071 instance=ExtResource("7_ey0gl")]
 
-[node name="Fueslage" parent="." index="2" unique_id=595642887]
+[node name="Fueslage" parent="." index="2" unique_id=648117241]
 script = SubResource("GDScript_op60t")
 
-[node name="Rudder" parent="Fueslage" index="3" unique_id=737228249]
+[node name="Rudder" parent="Fueslage" index="3" unique_id=1704237393]
 rotation_order = 1
 
-[node name="AileronL" parent="Fueslage/Wing" parent_id_path=PackedInt32Array(1478022673) index="0" unique_id=1663609209]
+[node name="AileronL" parent="Fueslage/Wing" parent_id_path=PackedInt32Array(1850075680) index="0" unique_id=2091248513]
 transform = Transform3D(0.9890177336483816, 0.06104854382800535, -0.13459939756737072, -0.06049092026769705, 0.9981347981592866, 0.00823245216730771, 0.134850921740217, 2.4144849441422465e-10, 0.9908658985482416, -4.00093, 0.78784645, -1.0111561)
 rotation_order = 5
 
-[node name="AileronR" parent="Fueslage/Wing" parent_id_path=PackedInt32Array(1478022673) index="1" unique_id=1491005513]
+[node name="AileronR" parent="Fueslage/Wing" parent_id_path=PackedInt32Array(1850075680) index="1" unique_id=953440275]
 transform = Transform3D(0.9890177336503876, -0.06049092023489863, 0.13485092174021704, 0.06104854386080376, 0.9981347981572808, -2.4367424050764086e-10, -0.1345993975377547, 0.00823245265152559, 0.9908658985482416, 4.0009294, 0.78784645, -1.011156)
 rotation_order = 5
 
-[node name="Fueslage_aero" parent="." index="3" unique_id=1526675494]
+[node name="Fueslage_aero" parent="." index="3" unique_id=1135736848]
 visible = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." index="4" unique_id=1955918201]
@@ -551,7 +534,7 @@ wing_config = SubResource("Resource_3wa4j")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
 [node name="Rudder" type="Node3D" parent="VerticalStab" index="0" unique_id=994628575]
-transform = Transform3D(0.908829, 1.5407400000000001e-33, -0.417169, 4.24757e-33, 1, 1.6940700000000002e-33, 0.417169, 3.08149e-33, 0.908829, -0.52477, -2.9501300000000003e-19, 0.499497)
+transform = Transform3D(0.908829, 1.54074e-33, -0.417169, 4.24757e-33, 1, 1.6940700000000002e-33, 0.417169, 3.08149e-33, 0.908829, -0.52477, -2.9501300000000003e-19, 0.499497)
 script = ExtResource("2_iyyha")
 manual_config = SubResource("Resource_rvxpo")
 wing_config = SubResource("Resource_uei0l")
@@ -559,7 +542,7 @@ actuation_config = SubResource("Resource_dufvg")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
 [node name="CSGBox3D" type="CSGBox3D" parent="VerticalStab/Rudder" index="0" unique_id=862024946]
-transform = Transform3D(1, -5.551120000000009e-16, 0, 5.55112e-16, 0.999999999999992, -4.614528e-31, -7.771561172376103e-16, 1.5777218e-30, 1, -8.881784e-16, 8.881779999999998e-16, 0.32276313112239796)
+transform = Transform3D(1, -5.551120000000009e-16, 0, 5.55112e-16, 0.999999999999992, -4.614528e-31, -7.771561172376104e-16, 1.5777217999999999e-30, 1, -8.881784e-16, 8.881779999999998e-16, 0.32276313112239796)
 visible = false
 size = Vector3(1.57572, 0.0454879, 0.8638856751504136)
 
@@ -611,4 +594,4 @@ script = ExtResource("14_lo3t1")
 buoyancy_mesh = ExtResource("15_op60t")
 metadata/_custom_type_script = "uid://blp6761y154ht"
 
-[node name="FloatingHUD" parent="." index="22" unique_id=1323450826 instance=ExtResource("18_7qotf")]
+[node name="FloatingHUD" parent="." index="21" unique_id=1323450826 instance=ExtResource("18_7qotf")]

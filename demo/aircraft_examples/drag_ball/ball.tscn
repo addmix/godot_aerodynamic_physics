@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://cj8k2c0i2doc4"]
+[gd_scene format=3 uid="uid://cj8k2c0i2doc4"]
 
 [ext_resource type="Script" uid="uid://3iji867c81k5" path="res://addons/godot_aerodynamic_physics/core/aero_body_3d.gd" id="1_1e00s"]
 [ext_resource type="Script" uid="uid://7scpeqlmo40t" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/drag_influencer/aero_drag_influencer.gd" id="2_bawn3"]
@@ -6,7 +6,8 @@
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_x8fbi"]
 
-[node name="Ball" type="VehicleBody3D"]
+[node name="Ball" type="VehicleBody3D" unique_id=421960979]
+collision_layer = 16385
 center_of_mass_mode = 1
 linear_damp_mode = 1
 angular_damp_mode = 1
@@ -14,16 +15,16 @@ script = ExtResource("1_1e00s")
 show_debug = true
 metadata/_custom_type_script = "uid://3iji867c81k5"
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1859877559]
 shape = SubResource("SphereShape3D_x8fbi")
 
-[node name="CSGSphere3D" type="CSGSphere3D" parent="."]
+[node name="CSGSphere3D" type="CSGSphere3D" parent="." unique_id=835932260]
 radial_segments = 32
 rings = 16
 
-[node name="AeroInfluencer3D" type="Node3D" parent="."]
+[node name="AeroInfluencer3D" type="Node3D" parent="." unique_id=547905215]
 script = ExtResource("2_bawn3")
 radius = 0.2
 metadata/_custom_type_script = "uid://c3n4g48jfeemj"
 
-[node name="CameraWithoutRotation" parent="." instance=ExtResource("3_nguxe")]
+[node name="CameraWithoutRotation" parent="." unique_id=472394445 instance=ExtResource("3_nguxe")]

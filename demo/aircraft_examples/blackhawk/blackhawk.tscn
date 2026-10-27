@@ -223,8 +223,6 @@ drag_at_mach_multiplier_curve = SubResource("Curve_oml6j")
 script = ExtResource("7_lml3a")
 chord = 0.5
 span = 7.0
-area = 3.5
-aspect_ratio = 14.0
 
 [sub_resource type="Resource" id="Resource_u6cg8"]
 resource_name = "collective"
@@ -278,8 +276,6 @@ drag_at_mach_multiplier_curve = SubResource("Curve_3hujt")
 script = ExtResource("7_lml3a")
 chord = 0.9999999999999998
 span = 4.429999999999999
-area = 4.429999999999998
-aspect_ratio = 4.43
 
 [sub_resource type="Curve" id="Curve_ppgta"]
 _limits = [0.0, 1.0, -180.0, 180.0]
@@ -349,8 +345,6 @@ drag_at_mach_multiplier_curve = SubResource("Curve_oml6j")
 script = ExtResource("7_lml3a")
 chord = 0.40000000000000013
 span = 1.6500000000000001
-area = 0.6600000000000003
-aspect_ratio = 4.124999999999999
 
 [sub_resource type="Resource" id="Resource_8u3u3"]
 resource_name = "yaw"
@@ -368,6 +362,7 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
 [node name="blackhawk" unique_id=1089370525 instance=ExtResource("1_o32yo")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.622818276083514, 0)
+collision_layer = 16385
 mass = 5675.0
 can_sleep = false
 substeps_override = 4
@@ -395,7 +390,7 @@ Collective: T/G"
 
 [node name="FlightInfoLabel" parent="CameraRotator/Camera3D" index="1" unique_id=813485644 instance=ExtResource("7_6i8qa")]
 
-[node name="Fueslage_aero" parent="." index="2" unique_id=1076756841]
+[node name="Fueslage_aero" parent="." index="2" unique_id=1919379838]
 visible = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." index="3" unique_id=161334249]
@@ -478,4 +473,4 @@ script = ExtResource("15_l68jr")
 buoyancy_mesh = ExtResource("16_l68jr")
 metadata/_custom_type_script = "uid://blp6761y154ht"
 
-[node name="FloatingHUD" parent="." index="13" unique_id=1323450826 instance=ExtResource("19_qni5f")]
+[node name="FloatingHUD" parent="." index="12" unique_id=1323450826 instance=ExtResource("19_qni5f")]

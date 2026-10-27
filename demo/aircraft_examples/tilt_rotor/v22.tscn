@@ -269,8 +269,6 @@ drag_at_mach_multiplier_curve = SubResource("Curve_dnftb")
 script = ExtResource("7_0axsk")
 chord = 0.6999999416666739
 span = 6.000000499999978
-area = 4.199999999999999
-aspect_ratio = 8.57143
 
 [sub_resource type="Resource" id="Resource_lerq6"]
 resource_name = "collective"
@@ -320,15 +318,11 @@ drag_at_mach_multiplier_curve = SubResource("Curve_u35px")
 script = ExtResource("7_0axsk")
 chord = 2.0759991720597255
 span = 5.065002019999597
-area = 10.514940000000001
-aspect_ratio = 2.43979
 
 [sub_resource type="Resource" id="Resource_wjnoa"]
 script = ExtResource("7_0axsk")
 chord = 1.4999999999999998
 span = 3.1199999999999997
-area = 4.679999999999999
-aspect_ratio = 2.08
 
 [sub_resource type="Resource" id="Resource_0axsk"]
 resource_name = "roll"
@@ -349,15 +343,11 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 script = ExtResource("7_0axsk")
 chord = 1.729999175337377
 span = 4.825002299999451
-area = 8.347249999999997
-aspect_ratio = 2.78902
 
 [sub_resource type="Resource" id="Resource_iwoxs"]
 script = ExtResource("7_0axsk")
 chord = 0.8950001205699727
 span = 4.824999349999957
-area = 4.318375000000001
-aspect_ratio = 5.39106
 
 [sub_resource type="Resource" id="Resource_m5xgb"]
 resource_name = "pitch"
@@ -377,15 +367,11 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 script = ExtResource("7_0axsk")
 chord = 1.2240004016522488
 span = 3.5349988399998096
-area = 4.326840000000001
-aspect_ratio = 2.8880699999999995
 
 [sub_resource type="Resource" id="Resource_nek0o"]
 script = ExtResource("7_0axsk")
 chord = 1.3010001582546258
 span = 3.5349995699999752
-area = 4.5990350000000015
-aspect_ratio = 2.717140000000001
 
 [sub_resource type="Resource" id="Resource_y7f6g"]
 resource_name = "yaw"
@@ -404,12 +390,13 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
 [node name="v22" unique_id=2036681563 instance=ExtResource("9_qgs5q")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.056818204108806, 0)
+collision_layer = 16385
 mass = 18000.0
 center_of_mass = Vector3(0, -1.5700000000000005, -0.17999999999999972)
 can_sleep = false
 show_debug = true
 
-[node name="fueslage_aero" parent="." index="7" unique_id=749318219]
+[node name="fueslage_aero" parent="." index="7" unique_id=1396348866]
 visible = false
 
 [node name="AeroControlComponent" type="Node" parent="." index="8" unique_id=1549256312]
@@ -582,4 +569,4 @@ script = ExtResource("15_683lg")
 buoyancy_mesh = ExtResource("16_gf6bv")
 metadata/_custom_type_script = "uid://blp6761y154ht"
 
-[node name="FloatingHUD" parent="." index="23" unique_id=1323450826 instance=ExtResource("19_ymo5k")]
+[node name="FloatingHUD" parent="." index="22" unique_id=1323450826 instance=ExtResource("19_ymo5k")]

@@ -206,15 +206,11 @@ drag_at_mach_multiplier_curve = SubResource("Curve_435wi")
 script = ExtResource("9_iktab")
 chord = 2.745
 span = 6.43
-area = 17.65035
-aspect_ratio = 2.3424408014571947
 
 [sub_resource type="Resource" id="Resource_kx8cy"]
 script = ExtResource("9_iktab")
 chord = 0.8100000000000002
 span = 3.29
-area = 2.6649000000000007
-aspect_ratio = 4.061728395061728
 
 [sub_resource type="Resource" id="Resource_lwu5l"]
 resource_name = "roll"
@@ -257,22 +253,16 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 script = ExtResource("9_iktab")
 chord = 1.72
 span = 2.8
-area = 4.816
-aspect_ratio = 1.627906976744186
 
 [sub_resource type="Resource" id="Resource_f8ilg"]
 script = ExtResource("9_iktab")
 chord = 1.92
 span = 3.75
-area = 7.199999999999999
-aspect_ratio = 1.953125
 
 [sub_resource type="Resource" id="Resource_n8r76"]
 script = ExtResource("9_iktab")
 chord = 0.74
 span = 2.56
-area = 1.8944
-aspect_ratio = 3.4594594594594597
 
 [sub_resource type="Resource" id="Resource_va5xg"]
 resource_name = "yaw"
@@ -293,8 +283,6 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 script = ExtResource("9_iktab")
 chord = 3.5
 span = 1.96
-area = 6.859999999999999
-aspect_ratio = 0.5599999999999999
 
 [sub_resource type="Resource" id="Resource_wiavu"]
 resource_name = "pitch"
@@ -360,15 +348,11 @@ drag_at_mach_multiplier_curve = SubResource("Curve_a71sr")
 script = ExtResource("9_iktab")
 chord = 9.029999999999998
 span = 3.465
-area = 31.28894999999999
-aspect_ratio = 0.3837209302325582
 
 [sub_resource type="Resource" id="Resource_gdnov"]
 script = ExtResource("9_iktab")
 chord = 8.535
 span = 1.135
-area = 9.687225
-aspect_ratio = 0.1329818394844757
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_a3l80"]
 size = Vector3(4.22054, 2.34029, 8.54477)
@@ -387,6 +371,7 @@ min_value = Vector3(0, 0, -1)
 
 [node name="berkut" unique_id=680196793 instance=ExtResource("1_anlvu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.932435843204834, 0)
+collision_layer = 16385
 mass = 25670.0
 physics_material_override = SubResource("PhysicsMaterial_k5k50")
 center_of_mass = Vector3(0, 0, 3.16)
@@ -561,4 +546,4 @@ metadata/_custom_type_script = "uid://3kjm0rdymoth"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.93934, -7.60912)
 script = ExtResource("15_iktab")
 
-[node name="FloatingHUD" parent="." index="24" unique_id=1323450826 instance=ExtResource("18_kx8cy")]
+[node name="FloatingHUD" parent="." index="23" unique_id=1323450826 instance=ExtResource("18_kx8cy")]

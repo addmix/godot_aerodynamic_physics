@@ -124,23 +124,23 @@ cumulative_negative_event = &"throttle_down"
 script = ExtResource("5_m1u2p")
 axis_configs = Array[ExtResource("5_1iei2")]([SubResource("Resource_5yd0i"), SubResource("Resource_r7djj"), SubResource("Resource_3jirj")])
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_h7w54"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_6g6ll"]
 viewport_path = NodePath("Camera3D/MeshInstance3D/SubViewport")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_28v4o"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_h7w54"]
 resource_local_to_scene = true
 transparency = 2
 alpha_scissor_threshold = 0.5
 alpha_antialiasing_mode = 0
 no_depth_test = true
 shading_mode = 0
-albedo_texture = SubResource("ViewportTexture_h7w54")
+albedo_texture = SubResource("ViewportTexture_6g6ll")
 fixed_size = true
 point_size = 100.0
 
-[sub_resource type="QuadMesh" id="QuadMesh_mbj8a"]
+[sub_resource type="QuadMesh" id="QuadMesh_28v4o"]
 resource_local_to_scene = true
-material = SubResource("StandardMaterial3D_28v4o")
+material = SubResource("StandardMaterial3D_h7w54")
 size = Vector2(0.05, 0.05)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_inpsn"]
@@ -186,8 +186,6 @@ drag_at_mach_multiplier_curve = SubResource("Curve_egaj7")
 script = ExtResource("4_8uh5b")
 chord = 0.155
 span = 0.525
-area = 0.081375
-aspect_ratio = 3.3870967741935485
 
 [sub_resource type="Resource" id="Resource_h7w54"]
 resource_name = "pitch"
@@ -237,8 +235,6 @@ movement_speed = 0.5
 script = ExtResource("4_8uh5b")
 chord = 0.514
 span = 0.679
-area = 0.34900600000000004
-aspect_ratio = 1.321011673151751
 
 [sub_resource type="Resource" id="Resource_28v4o"]
 resource_name = "throttle"
@@ -254,6 +250,7 @@ min_value = Vector3(0, 0, -1)
 
 [node name="aim-9" unique_id=1565931003 instance=ExtResource("1_4ptsi")]
 transform = Transform3D(1, 0, 0, 0, 0, -1.0000000000000009, 0, 1.0000000000000009, 0, 0, 1.5236021709088494, 0)
+collision_layer = 16385
 mass = 85.0
 can_sleep = false
 angular_damp = 2.0
@@ -287,12 +284,12 @@ text = "Throttle: Shift/Ctrl"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5125, 1.313, -2.986)
 
 [node name="MeshInstance3D" parent="CameraWithoutRotation/Camera3D" parent_id_path=PackedInt32Array(1299319465, 906426946) index="2" unique_id=181835651]
-mesh = SubResource("QuadMesh_mbj8a")
+mesh = SubResource("QuadMesh_28v4o")
 
-[node name="CanardLR" parent="." index="4" unique_id=772763563]
+[node name="CanardLR" parent="." index="4" unique_id=59641998]
 rotation_order = 3
 
-[node name="CanardLL" parent="." index="5" unique_id=424848713]
+[node name="CanardLL" parent="." index="5" unique_id=1357853305]
 transform = Transform3D(-0.707107, 0.707107, 0, -0.707107, -0.707107, 0, 0, 0, 1, 0, 0, -1.00634)
 rotation_order = 3
 
@@ -304,11 +301,11 @@ shape = SubResource("CapsuleShape3D_inpsn")
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 6.63781e-09, 1.2637)
 shape = SubResource("BoxShape3D_dsv8w")
 
-[node name="CanardUL" parent="." index="8" unique_id=2055914672]
+[node name="CanardUL" parent="." index="8" unique_id=499147190]
 transform = Transform3D(-0.707107, -0.707107, -1.05529e-07, 0.707107, -0.707107, 4.37114e-08, -1.05529e-07, -4.37114e-08, 1, 0, 0, -1.00634)
 rotation_order = 3
 
-[node name="CanardUR" parent="." index="9" unique_id=1050915076]
+[node name="CanardUR" parent="." index="9" unique_id=135896730]
 rotation_order = 3
 
 [node name="CanardR" type="Node3D" parent="." index="10" unique_id=1195741032]
@@ -353,7 +350,7 @@ script = ExtResource("12_dsv8w")
 throttle_control_config = SubResource("Resource_mbj8a")
 metadata/_custom_type_script = "uid://3kjm0rdymoth"
 
-[node name="fueslage_aero" parent="." index="15" unique_id=551349452]
+[node name="fueslage_aero" parent="." index="15" unique_id=484020513]
 visible = false
 
 [node name="AeroBuoyancyMesh3D" type="Node3D" parent="." index="16" unique_id=525158980]
@@ -361,6 +358,6 @@ script = ExtResource("16_b4ni8")
 buoyancy_mesh = ExtResource("17_6g6ll")
 metadata/_custom_type_script = "uid://blp6761y154ht"
 
-[node name="FloatingHUD" parent="." index="18" unique_id=1323450826 instance=ExtResource("18_6g6ll")]
+[node name="FloatingHUD" parent="." index="17" unique_id=1323450826 instance=ExtResource("18_6g6ll")]
 
 [editable path="CameraWithoutRotation"]

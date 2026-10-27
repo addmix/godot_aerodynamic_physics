@@ -178,15 +178,11 @@ drag_at_mach_multiplier_curve = SubResource("Curve_65nru")
 script = ExtResource("8_yinxf")
 chord = 9.117999999999999
 span = 26.138999999999996
-area = 238.33540199999993
-aspect_ratio = 2.8667470936608908
 
 [sub_resource type="Resource" id="Resource_hsuvl"]
 script = ExtResource("8_yinxf")
 chord = 6.093
 span = 18.724
-area = 114.085332
-aspect_ratio = 3.0730346299031677
 
 [sub_resource type="Curve" id="Curve_lvl4a"]
 _limits = [0.0, 1.0, -180.0, 180.0]
@@ -224,8 +220,6 @@ drag_at_mach_multiplier_curve = SubResource("Curve_8ix2c")
 script = ExtResource("8_yinxf")
 chord = 3.1330000000000005
 span = 17.069
-area = 53.477177000000005
-aspect_ratio = 5.448132780082987
 
 [sub_resource type="Resource" id="Resource_ejoba"]
 resource_name = "roll"
@@ -289,8 +283,6 @@ drag_at_mach_multiplier_curve = SubResource("Curve_cvjw4")
 script = ExtResource("8_yinxf")
 chord = 0.395
 span = 3.55
-area = 1.40225
-aspect_ratio = 8.987341772151899
 
 [sub_resource type="Resource" id="Resource_km0hj"]
 resource_name = "collective"
@@ -341,15 +333,11 @@ drag_at_mach_multiplier_curve = SubResource("Curve_kto0w")
 script = ExtResource("8_yinxf")
 chord = 2.2910000000000004
 span = 13.195
-area = 30.229745000000005
-aspect_ratio = 5.7594936708860756
 
 [sub_resource type="Resource" id="Resource_7qth2"]
 script = ExtResource("8_yinxf")
 chord = 2.3490000000000006
 span = 14.165
-area = 33.273585000000004
-aspect_ratio = 6.030225627926775
 
 [sub_resource type="Resource" id="Resource_4pa3l"]
 resource_name = "pitch"
@@ -368,15 +356,11 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 script = ExtResource("8_yinxf")
 chord = 3.5549999999999997
 span = 6.789999999999999
-area = 24.138449999999995
-aspect_ratio = 1.909985935302391
 
 [sub_resource type="Resource" id="Resource_ux024"]
 script = ExtResource("8_yinxf")
 chord = 3.19
 span = 6.94
-area = 22.1386
-aspect_ratio = 2.175548589341693
 
 [sub_resource type="Resource" id="Resource_k5k1t"]
 resource_name = "yaw"
@@ -430,6 +414,7 @@ points = PackedVector3Array(-12.905168426531596, -0.15763838424660215, -6.176033
 
 [node name="catalina" unique_id=336842260 instance=ExtResource("1_8heaw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.625663792684044, 0)
+collision_layer = 16385
 mass = 16000.0
 center_of_mass = Vector3(0, 0, -5)
 show_debug = true
@@ -552,13 +537,13 @@ wing_config = SubResource("Resource_ux024")
 actuation_config = SubResource("Resource_nrhy0")
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="Fueslage" parent="." index="8" unique_id=1498719465]
+[node name="Fueslage" parent="." index="8" unique_id=1608375741]
 script = SubResource("GDScript_0pbsb")
 
-[node name="AileronL" parent="Fueslage/Wing" parent_id_path=PackedInt32Array(566177933) index="0" unique_id=249009102]
+[node name="AileronL" parent="Fueslage/Wing" parent_id_path=PackedInt32Array(1409337634) index="0" unique_id=1634657252]
 transform = Transform3D(0.9973221642297576, 0.04176523831559446, -0.06003470333493929, -0.05501490073451862, 0.9693130566265606, -0.2395945720387779, 0.04818569739293636, 0.24225578036801448, 0.9690151058910488, -24.458296, -0.45893422, 3.4229016)
 
-[node name="AileronR" parent="Fueslage/Wing" parent_id_path=PackedInt32Array(566177933) index="1" unique_id=880061605]
+[node name="AileronR" parent="Fueslage/Wing" parent_id_path=PackedInt32Array(1409337634) index="1" unique_id=336684669]
 transform = Transform3D(0.9973221612713918, -0.0417652480580164, 0.06003474570290525, 0.05501492041037804, 0.9693130559450738, -0.23959457027792197, -0.04818573615915722, 0.2422557814151701, 0.96901510370155, 24.458302, -0.45893422, 3.4229016)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." index="9" unique_id=827594829]
@@ -581,7 +566,7 @@ transform = Transform3D(-0.9999999999999244, -1.3142376508619873e-08, -3.8847779
 shape = SubResource("ConvexPolygonShape3D_8f6hu")
 
 [node name="CollisionShape3D6" type="CollisionShape3D" parent="." index="14" unique_id=1243430882]
-transform = Transform3D(-0.9997503398608264, 0.02234408082724301, -3.847482985835883e-07, 0.02234408082723648, 0.9997503398609, 2.126032440374903e-08, 3.851272846774716e-07, 1.265816945705822e-08, -0.999999999999926, -27.17139398668139, 0.12884503379842194, -5.538838735166767)
+transform = Transform3D(-0.9997503398608264, 0.02234408082724301, -3.847482985835883e-07, 0.02234408082723648, 0.9997503398609, 2.126032440374903e-08, 3.851272846774716e-07, 1.2658169457058221e-08, -0.999999999999926, -27.17139398668139, 0.12884503379842194, -5.538838735166767)
 shape = SubResource("ConvexPolygonShape3D_vpgbi")
 
 [node name="CollisionShape3D7" type="CollisionShape3D" parent="." index="15" unique_id=2101258719]

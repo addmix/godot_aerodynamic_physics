@@ -184,15 +184,11 @@ drag_at_mach_multiplier_curve = SubResource("Curve_mdphc")
 script = ExtResource("4_xy21m")
 chord = 10.969000000000001
 span = 18.560000000000002
-area = 203.58464000000004
-aspect_ratio = 1.6920412070380162
 
 [sub_resource type="Resource" id="Resource_g0m4l"]
 script = ExtResource("4_xy21m")
 chord = 1.795
 span = 4.005
-area = 7.188974999999999
-aspect_ratio = 2.231197771587744
 
 [sub_resource type="Resource" id="Resource_5pvbw"]
 resource_name = "pitch"
@@ -219,8 +215,6 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 script = ExtResource("4_xy21m")
 chord = 1.7949999999999997
 span = 8.255
-area = 14.817725
-aspect_ratio = 4.598885793871868
 
 [sub_resource type="Resource" id="Resource_jithh"]
 resource_name = "pitch"
@@ -248,15 +242,11 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 script = ExtResource("4_xy21m")
 chord = 3.315
 span = 10.85
-area = 35.967749999999995
-aspect_ratio = 3.273001508295626
 
 [sub_resource type="Resource" id="Resource_bjpaj"]
 script = ExtResource("4_xy21m")
-chord = 1.7950000000000004
-span = 5.225000000000001
-area = 9.378875000000004
-aspect_ratio = 2.9108635097493036
+chord = 1.7949999999999997
+span = 5.225000000000004
 
 [sub_resource type="Resource" id="Resource_34bpg"]
 script = ExtResource("6_xy21m")
@@ -292,8 +282,6 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 script = ExtResource("4_xy21m")
 chord = 3.06
 span = 4.85
-area = 14.841
-aspect_ratio = 1.5849673202614378
 
 [sub_resource type="Resource" id="Resource_x2l3p"]
 resource_name = "throttle"
@@ -328,6 +316,7 @@ size = Vector3(13.9041, 1, 10.9709)
 
 [node name="B2" unique_id=1158073793 instance=ExtResource("1_nswbj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.485515075796764, 0)
+collision_layer = 16385
 mass = 152200.0
 physics_material_override = SubResource("PhysicsMaterial_y4kyt")
 center_of_mass = Vector3(0, 0, 1.16)
@@ -400,7 +389,7 @@ mirror_axis = 1
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
 [node name="ElevonR3" type="Node3D" parent="WingtipR" index="0" unique_id=1497746933]
-transform = Transform3D(1, 6.821991329233871e-18, 1.1102230246251563e-16, -2.9544509200230004e-18, 1, 6.9388939039072245e-18, -5.551115e-17, 3.694019431376082e-18, 1, -3.0406912649209765, 1.5321093277054003e-16, 2.7853530638615487)
+transform = Transform3D(1, 6.821991329233871e-18, 1.1102230246251563e-16, -2.9544509200230004e-18, 1, 6.9388939039072245e-18, -5.5511150000000004e-17, 3.694019431376082e-18, 1, -3.0406912649209765, 1.5321093277054003e-16, 2.7853530638615487)
 script = ExtResource("2_pw2a8")
 manual_config = SubResource("Resource_eqt1k")
 wing_config = SubResource("Resource_bjpaj")
@@ -412,7 +401,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.01294)
 size = Vector3(1, 0.180664, 3.02588)
 
 [node name="RudderRU" type="Node3D" parent="WingtipR" index="1" unique_id=1472247560]
-transform = Transform3D(1, 6.821991329233871e-18, 1.1102230246251563e-16, -2.9544509200230004e-18, 1, 6.9388939039072245e-18, -5.551115e-17, 3.694019431376082e-18, 1, 2.490151515475638, 0.10000000000000012, 2.7853546769824735)
+transform = Transform3D(1, 6.821991329233871e-18, 1.1102230246251563e-16, -2.9544509200230004e-18, 1, 6.9388939039072245e-18, -5.5511150000000004e-17, 3.694019431376082e-18, 1, 2.490151515475638, 0.10000000000000012, 2.7853546769824735)
 script = ExtResource("2_pw2a8")
 manual_config = SubResource("Resource_eqt1k")
 wing_config = SubResource("Resource_bjpaj")
@@ -425,7 +414,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.013)
 size = Vector3(1, 0.180664, 3.02588)
 
 [node name="RudderRL" type="Node3D" parent="WingtipR" index="2" unique_id=1690606324]
-transform = Transform3D(-1, -1.5099551461417133e-07, 1.1102230246251563e-16, 1.5099600000295446e-07, -1, -2.522380611060961e-13, 5.551115e-17, -4.843015715708973e-13, 1, 2.490151515475638, -0.09999999999999988, 2.7853546769824735)
+transform = Transform3D(-1, -1.5099551461417133e-07, 1.1102230246251563e-16, 1.5099600000295446e-07, -1, -2.522380611060961e-13, 5.5511150000000004e-17, -4.843015715708973e-13, 1, 2.490151515475638, -0.09999999999999988, 2.7853546769824735)
 rotation_order = 3
 script = ExtResource("2_pw2a8")
 manual_config = SubResource("Resource_eqt1k")
@@ -488,4 +477,4 @@ shape = SubResource("BoxShape3D_limry")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0101372)
 shape = SubResource("BoxShape3D_mdphc")
 
-[node name="FloatingHUD" parent="." index="17" unique_id=1323450826 instance=ExtResource("16_5pvbw")]
+[node name="FloatingHUD" parent="." index="16" unique_id=1323450826 instance=ExtResource("16_5pvbw")]

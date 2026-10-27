@@ -47,23 +47,23 @@ cumulative_negative_event = &"throttle_down"
 script = ExtResource("14_tufii")
 axis_configs = Array[ExtResource("13_gp0bn")]([SubResource("Resource_3h27b"), SubResource("Resource_qvpob"), SubResource("Resource_58016")])
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_uiicu"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_nof2j"]
 viewport_path = NodePath("Camera3D/MeshInstance3D/SubViewport")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3h27b"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uiicu"]
 resource_local_to_scene = true
 transparency = 2
 alpha_scissor_threshold = 0.5
 alpha_antialiasing_mode = 0
 no_depth_test = true
 shading_mode = 0
-albedo_texture = SubResource("ViewportTexture_uiicu")
+albedo_texture = SubResource("ViewportTexture_nof2j")
 fixed_size = true
 point_size = 100.0
 
-[sub_resource type="QuadMesh" id="QuadMesh_qvpob"]
+[sub_resource type="QuadMesh" id="QuadMesh_3h27b"]
 resource_local_to_scene = true
-material = SubResource("StandardMaterial3D_3h27b")
+material = SubResource("StandardMaterial3D_uiicu")
 size = Vector2(0.05, 0.05)
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_gp0bn"]
@@ -126,14 +126,11 @@ drag_at_mach_multiplier_curve = SubResource("Curve_xiynb")
 script = ExtResource("11_tufii")
 chord = 0.2
 span = 0.4
-area = 0.08000000000000002
 
 [sub_resource type="Resource" id="Resource_hcphs"]
 script = ExtResource("11_tufii")
 chord = 0.25
 span = 0.2
-area = 0.05
-aspect_ratio = 0.8
 
 [sub_resource type="Resource" id="Resource_nof2j"]
 resource_name = "throttle"
@@ -188,10 +185,9 @@ drag_at_mach_multiplier_curve = SubResource("Curve_qvpob")
 script = ExtResource("11_tufii")
 chord = 0.2
 span = 0.2
-area = 0.04000000000000001
-aspect_ratio = 1.0
 
 [node name="Boat" unique_id=1811329416 instance=ExtResource("1_annr2")]
+collision_layer = 16385
 mass = 1800.0
 center_of_mass = Vector3(0, 0.09999999999999964, 0.1999999999999993)
 show_debug = true
@@ -217,7 +213,7 @@ Throttle: Shift/Ctrl"
 [node name="FlightInfoLabel" parent="CameraWithoutRotation/Camera3D" parent_id_path=PackedInt32Array(94051619, 906426946) index="1" unique_id=782261310 instance=ExtResource("8_gp0bn")]
 
 [node name="MeshInstance3D" parent="CameraWithoutRotation/Camera3D" parent_id_path=PackedInt32Array(94051619, 906426946) index="2" unique_id=181835651]
-mesh = SubResource("QuadMesh_qvpob")
+mesh = SubResource("QuadMesh_3h27b")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." index="3" unique_id=1255831432]
 visible = false
@@ -270,7 +266,7 @@ show_drag = false
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
 [node name="CSGBox3D" type="CSGBox3D" parent="OutboardRotate/AeroPropeller3D/ManualAeroSurface3D" index="0" unique_id=845171662]
-transform = Transform3D(1, 0, 0, 0, 1.0000000000000022, 5.5511150000000004e-17, 0, -5.5511150000000004e-17, 1.0000000000000022, 0, 0, 0.04941531829536017)
+transform = Transform3D(1, 0, 0, 0, 1.0000000000000022, 5.551115e-17, 0, -5.551115e-17, 1.0000000000000022, 0, 0, 0.04941531829536017)
 size = Vector3(0.1967637893067149, 0.01187669383898537, 0.19131065197871067)
 
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="OutboardRotate/AeroPropeller3D" index="1" unique_id=1084973412]
@@ -286,6 +282,6 @@ size = Vector3(0.3051432223910524, 0.5555105119756263, 0.46904054573883514)
 transform = Transform3D(1, 0, 0, 0, 0.996007793875625, 0.08926631245333552, 0, -0.08926631245333552, 0.996007793875625, 0, -0.6239883985798936, 0.03499681120693454)
 size = Vector3(0.09501928310100992, 1.164965463433873, 0.2204151855348755)
 
-[node name="FloatingHUD" parent="." index="7" unique_id=1323450826 instance=ExtResource("17_nof2j")]
+[node name="FloatingHUD" parent="." index="6" unique_id=1323450826 instance=ExtResource("17_nof2j")]
 
 [editable path="CameraWithoutRotation"]

@@ -53,9 +53,6 @@ private:
 
 	//exports and config properties
 	int substeps_override = -1;
-	int substeps = 1;
-	double prediction_timestep_fraction = 1.0 / float(substeps);
-	double substep_delta = (1.0 / 60.0) / prediction_timestep_fraction;
 	int current_substep = 0;
 	//experimental_energy_tracking
 
@@ -70,7 +67,7 @@ private:
 	bool show_drag = true;
 	bool show_torque = false;
 	bool show_linear_velocity = true;
-	bool show_angular_velocity = false;
+	bool show_angular_velocity = true;
 	bool show_center_of_lift = true;
 	bool show_center_of_drag = true;
 	bool show_center_of_mass = true;
@@ -79,7 +76,7 @@ private:
 	//debug options
 	Vector3 debug_linear_velocity = Vector3(0, -10, -100);
 	Vector3 debug_angular_velocity = Vector3();
-	double debug_scale = 1.0;
+	double debug_scale = 0.1;
 	double debug_scaling_factor = 2.0;
 	double debug_width = 0.3;
 	double debug_influencer_width = 0.1;
@@ -142,8 +139,6 @@ public:
 	static void _bind_methods();
 	AeroBody3D();
 	~AeroBody3D();
-	void on_child_entered_tree(Node* p_node);
-	void on_child_exiting_tree(Node* p_node);
 	
 	void _ready() override;
 	void _enter_tree() override;
@@ -168,6 +163,9 @@ public:
 	TypedArray<AeroInfluencer3D> get_aero_influencers() const;
 	TypedArray<Area3D> get_atmosphere_areas() const;
 
+	void add_aero_influencer(AeroInfluencer3D* influencer);
+	void remove_aero_influencer(AeroInfluencer3D* influencer);
+
 	void add_aero_atmosphere(const Area3D* atmosphere);
 	void remove_aero_atmosphere(const Area3D* atmosphere);
 	
@@ -183,7 +181,6 @@ public:
 
 	void set_substeps_override(const int p_substeps);
 	int get_substeps_override() const;
-	void set_substeps(const int substeps);
 	int get_substeps() const;
 	double get_prediction_timestep_fraction() const;
 	double get_substep_delta() const;

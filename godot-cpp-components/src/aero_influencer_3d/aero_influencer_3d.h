@@ -6,6 +6,7 @@
 #include <godot_cpp/classes/node3d.hpp>
 #include <godot_cpp/core/gdvirtual.gen.inc>
 #include "aero_body_3d/aero_body_3d.h"
+#include "aero_utils/aero_utils.h"
 
 namespace godot {
 
@@ -19,8 +20,9 @@ private:
 	bool disabled = false;
 	bool can_override_body_sleep = true;
 	
-	bool mirror_only_position = false;
 	int mirror_axis = 0;
+	int mirror_scaling_fix_axis = 0;
+	int _mirror_scaling_fix_axis = 0;
 	bool _duplicate = false;
 	AeroInfluencer3D* mirror_duplicate = nullptr;
 
@@ -28,16 +30,16 @@ private:
 	int control_rotation_order = 0;
 	
 	bool omit_from_debug = false;
-	double debug_scale;
-	double debug_scaling_factor;
-	double debug_width;
+	double debug_scale = 0.1;
+	double debug_scaling_factor = 2.0;
+	double debug_width = 0.05;
 	bool show_debug = false;
 
-	bool show_force;
-	bool show_torque;
-	bool show_lift;
-	bool show_drag;
-	bool show_thrust;
+	bool show_force = true;
+	bool show_torque = false;
+	bool show_lift = true;
+	bool show_drag = true;
+	bool show_thrust = false;
 
 	//internal values (not export properties)
 	AeroBody3D *aero_body = nullptr;
@@ -45,9 +47,9 @@ private:
 	//std::vector<AeroInfluencer3D*>
 	TypedArray<AeroInfluencer3D> aero_influencers;
 
-	Transform3D default_transform;
+	Transform3D default_transform = Transform3D();
 
-	double altitude;
+	double altitude = 0.0;
 	double air_density = 1.225;
 	Vector3 relative_position;
 	Vector3 linear_velocity_substep;
@@ -57,17 +59,15 @@ private:
 	Vector3 local_air_velocity;
 	Vector3 world_air_velocity;
 	Vector3 drag_direction;
-	double air_speed;
-	double mach;
-	double dynamic_pressure;
+	double air_speed = 0.0;
+	double mach = 0.0;
+	double dynamic_pressure = 0.0;
 
 	Vector3 current_force;
 	Vector3 current_torque;
 
-	Ref<GDScript> point_3d_script;
-	Ref<GDScript> vector_3d_script;
-	Node3D *force_debug_vector = nullptr;//force_debug_vector : AeroDebugVector3D
-	Node3D *torque_debug_vector = nullptr;//torque_debug_vector : AeroDebugVector3D
+	Node3D *force_debug_vector = nullptr;
+	Node3D *torque_debug_vector = nullptr;
 	Node3D *lift_debug_vector = nullptr;
 	Node3D *drag_debug_vector = nullptr;
 	Node3D *thrust_debug_vector = nullptr;
@@ -85,9 +85,9 @@ public:
 	void _ready() override;
 	void _enter_tree() override;
 	void _exit_tree() override;
-	void on_child_entered_tree(Node *p_node);
-	void on_child_exiting_tree(Node *p_node);
 	void _physics_process(double delta) override;
+
+	void generate_mirror();
 
 	ForceAndTorque calculate_forces_with_override(double substep_delta);
 	virtual ForceAndTorque calculate_forces(double substep_delta);
@@ -108,7 +108,6 @@ public:
 
 	double get_control_command(StringName axis_name);
 	
-	void update_debug_visibility();
 	void update_debug_scale();
 	void update_debug_vectors();
 	void update_debug();
@@ -122,10 +121,10 @@ public:
 	void set_can_override_body_sleep(bool override);
 	bool get_can_override_body_sleep();
 
-	void set_mirror_only_position(bool value);
-	bool get_mirror_only_position();
 	void set_mirror_axis(int axis);
 	int get_mirror_axis();
+	void set_mirror_scaling_fix_axis(int axis);
+	int get_mirror_scaling_fix_axis() const;
 	void set_duplicate(const bool value);
 	bool is_duplicate() const; //doesn't need setter because it is never expected to be changed outside of aeroinfluencer 
 	AeroInfluencer3D* get_mirror_duplicate();
@@ -135,16 +134,18 @@ public:
 	void set_control_rotation_order(int rotation_order);
 	int get_control_rotation_order();
 	
-	void set_omit_from_debug(bool omit);
-	bool is_omitted_from_debug();
+	void update_debug_visibility();
+	GDVIRTUAL0(update_debug_visibility);
+	void set_omit_from_debug(const bool omit);
+	bool is_omitted_from_debug() const;
 	void set_debug_scale(const double value);
-	double get_debug_scale();
-	void set_debug_scaling_factor(double scaling_factor);
-	double get_debug_scaling_factor();
+	double get_debug_scale() const;
+	void set_debug_scaling_factor(const double scaling_factor);
+	double get_debug_scaling_factor() const;
 	void set_debug_width(const double value);
-	double get_debug_width();
+	double get_debug_width() const;
 	void set_show_debug(const bool value);
-	bool get_show_debug();
+	bool get_show_debug() const;
 
 	void set_show_force(bool show);
 	bool get_show_force();
@@ -158,28 +159,30 @@ public:
 	bool get_show_thrust();
 
 	void set_aero_body(AeroBody3D* new_body);
-	AeroBody3D* get_aero_body();
+	AeroBody3D* get_aero_body() const;
 	void set_aero_influencers(const TypedArray<AeroInfluencer3D> &new_arr);
 	TypedArray<AeroInfluencer3D> get_aero_influencers() const;
 	
-	Transform3D get_default_transform();
-	double get_altitude();
-	double get_air_density();
-	Vector3 get_relative_position();
+	void set_default_transform(const Transform3D new_transform);
+	Transform3D get_default_transform() const;
+	double get_altitude() const;
+	double get_air_density() const;
+	Vector3 get_relative_position() const;
 	Vector3 get_linear_velocity_substep();
+	GDVIRTUAL0R(Vector3, get_linear_velocity_substep);
 	Vector3 get_angular_velocity_substep();
-	Vector3 get_local_air_velocity();
-	Vector3 get_world_air_velocity();
-	Vector3 get_drag_direction();
-	double get_air_speed();
-	double get_mach();
-	double get_dynamic_pressure();
-	Vector3 get_centrifugal_offset();
-	Vector3 get_linear_acceleration();
-	Vector3 get_angular_acceleration();
-
-	Vector3 get_current_force();
-	Vector3 get_current_torque();
+	GDVIRTUAL0R(Vector3, get_angular_velocity_substep);
+	Vector3 get_local_air_velocity() const;
+	Vector3 get_world_air_velocity() const;
+	Vector3 get_drag_direction() const;
+	double get_air_speed() const;
+	double get_mach() const;
+	double get_dynamic_pressure() const;
+	Vector3 get_centrifugal_offset() const;
+	Vector3 get_linear_acceleration() const;
+	Vector3 get_angular_acceleration() const;
+	Vector3 get_current_force() const;
+	Vector3 get_current_torque() const;
 };
 
 }

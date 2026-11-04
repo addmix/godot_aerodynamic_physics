@@ -40,6 +40,10 @@ void uninitialize_gdextension_types(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
+
+	Engine::get_singleton()->unregister_singleton("AeroUnits");
+	memdelete(aero_units);
+	aero_units = nullptr;
 }
 
 extern "C"

@@ -2,35 +2,25 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build-debug",
-            "group": "build",
+            "label": "build",
+            "group": { "kind": "build", "isDefault": true },
             "type": "shell",
-            "command": "scons target=template_debug arch=x86_64 platform=windows precision=double debug_symbols=yes production=no custom_api_file=extension_api_double.json build_profile=build_profile.json",
-            "options": {
-                "cwd": "${workspaceFolder}/godot-cpp-components/",
-            },
-            "problemMatcher": "$msCompile"
+            "command": "${config:gap.shell}",
+            "args": ["${config:gap.shellFlag}", "${config:gap.buildExtension}"],
+            "options": { "cwd": "${workspaceFolder}/godot-cpp-components" },
+            "problemMatcher": "$gcc", // MSVC builds: change to "$msCompile"
+            "detail": "Compile the GDExtension. Command: gap.buildExtension in settings.json."
         },
         {
-            "label": "build-release",
-            "group": "build",
-            "type": "shell",
-            "command": "scons target=template_release arch=x86_64 platform=windows precision=double custom_api_file=extension_api_double.json build_profile=build_profile.json",
-            "options": {
-                "cwd": "${workspaceFolder}/godot-cpp-components/",
-            },
-            "problemMatcher": "$msCompile"
-        },
-        {
+            // Rebuilds the godot-cpp submodule itself (only needed after regenerating extension_api or updating godot-cpp).
             "label": "build-godot-cpp",
             "group": "build",
             "type": "shell",
-            "command": "scons platform=windows precision=double target=template_debug debug_symbols=yes production=yes custom_api_file=../extension_api_double.json build_profile=../build_profile.json",
-            "options": {
-                "cwd": "${workspaceFolder}/godot-cpp-components/godot-cpp",
-            },
-            "problemMatcher": "$msCompile"
-        },
+            "command": "${config:gap.shell}",
+            "args": ["${config:gap.shellFlag}", "${config:gap.buildGodotCpp}"],
+            "options": { "cwd": "${workspaceFolder}/godot-cpp-components/godot-cpp" },
+            "problemMatcher": "$gcc", // MSVC builds: change to "$msCompile"
+            "detail": "Rebuild the godot-cpp submodule. Command: gap.buildGodotCpp in settings.json."
+        }
     ]
 }
-

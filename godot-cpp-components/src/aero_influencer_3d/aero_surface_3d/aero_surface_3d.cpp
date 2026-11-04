@@ -17,21 +17,26 @@ void AeroSurface3D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_drag_force"), &AeroSurface3D::get_drag_force);
 }
 
-AeroSurface3D::AeroSurface3D() {}
+AeroSurface3D::AeroSurface3D() {
+    area = wing_config->get_area(); //matches main's `var area : float = wing_config.get_area() if wing_config else 0.0`
+}
 AeroSurface3D::~AeroSurface3D() {}
 
 void AeroSurface3D::_enter_tree() {
     AeroInfluencer3D::_enter_tree();
+
+    //initialize signal connections from resources (matches main's `wing_config = wing_config` re-trigger)
+    set_wing_config(wing_config);
 }
 
 ForceAndTorque AeroSurface3D::calculate_forces(double substep_delta) {
     ForceAndTorque force_and_torque = AeroInfluencer3D::calculate_forces(substep_delta);
     
-    angle_of_attack = get_global_basis().get_column(1).angle_to(-get_world_air_velocity()) - (Math_PI / 2.0);
-    sweep_angle = get_global_basis().get_column(0).angle_to(-get_world_air_velocity()) - (Math_PI / 2.0);
+    angle_of_attack = get_global_basis().get_column(1).angle_to(-get_world_air_velocity()) - (Math::PI / 2.0);
+    sweep_angle = get_global_basis().get_column(0).angle_to(-get_world_air_velocity()) - (Math::PI / 2.0);
 
     area = wing_config->get_area();
-    projected_wing_area = abs(area * sin(angle_of_attack));
+    projected_wing_area = Math::abs(area * sin(angle_of_attack));
 
     Vector3 right_facing_air_vector = get_world_air_velocity().cross(-get_global_basis().get_column(1)).normalized();
     lift_direction = get_drag_direction().cross(right_facing_air_vector).normalized();

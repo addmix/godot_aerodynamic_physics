@@ -1,6 +1,5 @@
-[gd_scene load_steps=8 format=3 uid="uid://cm3bcxtjtm5pb"]
+[gd_scene format=3 uid="uid://cm3bcxtjtm5pb"]
 
-[ext_resource type="Script" uid="uid://3iji867c81k5" path="res://addons/godot_aerodynamic_physics/core/aero_body_3d.gd" id="1_lv2ui"]
 [ext_resource type="Script" uid="uid://7scpeqlmo40t" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/drag_influencer/aero_drag_influencer.gd" id="2_wx2e6"]
 [ext_resource type="PackedScene" uid="uid://bm03tdt5so3wj" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/camera without rotation.tscn" id="3_jckdf"]
 [ext_resource type="Script" uid="uid://blp6761y154ht" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_buoyancy_3d/aero_buoyancy_mesh_3d.gd" id="4_glt2x"]
@@ -10,43 +9,43 @@
 [sub_resource type="SphereShape3D" id="SphereShape3D_x8fbi"]
 radius = 1.8
 
-[node name="FloatyBall" type="VehicleBody3D"]
+[node name="FloatyBall" type="AeroBody3D" unique_id=1180233814]
+show_debug = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2238237886199186, 0)
 collision_layer = 16385
 mass = 1000.0
-center_of_mass_mode = 1
-linear_damp_mode = 1
-angular_damp_mode = 1
-script = ExtResource("1_lv2ui")
-show_debug = true
-metadata/_custom_type_script = "uid://3iji867c81k5"
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=850544661]
 shape = SubResource("SphereShape3D_x8fbi")
 
-[node name="CSGSphere3D" type="CSGSphere3D" parent="."]
+[node name="CSGSphere3D" type="CSGSphere3D" parent="." unique_id=2095970755]
 visible = false
 radius = 1.7
 radial_segments = 32
 rings = 16
 
-[node name="AeroInfluencer3D" type="Node3D" parent="."]
+[node name="AeroInfluencer3D" type="AeroInfluencer3D" parent="." unique_id=1550478873 node_paths=PackedStringArray("aero_body")]
+show_debug = true
+aero_body = NodePath("..")
 script = ExtResource("2_wx2e6")
 radius = 1.7
 drag_coefficient = 0.6
-metadata/_custom_type_script = "uid://c3n4g48jfeemj"
 
-[node name="CameraWithoutRotation" parent="." instance=ExtResource("3_jckdf")]
+[node name="CameraWithoutRotation" parent="." unique_id=277816281 instance=ExtResource("3_jckdf")]
 camera_distance = 5.0
 
-[node name="AeroBuoyancyMesh3D" type="Node3D" parent="."]
+[node name="AeroBuoyancyMesh3D" type="AeroInfluencer3D" parent="." unique_id=808652481 node_paths=PackedStringArray("aero_body")]
+show_debug = true
+aero_body = NodePath("..")
 script = ExtResource("4_glt2x")
 buoyancy_mesh = ExtResource("5_aiyxi")
 metadata/_custom_type_script = "uid://blp6761y154ht"
 
-[node name="AeroBuoyancySphere3D" type="Node3D" parent="."]
+[node name="AeroBuoyancySphere3D" type="AeroInfluencer3D" parent="." unique_id=201842634 node_paths=PackedStringArray("aero_body")]
+disabled = 1
+show_debug = true
+aero_body = NodePath("..")
 visible = false
 script = ExtResource("6_lv2ui")
 radius = 1.7
-disabled = true
 metadata/_custom_type_script = "uid://cpjspki0t1o6j"

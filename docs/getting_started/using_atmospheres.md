@@ -8,6 +8,8 @@ AeroAtmosphere3Ds have 3 main properties:
 
 The demo scene has both water and wind configured, which is a good place to start.
 
+> The following document assumes you have a basic understanding of the [aircraft creation workflow](workflow.md), including how to use [Godot's 3D import settings menu](https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_3d_scenes/advanced_import_settings.html#using-the-advanced-import-settings-dialog)
+
 ## Workflow for creating an AeroBody3D scene with 1 or more AeroBuoyancyMesh3Ds
 
 ### 1. Modelling considerations:

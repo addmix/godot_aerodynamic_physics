@@ -6,15 +6,16 @@ void ManualAeroSurfaceConfig::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_lift_coefficient", "angle_of_attack"), &ManualAeroSurfaceConfig::get_lift_coefficient);
     ClassDB::bind_method(D_METHOD("get_drag_coefficient", "angle_of_attack"), &ManualAeroSurfaceConfig::get_drag_coefficient);
 
-    ClassDB::bind_method(D_METHOD("set_min_lift_coefficient", "value"), &ManualAeroSurfaceConfig::set_min_lift_coefficient);
-	ClassDB::bind_method(D_METHOD("get_min_lift_coefficient"), &ManualAeroSurfaceConfig::get_min_lift_coefficient);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "min_lift_coefficient"), "set_min_lift_coefficient", "get_min_lift_coefficient");
-    ClassDB::bind_method(D_METHOD("set_max_lift_coefficient", "value"), &ManualAeroSurfaceConfig::set_max_lift_coefficient);
-	ClassDB::bind_method(D_METHOD("get_max_lift_coefficient"), &ManualAeroSurfaceConfig::get_max_lift_coefficient);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "max_lift_coefficient"), "set_max_lift_coefficient", "get_max_lift_coefficient");
+	//main has min/max lift coefficient commented out (LiftCurve handles the scaling internally).
+	//ClassDB::bind_method(D_METHOD("set_min_lift_coefficient", "value"), &ManualAeroSurfaceConfig::set_min_lift_coefficient);
+	//ClassDB::bind_method(D_METHOD("get_min_lift_coefficient"), &ManualAeroSurfaceConfig::get_min_lift_coefficient);
+	//ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "min_lift_coefficient"), "set_min_lift_coefficient", "get_min_lift_coefficient");
+	//ClassDB::bind_method(D_METHOD("set_max_lift_coefficient", "value"), &ManualAeroSurfaceConfig::set_max_lift_coefficient);
+	//ClassDB::bind_method(D_METHOD("get_max_lift_coefficient"), &ManualAeroSurfaceConfig::get_max_lift_coefficient);
+	//ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "max_lift_coefficient"), "set_max_lift_coefficient", "get_max_lift_coefficient");
     ClassDB::bind_method(D_METHOD("set_lift_aoa_curve", "p_config"), &ManualAeroSurfaceConfig::set_lift_aoa_curve);
 	ClassDB::bind_method(D_METHOD("get_lift_aoa_curve"), &ManualAeroSurfaceConfig::get_lift_aoa_curve);
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "lift_aoa_curve", PROPERTY_HINT_RESOURCE_TYPE, "AeroInfluencerControlConfig"), "set_lift_aoa_curve", "get_lift_aoa_curve");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "lift_aoa_curve", PROPERTY_HINT_RESOURCE_TYPE, "Curve"), "set_lift_aoa_curve", "get_lift_aoa_curve");
 
     ClassDB::bind_method(D_METHOD("set_min_drag_coefficient", "value"), &ManualAeroSurfaceConfig::set_min_drag_coefficient);
 	ClassDB::bind_method(D_METHOD("get_min_drag_coefficient"), &ManualAeroSurfaceConfig::get_min_drag_coefficient);
@@ -24,43 +25,42 @@ void ManualAeroSurfaceConfig::_bind_methods() {
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "max_drag_coefficient"), "set_max_drag_coefficient", "get_max_drag_coefficient");
     ClassDB::bind_method(D_METHOD("set_drag_aoa_curve", "p_config"), &ManualAeroSurfaceConfig::set_drag_aoa_curve);
 	ClassDB::bind_method(D_METHOD("get_drag_aoa_curve"), &ManualAeroSurfaceConfig::get_drag_aoa_curve);
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "drag_aoa_curve", PROPERTY_HINT_RESOURCE_TYPE, "AeroInfluencerControlConfig"), "set_drag_aoa_curve", "get_drag_aoa_curve");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "drag_aoa_curve", PROPERTY_HINT_RESOURCE_TYPE, "Curve"), "set_drag_aoa_curve", "get_drag_aoa_curve");
 
     ClassDB::bind_method(D_METHOD("set_sweep_drag_multiplier_curve", "p_config"), &ManualAeroSurfaceConfig::set_sweep_drag_multiplier_curve);
 	ClassDB::bind_method(D_METHOD("get_sweep_drag_multiplier_curve"), &ManualAeroSurfaceConfig::get_sweep_drag_multiplier_curve);
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "sweep_drag_multiplier_curve", PROPERTY_HINT_RESOURCE_TYPE, "AeroInfluencerControlConfig"), "set_sweep_drag_multiplier_curve", "get_sweep_drag_multiplier_curve");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "sweep_drag_multiplier_curve", PROPERTY_HINT_RESOURCE_TYPE, "Curve"), "set_sweep_drag_multiplier_curve", "get_sweep_drag_multiplier_curve");
 
     ClassDB::bind_method(D_METHOD("set_drag_at_mach_multiplier_curve", "p_config"), &ManualAeroSurfaceConfig::set_drag_at_mach_multiplier_curve);
 	ClassDB::bind_method(D_METHOD("get_drag_at_mach_multiplier_curve"), &ManualAeroSurfaceConfig::get_drag_at_mach_multiplier_curve);
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "drag_at_mach_multiplier_curve", PROPERTY_HINT_RESOURCE_TYPE, "AeroInfluencerControlConfig"), "set_drag_at_mach_multiplier_curve", "get_drag_at_mach_multiplier_curve");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "drag_at_mach_multiplier_curve", PROPERTY_HINT_RESOURCE_TYPE, "Curve"), "set_drag_at_mach_multiplier_curve", "get_drag_at_mach_multiplier_curve");
 }
 
-ManualAeroSurfaceConfig::ManualAeroSurfaceConfig() {}
+ManualAeroSurfaceConfig::ManualAeroSurfaceConfig() {
+	//main initializes lift_aoa_curve with LiftCurve.new(); replicate by attaching the same script to a Curve.
+	//The script's _init (which calls recalculate) does not run when set_script is used, so call it explicitly.
+	lift_aoa_curve = Ref<Curve>(memnew(Curve));
+	lift_aoa_curve->set_script(ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/core/easy_lift_curve.gd"));
+	lift_aoa_curve->call("recalculate");
+}
 ManualAeroSurfaceConfig::~ManualAeroSurfaceConfig() {}
 
 double ManualAeroSurfaceConfig::get_lift_coefficient(double angle_of_attack) {
-    double sample = lift_aoa_curve->sample_baked(UtilityFunctions::remap(angle_of_attack, -Math_PI, Math_PI, lift_aoa_curve->get_min_domain(), lift_aoa_curve->get_max_domain()));
-    
-    if (sample >= 0.0) {
-        sample *= max_lift_coefficient / lift_aoa_curve->get_max_value();
-    }
-    else {
-        sample *= abs(min_lift_coefficient / lift_aoa_curve->get_min_value());
-    }
-
-    return sample;
+	double sample = lift_aoa_curve->sample_baked(UtilityFunctions::remap(angle_of_attack, -Math::PI, Math::PI, lift_aoa_curve->get_min_domain(), lift_aoa_curve->get_max_domain()));
+	//main returns the raw sample; min/max_lift_coefficient scaling is commented out there.
+	return sample;
 }
 double ManualAeroSurfaceConfig::get_drag_coefficient(double angle_of_attack) {
-    double sample = drag_aoa_curve->sample_baked(UtilityFunctions::remap(angle_of_attack, -Math_PI, Math_PI, drag_aoa_curve->get_min_domain(), drag_aoa_curve->get_max_domain()));
+    double sample = drag_aoa_curve->sample_baked(UtilityFunctions::remap(angle_of_attack, -Math::PI, Math::PI, drag_aoa_curve->get_min_domain(), drag_aoa_curve->get_max_domain()));
     return UtilityFunctions::remap(sample, drag_aoa_curve->get_min_value(), drag_aoa_curve->get_max_value(), min_drag_coefficient, max_drag_coefficient);
 }
 
 
 
-void ManualAeroSurfaceConfig::set_min_lift_coefficient(double value) {min_lift_coefficient = value;}
-double ManualAeroSurfaceConfig::get_min_lift_coefficient() {return min_lift_coefficient;}
-void ManualAeroSurfaceConfig::set_max_lift_coefficient(double value) {max_lift_coefficient = value;}
-double ManualAeroSurfaceConfig::get_max_lift_coefficient() {return max_lift_coefficient;}
+//void ManualAeroSurfaceConfig::set_min_lift_coefficient(double value) {min_lift_coefficient = value;}
+//double ManualAeroSurfaceConfig::get_min_lift_coefficient() {return min_lift_coefficient;}
+//void ManualAeroSurfaceConfig::set_max_lift_coefficient(double value) {max_lift_coefficient = value;}
+//double ManualAeroSurfaceConfig::get_max_lift_coefficient() {return max_lift_coefficient;}
 
 void ManualAeroSurfaceConfig::set_lift_aoa_curve(const Ref<Curve> &p_curve) {lift_aoa_curve = p_curve;}
 Ref<Curve> ManualAeroSurfaceConfig::get_lift_aoa_curve() {return lift_aoa_curve;}
@@ -76,7 +76,7 @@ Ref<Curve> ManualAeroSurfaceConfig::get_drag_aoa_curve() {return drag_aoa_curve;
 void ManualAeroSurfaceConfig::set_sweep_drag_multiplier_curve(const Ref<Curve> &p_curve) {sweep_drag_multiplier_curve = p_curve; }
 Ref<Curve> ManualAeroSurfaceConfig::get_sweep_drag_multiplier_curve() {return sweep_drag_multiplier_curve;}
 double ManualAeroSurfaceConfig::get_drag_at_sweep_angle(double sweep_angle) {
-    return sweep_drag_multiplier_curve->sample_baked(UtilityFunctions::abs(UtilityFunctions::remap(sweep_angle, 0.0, Math_PI, sweep_drag_multiplier_curve->get_min_domain(), sweep_drag_multiplier_curve->get_max_domain())));
+    return sweep_drag_multiplier_curve->sample_baked(UtilityFunctions::abs(UtilityFunctions::remap(sweep_angle, 0.0, Math::PI, sweep_drag_multiplier_curve->get_min_domain(), sweep_drag_multiplier_curve->get_max_domain())));
 }
 void ManualAeroSurfaceConfig::set_drag_at_mach_multiplier_curve(const Ref<Curve> &p_curve) {drag_at_mach_multiplier_curve = p_curve;}
 Ref<Curve> ManualAeroSurfaceConfig::get_drag_at_mach_multiplier_curve() {return drag_at_mach_multiplier_curve;}

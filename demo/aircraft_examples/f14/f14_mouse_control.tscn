@@ -1,25 +1,46 @@
-[gd_scene load_steps=5 format=3 uid="uid://d1bnjwusahsgf"]
+[gd_scene format=3 uid="uid://d1bnjwusahsgf"]
 
 [ext_resource type="PackedScene" uid="uid://c1jq0a2ww3rai" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/f14/f14.tscn" id="1_8ue2t"]
 [ext_resource type="Script" uid="uid://dgklknms5ac4a" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/mouse_control.gd" id="2_aggfd"]
 [ext_resource type="PackedScene" uid="uid://bm03tdt5so3wj" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/camera without rotation.tscn" id="3_213af"]
+[ext_resource type="PackedScene" uid="uid://ctn1rdc7k7icw" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/floating_hud.tscn" id="5_213af"]
 [ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/flight_info_label.tscn" id="7_b85q4"]
 
-[node name="f14" instance=ExtResource("1_8ue2t")]
+[sub_resource type="ViewportTexture" id="ViewportTexture_213af"]
+viewport_path = NodePath("Camera3D/MeshInstance3D/SubViewport")
 
-[node name="MouseControl" type="Node" parent="AeroControlComponent" index="0"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5fiaq"]
+resource_local_to_scene = true
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+no_depth_test = true
+shading_mode = 0
+albedo_texture = SubResource("ViewportTexture_213af")
+fixed_size = true
+point_size = 100.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_hbrus"]
+resource_local_to_scene = true
+material = SubResource("StandardMaterial3D_5fiaq")
+size = Vector2(0.05, 0.05)
+
+[node name="f14" unique_id=1840358262 instance=ExtResource("1_8ue2t")]
+
+[node name="MouseControl" type="Node" parent="AeroControlComponent" parent_id_path=PackedInt32Array(402715082) index="0" unique_id=1642641741]
 script = ExtResource("2_aggfd")
 
-[node name="CameraWithoutRotation" parent="." index="1" instance=ExtResource("3_213af")]
+[node name="CameraWithoutRotation" parent="." index="1" unique_id=98182456 instance=ExtResource("3_213af")]
+show_crosshair = true
 right_click_to_move = false
 camera_distance = 20.0
 camera_height = 4.0
 camera_fov = 75.0
 
-[node name="Camera3D" parent="CameraWithoutRotation" index="0"]
+[node name="Camera3D" parent="CameraWithoutRotation" index="0" unique_id=906426946]
 current = true
 
-[node name="Label3D" type="Label3D" parent="CameraWithoutRotation/Camera3D" index="0"]
+[node name="Label3D" type="Label3D" parent="CameraWithoutRotation/Camera3D" index="0" unique_id=238280975]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.313, -2.986)
 text = "Controls:
 Pitch: W/A
@@ -31,10 +52,18 @@ Sweep: T/G (auto)
 Throttle split: C/V
 Launch Ball: Space"
 
-[node name="FlightInfoLabel" parent="CameraWithoutRotation/Camera3D" index="1" instance=ExtResource("7_b85q4")]
+[node name="FlightInfoLabel" parent="CameraWithoutRotation/Camera3D" index="1" unique_id=1427550218 instance=ExtResource("7_b85q4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5125, 1.313, -2.986)
 
-[node name="Camera3D" parent="." index="2"]
+[node name="MeshInstance3D" parent="CameraWithoutRotation/Camera3D" index="2" unique_id=181835651]
+mesh = SubResource("QuadMesh_hbrus")
+
+[node name="CameraRotator" parent="." index="2" unique_id=7277811]
 visible = false
+
+[node name="FloatingHUD" parent="." index="23" unique_id=1323450826]
+visible = false
+
+[node name="FloatingHUD2" parent="." index="24" unique_id=1801055089 instance=ExtResource("5_213af")]
 
 [editable path="CameraWithoutRotation"]

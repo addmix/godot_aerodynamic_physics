@@ -39,8 +39,10 @@ func _ready() -> void:
 	#super._ready()
 	
 	add_child(buoyancy_mesh_debug, INTERNAL_MODE_FRONT)
+	
+	update_debug_visibility()
 
-func update_debug_visibility(_show_debug : bool = false) -> void:
+func update_debug_visibility() -> void:
 	#super.update_debug_visibility(_show_debug)
 	
 	buoyancy_mesh_debug.visible = show_debug and show_buoyancy_mesh_debug

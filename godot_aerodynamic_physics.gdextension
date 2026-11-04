@@ -1,0 +1,14 @@
+; Godot Aerodynamic Physics - C++ port (godot-cpp-components)
+; The library is built with SCons inside godot-cpp-components/ and output to
+; godot-cpp-components/bin/<platform>/libgdexample.<platform>.<target>.double.x86_64.so
+[configuration]
+entry_symbol = "example_library_init"
+compatibility_minimum = 4.7
+
+[libraries]
+linux.x86_64 = "res://addons/godot_aerodynamic_physics/godot-cpp-components/bin/linux/libgdexample.linux.template_debug.double.x86_64.so"
+
+[icons]
+AeroBody3D = "res://addons/godot_aerodynamic_physics/icons/AeroBody3D.svg"
+AeroInfluencer3D = "res://addons/godot_aerodynamic_physics/icons/AeroInfluencer3D.svg"
+AeroSurface3D = "res://addons/godot_aerodynamic_physics/icons/AeroSurface3D.svg"

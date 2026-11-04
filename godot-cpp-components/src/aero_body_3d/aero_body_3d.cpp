@@ -72,12 +72,16 @@ void AeroBody3D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "debug_center_width"), "set_debug_center_width", "get_debug_center_width");
 
 
-	ADD_GROUP("Do not show in inspector", "");
+	//don't show these in inspector
+	ADD_GROUP("", "");
 	ADD_SUBGROUP("", "");
 	ClassDB::bind_method(D_METHOD("get_substeps"), &AeroBody3D::get_substeps);
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "substeps"), "", "get_substeps");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "substeps", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_substeps");
+	ClassDB::bind_method(D_METHOD("get_current_substep"), &AeroBody3D::get_current_substep);
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "current_substep", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_current_substep");
 	ClassDB::bind_method(D_METHOD("get_aero_influencers"), &AeroBody3D::get_aero_influencers);
 	ClassDB::bind_method(D_METHOD("get_atmosphere_areas"), &AeroBody3D::get_atmosphere_areas);
+	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "atmosphere_areas", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_atmosphere_areas");
 	
 	
 	//ADD_PROPERTY(PropertyInfo(Variant::, ""), "", "");
@@ -141,13 +145,6 @@ AeroBody3D::AeroBody3D() {
 	linear_velocity_substep = get_linear_velocity();
 	angular_velocity_substep = get_angular_velocity();
 
-	if (not this->is_connected("child_entered_tree", callable_mp(this, &AeroBody3D::on_child_entered_tree))) {
-		connect("child_entered_tree", callable_mp(this, &AeroBody3D::on_child_entered_tree));
-	}
-	if (not this->is_connected("child_exiting_tree", callable_mp(this, &AeroBody3D::on_child_exiting_tree))) {
-		connect("child_exiting_tree", callable_mp(this, &AeroBody3D::on_child_exiting_tree));
-	}
-	
 
 	
 	PhysicsServer3D::get_singleton()->body_set_force_integration_callback(get_rid(), callable_mp(this, &AeroBody3D::integrate_forces));
@@ -161,32 +158,19 @@ AeroBody3D::~AeroBody3D() {
 }
 
 void AeroBody3D::_enter_tree() {
+	set_collision_layer_value(ProjectSettings::get_singleton()->get_setting("physics/aerodynamics/atmosphere_area_collision_layer", 15), true);
+
 	if (Engine::get_singleton()->is_editor_hint()) {
 		update_configuration_warnings();
 	}
 }
-void AeroBody3D::on_child_entered_tree(Node *p_node) {
-	AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(p_node);
-	if (!influencer) return;
-
-	aero_influencers.append(influencer);
-	influencer->set_aero_body(this);
-
-	influencer->set_show_debug(get_show_debug());
-	influencer->set_debug_scale(get_debug_scale());
-	influencer->set_debug_width(get_debug_width());
-}
-void AeroBody3D::on_child_exiting_tree(Node *p_node) {
-	AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(p_node);
-	if (!influencer) return;
-
-	aero_influencers.erase(influencer);
-	influencer->set_aero_body(nullptr);
-}
 void AeroBody3D::_ready() {
-	set_substeps(get_substeps());
+	for (int i = 0; i < aero_influencers.size(); i++) {
+		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+		if (influencer) influencer->generate_mirror();
+	}
+
 	set_show_debug(show_debug);
-	set_collision_layer_value(ProjectSettings::get_singleton()->get_setting("physics/aerodynamics/atmosphere_area_collision_layer", 15), true);
 
 	if (Engine::get_singleton()->is_editor_hint()) {
 		update_configuration_warnings();
@@ -230,17 +214,18 @@ void AeroBody3D::integrate_forces(PhysicsDirectBodyState3D *body_state) {
 		interrupt_sleep();
 	}
 	
-	if (body_state->is_sleeping() or substeps == 0) return;
+	if (body_state->is_sleeping() or get_substeps() == 0) return;
 
 	last_linear_velocity = uncommitted_last_linear_velocity;
 	last_angular_velocity = uncommitted_last_angular_velocity;
 
 	current_gravity = body_state->get_total_gravity();
 
-	//this probably doesn't need to run every frame
-	if (not Engine::get_singleton()->is_editor_hint()) {
-		set_center_of_mass(body_state->get_center_of_mass());
-	}
+	//I'm not sure if this is relevant in the C++ port.
+	//it was needed in GDScript because the center_of_mass property wasn't updated from the body_state center of mass
+	//if (not Engine::get_singleton()->is_editor_hint()) {
+	//	set_center_of_mass(body_state->get_transform().get_basis().xform_inv(body_state->get_center_of_mass()));
+	//}
 
 	linear_velocity_substep = body_state->get_linear_velocity();
 	angular_velocity_substep = body_state->get_angular_velocity();
@@ -292,8 +277,9 @@ ForceAndTorque AeroBody3D::calculate_forces(double delta) {
 	ForceAndTorque last_force_and_torque;
 	ForceAndTorque total_force_and_torque;
 
-	substep_delta = delta * prediction_timestep_fraction;
-	for (int substep = 0; substep < substeps; substep++) {
+	int substep_count = get_substeps();
+	double substep_delta = get_substep_delta();
+	for (int substep = 0; substep < substep_count; substep++) {
 		current_substep = substep;
 		
 		air_velocity = -get_linear_velocity_substep() + wind;
@@ -301,8 +287,8 @@ ForceAndTorque AeroBody3D::calculate_forces(double delta) {
 
 		local_air_velocity = get_global_transform().get_basis().xform_inv(air_velocity);
 		local_angular_velocity = get_global_transform().get_basis().xform_inv(angular_velocity_substep);
-		angle_of_attack = get_global_basis().get_column(1).angle_to(-air_velocity) - (Math_PI / 2.0);
-		sideslip_angle = get_global_basis().get_column(0).angle_to(air_velocity) - (Math_PI / 2.0);
+		angle_of_attack = get_global_basis().get_column(1).angle_to(-air_velocity) - (Math::PI / 2.0);
+		sideslip_angle = get_global_basis().get_column(0).angle_to(air_velocity) - (Math::PI / 2.0); 
 		relative_position = calculate_relative_position();
 		drag_direction = calculate_drag_direction();
 
@@ -325,9 +311,10 @@ ForceAndTorque AeroBody3D::calculate_forces(double delta) {
 		linear_velocity_substep = calculate_linear_velocity_substep(last_force_and_torque.force) + current_gravity * substep_delta;
 		angular_velocity_substep = calculate_angular_velocity_substep(last_force_and_torque.torque);
 
+		if (Engine::get_singleton()->is_editor_hint()) break; //only simulate 1 substep: see https://github.com/addmix/godot_aerodynamic_physics/issues/35
 	}
 
-	total_force_and_torque /= substeps;
+	total_force_and_torque /= substep_count;
 
 	current_force = total_force_and_torque.force;
 	current_torque = total_force_and_torque.torque;
@@ -400,8 +387,8 @@ void AeroBody3D::_update_transform_substep(double substep_delta) {
 	}
 }
 
-Vector3 AeroBody3D::calculate_linear_velocity_substep(const Vector3 force) const { return linear_velocity_substep + (force / get_mass() * substep_delta); }
-Vector3 AeroBody3D::calculate_angular_velocity_substep(const Vector3 torque) const { return angular_velocity_substep + (get_inverse_inertia_tensor().xform(torque) * substep_delta); }
+Vector3 AeroBody3D::calculate_linear_velocity_substep(const Vector3 force) const { return linear_velocity_substep + (force / get_mass() * get_substep_delta()); }
+Vector3 AeroBody3D::calculate_angular_velocity_substep(const Vector3 torque) const { return angular_velocity_substep + (get_inverse_inertia_tensor().xform(torque) * get_substep_delta()); }
 Vector3 AeroBody3D::calculate_relative_position() const { return get_global_basis().xform(-get_center_of_mass()); }
 Vector3 AeroBody3D::calculate_drag_direction() const { return air_velocity.normalized(); }
 //Vector3 AeroBody3D::calculate_linear_acceleration() const {
@@ -441,24 +428,23 @@ void AeroBody3D::interrupt_sleep() {
 TypedArray<AeroInfluencer3D> AeroBody3D::get_aero_influencers() const { return aero_influencers; }
 TypedArray<Area3D> AeroBody3D::get_atmosphere_areas() const { return atmosphere_areas; }
 
+void AeroBody3D::add_aero_influencer(AeroInfluencer3D* influencer) { aero_influencers.append(influencer); }
+void AeroBody3D::remove_aero_influencer(AeroInfluencer3D* influencer) { aero_influencers.erase(influencer); }
+
 void AeroBody3D::add_aero_atmosphere(const Area3D* atmosphere) { atmosphere_areas.append(atmosphere); }
 void AeroBody3D::remove_aero_atmosphere(const Area3D* atmosphere) { atmosphere_areas.erase(atmosphere); }
 
 void AeroBody3D::set_substeps_override(const int p_substeps) {substeps_override = p_substeps;}
 int AeroBody3D::get_substeps_override() const {return substeps_override;}
-void AeroBody3D::set_substeps(const int p_substeps) {
-	substeps = p_substeps;
-	prediction_timestep_fraction = 1.0 / (double) substeps;
-}
 int AeroBody3D::get_substeps() const {
 	if (substeps_override > -1){
 		return substeps_override;
 	}
 	
-	return (int) ProjectSettings::get_singleton()->get_setting("physics/3d/aerodynamics/substeps", 1);
+	return (int) ProjectSettings::get_singleton()->get_setting("physics/aerodynamics/substeps", 1);
 }
-double AeroBody3D::get_prediction_timestep_fraction() const {return prediction_timestep_fraction;}
-double AeroBody3D::get_substep_delta() const { return substep_delta; }
+double AeroBody3D::get_prediction_timestep_fraction() const {return 1.0 / (double)get_substeps();}
+double AeroBody3D::get_substep_delta() const { return get_physics_process_delta_time() * get_prediction_timestep_fraction(); }
 int AeroBody3D::get_current_substep() const { return current_substep; }
 
 
@@ -517,6 +503,8 @@ double AeroBody3D::get_inclination() const {return inclination;}
 
 //debug
 void AeroBody3D::_update_debug() {
+	if (not is_inside_tree()) return;
+
 	//TODO - implement the rest of the debug vectors
 
 	//_update_debug_visibility()
@@ -547,7 +535,6 @@ void AeroBody3D::_update_debug() {
 		//Vector3 original_angular_velocity = RigidBody3D::get_angular_velocity();
 		//RigidBody3D::set_linear_velocity(debug_linear_velocity);
 		//RigidBody3D::set_angular_velocity(debug_angular_velocity);
-		//substep_delta = 1.0 / float(ProjectSettings.get_setting("physics/common/physics_ticks_per_second")) / SUBSTEPS
 		//TODO
 		//ForceAndTorque last_force_and_torque = calculate_aerodynamic_forces(get_physics_process_delta_time());
 		

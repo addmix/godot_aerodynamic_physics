@@ -97,9 +97,9 @@ func update_propeller_transforms() -> void:
 		var prop_index = i + 1 #we already have 1 surface, so we add 1
 		var new_blade : AeroInfluencer3D = propeller_instances[prop_index]
 		
-		#new_blade.default_transform = base_transform.rotated(Vector3(0, 1, 0), deg_to_rad(360.0 / propeller_amount) * prop_index)
+		new_blade.default_transform = base_transform.rotated(Vector3(0, 1, 0), deg_to_rad(360.0 / propeller_amount) * prop_index)
 		new_blade.transform = new_blade.default_transform
-		#new_blade.default_transform.origin = base_transform.origin.rotated(Vector3(0, 1, 0), deg_to_rad(360.0 / propeller_amount) * prop_index)
+		new_blade.default_transform.origin = base_transform.origin.rotated(Vector3(0, 1, 0), deg_to_rad(360.0 / propeller_amount) * prop_index)
 		new_blade.position = new_blade.default_transform.origin
 
 func _update_control_transform(substep_delta : float) -> void:

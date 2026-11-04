@@ -139,9 +139,8 @@ var angular_rate_error := Vector3.ZERO
 @export_category("")
 
 func update(delta : float) -> void:
-	control_command = control_input
-	
 	if not enable_flight_assist:
+		control_command = control_input
 		return
 	
 	bank_angle_hold(delta)
@@ -277,17 +276,15 @@ func flight_assist(delta : float) -> void:
 	
 	angular_rate_error = angular_rates * control_input - local_angular_velocity
 	
-	#flight assist
-	#these should be adjusted when the reference frame changes.
+	#this is added to update/apply input changes from previous steps, such as target_direction
+	#without this line, controls can break when flight assist axes are disabled.
+	control_command = control_input 
 	if enable_flight_assist_x:
 		control_command.x = pitch_assist_pid.update(delta, angular_rate_error.x)
 	if enable_flight_assist_y:
 		control_command.y = yaw_assist_pid.update(delta, angular_rate_error.y)
 	if enable_flight_assist_z:
 		control_command.z = roll_assist_pid.update(delta, angular_rate_error.z)
-	
-	if enable_aoa_limiter:
-		control_command *= clamp(remap(angle_of_attack, deg_to_rad(aoa_limit_start), deg_to_rad(aoa_limit_end), 1, 0), 0, 1)
 	
 	#adjust for changing airspeed and density
 	if enable_control_adjustment:
@@ -299,6 +296,9 @@ func flight_assist(delta : float) -> void:
 		#control_command *= control_speed_adjustment_curve.sample(air_speed)
 	
 	control_command = control_command.clamp(Vector3(-1, -1, -1), Vector3(1, 1, 1))
+	
+	if enable_aoa_limiter:
+		control_command *= clamp(remap(abs(angle_of_attack), deg_to_rad(aoa_limit_end), deg_to_rad(aoa_limit_start), 0, 1), 0, 1)
 
 static func get_control_adjustment_factor(speed : float, density : float, tuned_speed : float = 100.0, _tuned_density : float = 1.222, min_accounted_speed : float = 0.75, min_accounted_density : float = 0.2) -> float:
 	var control_adjustment : float = 1.0

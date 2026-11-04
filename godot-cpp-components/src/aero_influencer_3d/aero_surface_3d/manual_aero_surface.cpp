@@ -30,7 +30,7 @@ ForceAndTorque ManualAeroSurface3D::calculate_forces(double substep_delta) {
     /*double form_drag =  drag_coefficient;
     double induced_drag = 0.0;
     if (not get_wing_config()->get_span() == 0.0 and not get_dynamic_pressure() == 0.0) {
-        induced_drag = (lift_force * lift_force) / (get_dynamic_pressure() * Math_PI * get_wing_config()->get_span() * get_wing_config()->get_span());
+        induced_drag = (lift_force * lift_force) / (get_dynamic_pressure() * Math::PI * get_wing_config()->get_span() * get_wing_config()->get_span());
     }
 
     if (UtilityFunctions::is_equal_approx(get_air_speed(), 0.0)) {

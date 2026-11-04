@@ -3,46 +3,15 @@
   // Hover to view descriptions of existing attributes.
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
+  // "program" resolves via gap.godotEditorBin in .vscode/settings.json — override there per machine.
+  // WINDOWS + MSVC: change each "type" below from "cppdbg" to "cppvsdbg".
+  // WINDOWS + MinGW: keep "cppdbg" and add "MIMode": "gdb" and "miDebuggerPath": "<path to gdb.exe>".
   "configurations": [
     {
-      "name": "editor-debug (vsdbg | windows)",
-      "type": "cppvsdbg",
+      "name": "editor (cppdbg)",
+      "type": "cppdbg",
       "request": "launch",
-      "program": "D:/User/Documents/Godot/repos/godot-vr/godot/bin/godot.windows.editor.dev.double.x86_64.exe",
-      "args": [
-        "--editor",
-        "--debug",
-        //"--verbose",
-        "--path",
-        "../.."
-      ],
-      "cwd": "${workspaceFolder}",
-      "console": "internalConsole",
-      "internalConsoleOptions": "openOnSessionStart",
-      "preLaunchTask": "build-debug",
-    },
-    {
-      "name": "project-debug (vsdbg | windows)",
-      "type": "cppvsdbg",
-      "request": "launch",
-      "program": "D:/User/Documents/Godot/repos/godot-vr/godot/bin/godot.windows.editor.dev.double.x86_64.exe",
-      "args": [
-        //"--editor",
-        //"--debug",
-        //"--verbose",
-        "--path",
-        "../.."
-      ],
-      "cwd": "${workspaceFolder}",
-      "console": "internalConsole",
-      "internalConsoleOptions": "openOnSessionStart",
-      "preLaunchTask": "build-debug",
-    },
-    {
-      "name": "editor-release (vsdbg | windows)",
-      "type": "cppvsdbg",
-      "request": "launch",
-      "program": "D:/User/Documents/Godot/repos/godot-vr/godot/bin/godot.windows.editor.double.x86_64.exe",
+      "program": "${config:gap.godotEditorBin}",
       "args": [
         "--editor",
         //"--debug",
@@ -53,15 +22,14 @@
       "cwd": "${workspaceFolder}",
       "console": "internalConsole",
       "internalConsoleOptions": "openOnSessionStart",
-      "preLaunchTask": "build-debug", //TODO - change this to release, but godot isn't set to load the release version
+      "preLaunchTask": "build"
     },
     {
-      "name": "project-release (vsdbg | windows)",
-      "type": "cppvsdbg",
+      "name": "project (cppdbg)",
+      "type": "cppdbg",
       "request": "launch",
-      "program": "D:/User/Documents/Godot/repos/godot-vr/godot/bin/godot.windows.editor.double.x86_64.exe",
+      "program": "${config:gap.godotEditorBin}",
       "args": [
-        //"--editor",
         //"--debug",
         //"--verbose",
         "--path",
@@ -70,7 +38,7 @@
       "cwd": "${workspaceFolder}",
       "console": "internalConsole",
       "internalConsoleOptions": "openOnSessionStart",
-      "preLaunchTask": "build-debug",
+      "preLaunchTask": "build"
     },
   ]
 }

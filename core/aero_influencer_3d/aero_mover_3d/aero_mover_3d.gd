@@ -33,10 +33,12 @@ func _update_transform_substep(substep_delta : float) -> void:
 		_angular_velocity -= angular_motor #cancel out any rotation caused by motor
 	
 	#motors
-	#default_transform.origin += linear_motor * basis * substep_delta
+	default_transform.origin += linear_motor * basis * substep_delta
 	#rotate by angular velocity
-	#if not is_equal_approx(angular_motor.length_squared(), 0.0):
-		#default_transform.basis = default_transform.basis * Basis((angular_motor).normalized(), angular_motor.length() * substep_delta)
+	if not is_equal_approx(angular_motor.length_squared(), 0.0):
+		var new_transform := default_transform
+		new_transform.basis = default_transform.basis * Basis((angular_motor).normalized(), angular_motor.length() * substep_delta)
+		default_transform = new_transform
 	
 	_linear_velocity += linear_motor
 	_angular_velocity += angular_motor
@@ -45,11 +47,12 @@ func _update_transform_substep(substep_delta : float) -> void:
 	last_rotation = basis
 	
 	#super._update_transform_substep(substep_delta)
-	
 
 
 func get_linear_velocity_substep() -> Vector3:
-	var velocity : Vector3 = super.get_linear_velocity_substep() + (_linear_velocity * global_basis.inverse())
+	#TODO: normally this should just be `super() + (_linear_velocity * global_basis.inverse())`, but that would cause infinite recursion with the virtual function.
+	#for now use this workaround as this class might be converted to C++ in the future
+	var velocity : Vector3 = get_parent().get_linear_velocity_substep() + get_parent().get_angular_velocity_substep().cross(get_parent().global_basis * position) + (_linear_velocity * global_basis.inverse())
 	
 	if disable_lift_dissymmetry:
 		velocity = global_basis.y.normalized() * velocity.dot(global_basis.y)
@@ -57,4 +60,6 @@ func get_linear_velocity_substep() -> Vector3:
 	return velocity
 
 func get_angular_velocity_substep() -> Vector3:
-	return super.get_angular_velocity_substep() + (_angular_velocity * global_basis.inverse())
+	#TODO: normally this should just be `super() + (_angular_velocity * global_basis.inverse())`, but that would cause infinite recursion with the virtual function.
+	#for now use this workaround as this class might be converted to C++ in the future
+	return get_parent().get_angular_velocity_substep() + (_angular_velocity * global_basis.inverse())

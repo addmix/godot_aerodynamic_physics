@@ -1,4 +1,53 @@
 {
+    // Build configs.
+    //
+    // Modify this file to match your environment
+    // 
+    // By default, this matches my build environment, but it will work for you with slight modification
+    // Ensure that gap.godotEditorBin resolves to your godot editor binary, with a filepath or environment variable
+
+
+
+    // Shell command
+    
+    // Linux
+    "gap.shell": "bash",
+    "gap.shellFlag": "-c",
+
+    // Windows
+    // "gap.shell": "powershell",
+    // "gap.shellFlag": "-Command",
+
+
+
+    // Godot Editor binary location:
+
+    // Linux recommendation: Place your godot binary inside ~/.local/bin/
+    // "gap.godotEditorBin": "godot",
+    "gap.godotEditorBin": "/var/home/jake/godot/bin/godot.linuxbsd.editor.double.x86_64",
+    
+    // Windows recommendation: Add your godot binary to your system $PATH environment variable
+    // "gap.godotEditorBin": "godot.exe",
+    // "gap.godotEditorBin": "C:/path/to/godot/bin/godot.windows.editor.double.x86_64.exe",
+
+    
+
+    // Scons build command:
+
+    // Linux
+    // "gap.buildExtension": "scons precision=double custom_api_file=extension_api_double.json build_profile=build_profile.json",
+    // "gap.buildGodotCpp": "scons precision=double  custom_api_file=extension_api_double.json build_profile=build_profile.json",
+    
+    // Linux (using distrobox, cuz Bazzite, lol)
+    "gap.buildExtension": "distrobox enter --no-tty --name godot-dev -- scons precision=double custom_api_file=extension_api_double.json build_profile=build_profile.json",
+    "gap.buildGodotCpp": "distrobox enter --no-tty --name godot-dev -- scons precision=double custom_api_file=extension_api_double.json build_profile=build_profile.json",
+
+    // Windows (powershell)
+    // "gap.buildExtension": "scons precision=double custom_api_file=extension_api_double.json build_profile=build_profile.json",
+    // "gap.buildGodotCpp": "scons precision=double custom_api_file=extension_api_double.json build_profile=build_profile.json",
+
+
+
     "files.associations": {
         "deque": "cpp",
         "list": "cpp",
@@ -15,7 +64,6 @@
         "cstdlib": "cpp"
     },
     "files.exclude": {
-        //"**/godot-cpp-components/godot-cpp": true,
         "**/*.o": true,
         "**/*.obj": true,
         "**/*.uid": true,
@@ -27,4 +75,5 @@
         "**/*.exp": true,
         "**/~*.dll": true,
     },
+    "cmake.sourceDirectory": "/home/jake/Documents/Godot projects/GAP C++/AerodynamicProject/addons/godot_aerodynamic_physics/godot-cpp-components/godot-cpp",
 }

@@ -10,30 +10,45 @@ script/source = "extends Node3D
 # I just don't want to add these demo-controls to the project settings
 
 func _ready():
-	add_input(\"pitch_up\", KEY_S)
-	add_input(\"pitch_down\", KEY_W)
-	add_input(\"yaw_left\", KEY_Q)
-	add_input(\"yaw_right\", KEY_E)
-	add_input(\"roll_left\", KEY_A)
-	add_input(\"roll_right\", KEY_D)
-	add_input(\"throttle_up\", KEY_SHIFT)
-	add_input(\"throttle_down\", KEY_CTRL)
-	add_input(\"brake_up\", KEY_B)
-	add_input(\"brake_down\", -1)
-	add_input(\"tilt_up\", KEY_C)
-	add_input(\"tilt_down\", KEY_V)
-	add_input(\"collective_up\", KEY_T)
-	add_input(\"collective_down\", KEY_G)
+	#TODO: Add controller button mapping
+	add_key_input(\"pitch_up\", KEY_S)
+	add_key_input(\"pitch_down\", KEY_W)
+	add_controller_axis(\"pitch_up\", JOY_AXIS_LEFT_Y)
+	add_controller_axis(\"pitch_down\", JOY_AXIS_LEFT_Y, false)
+	add_key_input(\"yaw_left\", KEY_Q)
+	add_key_input(\"yaw_right\", KEY_E)
+	add_key_input(\"roll_right\", KEY_D)
+	add_key_input(\"roll_left\", KEY_A)
+	add_controller_axis(\"roll_right\", JOY_AXIS_LEFT_X)
+	add_controller_axis(\"roll_left\", JOY_AXIS_LEFT_X, false)
+	add_key_input(\"throttle_up\", KEY_SHIFT)
+	add_key_input(\"throttle_down\", KEY_CTRL)
+	add_key_input(\"brake_up\", KEY_B)
+	add_key_input(\"brake_down\", -1)
+	add_key_input(\"tilt_up\", KEY_C)
+	add_key_input(\"tilt_down\", KEY_V)
+	add_key_input(\"collective_up\", KEY_T)
+	add_key_input(\"collective_down\", KEY_G)
 
-func add_input(_name : String, keycode : int) -> void:
-	if InputMap.has_action(_name):
-		return
-	
-	InputMap.add_action(_name)
+func ifndef(action_name : String) -> void:
+	if not InputMap.has_action(action_name):
+		InputMap.add_action(action_name)
+
+func add_key_input(_name : String, keycode : Key) -> void:
+	ifndef(_name)
 	
 	if keycode != -1:
-		var input = InputEventKey.new()
+		var input := InputEventKey.new()
 		input.keycode = keycode
+		InputMap.action_add_event(_name, input)
+
+func add_controller_axis(_name : String, axis : JoyAxis, positive : bool = true) -> void:
+	ifndef(_name)
+	
+	if axis != JOY_AXIS_INVALID:
+		var input := InputEventJoypadMotion.new()
+		input.axis = axis
+		input.axis_value = 1.0 if positive else -1.0
 		InputMap.action_add_event(_name, input)
 "
 
@@ -82,10 +97,12 @@ var vehicles := {
 }
 
 var water_spawns : Array[String] = [
-	\"PBY Catalina\",
 	\"Boat\",
 	\"Sailboat\",
 	\"Floaty ball\",
+]
+var upwind_spawns : Array[String] = [
+	\"PBY Catalina\",
 ]
 
 func _ready() -> void:
@@ -107,10 +124,12 @@ func _on_button_pressed() -> void:
 	
 	$\"..\".add_child(vehicle_instance)
 	
+	vehicle_instance.global_transform = global_transform * vehicle_instance.transform
 	if vehicle_name in water_spawns:
 		vehicle_instance.global_transform = $WaterSpawn.global_transform * vehicle_instance.transform
-	else:
-		vehicle_instance.global_transform = global_transform * vehicle_instance.transform
+	if vehicle_name in upwind_spawns:
+		vehicle_instance.global_transform = $UpwindWaterSpawn.global_transform * vehicle_instance.transform
+	
 "
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_0xmma"]
@@ -165,7 +184,7 @@ size = Vector3(10000, 1, 10000)
 material = SubResource("StandardMaterial3D_1sawy")
 
 [node name="VehicleSpawner" type="Marker3D" parent="." unique_id=2143956688]
-transform = Transform3D(-1, 0, 1.2246467991473532e-16, 0, 1, 0, -1.2246467991473532e-16, 0, -1, 0, 0, 629.1521505701555)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 script = SubResource("GDScript_bs15r")
 
 [node name="Control" type="Control" parent="VehicleSpawner" unique_id=2014092588]
@@ -211,7 +230,10 @@ text = "Press F5 to return to vehicle selection"
 horizontal_alignment = 1
 
 [node name="WaterSpawn" type="Marker3D" parent="VehicleSpawner" unique_id=2108868646]
-transform = Transform3D(-0.2588190451025207, 0, 0.9659258262890684, 0, 1, 0, -0.9659258262890684, 0, -0.2588190451025207, 0, -0.5, 991.9770866800802)
+transform = Transform3D(-0.25881904510252063, 0, 0.9659258262890684, 0, 1, 0, -0.9659258262890684, 0, -0.25881904510252063, 0, -0.5, 991.976999999999)
+
+[node name="UpwindWaterSpawn" type="Marker3D" parent="VehicleSpawner" unique_id=1759550898]
+transform = Transform3D(-1.6653345e-16, 0, -1.0000000000000002, 0, 1, 0, 1.0000000000000002, 0, -1.6653345e-16, 0, -0.5, 991.976999999999)
 
 [node name="AeroWaterAtmosphere3D" type="Area3D" parent="." unique_id=364326081]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 5580.072630985623)
@@ -238,7 +260,6 @@ material = SubResource("StandardMaterial3D_koshk")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5633.996997465442)
 collision_layer = 0
 collision_mask = 16384
-monitoring = false
 monitorable = false
 script = ExtResource("2_0xmma")
 wind = Vector3(-10, 0, 0)

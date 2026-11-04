@@ -5,11 +5,8 @@
 [ext_resource type="Script" uid="uid://cdp8dc63ytxx1" path="res://addons/godot_aerodynamic_physics/core/flight_assist.gd" id="4_a0mgf"]
 [ext_resource type="Script" uid="uid://dfbhcpt1rr3ai" path="res://addons/godot_aerodynamic_physics/core/controls/aero_control_config_axis.gd" id="5_hj20f"]
 [ext_resource type="Script" uid="uid://cbgqb7g7mmwtu" path="res://addons/godot_aerodynamic_physics/core/controls/aero_control_config.gd" id="5_x51t6"]
-[ext_resource type="Curve" uid="uid://bf3v5qwdrjkmt" path="res://addons/godot_aerodynamic_physics/core/resources/default_drag_aoa_curve.tres" id="9_qs0nt"]
-[ext_resource type="Curve" uid="uid://dwn08xp3ynaja" path="res://addons/godot_aerodynamic_physics/core/resources/default_drag_at_mach_curve.tres" id="10_m134i"]
+[ext_resource type="Script" uid="uid://cii4ohipynhcc" path="res://addons/godot_aerodynamic_physics/core/easy_lift_curve.gd" id="9_u1r4g"]
 [ext_resource type="Script" uid="uid://c46td0go5kvp6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_axis_config.gd" id="11_1g5my"]
-[ext_resource type="Curve" uid="uid://cx3q3y0bx1rv7" path="res://addons/godot_aerodynamic_physics/core/resources/default_lift_aoa_curve.tres" id="11_rvvp2"]
-[ext_resource type="Curve" uid="uid://db2tsvmeabwc8" path="res://addons/godot_aerodynamic_physics/core/resources/default_sweep_drag_multiplier.tres" id="12_blosn"]
 [ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_config.gd" id="12_njgyo"]
 [ext_resource type="PackedScene" uid="uid://bddf1hhmmre47" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/flight_info_label.tscn" id="13_m134i"]
 [ext_resource type="Script" uid="uid://j11128f5e4xl" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_thruster_3d/aero_jet_thruster_3d.gd" id="13_qs0nt"]
@@ -142,7 +139,35 @@ axis_configs = Array[ExtResource("11_1g5my")]([SubResource("Resource_rvvp2")])
 use_separate_minmax = true
 min_value = Vector3(0, 0, -1)
 
+[sub_resource type="Curve" id="Curve_dk61a"]
+_limits = [0.0, 1.0, -180.0, 180.0]
+bake_resolution = 21
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-90, 1), 0.0, 0.0, 0, 0, Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(90, 1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+point_count = 5
+
+[sub_resource type="Curve" id="Curve_hj20f"]
+_limits = [1.0, 2.0, 0.0, 2.0]
+bake_resolution = 23
+_data = [Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 2), 0.0, 0.0, 0, 0, Vector2(2, 1.2), 0.181, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_qs0nt"]
+_limits = [-1.2, 1.2, -180.0, 180.0]
+_data = [Vector2(-180, 0), 0.0, 0.07999999999999999, 1, 1, Vector2(-169.5, 0.84), 0.07999999999999999, 0.0, 1, 0, Vector2(-135, 0.6), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-15, -1.2), 0.0, 0.08, 0, 1, Vector2(15, 1.2), 0.08, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.6), 0.0, 0.0, 0, 0, Vector2(169.5, -0.84), 0.0, 0.07999999999999999, 0, 1, Vector2(180, 0), 0.07999999999999999, 0.0, 1, 1]
+point_count = 10
+script = ExtResource("9_u1r4g")
+
+[sub_resource type="Curve" id="Curve_m134i"]
+_limits = [0.0, 1.0, 0.0, 90.0]
+bake_resolution = 4
+_data = [Vector2(0, 1), 0.0, -0.015519453, 0, 0, Vector2(35, 0.6), -0.0035805835, -0.0035805835, 0, 0, Vector2(90, 0.5), 0.0, 0.0, 0, 0]
+point_count = 3
+
 [sub_resource type="ManualAeroSurfaceConfig" id="ManualAeroSurfaceConfig_m2vdb"]
+lift_aoa_curve = SubResource("Curve_qs0nt")
+drag_aoa_curve = SubResource("Curve_dk61a")
+sweep_drag_multiplier_curve = SubResource("Curve_m134i")
+drag_at_mach_multiplier_curve = SubResource("Curve_hj20f")
 
 [sub_resource type="AeroSurfaceConfig" id="AeroSurfaceConfig_gk5sg"]
 
@@ -159,7 +184,35 @@ max_value = Vector3(0.2, 0, 0)
 min_value = Vector3(-0.2, 0, 0)
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
+[sub_resource type="Curve" id="Curve_rvvp2"]
+_limits = [0.0, 1.0, -180.0, 180.0]
+bake_resolution = 21
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-90, 1), 0.0, 0.0, 0, 0, Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(90, 1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+point_count = 5
+
+[sub_resource type="Curve" id="Curve_blosn"]
+_limits = [1.0, 2.0, 0.0, 2.0]
+bake_resolution = 23
+_data = [Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 2), 0.0, 0.0, 0, 0, Vector2(2, 1.2), 0.181, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_m2vdb"]
+_limits = [-1.2, 1.2, -180.0, 180.0]
+_data = [Vector2(-180, 0), 0.0, 0.07999999999999999, 1, 1, Vector2(-169.5, 0.84), 0.07999999999999999, 0.0, 1, 0, Vector2(-135, 0.6), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-15, -1.2), 0.0, 0.08, 0, 1, Vector2(15, 1.2), 0.08, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.6), 0.0, 0.0, 0, 0, Vector2(169.5, -0.84), 0.0, 0.07999999999999999, 0, 1, Vector2(180, 0), 0.07999999999999999, 0.0, 1, 1]
+point_count = 10
+script = ExtResource("9_u1r4g")
+
+[sub_resource type="Curve" id="Curve_gk5sg"]
+_limits = [0.0, 1.0, 0.0, 90.0]
+bake_resolution = 4
+_data = [Vector2(0, 1), 0.0, -0.015519453, 0, 0, Vector2(35, 0.6), -0.0035805835, -0.0035805835, 0, 0, Vector2(90, 0.5), 0.0, 0.0, 0, 0]
+point_count = 3
+
 [sub_resource type="ManualAeroSurfaceConfig" id="ManualAeroSurfaceConfig_8brnm"]
+lift_aoa_curve = SubResource("Curve_m2vdb")
+drag_aoa_curve = SubResource("Curve_rvvp2")
+sweep_drag_multiplier_curve = SubResource("Curve_gk5sg")
+drag_at_mach_multiplier_curve = SubResource("Curve_blosn")
 
 [sub_resource type="AeroSurfaceConfig" id="AeroSurfaceConfig_uwqen"]
 
@@ -176,16 +229,39 @@ max_value = Vector3(0.5, 0, 0)
 min_value = Vector3(-0.5, 0, 0)
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
+[sub_resource type="Curve" id="Curve_8brnm"]
+_limits = [0.0, 1.0, -180.0, 180.0]
+bake_resolution = 21
+_data = [Vector2(-180, 0), 0.0, 0.0, 0, 0, Vector2(-90, 1), 0.0, 0.0, 0, 0, Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(90, 1), 0.0, 0.0, 0, 0, Vector2(180, 0), 0.0, 0.0, 0, 0]
+point_count = 5
+
+[sub_resource type="Curve" id="Curve_uwqen"]
+_limits = [1.0, 2.0, 0.0, 2.0]
+bake_resolution = 23
+_data = [Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 2), 0.0, 0.0, 0, 0, Vector2(2, 1.2), 0.181, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_e07xt"]
+_limits = [-1.2, 1.2, -180.0, 180.0]
+_data = [Vector2(-180, 0), 0.0, 0.07999999999999999, 1, 1, Vector2(-169.5, 0.84), 0.07999999999999999, 0.0, 1, 0, Vector2(-135, 0.6), 0.0, 0.0, 0, 0, Vector2(-45, -0.6), 0.0, 0.0, 0, 0, Vector2(-15, -1.2), 0.0, 0.08, 0, 1, Vector2(15, 1.2), 0.08, 0.0, 1, 0, Vector2(45, 0.6), 0.0, 0.0, 0, 0, Vector2(135, -0.6), 0.0, 0.0, 0, 0, Vector2(169.5, -0.84), 0.0, 0.07999999999999999, 0, 1, Vector2(180, 0), 0.07999999999999999, 0.0, 1, 1]
+point_count = 10
+script = ExtResource("9_u1r4g")
+
+[sub_resource type="Curve" id="Curve_0lgyr"]
+_limits = [0.0, 1.0, 0.0, 90.0]
+bake_resolution = 4
+_data = [Vector2(0, 1), 0.0, -0.015519453, 0, 0, Vector2(35, 0.6), -0.0035805835, -0.0035805835, 0, 0, Vector2(90, 0.5), 0.0, 0.0, 0, 0]
+point_count = 3
+
 [sub_resource type="ManualAeroSurfaceConfig" id="ManualAeroSurfaceConfig_e07xt"]
-min_lift_coefficient = -1.5
-max_lift_coefficient = 1.5
-min_drag_coefficient = 0.02
+lift_aoa_curve = SubResource("Curve_e07xt")
 max_drag_coefficient = 0.5
+drag_aoa_curve = SubResource("Curve_8brnm")
+sweep_drag_multiplier_curve = SubResource("Curve_0lgyr")
+drag_at_mach_multiplier_curve = SubResource("Curve_uwqen")
 
 [sub_resource type="AeroSurfaceConfig" id="AeroSurfaceConfig_0lgyr"]
 span = 3.0
-area = 3.0
-aspect_ratio = 3.0
 
 [sub_resource type="Resource" id="Resource_i3p6j"]
 resource_name = "roll"
@@ -205,12 +281,12 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 substeps_override = 16
 show_debug = true
 substeps = 16
+prediction_timestep_fraction = 0.0625
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8844791671787666, 0)
+collision_layer = 16385
 mass = 850.0
 physics_material_override = SubResource("PhysicsMaterial_m08mi")
 can_sleep = false
-linear_damp_mode = 1
-angular_damp_mode = 1
 
 [node name="AeroControlComponent" type="Node" parent="." unique_id=292886688]
 script = ExtResource("2_x2dhw")
@@ -225,11 +301,11 @@ shape = SubResource("BoxShape3D_nchkm")
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, -0.434142, -0.220745)
 shape = SubResource("CapsuleShape3D_6onr1")
 
-[node name="AeroJetThruster3D" type="AeroInfluencer3D" parent="." unique_id=75216338]
+[node name="AeroJetThruster3D" type="AeroInfluencer3D" parent="." unique_id=75216338 node_paths=PackedStringArray("aero_body")]
 debug_scale = 1.0
 debug_width = 0.3
 show_debug = true
-show_drag = true
+aero_body = NodePath("..")
 default_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.29881)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.29881)
 script = ExtResource("13_qs0nt")
@@ -238,14 +314,14 @@ exhaust_velocity = 100.0
 throttle_control_config = SubResource("Resource_blosn")
 metadata/_custom_type_script = "uid://j11128f5e4xl"
 
-[node name="Elevator" type="ManualAeroSurface3D" parent="." unique_id=494901168]
+[node name="Elevator" type="ManualAeroSurface3D" parent="." unique_id=494901168 node_paths=PackedStringArray("aero_body")]
 manual_config = SubResource("ManualAeroSurfaceConfig_m2vdb")
 wing_config = SubResource("AeroSurfaceConfig_gk5sg")
 actuation_config = SubResource("Resource_m2vdb")
 debug_scale = 1.0
 debug_width = 0.3
 show_debug = true
-show_drag = true
+aero_body = NodePath("..")
 default_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.576279999917276e-07, 2.72025)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.576279999917276e-07, 2.72025)
 
@@ -253,14 +329,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.576279999917276e-07, 2.
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.57628e-07, 0.29494)
 size = Vector3(2.0332, 0.113525, 1.14014)
 
-[node name="Rudder" type="ManualAeroSurface3D" parent="." unique_id=232763011]
+[node name="Rudder" type="ManualAeroSurface3D" parent="." unique_id=232763011 node_paths=PackedStringArray("aero_body")]
 manual_config = SubResource("ManualAeroSurfaceConfig_8brnm")
 wing_config = SubResource("AeroSurfaceConfig_uwqen")
 actuation_config = SubResource("Resource_8brnm")
 debug_scale = 1.0
 debug_width = 0.3
 show_debug = true
-show_drag = true
+aero_body = NodePath("..")
 default_transform = Transform3D(6.12304e-17, -1, 0, 0.835808, 5.11768e-17, -0.549023, 0.549023, 3.36168e-17, 0.835808, -2.96035e-17, 0.742918, 2.98506)
 transform = Transform3D(6.12304e-17, -1, 0, 0.835808, 5.11768e-17, -0.549023, 0.549023, 3.36168e-17, 0.835808, -2.96035e-17, 0.742918, 2.98506)
 
@@ -268,14 +344,14 @@ transform = Transform3D(6.12304e-17, -1, 0, 0.835808, 5.11768e-17, -0.549023, 0.
 transform = Transform3D(-4.37114e-08, 0.999742, -0.0227224, -1, -4.37001e-08, 9.93232e-10, 3.55271e-15, 0.0227224, 0.999742, 0.0151641, -6.6283e-10, 0.239923)
 size = Vector3(0.141602, 1.41797, 1.14014)
 
-[node name="WingR" type="ManualAeroSurface3D" parent="." unique_id=582370663]
+[node name="WingR" type="ManualAeroSurface3D" parent="." unique_id=582370663 node_paths=PackedStringArray("aero_body")]
 manual_config = SubResource("ManualAeroSurfaceConfig_e07xt")
 wing_config = SubResource("AeroSurfaceConfig_0lgyr")
 actuation_config = SubResource("Resource_yl62e")
 debug_scale = 1.0
 debug_width = 0.3
 show_debug = true
-show_drag = true
+aero_body = NodePath("..")
 default_transform = Transform3D(0.996195, -0.0871557, 0, 0.0871558, 0.996194, 0, 0, 0, 1, 1.908, 0, -0.813632)
 transform = Transform3D(0.996195, -0.0871557, 0, 0.0871558, 0.996194, 0, 0, 0, 1, 1.908, 0, -0.813632)
 
@@ -283,14 +359,14 @@ transform = Transform3D(0.996195, -0.0871557, 0, 0.0871558, 0.996194, 0, 0, 0, 1
 transform = Transform3D(1, 0, -5.96046e-08, 0, 1, 0, 5.96046e-08, 0, 1, -0.0699999, 0, 0.269945)
 size = Vector3(3.67285, 0.113525, 1.14014)
 
-[node name="WingL" type="ManualAeroSurface3D" parent="." unique_id=2043891661]
+[node name="WingL" type="ManualAeroSurface3D" parent="." unique_id=2043891661 node_paths=PackedStringArray("aero_body")]
 manual_config = SubResource("ManualAeroSurfaceConfig_e07xt")
 wing_config = SubResource("AeroSurfaceConfig_0lgyr")
 actuation_config = SubResource("Resource_yl62e")
 debug_scale = 1.0
 debug_width = 0.3
 show_debug = true
-show_drag = true
+aero_body = NodePath("..")
 default_transform = Transform3D(0.9961950026775503, 0.08715568181176198, 0, -0.08715576939546317, 0.9961940015912648, 0, 0, 0, 1, -1.907999999995809, 0, -0.8135999999940395)
 transform = Transform3D(0.9961950026775503, 0.08715568181176198, 0, -0.08715576939546317, 0.9961940015912648, 0, 0, 0, 1, -1.907999999995809, 0, -0.8135999999940395)
 

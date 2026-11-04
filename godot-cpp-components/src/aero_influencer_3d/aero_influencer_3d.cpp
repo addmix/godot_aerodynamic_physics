@@ -29,13 +29,13 @@ void AeroInfluencer3D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "can_override_body_sleep"), "set_can_override_body_sleep", "get_can_override_body_sleep");
 
 	ADD_GROUP("Mirroring", "");
-	ClassDB::bind_method(D_METHOD("set_mirror_only_position", "only_position"), &AeroInfluencer3D::set_mirror_only_position);
-	ClassDB::bind_method(D_METHOD("get_mirror_only_position"), &AeroInfluencer3D::get_mirror_only_position);
-	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "mirror_only_position"), "set_mirror_only_position", "get_mirror_only_position");
-
 	ClassDB::bind_method(D_METHOD("set_mirror_axis", "axis"), &AeroInfluencer3D::set_mirror_axis);
 	ClassDB::bind_method(D_METHOD("get_mirror_axis"), &AeroInfluencer3D::get_mirror_axis);
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "mirror_axis", PROPERTY_HINT_ENUM, "None,X,Y,Z"), "set_mirror_axis", "get_mirror_axis");
+
+	ClassDB::bind_method(D_METHOD("set_mirror_scaling_fix_axis", "axis"), &AeroInfluencer3D::set_mirror_scaling_fix_axis);
+	ClassDB::bind_method(D_METHOD("get_mirror_scaling_fix_axis"), &AeroInfluencer3D::get_mirror_scaling_fix_axis);
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "mirror_scaling_fix_axis", PROPERTY_HINT_ENUM, "None,X,Y,Z"), "set_mirror_scaling_fix_axis", "get_mirror_scaling_fix_axis");
 	
 	ClassDB::bind_method(D_METHOD("is_duplicate"), &AeroInfluencer3D::is_duplicate);
 	
@@ -70,6 +70,10 @@ void AeroInfluencer3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_debug_width"), &AeroInfluencer3D::get_debug_width);
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "debug_width"), "set_debug_width", "get_debug_width");
 
+	//update_debug_visibility
+	GDVIRTUAL_BIND(update_debug_visibility);
+	ClassDB::bind_method(D_METHOD("update_debug_visibility"), &AeroInfluencer3D::update_debug_visibility);
+
 	ClassDB::bind_method(D_METHOD("set_show_debug", "show"), &AeroInfluencer3D::set_show_debug);
 	ClassDB::bind_method(D_METHOD("get_show_debug"), &AeroInfluencer3D::get_show_debug);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "show_debug"), "set_show_debug", "get_show_debug");
@@ -95,12 +99,13 @@ void AeroInfluencer3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_show_thrust"), &AeroInfluencer3D::get_show_thrust);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "show_thrust"), "set_show_thrust", "get_show_thrust");
 
-	ADD_GROUP("Dont show in inspector", "");
+	//the below properties are not shown in inspector
 	ClassDB::bind_method(D_METHOD("get_aero_body"), &AeroInfluencer3D::get_aero_body);
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "aero_body", PROPERTY_HINT_NODE_TYPE, "AeroBody3D", PROPERTY_USAGE_STORAGE), "", "get_aero_body");
 	
+	ClassDB::bind_method(D_METHOD("set_default_transform", "new_transform"), &AeroInfluencer3D::set_default_transform);
 	ClassDB::bind_method(D_METHOD("get_default_transform"), &AeroInfluencer3D::get_default_transform);
-	ADD_PROPERTY(PropertyInfo(Variant::TRANSFORM3D, "default_transform", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_default_transform");
+	ADD_PROPERTY(PropertyInfo(Variant::TRANSFORM3D, "default_transform", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "set_default_transform", "get_default_transform");
 	ClassDB::bind_method(D_METHOD("get_altitude"), &AeroInfluencer3D::get_altitude);
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "altitude", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_altitude");
 	ClassDB::bind_method(D_METHOD("get_air_density"), &AeroInfluencer3D::get_air_density);
@@ -108,10 +113,14 @@ void AeroInfluencer3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_relative_position"), &AeroInfluencer3D::get_relative_position);
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "relative_position", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_relative_position");
 
+	GDVIRTUAL_BIND(get_linear_velocity_substep);
 	ClassDB::bind_method(D_METHOD("get_linear_velocity_substep"), &AeroInfluencer3D::get_linear_velocity_substep);
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "linear_velocity_substep", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_linear_velocity_substep");
+	GDVIRTUAL_BIND(get_angular_velocity_substep);
 	ClassDB::bind_method(D_METHOD("get_angular_velocity_substep"), &AeroInfluencer3D::get_angular_velocity_substep);
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "angular_velocity_substep", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_angular_velocity_substep");
+	
+	
 	ClassDB::bind_method(D_METHOD("get_local_air_velocity"), &AeroInfluencer3D::get_local_air_velocity);
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "local_air_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "", "get_local_air_velocity");
 	ClassDB::bind_method(D_METHOD("get_world_air_velocity"), &AeroInfluencer3D::get_world_air_velocity);
@@ -137,9 +146,6 @@ void AeroInfluencer3D::_bind_methods() {
 }
 
 AeroInfluencer3D::AeroInfluencer3D() {
-	vector_3d_script = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/utils/vector_3d/vector_3d.gd");
-	point_3d_script = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/utils/point_3d/point_3d.gd");
-
 	mirror_duplicate = nullptr;
 }
 
@@ -149,8 +155,8 @@ AeroInfluencer3D::~AeroInfluencer3D() {
 
 void AeroInfluencer3D::_notification(int what) {
 	switch (what) {
-	case NOTIFICATION_LOCAL_TRANSFORM_CHANGED:
-		set_mirror_axis(mirror_axis); //not the most efficient way to do this
+	case NOTIFICATION_TRANSFORM_CHANGED:
+		if (is_inside_tree()) generate_mirror();
 		break;
 	}
 }
@@ -160,47 +166,49 @@ void AeroInfluencer3D::_ready() {
 			actuation_config = actuation_config->duplicate(true);
 		}
 	}
+
+	for (int i = 0; i < aero_influencers.size(); i++) {
+		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+		if (influencer) influencer->generate_mirror();
+	}
+
+	update_debug_visibility();
 }
 void AeroInfluencer3D::_enter_tree() {
-	this->connect("child_entered_tree", callable_mp(this, &AeroInfluencer3D::on_child_entered_tree));
-	this->connect("child_exiting_tree", callable_mp(this, &AeroInfluencer3D::on_child_exiting_tree));
-
-	set_deferred("mirror_axis", mirror_axis);
-	//set_mirror_axis(mirror_axis); //set_deferred("mirror_axis", mirror_axis) #ensures that mirrored version is reliably created when nodes are changed
+	Node* parent = get_parent();
+	if (AeroBody3D* body = Object::cast_to<AeroBody3D>(parent)) {
+		aero_body = body;
+		body->add_aero_influencer(this); //self-registration, matches main's _enter_tree
+	} else if (AeroInfluencer3D* infl_parent = Object::cast_to<AeroInfluencer3D>(parent)) {
+		aero_body = infl_parent->get_aero_body();
+		if (infl_parent->_duplicate) _duplicate = true; //same class, private access OK
+		infl_parent->aero_influencers.append(this);
+	}
 
 	default_transform = get_transform();
-	//TODO ensure other @onready variables are set
+	if (mirror_scaling_fix_axis != 0) {
+		set_mirror_scaling_fix_axis(mirror_scaling_fix_axis); //re-trigger setter now that we're in the tree
+	}
 }
 void AeroInfluencer3D::_exit_tree() {
-	if (mirror_duplicate) {
-		mirror_duplicate->queue_free();
+	Node* parent = get_parent();
+	if (AeroInfluencer3D* infl_parent = Object::cast_to<AeroInfluencer3D>(parent)) {
+		infl_parent->aero_influencers.erase(this);
+	} else if (AeroBody3D* body = Object::cast_to<AeroBody3D>(parent)) {
+		body->remove_aero_influencer(this); //self-unregistration, matches main's _exit_tree
 	}
-}
-void AeroInfluencer3D::on_child_entered_tree(Node *p_node) {
-	AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(p_node);
-	if (!influencer) return;
-
-	aero_influencers.append(influencer);
-	influencer->set_aero_body(aero_body);
-}
-void AeroInfluencer3D::on_child_exiting_tree(Node *p_node) {
-	AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(p_node);
-	if (!influencer) return;
-
-	aero_influencers.erase(influencer);
-	influencer->set_aero_body(nullptr);
+	aero_body = nullptr;
 }
 void AeroInfluencer3D::_physics_process(double delta) {
-	if (is_overriding_body_sleep() and ObjectDB::get_instance(aero_body->get_instance_id()) != NULL) {
-		aero_body->interrupt_sleep();
+	if (Engine::get_singleton()->is_editor_hint()) return;
+	if (get_transform() != last_transform) {
+		if (aero_body) aero_body->interrupt_sleep(); //null guard: main would crash on null aero_body, C++ nullptr deref is worse
 	}
-	//if not transform == last_transform:
-	//	aero_body.interrupt_sleep()
 	last_transform = get_transform();
 }
 
 ForceAndTorque AeroInfluencer3D::calculate_forces_with_override(double substep_delta) {
-	ForceAndTorque result = calculate_forces(substep_delta); //TODO - this is wrong, not properly implemented.
+	ForceAndTorque force_and_torque = calculate_forces(substep_delta); //TODO - this is wrong, not properly implemented.
 	//TODO revise this logic, may not be entirely necessary
 	if (GDVIRTUAL_IS_OVERRIDDEN(_calculate_forces)) {
 		PackedVector3Array result;
@@ -210,11 +218,14 @@ ForceAndTorque AeroInfluencer3D::calculate_forces_with_override(double substep_d
 
 		if (result.size() < 2) return ForceAndTorque();
 
-		return ForceAndTorque(result[0], result[1]);
+		force_and_torque = ForceAndTorque(result[0], result[1]);
 	}
 	//do post-calculate_forces code, like updating current_force and current_torque.
 	
-	return result;
+	current_force = force_and_torque.force;
+	current_torque = force_and_torque.torque;
+
+	return force_and_torque;
 }
 
 ForceAndTorque AeroInfluencer3D::calculate_forces(double substep_delta) {
@@ -294,6 +305,10 @@ double AeroInfluencer3D::get_control_command(StringName axis_name) {
 }
 //TODO add virtual for this func
 void AeroInfluencer3D::_update_transform_substep(double substep_delta) {
+	if (GDVIRTUAL_IS_OVERRIDDEN(_update_transform_substep)) {
+		GDVIRTUAL_CALL(_update_transform_substep, substep_delta);
+	}
+
 	for (int i = 0; i < aero_influencers.size(); i++) {
 		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
 		if (not influencer) continue;
@@ -304,18 +319,16 @@ void AeroInfluencer3D::_update_transform_substep(double substep_delta) {
 
 	_update_control_transform(substep_delta);
 }
-//TODO add virtual for this func
 void AeroInfluencer3D::_update_control_transform(double substep_delta) {
+	Vector3 actuation_value = Vector3();
 	if (actuation_config.is_valid()) {
-		Variant result = actuation_config->call("update", this, substep_delta);
-		Vector3 actuation_value = result;
-		
-		//might be incorrect behavior, may need to set basis directly with: basis = ...
-		set_basis(default_transform.basis * Basis::from_euler(actuation_value, (godot::EulerOrder) control_rotation_order));
+		actuation_value = actuation_config->call("update", this, substep_delta);
 	}
 
+	//might be incorrect behavior, may need to set basis directly with: basis = ...
+	set_basis(default_transform.basis * Basis::from_euler(actuation_value, (godot::EulerOrder) control_rotation_order));
+
 	if (GDVIRTUAL_IS_OVERRIDDEN(_update_control_transform)) {
-		PackedVector3Array result;
 		GDVIRTUAL_CALL(_update_control_transform, substep_delta);
 	}
 }
@@ -326,6 +339,11 @@ bool AeroInfluencer3D::is_overriding_body_sleep() {
 	}
 	
 	bool overriding = false;
+
+	// if (GDVIRTUAL_IS_OVERRIDDEN(_update_control_transform)) {
+	// 	PackedVector3Array result;
+	// 	GDVIRTUAL_CALL(_update_control_transform, substep_delta);
+	// }
 
 	for (int i = 0; i < aero_influencers.size(); i++) {
 		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
@@ -389,11 +407,12 @@ Vector3 AeroInfluencer3D::calculate_angular_velocity_substep() {
 //virtual?
 Vector3 AeroInfluencer3D::calculate_centrifugal_offset() {
 	return get_position();
-	
 }
+//TODO
 Vector3 AeroInfluencer3D::calculate_linear_acceleration() {
 	return Vector3();
 }
+//TODO
 Vector3 AeroInfluencer3D::calculate_angular_acceleration() {
 	return Vector3();
 }
@@ -401,15 +420,27 @@ Vector3 AeroInfluencer3D::calculate_angular_acceleration() {
 
 
 void AeroInfluencer3D::update_debug(){
-	//TODO implement the other debug vectors
 	if (not is_inside_tree()) return;
-
+	
+	//TODO: Move this v3_log_with_base and basis stuff into the AeroDebugVector class
 	if (force_debug_vector) {
-		force_debug_vector->set("value", get_global_basis().xform_inv(get_current_force()) * debug_scale);
+		force_debug_vector->set("value", get_global_basis().xform_inv(AeroUtils::v3log_with_base(get_current_force(), debug_scaling_factor)) * debug_scale);
 	}
 	if (torque_debug_vector) {
-		torque_debug_vector->set("value", get_global_basis().xform_inv(get_current_torque()) * debug_scale);
+		torque_debug_vector->set("value", get_global_basis().xform_inv(AeroUtils::v3log_with_base(get_current_torque(), debug_scaling_factor)) * debug_scale);
 	}
+	if (lift_debug_vector) {
+		Vector3 lift = get_current_force() - get_current_force().dot(get_drag_direction()) * get_drag_direction();
+		lift_debug_vector->set("value", get_global_basis().xform_inv(AeroUtils::v3log_with_base(lift, debug_scaling_factor)) * debug_scale);
+	}
+	if (drag_debug_vector) {
+		Vector3 drag = double(UtilityFunctions::max(get_current_force().dot(get_drag_direction()), 0.0)) * get_drag_direction();
+		drag_debug_vector->set("value", get_global_basis().xform_inv(AeroUtils::v3log_with_base(drag, debug_scaling_factor)) * debug_scale);
+	}
+	if (thrust_debug_vector) {
+		Vector3 thrust = double(UtilityFunctions::min(get_current_force().dot(get_drag_direction()), 0.0)) * get_drag_direction();
+		thrust_debug_vector->set("value", get_global_basis().xform_inv(AeroUtils::v3log_with_base(thrust, debug_scaling_factor)) * debug_scale);
+	}	
 
 	for (int i = 0; i < aero_influencers.size(); i++) {
 		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
@@ -430,53 +461,70 @@ void AeroInfluencer3D::set_can_override_body_sleep(bool override) {
 bool AeroInfluencer3D::get_can_override_body_sleep() {
 	return can_override_body_sleep;
 }
-void AeroInfluencer3D::set_mirror_only_position(bool value) {
-	mirror_only_position = value;
-}
-bool AeroInfluencer3D::get_mirror_only_position() {
-	return mirror_only_position;
-}
 void AeroInfluencer3D::set_mirror_axis(int axis) {
-	mirror_axis = axis;
-	if (mirror_duplicate and not (mirror_duplicate == this)) {
-		//TODO - still issues with mirroring, some incorrectly initialized pointed when the duplicate happens or something.
-		mirror_duplicate->queue_free();
-		mirror_duplicate = nullptr;
-	}
-	if (mirror_axis == 0 or is_duplicate() or not is_inside_tree()) return;
-
-	mirror_duplicate = Object::cast_to<AeroInfluencer3D>(duplicate());
-	if (not mirror_duplicate) return; //something went wrong when duplicating and type casting
-	mirror_duplicate->set_duplicate(true);
-	mirror_duplicate->set_name(get_name() + (StringName) "Mirror");
-	mirror_duplicate->set_mirror_axis(mirror_axis);
-	
-	switch (mirror_axis)
-	{
-	case 1:
-		mirror_duplicate->set_position(mirror_duplicate->get_position() * Vector3(-1, 1, 1));
-		if (not mirror_only_position) {
-			mirror_duplicate->set_basis(Basis(Vector3(-1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1)) * mirror_duplicate->get_basis());
-		}
-		break;
-	case 2:
-		mirror_duplicate->set_position(mirror_duplicate->get_position() * Vector3(1, -1, 1));
-		if (not mirror_only_position) {
-			mirror_duplicate->set_basis(Basis(Vector3(1, 0, 0), Vector3(0, -1, 0), Vector3(0, 0, 1)) * mirror_duplicate->get_basis());
-		}
-		break;
-	case 3:
-		mirror_duplicate->set_position(mirror_duplicate->get_position() * Vector3(1, 1, -1));
-		if (not mirror_only_position) {
-			mirror_duplicate->set_basis(Basis(Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, -1)) * mirror_duplicate->get_basis());
-		}
-		break;
-	}
-
-	get_parent()->add_child(mirror_duplicate);
+	mirror_axis = axis; //mirror regeneration happens via NOTIFICATION_TRANSFORM_CHANGED and the _ready loops
 }
 int AeroInfluencer3D::get_mirror_axis() {
 	return mirror_axis;
+}
+void AeroInfluencer3D::generate_mirror() {
+	if (mirror_axis == 0 or _duplicate) return; //no duplication
+	
+	if (mirror_duplicate) {
+		mirror_duplicate->queue_free();
+		mirror_duplicate = nullptr;
+	}
+
+	//remove debug vectors befor duplication, to prevent duplicating them
+	bool temp_show_debug = get_show_debug();
+	set_show_debug(false);
+
+	int x = mirror_axis;
+	mirror_axis = 0;
+	mirror_duplicate = Object::cast_to<AeroInfluencer3D>(duplicate()); //Node::duplicate() default flags include DEEP - matches main's no-arg duplicate()
+	
+	//restore debug vectors after duplication has completed.
+	set_show_debug(temp_show_debug);
+
+	if (not mirror_duplicate) return; //something went wrong when duplicating and type casting
+
+	mirror_duplicate->_duplicate = true;
+	mirror_duplicate->mirror_duplicate = nullptr;
+	mirror_duplicate->set_name(String(get_name()) + String("Mirror"));
+
+	mirror_axis = x;
+	mirror_duplicate->mirror_axis = x;
+
+	Vector3 flip(1.0, 1.0, 1.0); //Vector3::ONE not available in this godot-cpp version
+	flip[x - 1] = -1.0;
+	mirror_duplicate->set_position(mirror_duplicate->get_position() * flip);
+	Basis b = mirror_duplicate->get_basis();
+	mirror_duplicate->set_basis(Basis::from_scale(flip) * b);
+	mirror_duplicate->default_transform = mirror_duplicate->get_transform(); //main: default_transform = transform
+
+	get_parent()->add_child(mirror_duplicate);
+}
+void AeroInfluencer3D::set_mirror_scaling_fix_axis(int axis) {
+	mirror_scaling_fix_axis = axis;
+	if (is_inside_tree()) {
+		//undo previous mirroring
+		if (_duplicate and _mirror_scaling_fix_axis != 0) {
+			Basis b = get_basis();
+			b[_mirror_scaling_fix_axis - 1] *= -1.0;
+			set_basis(b);
+		}
+		_mirror_scaling_fix_axis = axis;
+		//do new mirroring
+		if (_duplicate and _mirror_scaling_fix_axis != 0) {
+			Basis b = get_basis();
+			b[_mirror_scaling_fix_axis - 1] *= -1.0;
+			set_basis(b);
+			default_transform = get_basis(); //main: default_transform = basis (zero origin)
+		}
+	}
+}
+int AeroInfluencer3D::get_mirror_scaling_fix_axis() const {
+	return mirror_scaling_fix_axis;
 }
 void AeroInfluencer3D::set_duplicate(const bool value){
 	_duplicate = value;
@@ -499,10 +547,10 @@ void AeroInfluencer3D::set_control_rotation_order(int rotation_order) {
 int AeroInfluencer3D::get_control_rotation_order() {
 	return control_rotation_order;
 }
-bool AeroInfluencer3D::is_omitted_from_debug() {
+bool AeroInfluencer3D::is_omitted_from_debug() const {
 	return omit_from_debug;
 }
-void AeroInfluencer3D::set_omit_from_debug(bool omit) {
+void AeroInfluencer3D::set_omit_from_debug(const bool omit) {
 	omit_from_debug = omit;
 }
 void AeroInfluencer3D::set_debug_scale(const double value) {
@@ -513,111 +561,137 @@ void AeroInfluencer3D::set_debug_scale(const double value) {
 		if (not influencer) continue;
 		influencer->set_debug_scale(debug_scale);
 	}
+
+	
 }
-double AeroInfluencer3D::get_debug_scale() {
+double AeroInfluencer3D::get_debug_scale() const {
 	return debug_scale;
 }
-void AeroInfluencer3D::set_debug_scaling_factor(double scaling_factor) {
+void AeroInfluencer3D::set_debug_scaling_factor(const double scaling_factor) {
 	debug_scaling_factor = scaling_factor;
 	//TODO - update scaling factor on debug vectors
+
+	for (int i = 0; i < aero_influencers.size(); i++) {
+		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+		if (not influencer) continue;
+		influencer->set_debug_scaling_factor(debug_scaling_factor);
+	}
 }
-double AeroInfluencer3D::get_debug_scaling_factor() {
+double AeroInfluencer3D::get_debug_scaling_factor() const {
 	return debug_scaling_factor;
 }
 void AeroInfluencer3D::set_debug_width(const double value) {
 	debug_width = value;
 	//TODO implement the rest of the debug vectors
-	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
-		if (not influencer) continue;
-		influencer->set_debug_width(debug_width);
-	}
 	if (force_debug_vector) {
 		force_debug_vector->set("width", debug_width);
 	}
 	if (torque_debug_vector) {
 		torque_debug_vector->set("width", debug_width);
 	}
+	for (int i = 0; i < aero_influencers.size(); i++) {
+		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+		if (not influencer) continue;
+		influencer->set_debug_width(debug_width);
+	}
 }
-double AeroInfluencer3D::get_debug_width() {
+double AeroInfluencer3D::get_debug_width() const {
 	return debug_width;
 }
+
+Node3D* create_debug_vector(Node *node, String name, Color color = Color(1.0, 1.0, 1.0), bool checker = true) {
+	Node3D *vector = memnew(MeshInstance3D);
+	vector->set_script(ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/utils/vector_3d/vector_3d.gd"));
+	vector->set_name(name);
+
+	vector->set("color", color);
+	vector->set("checker", checker);
+
+	node->add_child(vector, godot::Node::INTERNAL_MODE_FRONT);
+	return vector;
+}
+void destroy_debug_vector(Node3D*& vector) {
+	vector->queue_free();
+	vector = nullptr;
+}
+
+void AeroInfluencer3D::update_debug_visibility() {
+	if (show_debug and show_force and not force_debug_vector) force_debug_vector = create_debug_vector(this, "ForceDebug", Color(1.0, 1.0, 1.0));
+	if (show_debug and show_torque and not torque_debug_vector) torque_debug_vector = create_debug_vector(this, "TorqueDebug", Color(0.0, 0.0, 0.0), false);
+	if (show_debug and show_lift and not lift_debug_vector) lift_debug_vector = create_debug_vector(this, "LiftDebug", Color(0.0, 0.0, 1.0), false);
+	if (show_debug and show_drag and not drag_debug_vector) drag_debug_vector = create_debug_vector(this, "DragDebug", Color(1.0, 0.0, 0.0), false);
+	if (show_debug and show_thrust and not thrust_debug_vector) thrust_debug_vector = create_debug_vector(this, "ThrustDebug", Color(1.0, 0.0, 1.0));
+
+	if ((not show_debug or not show_force) and force_debug_vector) destroy_debug_vector(force_debug_vector);
+	if ((not show_debug or not show_torque) and torque_debug_vector) destroy_debug_vector(torque_debug_vector);
+	if ((not show_debug or not show_lift) and lift_debug_vector) destroy_debug_vector(lift_debug_vector);
+	if ((not show_debug or not show_drag) and drag_debug_vector) destroy_debug_vector(drag_debug_vector);
+	if ((not show_debug or not show_thrust) and thrust_debug_vector) destroy_debug_vector(thrust_debug_vector);
+
+	if (GDVIRTUAL_IS_OVERRIDDEN(update_debug_visibility)) {
+		GDVIRTUAL_CALL(update_debug_visibility);
+	}
+}
+
 //create virtual function for this
 void AeroInfluencer3D::set_show_debug(const bool value) {
-	//TODO implement the rest of the debug vectors
-	
+	bool update_visibility = show_debug != value;
 	show_debug = value;
-	if (show_debug) {
-		//and show_force
-		if (not force_debug_vector) {
-			force_debug_vector = memnew(MeshInstance3D);
-			force_debug_vector->set_script(vector_3d_script);
-			force_debug_vector->set_name("ForceDebug");
-
-			force_debug_vector->set("color", Color(1.0, 1.0, 1.0));
-			force_debug_vector->set("checker", true);
-			add_child(force_debug_vector, INTERNAL_MODE_FRONT);
-		}
-		//and show_torque
-		if (not torque_debug_vector) {
-			torque_debug_vector = memnew(MeshInstance3D);
-			torque_debug_vector->set_script(vector_3d_script);
-			torque_debug_vector->set_name("ForceDebug");
-
-			torque_debug_vector->set("color", Color(0.0, 0.5, 0.0));
-			add_child(torque_debug_vector, INTERNAL_MODE_FRONT);
-		}
-	} else {
-		if (force_debug_vector) {
-			force_debug_vector->queue_free();
-			force_debug_vector = nullptr;
-		}
-		if (torque_debug_vector) {
-			torque_debug_vector->queue_free();
-			torque_debug_vector = nullptr;
-		}
-	}
+	
+	if (update_visibility) update_debug_visibility();
 
 	for (int i = 0; i < aero_influencers.size(); i++) {
 		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
 		if (not influencer) continue;
 		influencer->set_show_debug(show_debug);
 	}
+
+	
 }
-bool AeroInfluencer3D::get_show_debug() {
+bool AeroInfluencer3D::get_show_debug() const {
 	return show_debug;
 }
 void AeroInfluencer3D::set_show_force(bool show) {
-	//TODO - update on debug vectors
+	bool update_visibility = show_force != show;
 	show_force = show;
+
+	if(update_visibility) update_debug_visibility();
 }
 bool AeroInfluencer3D::get_show_force() {
 	return show_force;
 }
 void AeroInfluencer3D::set_show_torque(bool show) {
-	//TODO - update on debug vectors
+	bool update_visibility = show_torque != show;
 	show_torque = show;
+
+	if(update_visibility) update_debug_visibility();
 }
 bool AeroInfluencer3D::get_show_torque() {
 	return show_torque;
 }
 void AeroInfluencer3D::set_show_lift(bool show) {
-	//TODO - update on debug vectors
+	bool update_visibility = show_lift != show;
 	show_lift = show;
+
+	if(update_visibility) update_debug_visibility();
 }
 bool AeroInfluencer3D::get_show_lift() {
 	return show_lift;
 }
 void AeroInfluencer3D::set_show_drag(bool show) {
-	//TODO - update on debug vectors
+	bool update_visibility = show_drag != show;
 	show_drag = show;
+
+	if(update_visibility) update_debug_visibility();
 }
 bool AeroInfluencer3D::get_show_drag() {
 	return show_drag;
 }
 void AeroInfluencer3D::set_show_thrust(bool show) {
-	//TODO - update on debug vectors
+	bool update_visibility = show_thrust != show;
 	show_thrust = show;
+
+	if(update_visibility) update_debug_visibility();
 }
 bool AeroInfluencer3D::get_show_thrust() {
 	return show_thrust;
@@ -625,7 +699,7 @@ bool AeroInfluencer3D::get_show_thrust() {
 void AeroInfluencer3D::set_aero_body(AeroBody3D *p_new_body) {
     aero_body = p_new_body;
 }
-AeroBody3D* AeroInfluencer3D::get_aero_body() {
+AeroBody3D* AeroInfluencer3D::get_aero_body() const {
 	return aero_body;
 }
 void AeroInfluencer3D::set_aero_influencers(const TypedArray<AeroInfluencer3D> &new_arr) {
@@ -634,54 +708,69 @@ void AeroInfluencer3D::set_aero_influencers(const TypedArray<AeroInfluencer3D> &
 TypedArray<AeroInfluencer3D> AeroInfluencer3D::get_aero_influencers() const {
 	return aero_influencers;
 }
-Transform3D AeroInfluencer3D::get_default_transform() {
+void AeroInfluencer3D::set_default_transform(Transform3D new_transform) {
+	default_transform = new_transform;
+}
+Transform3D AeroInfluencer3D::get_default_transform() const {
 	return default_transform;
 }
-double AeroInfluencer3D::get_altitude() {
+double AeroInfluencer3D::get_altitude() const {
 	return altitude;
 }
-double AeroInfluencer3D::get_air_density() {
+double AeroInfluencer3D::get_air_density() const {
 	return air_density;
 }
-Vector3 AeroInfluencer3D::get_relative_position() {
+Vector3 AeroInfluencer3D::get_relative_position() const {
 	return relative_position;
 }
 Vector3 AeroInfluencer3D::get_linear_velocity_substep() {
+	if (GDVIRTUAL_IS_OVERRIDDEN(get_linear_velocity_substep)) {
+		Vector3 result = Vector3();
+		GDVIRTUAL_CALL(get_linear_velocity_substep, result);
+		return result;
+	}
+
 	return linear_velocity_substep;
 }
 Vector3 AeroInfluencer3D::get_angular_velocity_substep() {
+	if (GDVIRTUAL_IS_OVERRIDDEN(get_angular_velocity_substep)) {
+		Vector3 result = Vector3();
+		GDVIRTUAL_CALL(get_angular_velocity_substep, result);
+		return result;
+	}
+	
 	return angular_velocity_substep;
 }
-Vector3 AeroInfluencer3D::get_local_air_velocity() {
+Vector3 AeroInfluencer3D::get_local_air_velocity() const {
 	return local_air_velocity;
 }
-Vector3 AeroInfluencer3D::get_world_air_velocity() {
+Vector3 AeroInfluencer3D::get_world_air_velocity() const {
 	return world_air_velocity;
 }
-Vector3 AeroInfluencer3D::get_drag_direction() {
+Vector3 AeroInfluencer3D::get_drag_direction() const {
 	return drag_direction;
 }
-double AeroInfluencer3D::get_air_speed() {
+double AeroInfluencer3D::get_air_speed() const {
 	return air_speed;
 }
-double AeroInfluencer3D::get_mach() {
+double AeroInfluencer3D::get_mach() const {
 	return mach;
 }
-double AeroInfluencer3D::get_dynamic_pressure() {
+double AeroInfluencer3D::get_dynamic_pressure() const {
 	return dynamic_pressure;
 }
-Vector3 AeroInfluencer3D::get_centrifugal_offset() {
+Vector3 AeroInfluencer3D::get_centrifugal_offset() const {
 	return Vector3(); //TODO
 }
-Vector3 AeroInfluencer3D::get_linear_acceleration() {
+Vector3 AeroInfluencer3D::get_linear_acceleration() const {
 	return Vector3(); //TODO
 }
-Vector3 AeroInfluencer3D::get_angular_acceleration() {
+Vector3 AeroInfluencer3D::get_angular_acceleration() const {
 	return Vector3(); //TODO
 }
-Vector3 AeroInfluencer3D::get_current_force() {
+Vector3 AeroInfluencer3D::get_current_force() const {
 	return current_force;
 }
-Vector3 AeroInfluencer3D::get_current_torque() {
+Vector3 AeroInfluencer3D::get_current_torque() const {
 	return current_torque;
 }

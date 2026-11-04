@@ -286,9 +286,6 @@ func flight_assist(delta : float) -> void:
 	if enable_flight_assist_z:
 		control_command.z = roll_assist_pid.update(delta, angular_rate_error.z)
 	
-	if enable_aoa_limiter:
-		control_command *= clamp(remap(angle_of_attack, deg_to_rad(aoa_limit_start), deg_to_rad(aoa_limit_end), 1, 0), 0, 1)
-	
 	#adjust for changing airspeed and density
 	if enable_control_adjustment:
 		control_command *= FlightAssist.get_control_adjustment_factor(air_speed, air_density, tuned_airspeed, tuned_density, min_accounted_airspeed, min_accounted_air_density)
@@ -299,6 +296,9 @@ func flight_assist(delta : float) -> void:
 		#control_command *= control_speed_adjustment_curve.sample(air_speed)
 	
 	control_command = control_command.clamp(Vector3(-1, -1, -1), Vector3(1, 1, 1))
+
+	if enable_aoa_limiter:
+		control_command *= clamp(remap(abs(angle_of_attack), deg_to_rad(aoa_limit_end), deg_to_rad(aoa_limit_start), 0, 1), 0, 1)
 
 static func get_control_adjustment_factor(speed : float, density : float, tuned_speed : float = 100.0, _tuned_density : float = 1.222, min_accounted_speed : float = 0.75, min_accounted_density : float = 0.2) -> float:
 	var control_adjustment : float = 1.0

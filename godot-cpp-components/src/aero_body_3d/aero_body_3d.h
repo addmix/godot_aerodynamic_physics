@@ -1,18 +1,18 @@
 #ifndef AERO_BODY_3D
 #define AERO_BODY_3D
 
-#include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/variant/packed_string_array.hpp>
 #include <godot_cpp/templates/vector.hpp>
+#include <vector>
 #include <godot_cpp/core/class_db.hpp>
-#include <godot_cpp/classes/gd_script.hpp>
 #include <godot_cpp/classes/vehicle_body3d.hpp>
 #include <godot_cpp/classes/area3d.hpp>
 #include <godot_cpp/classes/project_settings.hpp>
+#include <godot_cpp/variant/callable.hpp>
+#include <godot_cpp/variant/callable_method_pointer.hpp>
+#include <godot_cpp/core/memory.hpp>
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/classes/physics_direct_body_state3d.hpp>
-#include <godot_cpp/classes/resource_loader.hpp>
-#include <godot_cpp/classes/mesh_instance3d.hpp>
 #include "aero_influencer_3d/aero_influencer_3d.h"
 #include "aero_units/aero_units.h"
 
@@ -35,7 +35,7 @@ struct ForceAndTorque {
         torque += other.torque;
         return *this;
     }
-	ForceAndTorque& operator/=(const float divisor) {
+	ForceAndTorque& operator/=(float divisor) {
 		force /= divisor;
 		torque /= divisor;
 		return *this;
@@ -55,7 +55,7 @@ private:
 
 	//exports and config properties
 	int substeps_override = -1;
-	int substeps = 1;
+	static int substeps;
 	int current_substep = 0;
 	//experimental_energy_tracking
 
@@ -86,7 +86,7 @@ private:
 	double debug_center_width = 0.4;
 
 	////std::vector<AeroInfluencer3D*>
-	TypedArray<AeroInfluencer3D> aero_influencers; //I'm guessing iterating this list is slow
+	std::vector<AeroInfluencer3D*> aero_influencers; //pointer list, so the substep loops don't box Variants
 	//aero_surfaces
 	Vector3 current_force = Vector3(0, 0, 0);
 	Vector3 current_torque = Vector3(0, 0, 0);
@@ -101,6 +101,7 @@ private:
 	Vector3 angular_velocity_substep = Vector3(0, 0, 0);
 	
 	Vector3 wind = Vector3(0, 0, 0);
+	Transform3D global_transform_cache = Transform3D();
 	Vector3 air_velocity = Vector3(0, 0, 0);
 	Vector3 local_air_velocity = Vector3(0, 0, 0);
 	Vector3 local_angular_velocity = Vector3(0, 0, 0);
@@ -120,7 +121,7 @@ private:
 	double inclination = 0;
 
 	////std::vector<AeroAtmosphere3D*>
-	TypedArray<Area3D> atmosphere_areas;
+	std::vector<Area3D*> atmosphere_areas;
 
 	
 	Node3D *linear_velocity_vector = nullptr;
@@ -138,6 +139,9 @@ protected:
 public:
 	//init/deinit, and godot virtual overrides.
 	static void _bind_methods();
+	static void initialize_substeps();
+	static void finalize_substeps();
+	static void refresh_substeps();
 	AeroBody3D();
 	~AeroBody3D();
 	
@@ -154,21 +158,22 @@ public:
 	Vector3 calculate_drag_direction() const;
 	//Vector3 calculate_linear_acceleration() const;
 	//Vector3 calculate_angular_acceleration() const;
-	Vector3 calculate_linear_velocity_substep(const Vector3 force) const;
-	Vector3 calculate_angular_velocity_substep(const Vector3 torque) const;
+	Vector3 calculate_linear_velocity_substep(Vector3 force) const;
+	Vector3 calculate_angular_velocity_substep(Vector3 torque) const;
 	
-	double get_control_command(const StringName axis_name); //unimplemented
+	double get_control_command(StringName axis_name); //unimplemented
 	bool is_overriding_body_sleep() const; //unimplemented
 	void interrupt_sleep();
 	
 	TypedArray<AeroInfluencer3D> get_aero_influencers() const;
 	TypedArray<Area3D> get_atmosphere_areas() const;
+	const std::vector<Area3D*> &get_atmosphere_areas_internal() const;
 
 	void add_aero_influencer(AeroInfluencer3D* influencer);
 	void remove_aero_influencer(AeroInfluencer3D* influencer);
 
-	void add_aero_atmosphere(const Area3D* atmosphere);
-	void remove_aero_atmosphere(const Area3D* atmosphere);
+	void add_aero_atmosphere(Area3D* atmosphere);
+	void remove_aero_atmosphere(Area3D* atmosphere);
 	
 	
 
@@ -180,9 +185,13 @@ public:
 
 
 
-	void set_substeps_override(const int p_substeps);
+	void set_substeps_override(int p_substeps);
 	int get_substeps_override() const;
 	int get_substeps() const;
+
+	void refresh_transform_cache();
+	const Transform3D &get_cached_global_transform() const;
+	Basis get_cached_global_basis() const;
 	double get_prediction_timestep_fraction() const;
 	double get_substep_delta() const;
 	int get_current_substep() const;
@@ -222,62 +231,62 @@ public:
 	void _update_debug_visibility();
 	void _update_debug_scale();
 
-	void set_show_debug(const bool value);
+	void set_show_debug(bool value);
 	bool get_show_debug() const;
 
-	void set_update_debug(const bool value);
+	void set_update_debug(bool value);
 	bool get_update_debug() const;
 
-	void set_show_wing_debug_vectors(const bool value);
+	void set_show_wing_debug_vectors(bool value);
 	bool get_show_wing_debug_vectors() const;
 
-	void set_show_lift_vectors(const bool value);
+	void set_show_lift_vectors(bool value);
 	bool get_show_lift_vectors() const;
 
-	void set_show_drag_vectors(const bool value);
+	void set_show_drag_vectors(bool value);
 	bool get_show_drag_vectors() const;
 
-	void set_show_torque(const bool value);
+	void set_show_torque(bool value);
 	bool get_show_torque() const;
 
-	void set_show_linear_velocity(const bool value);
+	void set_show_linear_velocity(bool value);
 	bool get_show_linear_velocity() const;
 
-	void set_show_angular_velocity(const bool value);
+	void set_show_angular_velocity(bool value);
 	bool get_show_angular_velocity() const;
 
-	void set_show_center_of_lift(const bool value);
+	void set_show_center_of_lift(bool value);
 	bool get_show_center_of_lift() const;
 
-	void set_show_center_of_drag(const bool value);
+	void set_show_center_of_drag(bool value);
 	bool get_show_center_of_drag() const;
 
-	void set_show_center_of_mass(const bool value);
+	void set_show_center_of_mass(bool value);
 	bool get_show_center_of_mass() const;
 
-	void set_show_center_of_thrust(const bool value);
+	void set_show_center_of_thrust(bool value);
 	bool get_show_center_of_thrust() const;
 	
 	//debug options
-	void set_debug_linear_velocity(const Vector3 value);
+	void set_debug_linear_velocity(Vector3 value);
 	Vector3 get_debug_linear_velocity() const;
 
-	void set_debug_angular_velocity(const Vector3 value);
+	void set_debug_angular_velocity(Vector3 value);
 	Vector3 get_debug_angular_velocity() const;
 
-	void set_debug_scale(const double value);
+	void set_debug_scale(double value);
 	double get_debug_scale() const;
 
-	void set_debug_width(const double value);
+	void set_debug_width(double value);
 	double get_debug_width() const;
 
-	void set_debug_scaling_factor(const double value);
+	void set_debug_scaling_factor(double value);
 	double get_debug_scaling_factor() const;
 
-	void set_influencer_debug_width(const double value);
+	void set_influencer_debug_width(double value);
 	double get_influencer_debug_width() const;
 
-	void set_debug_center_width(const double value);
+	void set_debug_center_width(double value);
 	double get_debug_center_width() const;
 
 

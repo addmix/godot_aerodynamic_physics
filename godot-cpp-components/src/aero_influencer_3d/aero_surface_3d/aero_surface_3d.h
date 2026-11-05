@@ -1,7 +1,6 @@
 #ifndef AERO_SURFACE_3D
 #define AERO_SURFACE_3D
 
-#include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include "aero_influencer_3d/aero_influencer_3d.h"
 #include "aero_influencer_3d/aero_surface_3d/aero_surface_config.h"
@@ -35,14 +34,14 @@ public:
     void set_wing_config(const Ref<AeroSurfaceConfig> &p_config);
 	Ref<AeroSurfaceConfig> get_wing_config() const;
     
-    double get_angle_of_attack();
-    double get_sweep_angle();
-    double get_area();
-    double get_projected_wing_area();
-    double get_aero_reference();
-    Vector3 get_lift_direction();
-    double get_lift_force();
-    double get_drag_force();
+    double get_angle_of_attack() const;
+    double get_sweep_angle() const;
+    double get_area() const;
+    double get_projected_wing_area() const;
+    double get_aero_reference() const;
+    Vector3 get_lift_direction() const;
+    double get_lift_force() const;
+    double get_drag_force() const;
 };
 
 }

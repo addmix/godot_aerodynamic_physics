@@ -426,7 +426,7 @@ shape = SubResource("BoxShape3D_o4ret")
 transform = Transform3D(5.69823e-17, 1, 2.24092e-17, -0.930622, 6.12303e-17, -0.365982, -0.365982, 0, 0.930622, -3.5564e-17, 0.721239, 3.35956)
 shape = SubResource("BoxShape3D_3cn7l")
 
-[node name="AeroPropeller3D" type="AeroInfluencer3D" parent="." index="12" unique_id=910084985 node_paths=PackedStringArray("aero_body", "propeller_blade")]
+[node name="AeroPropeller3D" type="AeroInfluencer3D" parent="." index="12" unique_id=910084985 node_paths=PackedStringArray("propeller_blade")]
 show_debug = true
 show_torque = true
 show_lift = false
@@ -436,7 +436,7 @@ script = ExtResource("5_keinb")
 propeller_blade = NodePath("ManualAeroSurface3D")
 propeller_speed_control_config = SubResource("Resource_sgq0w")
 
-[node name="ManualAeroSurface3D" type="ManualAeroSurface3D" parent="AeroPropeller3D" index="0" unique_id=466152667 node_paths=PackedStringArray("aero_body")]
+[node name="ManualAeroSurface3D" type="ManualAeroSurface3D" parent="AeroPropeller3D" index="0" unique_id=466152667]
 manual_config = SubResource("Resource_8ihwy")
 wing_config = SubResource("Resource_fnaxt")
 actuation_config = SubResource("Resource_03obi")
@@ -447,14 +447,14 @@ transform = Transform3D(1, 0, 0, 0, 0.7986349259669956, -0.6018145830159747, 0, 
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.88178e-16, 0.034494)
 size = Vector3(1.09857, 0.0454879, 0.144012)
 
-[node name="WingR1" type="ManualAeroSurface3D" parent="." index="13" unique_id=73205138 node_paths=PackedStringArray("aero_body")]
+[node name="WingR1" type="ManualAeroSurface3D" parent="." index="13" unique_id=73205138]
 manual_config = SubResource("Resource_8ihwy")
 wing_config = SubResource("Resource_4u4b6")
 mirror_axis = 1
 show_debug = true
 transform = Transform3D(0.999858, -0.0168242, 0, 0.0168242, 0.999858, 0, 0, 0, 1, 1.50973, 0.675157, -1.85714)
 
-[node name="Flap" type="ManualAeroSurface3D" parent="WingR1" index="0" unique_id=1537120116 node_paths=PackedStringArray("aero_body")]
+[node name="Flap" type="ManualAeroSurface3D" parent="WingR1" index="0" unique_id=1537120116]
 manual_config = SubResource("Resource_8ihwy")
 wing_config = SubResource("Resource_snyt3")
 actuation_config = SubResource("Resource_cp2h5")
@@ -466,7 +466,7 @@ transform = Transform3D(1, -5.55112e-16, 0, 5.55112e-16, 1, 0, 0, 0, 1, 0, 8.881
 visible = false
 size = Vector3(1.99478, 0.0454879, 0.510548)
 
-[node name="WingR2" type="ManualAeroSurface3D" parent="WingR1" index="1" unique_id=1891188101 node_paths=PackedStringArray("aero_body")]
+[node name="WingR2" type="ManualAeroSurface3D" parent="WingR1" index="1" unique_id=1891188101]
 manual_config = SubResource("Resource_8ihwy")
 wing_config = SubResource("Resource_i3e03")
 show_debug = true
@@ -474,7 +474,7 @@ show_torque = true
 show_thrust = true
 transform = Transform3D(0.9989359518124928, -0.04613015224113451, 0, 0.04613015224113451, 0.9989359518124928, 0, 0, 0, 1, 2.4704969031905866, 0.075848636507725, 0.04244418146555129)
 
-[node name="Aileron" type="ManualAeroSurface3D" parent="WingR1/WingR2" index="0" unique_id=536402308 node_paths=PackedStringArray("aero_body")]
+[node name="Aileron" type="ManualAeroSurface3D" parent="WingR1/WingR2" index="0" unique_id=536402308]
 manual_config = SubResource("Resource_8ihwy")
 wing_config = SubResource("Resource_keinb")
 actuation_config = SubResource("Resource_4mn0n")
@@ -488,14 +488,14 @@ transform = Transform3D(1, 5.50469e-16, 2.38698e-15, -2.47025e-15, 1, -7.1991e-1
 visible = false
 size = Vector3(2.83724, 0.146557, 0.400159)
 
-[node name="HorizontalStab" type="ManualAeroSurface3D" parent="." index="14" unique_id=1295677440 node_paths=PackedStringArray("aero_body")]
+[node name="HorizontalStab" type="ManualAeroSurface3D" parent="." index="14" unique_id=1295677440]
 manual_config = SubResource("Resource_8ihwy")
 wing_config = SubResource("Resource_g185g")
 show_debug = true
 show_torque = true
 transform = Transform3D(1, 0, 0, 0, 0.99889, 0.0471065, 0, -0.0471065, 0.99889, 0, 0.210207, 2.68076)
 
-[node name="Elevator2" type="ManualAeroSurface3D" parent="." index="15" unique_id=1852727079 node_paths=PackedStringArray("aero_body")]
+[node name="Elevator2" type="ManualAeroSurface3D" parent="." index="15" unique_id=1852727079]
 manual_config = SubResource("Resource_8ihwy")
 wing_config = SubResource("Resource_2trr8")
 actuation_config = SubResource("Resource_qhb2b")
@@ -509,23 +509,23 @@ transform = Transform3D(1, -5.55112e-16, 0, 5.55112e-16, 1, -4.92661e-16, 0, 4.9
 visible = false
 size = Vector3(3.43267, 0.0454879, 0.510548)
 
-[node name="VerticalStab" type="ManualAeroSurface3D" parent="." index="16" unique_id=2079185050 node_paths=PackedStringArray("aero_body")]
+[node name="VerticalStab" type="ManualAeroSurface3D" parent="." index="16" unique_id=2079185050]
 manual_config = SubResource("Resource_rvxpo")
 wing_config = SubResource("Resource_3wa4j")
 show_debug = true
 transform = Transform3D(3.70173e-17, 1, 3.94809e-17, -0.762205, 6.15827e-17, -0.647335, -0.647335, -1.38778e-17, 0.762205, 0, 0.727, 2.911)
 
-[node name="Rudder" type="ManualAeroSurface3D" parent="VerticalStab" index="0" unique_id=994628575 node_paths=PackedStringArray("aero_body")]
+[node name="Rudder" type="ManualAeroSurface3D" parent="VerticalStab" index="0" unique_id=994628575]
 manual_config = SubResource("Resource_rvxpo")
 wing_config = SubResource("Resource_uei0l")
 actuation_config = SubResource("Resource_dufvg")
 show_debug = true
 show_torque = true
 show_thrust = true
-transform = Transform3D(0.908829, 1.5407400000000001e-33, -0.417169, 4.24757e-33, 1, 1.6940700000000002e-33, 0.417169, 3.08149e-33, 0.908829, -0.52477, -2.9501300000000003e-19, 0.499497)
+transform = Transform3D(0.908829, 1.54074e-33, -0.417169, 4.24757e-33, 1, 1.6940700000000002e-33, 0.417169, 3.08149e-33, 0.908829, -0.52477, -2.9501300000000003e-19, 0.499497)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="VerticalStab/Rudder" index="0" unique_id=862024946]
-transform = Transform3D(1, -5.551120000000009e-16, 0, 5.55112e-16, 0.999999999999992, -4.614528e-31, -7.77156117237611e-16, 1.5777218e-30, 1, -8.881784e-16, 8.881779999999998e-16, 0.32276313112239796)
+transform = Transform3D(1, -5.551120000000009e-16, 0, 5.55112e-16, 0.999999999999992, -4.614528e-31, -7.77156117237611e-16, 1.5777217999999999e-30, 1, -8.881784e-16, 8.881779999999998e-16, 0.32276313112239796)
 visible = false
 size = Vector3(1.57572, 0.0454879, 0.8638856751504136)
 
@@ -572,7 +572,7 @@ height = 0.107076
 sides = 16
 material = SubResource("StandardMaterial3D_4tt3o")
 
-[node name="AeroBuoyancyMesh3D" type="AeroInfluencer3D" parent="." index="20" unique_id=5723858 node_paths=PackedStringArray("aero_body")]
+[node name="AeroBuoyancyMesh3D" type="AeroInfluencer3D" parent="." index="20" unique_id=5723858]
 show_debug = true
 script = ExtResource("14_lo3t1")
 buoyancy_mesh = ExtResource("15_op60t")

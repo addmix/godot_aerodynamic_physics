@@ -15,6 +15,8 @@ void AeroInfluencer3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_update_transform_substep", "substep_delta"), &AeroInfluencer3D::_update_transform_substep);
 	ClassDB::bind_method(D_METHOD("_update_control_transform", "substep_delta"), &AeroInfluencer3D::_update_control_transform);
 	ClassDB::bind_method(D_METHOD("update_debug_vectors"), &AeroInfluencer3D::update_debug_vectors);
+	ClassDB::bind_method(D_METHOD("set_cached_transform", "transform"), &AeroInfluencer3D::set_cached_transform);
+	ClassDB::bind_method(D_METHOD("get_cached_local_transform"), &AeroInfluencer3D::get_cached_local_transform);
 	//calculate_relative_position();
 	//calculate_world_air_velocity();
 	//calculate_linear_velocity();
@@ -33,6 +35,8 @@ void AeroInfluencer3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_can_override_body_sleep", "can_override"), &AeroInfluencer3D::set_can_override_body_sleep);
 	ClassDB::bind_method(D_METHOD("get_can_override_body_sleep"), &AeroInfluencer3D::get_can_override_body_sleep);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "can_override_body_sleep"), "set_can_override_body_sleep", "get_can_override_body_sleep");
+
+	ClassDB::bind_method(D_METHOD("is_overriding_body_sleep"), &AeroInfluencer3D::is_overriding_body_sleep_with_override);
 
 	ADD_GROUP("Mirroring", "");
 	ClassDB::bind_method(D_METHOD("set_mirror_axis", "axis"), &AeroInfluencer3D::set_mirror_axis);
@@ -107,49 +111,49 @@ void AeroInfluencer3D::_bind_methods() {
 
 	//the below properties are not shown in inspector
 	ClassDB::bind_method(D_METHOD("get_aero_body"), &AeroInfluencer3D::get_aero_body);
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "aero_body", PROPERTY_HINT_NODE_TYPE, "AeroBody3D", PROPERTY_USAGE_EDITOR), "", "get_aero_body");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "aero_body", PROPERTY_HINT_NODE_TYPE, "AeroBody3D", PROPERTY_USAGE_NONE), "", "get_aero_body");
 	
 	ClassDB::bind_method(D_METHOD("set_default_transform", "new_transform"), &AeroInfluencer3D::set_default_transform);
 	ClassDB::bind_method(D_METHOD("get_default_transform"), &AeroInfluencer3D::get_default_transform);
-	ADD_PROPERTY(PropertyInfo(Variant::TRANSFORM3D, "default_transform", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "set_default_transform", "get_default_transform");
+	ADD_PROPERTY(PropertyInfo(Variant::TRANSFORM3D, "default_transform", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "set_default_transform", "get_default_transform");
 	ClassDB::bind_method(D_METHOD("get_altitude"), &AeroInfluencer3D::get_altitude);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "altitude", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_altitude");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "altitude", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_altitude");
 	ClassDB::bind_method(D_METHOD("get_air_density"), &AeroInfluencer3D::get_air_density);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "air_density", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_air_density");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "air_density", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_air_density");
 	ClassDB::bind_method(D_METHOD("get_relative_position"), &AeroInfluencer3D::get_relative_position);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "relative_position", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_relative_position");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "relative_position", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_relative_position");
 
 	ClassDB::bind_method(D_METHOD("calculate_linear_velocity_substep"), &AeroInfluencer3D::calculate_linear_velocity_substep);
 	ClassDB::bind_method(D_METHOD("calculate_angular_velocity_substep"), &AeroInfluencer3D::calculate_angular_velocity_substep);
 
 	ClassDB::bind_method(D_METHOD("get_linear_velocity_substep"), &AeroInfluencer3D::get_linear_velocity_substep);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "linear_velocity_substep", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_linear_velocity_substep");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "linear_velocity_substep", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_linear_velocity_substep");
 	ClassDB::bind_method(D_METHOD("get_angular_velocity_substep"), &AeroInfluencer3D::get_angular_velocity_substep);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "angular_velocity_substep", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_angular_velocity_substep");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "angular_velocity_substep", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_angular_velocity_substep");
 	
 	
 	ClassDB::bind_method(D_METHOD("get_local_air_velocity"), &AeroInfluencer3D::get_local_air_velocity);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "local_air_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_local_air_velocity");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "local_air_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_local_air_velocity");
 	ClassDB::bind_method(D_METHOD("get_world_air_velocity"), &AeroInfluencer3D::get_world_air_velocity);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "world_air_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_world_air_velocity");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "world_air_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_world_air_velocity");
 	ClassDB::bind_method(D_METHOD("get_drag_direction"), &AeroInfluencer3D::get_drag_direction);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "drag_direction", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_drag_direction");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "drag_direction", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_drag_direction");
 	ClassDB::bind_method(D_METHOD("get_air_speed"), &AeroInfluencer3D::get_air_speed);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "air_speed", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_air_speed");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "air_speed", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_air_speed");
 	ClassDB::bind_method(D_METHOD("get_mach"), &AeroInfluencer3D::get_mach);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "mach", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_mach");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "mach", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_mach");
 	ClassDB::bind_method(D_METHOD("get_dynamic_pressure"), &AeroInfluencer3D::get_dynamic_pressure);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "dynamic_pressure", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_dynamic_pressure");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "dynamic_pressure", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_dynamic_pressure");
 	ClassDB::bind_method(D_METHOD("get_centrifugal_offset"), &AeroInfluencer3D::get_centrifugal_offset);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "centrifugal_offset", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_centrifugal_offset");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "centrifugal_offset", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_centrifugal_offset");
 	ClassDB::bind_method(D_METHOD("get_linear_acceleration"), &AeroInfluencer3D::get_linear_acceleration);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "linear_acceleration", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_linear_acceleration");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "linear_acceleration", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_linear_acceleration");
 	ClassDB::bind_method(D_METHOD("get_angular_acceleration"), &AeroInfluencer3D::get_angular_acceleration);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "angular_acceleration", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_angular_acceleration");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "angular_acceleration", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_angular_acceleration");
 	ClassDB::bind_method(D_METHOD("get_current_force"), &AeroInfluencer3D::get_current_force);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_force", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_current_force");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_force", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_current_force");
 	ClassDB::bind_method(D_METHOD("get_current_torque"), &AeroInfluencer3D::get_current_torque);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_torque", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_current_torque");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_torque", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_current_torque");
 }
 
 AeroInfluencer3D::AeroInfluencer3D() {
@@ -165,6 +169,22 @@ void AeroInfluencer3D::_notification(int what) {
 	case NOTIFICATION_TRANSFORM_CHANGED:
 		if (is_inside_tree()) generate_mirror();
 		break;
+	case NOTIFICATION_LOCAL_TRANSFORM_CHANGED:
+		//the one place the caches are synchronised: covers set_cached_transform() and anything
+		//writing position/transform directly (scripts, propeller instancing, the editor)
+		local_transform_cache = get_transform();
+
+		if (is_inside_tree()) {
+			Transform3D parent_global = Transform3D();
+			if (parent_influencer) {
+				parent_global = parent_influencer->get_cached_global_transform();
+			} else if (aero_body) {
+				parent_global = aero_body->get_cached_global_transform();
+			}
+
+			update_transform_cache(parent_global);
+		}
+		break;
 	}
 }
 void AeroInfluencer3D::_ready() {
@@ -174,37 +194,59 @@ void AeroInfluencer3D::_ready() {
 		}
 	}
 
-	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+	for (AeroInfluencer3D* influencer : aero_influencers) {
 		if (influencer) influencer->generate_mirror();
 	}
 
 
 	update_debug_visibility();
 }
+void AeroInfluencer3D::refresh_virtual_override_cache() {
+	calculate_forces_overridden = GDVIRTUAL_IS_OVERRIDDEN(_calculate_forces);
+	update_transform_substep_overridden = GDVIRTUAL_IS_OVERRIDDEN(_update_transform_substep);
+	update_control_transform_overridden = GDVIRTUAL_IS_OVERRIDDEN(_update_control_transform);
+	linear_velocity_substep_overridden = GDVIRTUAL_IS_OVERRIDDEN(calculate_linear_velocity_substep);
+	angular_velocity_substep_overridden = GDVIRTUAL_IS_OVERRIDDEN(calculate_angular_velocity_substep);
+	body_sleep_overridden = GDVIRTUAL_IS_OVERRIDDEN(is_overriding_body_sleep);
+}
 void AeroInfluencer3D::_enter_tree() {
+	refresh_virtual_override_cache();
+
+	parent_influencer = nullptr;
+
 	Node* parent = get_parent();
 	if (AeroBody3D* body = Object::cast_to<AeroBody3D>(parent)) {
 		aero_body = body;
 		body->add_aero_influencer(this); //self-registration, matches main's _enter_tree
 	} else if (AeroInfluencer3D* infl_parent = Object::cast_to<AeroInfluencer3D>(parent)) {
+		parent_influencer = infl_parent;
 		aero_body = infl_parent->get_aero_body();
 		if (infl_parent->_duplicate) _duplicate = true; //same class, private access OK
-		infl_parent->aero_influencers.append(this);
+		infl_parent->aero_influencers.push_back(this);
 	}
 
 	default_transform = get_transform();
+	local_transform_cache = default_transform;
+	global_transform_cache = get_global_transform();
+
 	if (mirror_scaling_fix_axis != 0) {
 		set_mirror_scaling_fix_axis(mirror_scaling_fix_axis); //re-trigger setter now that we're in the tree
 	}
+
+	set_notify_local_transform(true);
 }
 void AeroInfluencer3D::_exit_tree() {
-	Node* parent = get_parent();
-	if (AeroInfluencer3D* infl_parent = Object::cast_to<AeroInfluencer3D>(parent)) {
-		infl_parent->aero_influencers.erase(this);
-	} else if (AeroBody3D* body = Object::cast_to<AeroBody3D>(parent)) {
-		body->remove_aero_influencer(this); //self-unregistration, matches main's _exit_tree
+	if (parent_influencer) {
+		for (size_t i = 0; i < parent_influencer->aero_influencers.size(); i++) {
+			if (parent_influencer->aero_influencers[i] == this) {
+				parent_influencer->aero_influencers.erase(parent_influencer->aero_influencers.begin() + i);
+				break;
+			}
+		}
+	} else if (aero_body) {
+		aero_body->remove_aero_influencer(this);
 	}
+	parent_influencer = nullptr;
 	aero_body = nullptr;
 }
 void AeroInfluencer3D::_physics_process(double delta) {
@@ -215,10 +257,39 @@ void AeroInfluencer3D::_physics_process(double delta) {
 	last_transform = get_transform();
 }
 
+void AeroInfluencer3D::update_transform_cache(const Transform3D &parent_global_transform) {
+	global_transform_cache = parent_global_transform * local_transform_cache;
+
+	for (AeroInfluencer3D* influencer : aero_influencers) {
+		if (not influencer) continue;
+
+		influencer->update_transform_cache(global_transform_cache);
+	}
+}
+void AeroInfluencer3D::set_cached_transform(const Transform3D &p_transform) {
+	//most influencers don't actually move between substeps, so don't pay for an engine transform write
+	if (p_transform == local_transform_cache) return;
+
+	//the local transform notification updates the caches
+	set_transform(p_transform);
+}
+const Transform3D &AeroInfluencer3D::get_cached_local_transform() const {
+	return local_transform_cache;
+}
+Vector3 AeroInfluencer3D::get_cached_position() const {
+	return local_transform_cache.origin;
+}
+const Transform3D &AeroInfluencer3D::get_cached_global_transform() const {
+	return global_transform_cache;
+}
+Basis AeroInfluencer3D::get_cached_global_basis() const {
+	return global_transform_cache.basis;
+}
+
 ForceAndTorque AeroInfluencer3D::calculate_forces_with_override(double substep_delta) {
 	ForceAndTorque force_and_torque = calculate_forces(substep_delta);
 
-	if (GDVIRTUAL_IS_OVERRIDDEN(_calculate_forces)) {
+	if (calculate_forces_overridden) {
 		PackedVector3Array result;
 		GDVIRTUAL_CALL(_calculate_forces, substep_delta, result);
 		if (result.size() >= 2) {
@@ -242,8 +313,7 @@ ForceAndTorque AeroInfluencer3D::calculate_forces(double substep_delta) {
 	air_density = aero_body->get_air_density();
 	world_air_velocity = calculate_world_air_velocity();
 
-	for (int i = 0; i < aero_body->get_atmosphere_areas().size(); i++) {
-		Area3D* atmosphere = Object::cast_to<Area3D>(aero_body->get_atmosphere_areas()[i]);
+	for (Area3D* atmosphere : aero_body->get_atmosphere_areas_internal()) {
 		if (not atmosphere) continue;
 		if (not atmosphere->get("per_influencer_positioning")) continue;
 		if (not atmosphere->call("is_inside_atmosphere", get_global_position())) continue; //error here
@@ -272,7 +342,7 @@ ForceAndTorque AeroInfluencer3D::calculate_forces(double substep_delta) {
 	altitude = aero_body->get_altitude();
 	dynamic_pressure = 0.5 * air_density * air_speed * air_speed;
 	drag_direction = world_air_velocity.normalized();
-	local_air_velocity = get_global_basis().xform_inv(world_air_velocity);
+	local_air_velocity = get_cached_global_basis().xform_inv(world_air_velocity);
 	
 	if (AeroUnits::get_singleton()) {
 		mach = AeroUnits::get_singleton()->speed_to_mach_at_altitude(air_speed, altitude);
@@ -286,8 +356,7 @@ ForceAndTorque AeroInfluencer3D::calculate_forces(double substep_delta) {
 
 	ForceAndTorque total_force_and_torque;
 
-	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+	for (AeroInfluencer3D* influencer : aero_influencers) {
 		if (not influencer) continue;
 		if (influencer->is_disabled()) continue;
 
@@ -299,24 +368,23 @@ ForceAndTorque AeroInfluencer3D::calculate_forces(double substep_delta) {
 }
 
 double AeroInfluencer3D::get_control_command(StringName axis_name) {
-	if (AeroInfluencer3D* influencer_parent = Object::cast_to<AeroInfluencer3D>(get_parent())) {
-		return influencer_parent->get_control_command(axis_name);
+	if (parent_influencer) {
+		return parent_influencer->get_control_command(axis_name);
 	}
-	else if (AeroBody3D* body_parent = Object::cast_to<AeroBody3D>(get_parent())) {
-		return body_parent->get_control_command(axis_name);
+	else if (aero_body) {
+		return aero_body->get_control_command(axis_name);
 	}
 	return 0.0;
 }
 void AeroInfluencer3D::_update_transform_substep_with_override(double substep_delta) {
-	if (GDVIRTUAL_IS_OVERRIDDEN(_update_transform_substep)) {
+	if (update_transform_substep_overridden) {
 		GDVIRTUAL_CALL(_update_transform_substep, substep_delta);
 	} else {
 		_update_transform_substep(substep_delta);
 	}
 }
 void AeroInfluencer3D::_update_transform_substep(double substep_delta) {
-	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+	for (AeroInfluencer3D* influencer : aero_influencers) {
 		if (not influencer) continue;
 		if (influencer->is_disabled()) continue;
 		
@@ -326,37 +394,50 @@ void AeroInfluencer3D::_update_transform_substep(double substep_delta) {
 	_update_control_transform_with_override(substep_delta);
 }
 void AeroInfluencer3D::_update_control_transform_with_override(double substep_delta) {
-	if (GDVIRTUAL_IS_OVERRIDDEN(_update_control_transform)) {
+	if (update_control_transform_overridden) {
 		GDVIRTUAL_CALL(_update_control_transform, substep_delta);
 	} else {
 		_update_control_transform(substep_delta);
 	}
 }
 void AeroInfluencer3D::_update_control_transform(double substep_delta) {
+	Basis new_basis;
 	Vector3 actuation_value = Vector3();
 	if (actuation_config.is_valid()) {
 		actuation_value = actuation_config->call("update", this, substep_delta);
 	}
 
-	set_basis(default_transform.basis * Basis::from_euler(actuation_value, (godot::EulerOrder) control_rotation_order));
+	if (actuation_value != Vector3()) {
+		new_basis = default_transform.basis * Basis::from_euler(actuation_value, (godot::EulerOrder) control_rotation_order);
+	} else {
+		if (default_transform == local_transform_cache) return;
+
+		new_basis = default_transform.basis;
+	}
+
+	set_cached_transform(Transform3D(new_basis, local_transform_cache.origin));
 }
-bool AeroInfluencer3D::is_overriding_body_sleep() {
-	if (GDVIRTUAL_IS_OVERRIDDEN(is_overriding_body_sleep)) {
+bool AeroInfluencer3D::is_overriding_body_sleep_with_override() {
+	if (body_sleep_overridden and not in_body_sleep_override) {
+		in_body_sleep_override = true;
 		bool result = false;
 		GDVIRTUAL_CALL(is_overriding_body_sleep, result);
+		in_body_sleep_override = false;
 		if (result) return true;
 	}
 
+	return is_overriding_body_sleep();
+}
+bool AeroInfluencer3D::is_overriding_body_sleep() const {
 	if (not can_override_body_sleep) {
 		return false;
 	}
 
-	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+	for (AeroInfluencer3D* influencer : aero_influencers) {
 		if (not influencer) continue;
 		if (influencer->is_disabled()) continue;
 
-		if (influencer->is_overriding_body_sleep()) return true;
+		if (influencer->is_overriding_body_sleep_with_override()) return true;
 	}
 
 	return false;
@@ -369,21 +450,21 @@ bool AeroInfluencer3D::is_overriding_body_sleep() {
 
 
 
-Vector3 AeroInfluencer3D::calculate_relative_position() {
-	if (AeroInfluencer3D* influencer_parent = Object::cast_to<AeroInfluencer3D>(get_parent())) {
-		return influencer_parent->get_relative_position() + (influencer_parent->get_global_basis().xform(get_position()));
+Vector3 AeroInfluencer3D::calculate_relative_position() const {
+	if (parent_influencer) {
+		return parent_influencer->get_relative_position() + (parent_influencer->get_cached_global_basis().xform(get_cached_position()));
 	}
-	else if (AeroBody3D* body_parent = Object::cast_to<AeroBody3D>(get_parent())) {
-		return body_parent->get_relative_position() + (body_parent->get_global_basis().xform(get_position()));
+	else if (aero_body) {
+		return aero_body->get_relative_position() + (aero_body->get_cached_global_basis().xform(get_cached_position()));
 	}
 
 	return Vector3();
 }
-Vector3 AeroInfluencer3D::calculate_world_air_velocity() { //this function is redundant and should be removed.
+Vector3 AeroInfluencer3D::calculate_world_air_velocity() const { //this function is redundant and should be removed.
 	return -linear_velocity_substep + aero_body->get_wind();
 }
 Vector3 AeroInfluencer3D::calculate_linear_velocity_substep_with_override() {
-	if (GDVIRTUAL_IS_OVERRIDDEN(calculate_linear_velocity_substep)) {
+	if (linear_velocity_substep_overridden) {
 		Vector3 result = Vector3();
 		GDVIRTUAL_CALL(calculate_linear_velocity_substep, result);
 		return result;
@@ -391,17 +472,17 @@ Vector3 AeroInfluencer3D::calculate_linear_velocity_substep_with_override() {
 
 	return calculate_linear_velocity_substep();
 }
-Vector3 AeroInfluencer3D::calculate_linear_velocity_substep() {
-	if (AeroInfluencer3D* influencer_parent = Object::cast_to<AeroInfluencer3D>(get_parent())) {
-		return influencer_parent->get_linear_velocity_substep() + influencer_parent->get_angular_velocity_substep().cross(influencer_parent->get_global_basis().xform(get_position()));
+Vector3 AeroInfluencer3D::calculate_linear_velocity_substep() const {
+	if (parent_influencer) {
+		return parent_influencer->get_linear_velocity_substep() + parent_influencer->get_angular_velocity_substep().cross(parent_influencer->get_cached_global_basis().xform(get_cached_position()));
 	}
-	else if (AeroBody3D* body_parent = Object::cast_to<AeroBody3D>(get_parent())) {
-		return body_parent->get_linear_velocity_substep() + body_parent->get_angular_velocity_substep().cross(body_parent->get_global_basis().xform(get_position()));
+	else if (aero_body) {
+		return aero_body->get_linear_velocity_substep() + aero_body->get_angular_velocity_substep().cross(aero_body->get_cached_global_basis().xform(get_cached_position()));
 	} 
 	return Vector3();
 }
 Vector3 AeroInfluencer3D::calculate_angular_velocity_substep_with_override() {
-	if (GDVIRTUAL_IS_OVERRIDDEN(calculate_angular_velocity_substep)) {
+	if (angular_velocity_substep_overridden) {
 		Vector3 result = Vector3();
 		GDVIRTUAL_CALL(calculate_angular_velocity_substep, result);
 		return result;
@@ -409,12 +490,12 @@ Vector3 AeroInfluencer3D::calculate_angular_velocity_substep_with_override() {
 
 	return calculate_angular_velocity_substep();
 }
-Vector3 AeroInfluencer3D::calculate_angular_velocity_substep() {
-	if (AeroInfluencer3D* influencer_parent = Object::cast_to<AeroInfluencer3D>(get_parent())) {
-		return influencer_parent->get_angular_velocity_substep();
+Vector3 AeroInfluencer3D::calculate_angular_velocity_substep() const {
+	if (parent_influencer) {
+		return parent_influencer->get_angular_velocity_substep();
 	}
-	else if (AeroBody3D* body_parent = Object::cast_to<AeroBody3D>(get_parent())) {
-		return body_parent->get_angular_velocity_substep();
+	else if (aero_body) {
+		return aero_body->get_angular_velocity_substep();
 	}
 	return Vector3();
 }
@@ -425,7 +506,7 @@ Vector3 AeroInfluencer3D::calculate_centrifugal_offset() {
 Vector3 AeroInfluencer3D::calculate_linear_acceleration() {
 	return get_linear_acceleration();
 }
-Vector3 AeroInfluencer3D::calculate_angular_acceleration() {
+Vector3 AeroInfluencer3D::calculate_angular_acceleration() const {
 	return get_angular_acceleration();
 }
 
@@ -446,22 +527,21 @@ void AeroInfluencer3D::update_debug_vectors(){
 		lift_debug_vector->set("value", get_global_basis().xform_inv(AeroUtils::v3log_with_base(lift, debug_scaling_factor)) * debug_scale);
 	}
 	if (drag_debug_vector) {
-		Vector3 drag = double(UtilityFunctions::max(get_current_force().dot(get_drag_direction()), 0.0)) * get_drag_direction();
+		Vector3 drag = Math::max(get_current_force().dot(get_drag_direction()), 0.0) * get_drag_direction();
 		drag_debug_vector->set("value", get_global_basis().xform_inv(AeroUtils::v3log_with_base(drag, debug_scaling_factor)) * debug_scale);
 	}
 	if (thrust_debug_vector) {
-		Vector3 thrust = double(UtilityFunctions::min(get_current_force().dot(get_drag_direction()), 0.0)) * get_drag_direction();
+		Vector3 thrust = Math::min(get_current_force().dot(get_drag_direction()), 0.0) * get_drag_direction();
 		thrust_debug_vector->set("value", get_global_basis().xform_inv(AeroUtils::v3log_with_base(thrust, debug_scaling_factor)) * debug_scale);
 	}	
 
-	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+	for (AeroInfluencer3D* influencer : aero_influencers) {
 		if (not influencer) continue;
 		influencer->update_debug_vectors();
 	}
 }
 
-void AeroInfluencer3D::set_disabled(const int p_disabled) {
+void AeroInfluencer3D::set_disabled(int p_disabled) {
 	disabled = p_disabled;
 	update_gizmos();
 }
@@ -471,13 +551,13 @@ int AeroInfluencer3D::is_disabled() const {
 void AeroInfluencer3D::set_can_override_body_sleep(bool override) {
 	can_override_body_sleep = override;
 }
-bool AeroInfluencer3D::get_can_override_body_sleep() {
+bool AeroInfluencer3D::get_can_override_body_sleep() const {
 	return can_override_body_sleep;
 }
 void AeroInfluencer3D::set_mirror_axis(int axis) {
 	mirror_axis = axis; //mirror regeneration happens via NOTIFICATION_TRANSFORM_CHANGED and the _ready loops
 }
-int AeroInfluencer3D::get_mirror_axis() {
+int AeroInfluencer3D::get_mirror_axis() const {
 	return mirror_axis;
 }
 void AeroInfluencer3D::generate_mirror() {
@@ -539,13 +619,13 @@ void AeroInfluencer3D::set_mirror_scaling_fix_axis(int axis) {
 int AeroInfluencer3D::get_mirror_scaling_fix_axis() const {
 	return mirror_scaling_fix_axis;
 }
-void AeroInfluencer3D::set_duplicate(const bool value){
+void AeroInfluencer3D::set_duplicate(bool value){
 	_duplicate = value;
 }
 bool AeroInfluencer3D::is_duplicate() const {
 	return _duplicate;
 }
-AeroInfluencer3D* AeroInfluencer3D::get_mirror_duplicate() {
+AeroInfluencer3D* AeroInfluencer3D::get_mirror_duplicate() const {
 	return mirror_duplicate;
 }
 void AeroInfluencer3D::set_actuation_config(const Ref<Resource> &p_config) {
@@ -557,20 +637,19 @@ Ref<Resource> AeroInfluencer3D::get_actuation_config() const {
 void AeroInfluencer3D::set_control_rotation_order(int rotation_order) {
 	control_rotation_order = rotation_order;
 }
-int AeroInfluencer3D::get_control_rotation_order() {
+int AeroInfluencer3D::get_control_rotation_order() const {
 	return control_rotation_order;
 }
 bool AeroInfluencer3D::is_omitted_from_debug() const {
 	return omit_from_debug;
 }
-void AeroInfluencer3D::set_omit_from_debug(const bool omit) {
+void AeroInfluencer3D::set_omit_from_debug(bool omit) {
 	omit_from_debug = omit;
 }
-void AeroInfluencer3D::set_debug_scale(const double value) {
+void AeroInfluencer3D::set_debug_scale(double value) {
 	debug_scale = value;
 
-	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+	for (AeroInfluencer3D* influencer : aero_influencers) {
 		if (not influencer) continue;
 		influencer->set_debug_scale(debug_scale);
 	}
@@ -578,11 +657,10 @@ void AeroInfluencer3D::set_debug_scale(const double value) {
 double AeroInfluencer3D::get_debug_scale() const {
 	return debug_scale;
 }
-void AeroInfluencer3D::set_debug_scaling_factor(const double scaling_factor) {
+void AeroInfluencer3D::set_debug_scaling_factor(double scaling_factor) {
 	debug_scaling_factor = scaling_factor;
 
-	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+	for (AeroInfluencer3D* influencer : aero_influencers) {
 		if (not influencer) continue;
 		influencer->set_debug_scaling_factor(debug_scaling_factor);
 	}
@@ -590,7 +668,7 @@ void AeroInfluencer3D::set_debug_scaling_factor(const double scaling_factor) {
 double AeroInfluencer3D::get_debug_scaling_factor() const {
 	return debug_scaling_factor;
 }
-void AeroInfluencer3D::set_debug_width(const double value) {
+void AeroInfluencer3D::set_debug_width(double value) {
 	debug_width = value;
 
 	if (force_debug_vector) force_debug_vector->set("width", debug_width);
@@ -599,8 +677,7 @@ void AeroInfluencer3D::set_debug_width(const double value) {
 	if (drag_debug_vector) drag_debug_vector->set("width", debug_width);
 	if (thrust_debug_vector) thrust_debug_vector->set("width", debug_width);
 
-	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+	for (AeroInfluencer3D* influencer : aero_influencers) {
 		if (not influencer) continue;
 		influencer->set_debug_width(debug_width);
 	}
@@ -636,14 +713,13 @@ void AeroInfluencer3D::update_debug_visibility() {
 }
 
 //create virtual function for this
-void AeroInfluencer3D::set_show_debug(const bool value) {
+void AeroInfluencer3D::set_show_debug(bool value) {
 	bool update_visibility = show_debug != value;
 	show_debug = value;
 	
 	if (update_visibility) update_debug_visibility();
 
-	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+	for (AeroInfluencer3D* influencer : aero_influencers) {
 		if (not influencer) continue;
 		influencer->set_show_debug(show_debug);
 	}
@@ -659,7 +735,7 @@ void AeroInfluencer3D::set_show_force(bool show) {
 
 	if(update_visibility) update_debug_visibility();
 }
-bool AeroInfluencer3D::get_show_force() {
+bool AeroInfluencer3D::get_show_force() const {
 	return show_force;
 }
 void AeroInfluencer3D::set_show_torque(bool show) {
@@ -668,7 +744,7 @@ void AeroInfluencer3D::set_show_torque(bool show) {
 
 	if(update_visibility) update_debug_visibility();
 }
-bool AeroInfluencer3D::get_show_torque() {
+bool AeroInfluencer3D::get_show_torque() const {
 	return show_torque;
 }
 void AeroInfluencer3D::set_show_lift(bool show) {
@@ -677,7 +753,7 @@ void AeroInfluencer3D::set_show_lift(bool show) {
 
 	if(update_visibility) update_debug_visibility();
 }
-bool AeroInfluencer3D::get_show_lift() {
+bool AeroInfluencer3D::get_show_lift() const {
 	return show_lift;
 }
 void AeroInfluencer3D::set_show_drag(bool show) {
@@ -686,7 +762,7 @@ void AeroInfluencer3D::set_show_drag(bool show) {
 
 	if(update_visibility) update_debug_visibility();
 }
-bool AeroInfluencer3D::get_show_drag() {
+bool AeroInfluencer3D::get_show_drag() const {
 	return show_drag;
 }
 void AeroInfluencer3D::set_show_thrust(bool show) {
@@ -695,7 +771,7 @@ void AeroInfluencer3D::set_show_thrust(bool show) {
 
 	if(update_visibility) update_debug_visibility();
 }
-bool AeroInfluencer3D::get_show_thrust() {
+bool AeroInfluencer3D::get_show_thrust() const {
 	return show_thrust;
 }
 void AeroInfluencer3D::set_aero_body(AeroBody3D *p_new_body) {
@@ -705,10 +781,20 @@ AeroBody3D* AeroInfluencer3D::get_aero_body() const {
 	return aero_body;
 }
 void AeroInfluencer3D::set_aero_influencers(const TypedArray<AeroInfluencer3D> &new_arr) {
-    aero_influencers.assign(new_arr);
+	aero_influencers.clear();
+	aero_influencers.reserve((size_t) new_arr.size());
+	for (int i = 0; i < new_arr.size(); i++) {
+		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(new_arr[i]);
+		if (influencer) aero_influencers.push_back(influencer);
+	}
 }
 TypedArray<AeroInfluencer3D> AeroInfluencer3D::get_aero_influencers() const {
-	return aero_influencers;
+	TypedArray<AeroInfluencer3D> result;
+	result.resize((int) aero_influencers.size());
+	for (size_t i = 0; i < aero_influencers.size(); i++) {
+		result[(int) i] = aero_influencers[i];
+	}
+	return result;
 }
 void AeroInfluencer3D::set_default_transform(Transform3D new_transform) {
 	default_transform = new_transform;
@@ -725,10 +811,10 @@ double AeroInfluencer3D::get_air_density() const {
 Vector3 AeroInfluencer3D::get_relative_position() const {
 	return relative_position;
 }
-Vector3 AeroInfluencer3D::get_linear_velocity_substep() {
+Vector3 AeroInfluencer3D::get_linear_velocity_substep() const {
 	return linear_velocity_substep;
 }
-Vector3 AeroInfluencer3D::get_angular_velocity_substep() {
+Vector3 AeroInfluencer3D::get_angular_velocity_substep() const {
 	return angular_velocity_substep;
 }
 Vector3 AeroInfluencer3D::get_local_air_velocity() const {
@@ -756,28 +842,28 @@ Vector3 AeroInfluencer3D::get_centrifugal_offset() {
 		return result;
 	}
 
-	return get_position();
+	return get_cached_position();
 }
 Vector3 AeroInfluencer3D::get_linear_acceleration() {
-	Node* parent = get_parent();
-	Node3D* parent_3d = Object::cast_to<Node3D>(parent);
-	if (not parent_3d) return Vector3();
-
 	Vector3 parent_linear_acceleration = Vector3();
 	Vector3 parent_angular_acceleration = Vector3();
 	double parent_angular_velocity_squared = 0.0;
-	if (AeroInfluencer3D* parent_influencer = Object::cast_to<AeroInfluencer3D>(parent)) {
+	Basis parent_basis = Basis();
+
+	if (parent_influencer) {
 		parent_linear_acceleration = parent_influencer->get_linear_acceleration();
 		parent_angular_acceleration = parent_influencer->get_angular_acceleration();
-	} else if (AeroBody3D* parent_body = Object::cast_to<AeroBody3D>(parent)) {
-		parent_linear_acceleration = parent_body->get_linear_acceleration();
-		parent_angular_acceleration = parent_body->get_angular_acceleration();
-	}
-	if (RigidBody3D* parent_rigid_body = Object::cast_to<RigidBody3D>(parent)) {
-		parent_angular_velocity_squared = parent_rigid_body->get_angular_velocity().length_squared();
+		parent_basis = parent_influencer->get_cached_global_basis();
+	} else if (aero_body) {
+		parent_linear_acceleration = aero_body->get_linear_acceleration();
+		parent_angular_acceleration = aero_body->get_angular_acceleration();
+		parent_angular_velocity_squared = aero_body->get_angular_velocity().length_squared();
+		parent_basis = aero_body->get_cached_global_basis();
+	} else {
+		return Vector3();
 	}
 
-	Vector3 centrifugal_offset = parent_3d->get_global_basis().xform(get_centrifugal_offset());
+	Vector3 centrifugal_offset = parent_basis.xform(get_centrifugal_offset());
 
 	Vector3 axis = angular_velocity_substep.normalized();
 	Vector3 nearest_point_on_line = axis * centrifugal_offset.dot(axis.normalized());

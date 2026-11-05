@@ -49,8 +49,10 @@ func _update_transform_substep(substep_delta : float) -> void:
 		#flap = clamp(flap, -0.5, 0.5) - 0.05 * sign(flap)
 		#flap_velocity = 0.0
 	
-	rotation.z = rotation_z + flap
-	rotation.y = rotation_y + leadlag
+	#apply the rotation through the cache-aware setter so the influencer's transform caches stay valid
+	var local_transform : Transform3D = get_cached_local_transform()
+	local_transform.basis = Basis.from_euler(Vector3(0, rotation_y + leadlag, rotation_z + flap))
+	set_cached_transform(local_transform)
 
 func get_centrifugal_offset() -> Vector3:
 	return position + Vector3(blade_length * 0.5, 0, 0)

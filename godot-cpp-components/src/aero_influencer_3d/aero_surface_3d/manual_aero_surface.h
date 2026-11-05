@@ -1,7 +1,6 @@
 #ifndef MANUAL_AERO_SURFACE_3D
 #define MANUAL_AERO_SURFACE_3D
 
-#include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include "aero_influencer_3d/aero_surface_3d/aero_surface_3d.h"
 #include "aero_influencer_3d/aero_surface_3d/manual_aero_surface_config.h"

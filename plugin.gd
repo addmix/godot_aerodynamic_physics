@@ -75,7 +75,7 @@ func _exit_tree():
 	remove_custom_type("AeroJetThruster3D")
 	remove_custom_type("FlightAssist")
 	
-	remove_autoload_singleton("AeroUnits")
+	#remove_autoload_singleton("AeroUnits")
 	remove_node_3d_gizmo_plugin(surface_gizmo_instance)
 	remove_node_3d_gizmo_plugin(propeller_gizmo_instance)
 

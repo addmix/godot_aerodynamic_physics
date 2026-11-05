@@ -28,6 +28,8 @@ void initialize_gdextension_types(ModuleInitializationLevel p_level)
 	aero_units = memnew(AeroUnits);
 	Engine::get_singleton()->register_singleton("AeroUnits", AeroUnits::get_singleton());
 
+	AeroBody3D::initialize_substeps();
+
 	GDREGISTER_CLASS(AeroBody3D);
 	GDREGISTER_CLASS(AeroInfluencer3D);
 	GDREGISTER_CLASS(AeroSurfaceConfig);
@@ -41,6 +43,8 @@ void uninitialize_gdextension_types(ModuleInitializationLevel p_level) {
 		return;
 	}
 
+	AeroBody3D::finalize_substeps();
+
 	Engine::get_singleton()->unregister_singleton("AeroUnits");
 	memdelete(aero_units);
 	aero_units = nullptr;
@@ -49,7 +53,7 @@ void uninitialize_gdextension_types(ModuleInitializationLevel p_level) {
 extern "C"
 {
 	// Initialization
-	GDExtensionBool GDE_EXPORT example_library_init(GDExtensionInterfaceGetProcAddress p_get_proc_address, GDExtensionClassLibraryPtr p_library, GDExtensionInitialization *r_initialization)
+	GDExtensionBool GDE_EXPORT godot_aerodynamic_physics_init(GDExtensionInterfaceGetProcAddress p_get_proc_address, GDExtensionClassLibraryPtr p_library, GDExtensionInitialization *r_initialization)
 	{
 		GDExtensionBinding::InitObject init_obj(p_get_proc_address, p_library, r_initialization);
 		init_obj.register_initializer(initialize_gdextension_types);

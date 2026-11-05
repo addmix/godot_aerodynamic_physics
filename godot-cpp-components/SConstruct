@@ -11,7 +11,7 @@ def validate_parent_dir(key, val, env):
         raise UserError("'%s' is not a directory: %s" % (key, os.path.dirname(val)))
 
 
-libname = "gdexample"
+libname = "godot_aerodynamic_physics"
 projectdir = "demo"
 
 localEnv = Environment(tools=["default"], PLATFORM="")

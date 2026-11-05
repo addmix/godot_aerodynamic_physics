@@ -47,14 +47,14 @@ ManualAeroSurfaceConfig::ManualAeroSurfaceConfig() {
 }
 ManualAeroSurfaceConfig::~ManualAeroSurfaceConfig() {}
 
-double ManualAeroSurfaceConfig::get_lift_coefficient(double angle_of_attack) {
-	double sample = lift_aoa_curve->sample_baked(UtilityFunctions::remap(angle_of_attack, -Math::PI, Math::PI, lift_aoa_curve->get_min_domain(), lift_aoa_curve->get_max_domain()));
+double ManualAeroSurfaceConfig::get_lift_coefficient(double angle_of_attack) const {
+	double sample = lift_aoa_curve->sample_baked(Math::remap(angle_of_attack, -Math::PI, Math::PI, lift_aoa_curve->get_min_domain(), lift_aoa_curve->get_max_domain()));
 	//main returns the raw sample; min/max_lift_coefficient scaling is commented out there.
 	return sample;
 }
-double ManualAeroSurfaceConfig::get_drag_coefficient(double angle_of_attack) {
-    double sample = drag_aoa_curve->sample_baked(UtilityFunctions::remap(angle_of_attack, -Math::PI, Math::PI, drag_aoa_curve->get_min_domain(), drag_aoa_curve->get_max_domain()));
-    return UtilityFunctions::remap(sample, drag_aoa_curve->get_min_value(), drag_aoa_curve->get_max_value(), min_drag_coefficient, max_drag_coefficient);
+double ManualAeroSurfaceConfig::get_drag_coefficient(double angle_of_attack) const {
+    double sample = drag_aoa_curve->sample_baked(Math::remap(angle_of_attack, -Math::PI, Math::PI, drag_aoa_curve->get_min_domain(), drag_aoa_curve->get_max_domain()));
+    return Math::remap(sample, drag_aoa_curve->get_min_value(), drag_aoa_curve->get_max_value(), min_drag_coefficient, max_drag_coefficient);
 }
 
 
@@ -65,23 +65,23 @@ double ManualAeroSurfaceConfig::get_drag_coefficient(double angle_of_attack) {
 //double ManualAeroSurfaceConfig::get_max_lift_coefficient() {return max_lift_coefficient;}
 
 void ManualAeroSurfaceConfig::set_lift_aoa_curve(const Ref<Curve> &p_curve) {lift_aoa_curve = p_curve;}
-Ref<Curve> ManualAeroSurfaceConfig::get_lift_aoa_curve() {return lift_aoa_curve;}
+Ref<Curve> ManualAeroSurfaceConfig::get_lift_aoa_curve() const {return lift_aoa_curve;}
 
 void ManualAeroSurfaceConfig::set_min_drag_coefficient(double value) {min_drag_coefficient = value;}
-double ManualAeroSurfaceConfig::get_min_drag_coefficient() {return min_drag_coefficient;}
+double ManualAeroSurfaceConfig::get_min_drag_coefficient() const {return min_drag_coefficient;}
 void ManualAeroSurfaceConfig::set_max_drag_coefficient(double value) {max_drag_coefficient = value;}
-double ManualAeroSurfaceConfig::get_max_drag_coefficient() {return max_drag_coefficient;}
+double ManualAeroSurfaceConfig::get_max_drag_coefficient() const {return max_drag_coefficient;}
 
 void ManualAeroSurfaceConfig::set_drag_aoa_curve(const Ref<Curve> &p_curve) {drag_aoa_curve = p_curve;}
-Ref<Curve> ManualAeroSurfaceConfig::get_drag_aoa_curve() {return drag_aoa_curve;}
+Ref<Curve> ManualAeroSurfaceConfig::get_drag_aoa_curve() const {return drag_aoa_curve;}
 
 void ManualAeroSurfaceConfig::set_sweep_drag_multiplier_curve(const Ref<Curve> &p_curve) {sweep_drag_multiplier_curve = p_curve; }
-Ref<Curve> ManualAeroSurfaceConfig::get_sweep_drag_multiplier_curve() {return sweep_drag_multiplier_curve;}
-double ManualAeroSurfaceConfig::get_drag_at_sweep_angle(double sweep_angle) {
-    return sweep_drag_multiplier_curve->sample_baked(UtilityFunctions::abs(UtilityFunctions::remap(sweep_angle, 0.0, Math::PI, sweep_drag_multiplier_curve->get_min_domain(), sweep_drag_multiplier_curve->get_max_domain())));
+Ref<Curve> ManualAeroSurfaceConfig::get_sweep_drag_multiplier_curve() const {return sweep_drag_multiplier_curve;}
+double ManualAeroSurfaceConfig::get_drag_at_sweep_angle(double sweep_angle) const {
+    return sweep_drag_multiplier_curve->sample_baked(Math::abs(Math::remap(sweep_angle, 0.0, Math::PI, sweep_drag_multiplier_curve->get_min_domain(), sweep_drag_multiplier_curve->get_max_domain())));
 }
 void ManualAeroSurfaceConfig::set_drag_at_mach_multiplier_curve(const Ref<Curve> &p_curve) {drag_at_mach_multiplier_curve = p_curve;}
-Ref<Curve> ManualAeroSurfaceConfig::get_drag_at_mach_multiplier_curve() {return drag_at_mach_multiplier_curve;}
-double ManualAeroSurfaceConfig::get_drag_multiplier_at_mach(double mach) {
+Ref<Curve> ManualAeroSurfaceConfig::get_drag_at_mach_multiplier_curve() const {return drag_at_mach_multiplier_curve;}
+double ManualAeroSurfaceConfig::get_drag_multiplier_at_mach(double mach) const {
     return drag_at_mach_multiplier_curve->sample_baked(mach);
 }

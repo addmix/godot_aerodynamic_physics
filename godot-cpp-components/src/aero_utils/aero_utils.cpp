@@ -2,10 +2,10 @@
 
 using namespace godot;
 
-double AeroUtils::log_with_base(const double value, const double base) {
+double AeroUtils::log_with_base(double value, double base) {
     return log(value) / log(base);
 }
-Vector3 AeroUtils::v3log_with_base(const Vector3 vector, const double base) {
+Vector3 AeroUtils::v3log_with_base(Vector3 vector, double base) {
     return vector.normalized() * AeroUtils::log_with_base(vector.length() + 1, base);
 }
 
@@ -42,7 +42,7 @@ void AeroUtils::get_descendants_of_type(Node* node, const StringName &type, Vect
     }
 }
 
-static Node3D* create_debug_node(const Ref<Script> &script, const StringName &name, const Color &color, const bool checker, const double width, Node* parent) {
+static Node3D* create_debug_node(const Ref<Script> &script, const StringName &name, const Color &color, bool checker, double width, Node* parent) {
     Node3D *vector = memnew(MeshInstance3D);
     vector->set_script(script);
     vector->set_name(name);
@@ -54,11 +54,11 @@ static Node3D* create_debug_node(const Ref<Script> &script, const StringName &na
     return vector;
 }
 
-Node3D* AeroUtils::create_debug_point_node(const StringName &name, const Color &color, const bool checker, const double width, Node* parent) {
+Node3D* AeroUtils::create_debug_point_node(const StringName &name, const Color &color, bool checker, double width, Node* parent) {
     Ref<Script> point_script = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/utils/point_3d/point_3d.gd");
     return create_debug_node(point_script, name, color, checker, width, parent);
 }
-Node3D* AeroUtils::create_debug_vector_node(const StringName &name, const Color &color, const bool checker, const double width, Node* parent) {
+Node3D* AeroUtils::create_debug_vector_node(const StringName &name, const Color &color, bool checker, double width, Node* parent) {
     Ref<Script> vector_script = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/utils/vector_3d/vector_3d.gd");
     return create_debug_node(vector_script, name, color, checker, width, parent);
 }

@@ -38,13 +38,15 @@ ForceAndTorque AeroSurface3D::calculate_forces(double substep_delta) {
         aero_reference = 0.0;
         return force_and_torque;
     }
-    angle_of_attack = get_global_basis().get_column(1).angle_to(-get_world_air_velocity()) - (Math::PI / 2.0);
-    sweep_angle = get_global_basis().get_column(0).angle_to(-get_world_air_velocity()) - (Math::PI / 2.0);
+    const Basis global_basis = get_cached_global_basis();
+
+    angle_of_attack = global_basis.get_column(1).angle_to(-get_world_air_velocity()) - (Math::PI / 2.0);
+    sweep_angle = global_basis.get_column(0).angle_to(-get_world_air_velocity()) - (Math::PI / 2.0);
 
     area = wing_config->get_area();
     projected_wing_area = Math::abs(area * sin(angle_of_attack));
 
-    Vector3 right_facing_air_vector = get_world_air_velocity().cross(-get_global_basis().get_column(1)).normalized();
+    Vector3 right_facing_air_vector = get_world_air_velocity().cross(-global_basis.get_column(1)).normalized();
     lift_direction = get_drag_direction().cross(right_facing_air_vector).normalized();
 
     aero_reference = get_dynamic_pressure() * area;
@@ -65,27 +67,27 @@ void AeroSurface3D::set_wing_config(const Ref<AeroSurfaceConfig> &p_config) {
 };
 Ref<AeroSurfaceConfig> AeroSurface3D::get_wing_config() const {return wing_config;};
 
-double AeroSurface3D::get_angle_of_attack() {
+double AeroSurface3D::get_angle_of_attack() const {
     return angle_of_attack;
 }
-double AeroSurface3D::get_sweep_angle() {
+double AeroSurface3D::get_sweep_angle() const {
     return sweep_angle;
 }
-double AeroSurface3D::get_area() {
+double AeroSurface3D::get_area() const {
     return area;
 }
-double AeroSurface3D::get_projected_wing_area() {
+double AeroSurface3D::get_projected_wing_area() const {
     return projected_wing_area;
 }
-double AeroSurface3D::get_aero_reference() {
+double AeroSurface3D::get_aero_reference() const {
     return aero_reference;
 }
-Vector3 AeroSurface3D::get_lift_direction() {
+Vector3 AeroSurface3D::get_lift_direction() const {
     return lift_direction;
 }
-double AeroSurface3D::get_lift_force() {
+double AeroSurface3D::get_lift_force() const {
     return lift_force;
 }
-double AeroSurface3D::get_drag_force() {
+double AeroSurface3D::get_drag_force() const {
     return drag_force;
 }

@@ -1,9 +1,9 @@
 #ifndef AERO_INFLUENCER_3D
 #define AERO_INFLUENCER_3D
 
-#include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/classes/node3d.hpp>
+#include <vector>
 #include <godot_cpp/core/gdvirtual.gen.inc>
 #include "aero_body_3d/aero_body_3d.h"
 #include "aero_utils/aero_utils.h"
@@ -43,9 +43,10 @@ private:
 
 	//internal values (not export properties)
 	AeroBody3D *aero_body = nullptr;
+	AeroInfluencer3D *parent_influencer = nullptr; //resolved in _enter_tree so the substep path doesn't call get_parent()
 	//see if it's possible/probably to convert this to a native array
 	//std::vector<AeroInfluencer3D*>
-	TypedArray<AeroInfluencer3D> aero_influencers;
+	std::vector<AeroInfluencer3D*> aero_influencers; //pointer list, so the substep loops don't box Variants
 
 	Transform3D default_transform = Transform3D();
 
@@ -75,6 +76,17 @@ private:
 	Node3D *thrust_debug_vector = nullptr;
 
 	Transform3D last_transform = Transform3D();
+
+	bool calculate_forces_overridden = false;
+	bool update_transform_substep_overridden = false;
+	bool update_control_transform_overridden = false;
+	bool linear_velocity_substep_overridden = false;
+	bool angular_velocity_substep_overridden = false;
+	bool body_sleep_overridden = false;
+	bool in_body_sleep_override = false;
+
+	Transform3D local_transform_cache = Transform3D();
+	Transform3D global_transform_cache = Transform3D();
 public:
 	//functions, init, deinint, overrides, etc
 	static void _bind_methods(); //_init(), kinda
@@ -85,6 +97,7 @@ public:
 	GDVIRTUAL1R(PackedVector3Array, _calculate_forces, double);
 	
 	void _ready() override;
+	void refresh_virtual_override_cache();
 	void _enter_tree() override;
 	void _exit_tree() override;
 	void _physics_process(double delta) override;
@@ -99,83 +112,94 @@ public:
 	void _update_control_transform(double substep_delta);
 	GDVIRTUAL1(_update_control_transform, double);
 	void _update_control_transform_with_override(double substep_delta);
-	bool is_overriding_body_sleep();
+	bool is_overriding_body_sleep() const;
 	GDVIRTUAL0R(bool, is_overriding_body_sleep);
+	bool is_overriding_body_sleep_with_override();
 
-	Vector3 calculate_relative_position();
-	Vector3 calculate_world_air_velocity();
-	Vector3 calculate_linear_velocity_substep();
+	Vector3 calculate_relative_position() const;
+	Vector3 calculate_world_air_velocity() const;
+	Vector3 calculate_linear_velocity_substep() const;
 	GDVIRTUAL0R(Vector3, calculate_linear_velocity_substep);
 	Vector3 calculate_linear_velocity_substep_with_override();
-	Vector3 calculate_angular_velocity_substep();
+	Vector3 calculate_angular_velocity_substep() const;
 	GDVIRTUAL0R(Vector3, calculate_angular_velocity_substep);
 	Vector3 calculate_angular_velocity_substep_with_override();
 	Vector3 calculate_centrifugal_offset();
 	Vector3 calculate_linear_acceleration();
-	Vector3 calculate_angular_acceleration();
+	Vector3 calculate_angular_acceleration() const;
 
 	double get_control_command(StringName axis_name);
 	
 	void update_debug_vectors();
 
+	//recompute this influencer's cached global transform from the parent's, then cascade into children
+	void update_transform_cache(const Transform3D &parent_global_transform);
+	//apply a transform and let the caches follow (use instead of set_transform/set_basis)
+	void set_cached_transform(const Transform3D &p_transform);
+
+	const Transform3D &get_cached_local_transform() const;
+	const Transform3D &get_cached_global_transform() const;
+	Basis get_cached_global_basis() const;
+	Vector3 get_cached_position() const;
+
 
 	
 	//setters and getters
-	void set_disabled(const int p_disabled);
+	void set_disabled(int p_disabled);
 	int is_disabled() const;
 
 	void set_can_override_body_sleep(bool override);
-	bool get_can_override_body_sleep();
+	bool get_can_override_body_sleep() const;
 
 	void set_mirror_axis(int axis);
-	int get_mirror_axis();
+	int get_mirror_axis() const;
 	void set_mirror_scaling_fix_axis(int axis);
 	int get_mirror_scaling_fix_axis() const;
-	void set_duplicate(const bool value);
+	void set_duplicate(bool value);
 	bool is_duplicate() const; //doesn't need setter because it is never expected to be changed outside of aeroinfluencer 
-	AeroInfluencer3D* get_mirror_duplicate();
+	AeroInfluencer3D* get_mirror_duplicate() const;
 	
 	void set_actuation_config(const Ref<Resource> &p_config);
 	Ref<Resource> get_actuation_config() const;
 	void set_control_rotation_order(int rotation_order);
-	int get_control_rotation_order();
+	int get_control_rotation_order() const;
 	
 	void update_debug_visibility();
 	GDVIRTUAL0(update_debug_visibility);
-	void set_omit_from_debug(const bool omit);
+	void set_omit_from_debug(bool omit);
 	bool is_omitted_from_debug() const;
-	void set_debug_scale(const double value);
+	void set_debug_scale(double value);
 	double get_debug_scale() const;
-	void set_debug_scaling_factor(const double scaling_factor);
+	void set_debug_scaling_factor(double scaling_factor);
 	double get_debug_scaling_factor() const;
-	void set_debug_width(const double value);
+	void set_debug_width(double value);
 	double get_debug_width() const;
-	void set_show_debug(const bool value);
+	void set_show_debug(bool value);
 	bool get_show_debug() const;
 
 	void set_show_force(bool show);
-	bool get_show_force();
+	bool get_show_force() const;
 	void set_show_torque(bool show);
-	bool get_show_torque();
+	bool get_show_torque() const;
 	void set_show_lift(bool show);
-	bool get_show_lift();
+	bool get_show_lift() const;
 	void set_show_drag(bool show);
-	bool get_show_drag();
+	bool get_show_drag() const;
 	void set_show_thrust(bool show);
-	bool get_show_thrust();
+	bool get_show_thrust() const;
 
 	void set_aero_body(AeroBody3D* new_body);
 	AeroBody3D* get_aero_body() const;
 	void set_aero_influencers(const TypedArray<AeroInfluencer3D> &new_arr);
 	TypedArray<AeroInfluencer3D> get_aero_influencers() const;
 	
-	void set_default_transform(const Transform3D new_transform);
+	void set_default_transform(Transform3D new_transform);
 	Transform3D get_default_transform() const;
 	double get_altitude() const;
 	double get_air_density() const;
 	Vector3 get_relative_position() const;
-	Vector3 get_linear_velocity_substep();
-	Vector3 get_angular_velocity_substep();
+	Vector3 get_linear_velocity_substep() const;
+	Vector3 get_angular_velocity_substep() const;
 	Vector3 get_local_air_velocity() const;
 	Vector3 get_world_air_velocity() const;
 	Vector3 get_drag_direction() const;

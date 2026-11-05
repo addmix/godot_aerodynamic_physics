@@ -91,70 +91,105 @@ void AeroBody3D::_bind_methods() {
 	ADD_GROUP("", "");
 	ADD_SUBGROUP("", "");
 	ClassDB::bind_method(D_METHOD("get_substeps"), &AeroBody3D::get_substeps);
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "substeps", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_substeps");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "substeps", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_substeps");
 	ClassDB::bind_method(D_METHOD("get_current_substep"), &AeroBody3D::get_current_substep);
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "current_substep", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_current_substep");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "current_substep", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_current_substep");
 	ClassDB::bind_method(D_METHOD("get_aero_influencers"), &AeroBody3D::get_aero_influencers);
 	ClassDB::bind_method(D_METHOD("get_atmosphere_areas"), &AeroBody3D::get_atmosphere_areas);
-	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "atmosphere_areas", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_atmosphere_areas");
+	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "atmosphere_areas", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_atmosphere_areas");
 	
 	
 	//ADD_PROPERTY(PropertyInfo(Variant::, ""), "", "");
 	ClassDB::bind_method(D_METHOD("get_prediction_timestep_fraction"), &AeroBody3D::get_prediction_timestep_fraction);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "prediction_timestep_fraction", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_prediction_timestep_fraction");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "prediction_timestep_fraction", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_prediction_timestep_fraction");
 	ClassDB::bind_method(D_METHOD("get_current_force"), &AeroBody3D::get_current_force);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_force", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_current_force");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_force", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_current_force");
 	ClassDB::bind_method(D_METHOD("get_current_torque"), &AeroBody3D::get_current_torque);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_torque", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_current_torque");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_torque", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_current_torque");
 	ClassDB::bind_method(D_METHOD("get_current_gravity"), &AeroBody3D::get_current_gravity);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_gravity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_current_gravity");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "current_gravity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_current_gravity");
 	//set_linear_velocity
 	ClassDB::bind_method(D_METHOD("get_linear_velocity_substep"), &AeroBody3D::get_linear_velocity_substep);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "linear_velocity_substep", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_linear_velocity_substep");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "linear_velocity_substep", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_linear_velocity_substep");
 	//set_angular_velocity
 	ClassDB::bind_method(D_METHOD("get_angular_velocity_substep"), &AeroBody3D::get_angular_velocity_substep);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "angular_velocity_substep", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_angular_velocity_substep");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "angular_velocity_substep", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_angular_velocity_substep");
 	ClassDB::bind_method(D_METHOD("get_linear_acceleration"), &AeroBody3D::get_linear_acceleration);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "linear_acceleration", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_linear_acceleration");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "linear_acceleration", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_linear_acceleration");
 	ClassDB::bind_method(D_METHOD("get_angular_acceleration"), &AeroBody3D::get_angular_acceleration);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "angular_acceleration", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_angular_acceleration");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "angular_acceleration", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_angular_acceleration");
 	ClassDB::bind_method(D_METHOD("get_last_linear_velocity"), &AeroBody3D::get_last_linear_velocity);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "last_linear_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_last_linear_velocity");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "last_linear_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_last_linear_velocity");
 	ClassDB::bind_method(D_METHOD("get_last_angular_velocity"), &AeroBody3D::get_last_angular_velocity);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "last_angular_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_last_angular_velocity");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "last_angular_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_last_angular_velocity");
 	ClassDB::bind_method(D_METHOD("get_wind"), &AeroBody3D::get_wind);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "wind", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_wind");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "wind", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_wind");
 	ClassDB::bind_method(D_METHOD("get_air_velocity"), &AeroBody3D::get_air_velocity);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "air_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_air_velocity");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "air_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_air_velocity");
 	ClassDB::bind_method(D_METHOD("get_local_air_velocity"), &AeroBody3D::get_local_air_velocity);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "local_air_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_local_air_velocity");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "local_air_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_local_air_velocity");
 	ClassDB::bind_method(D_METHOD("get_local_angular_velocity"), &AeroBody3D::get_local_angular_velocity);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "local_angular_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_local_angular_velocity");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "local_angular_velocity", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_local_angular_velocity");
 	ClassDB::bind_method(D_METHOD("get_air_speed"), &AeroBody3D::get_air_speed);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "air_speed", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_air_speed");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "air_speed", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_air_speed");
 	ClassDB::bind_method(D_METHOD("get_mach"), &AeroBody3D::get_mach);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "mach", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_mach");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "mach", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_mach");
 	ClassDB::bind_method(D_METHOD("get_air_density"), &AeroBody3D::get_air_density);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "air_density", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_air_density");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "air_density", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_air_density");
 	ClassDB::bind_method(D_METHOD("get_air_pressure"), &AeroBody3D::get_air_pressure);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "air_pressure", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_air_pressure");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "air_pressure", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_air_pressure");
 	ClassDB::bind_method(D_METHOD("get_angle_of_attack"), &AeroBody3D::get_angle_of_attack);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "angle_of_attack", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_angle_of_attack");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "angle_of_attack", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_angle_of_attack");
 	ClassDB::bind_method(D_METHOD("get_sideslip_angle"), &AeroBody3D::get_sideslip_angle);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "sideslip_angle", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_sideslip_angle");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "sideslip_angle", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_sideslip_angle");
 	ClassDB::bind_method(D_METHOD("get_altitude"), &AeroBody3D::get_altitude);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "altitude", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_altitude");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "altitude", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_altitude");
 	ClassDB::bind_method(D_METHOD("get_bank_angle"), &AeroBody3D::get_bank_angle);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "bank_angle", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_bank_angle");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "bank_angle", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_bank_angle");
 	ClassDB::bind_method(D_METHOD("get_heading"), &AeroBody3D::get_heading);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "heading", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_heading");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "heading", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_heading");
 	ClassDB::bind_method(D_METHOD("get_inclination"), &AeroBody3D::get_inclination);
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "inclination", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "", "get_inclination");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "inclination", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_inclination");
+}
+
+int AeroBody3D::substeps = 1;
+
+void AeroBody3D::refresh_transform_cache() {
+	global_transform_cache = get_global_transform();
+
+	for (AeroInfluencer3D* influencer : aero_influencers) {
+		if (not influencer) continue;
+
+		influencer->update_transform_cache(global_transform_cache);
+	}
+}
+const Transform3D &AeroBody3D::get_cached_global_transform() const {
+	return global_transform_cache;
+}
+Basis AeroBody3D::get_cached_global_basis() const {
+	return global_transform_cache.basis;
+}
+
+static Callable *substeps_refresh_callable = nullptr;
+
+void AeroBody3D::initialize_substeps() {
+	refresh_substeps();
+
+	substeps_refresh_callable = memnew(Callable(callable_mp_static(&AeroBody3D::refresh_substeps)));
+	ProjectSettings::get_singleton()->connect("settings_changed", *substeps_refresh_callable);
+}
+void AeroBody3D::finalize_substeps() {
+	if (not substeps_refresh_callable) return;
+
+	ProjectSettings::get_singleton()->disconnect("settings_changed", *substeps_refresh_callable);
+	memdelete(substeps_refresh_callable);
+	substeps_refresh_callable = nullptr;
+}
+void AeroBody3D::refresh_substeps() {
+	substeps = (int) ProjectSettings::get_singleton()->get_setting("physics/aerodynamics/substeps", 1);
 }
 
 AeroBody3D::AeroBody3D() {
-	substeps = (int) ProjectSettings::get_singleton()->get_setting("physics/aerodynamics/substeps", 1);
-
 	set_linear_damp_mode(DAMP_MODE_REPLACE);
 	set_angular_damp_mode(DAMP_MODE_REPLACE);
 	set_center_of_mass_mode(CENTER_OF_MASS_MODE_CUSTOM);
@@ -186,8 +221,7 @@ void AeroBody3D::_enter_tree() {
 	}
 }
 void AeroBody3D::_ready() {
-	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+	for (AeroInfluencer3D* influencer : aero_influencers) {
 		if (influencer) influencer->generate_mirror();
 	}
 
@@ -239,9 +273,6 @@ PackedStringArray AeroBody3D::_get_configuration_warnings() const {
 }
 
 void AeroBody3D::_physics_process(double delta) {
-	//refresh the cached substeps once per frame instead of querying ProjectSettings from the substep loop
-	substeps = (int) ProjectSettings::get_singleton()->get_setting("physics/aerodynamics/substeps", 1);
-
 	if (show_debug and update_debug) {
 		_update_debug();
 	}	
@@ -271,6 +302,8 @@ void AeroBody3D::integrate_forces(PhysicsDirectBodyState3D *body_state) {
 
 	linear_velocity_substep = body_state->get_linear_velocity();
 	angular_velocity_substep = body_state->get_angular_velocity();
+
+	refresh_transform_cache();
 
 	ForceAndTorque total_force_and_torque = calculate_forces(body_state->get_step());
 
@@ -305,8 +338,7 @@ ForceAndTorque AeroBody3D::calculate_forces(double delta) {
 	}
 	
 	wind = Vector3();
-	for (int i = 0; i < atmosphere_areas.size(); i++) {
-		Area3D* atmosphere = Object::cast_to<Area3D>(atmosphere_areas[i]);
+	for (Area3D* atmosphere : atmosphere_areas) {
 		if (not atmosphere) continue;
 		if (atmosphere->get("per_influencer_positioning")) continue;
 
@@ -318,9 +350,10 @@ ForceAndTorque AeroBody3D::calculate_forces(double delta) {
 		}
 	}
 	
-	bank_angle = get_rotation().z;
-	heading = get_rotation().y;
-	inclination = get_rotation().x;
+	Vector3 global_euler = global_transform_cache.basis.get_euler();
+	bank_angle = global_euler.z;
+	heading = global_euler.y;
+	inclination = global_euler.x;
 
 	
 	ForceAndTorque last_force_and_torque;
@@ -334,10 +367,10 @@ ForceAndTorque AeroBody3D::calculate_forces(double delta) {
 		air_velocity = -get_linear_velocity_substep() + wind;
 		air_speed = air_velocity.length();
 
-		local_air_velocity = get_global_transform().get_basis().xform_inv(air_velocity);
-		local_angular_velocity = get_global_transform().get_basis().xform_inv(angular_velocity_substep);
-		angle_of_attack = get_global_basis().get_column(1).angle_to(-air_velocity) - (Math::PI / 2.0);
-		sideslip_angle = get_global_basis().get_column(0).angle_to(air_velocity) - (Math::PI / 2.0); 
+		local_air_velocity = global_transform_cache.basis.xform_inv(air_velocity);
+		local_angular_velocity = global_transform_cache.basis.xform_inv(angular_velocity_substep);
+		angle_of_attack = global_transform_cache.basis.get_column(1).angle_to(-air_velocity) - (Math::PI / 2.0);
+		sideslip_angle = global_transform_cache.basis.get_column(0).angle_to(air_velocity) - (Math::PI / 2.0); 
 		relative_position = calculate_relative_position();
 		drag_direction = calculate_drag_direction();
 
@@ -436,8 +469,8 @@ void AeroBody3D::_update_transform_substep(double substep_delta) {
 	}
 }
 
-Vector3 AeroBody3D::calculate_linear_velocity_substep(const Vector3 force) const { return linear_velocity_substep + (force / get_mass() * get_substep_delta()); }
-Vector3 AeroBody3D::calculate_angular_velocity_substep(const Vector3 torque) const { return angular_velocity_substep + (get_inverse_inertia_tensor().xform(torque) * get_substep_delta()); }
+Vector3 AeroBody3D::calculate_linear_velocity_substep(Vector3 force) const { return linear_velocity_substep + (force / get_mass() * get_substep_delta()); }
+Vector3 AeroBody3D::calculate_angular_velocity_substep(Vector3 torque) const { return angular_velocity_substep + (get_inverse_inertia_tensor().xform(torque) * get_substep_delta()); }
 Vector3 AeroBody3D::calculate_relative_position() const { return get_global_basis().xform(-get_center_of_mass()); }
 Vector3 AeroBody3D::calculate_drag_direction() const { return air_velocity.normalized(); }
 //Vector3 AeroBody3D::calculate_linear_acceleration() const {
@@ -459,12 +492,11 @@ double AeroBody3D::get_control_command(StringName axis_name) {
 bool AeroBody3D::is_overriding_body_sleep() const {
 	bool overriding = false;
 
-	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+	for (AeroInfluencer3D* influencer : aero_influencers) {
 		if (not influencer) continue;
 		if (influencer->is_disabled()) continue;
 
-		overriding = overriding or influencer->is_overriding_body_sleep();
+		overriding = overriding or influencer->is_overriding_body_sleep_with_override();
 	}
 
 	return overriding;
@@ -474,16 +506,45 @@ void AeroBody3D::interrupt_sleep() {
 	set_sleeping(false);
 }
 
-TypedArray<AeroInfluencer3D> AeroBody3D::get_aero_influencers() const { return aero_influencers; }
-TypedArray<Area3D> AeroBody3D::get_atmosphere_areas() const { return atmosphere_areas; }
+TypedArray<AeroInfluencer3D> AeroBody3D::get_aero_influencers() const {
+	TypedArray<AeroInfluencer3D> result;
+	result.resize((int) aero_influencers.size());
+	for (size_t i = 0; i < aero_influencers.size(); i++) {
+		result[(int) i] = aero_influencers[i];
+	}
+	return result;
+}
+TypedArray<Area3D> AeroBody3D::get_atmosphere_areas() const {
+	TypedArray<Area3D> result;
+	result.resize((int) atmosphere_areas.size());
+	for (size_t i = 0; i < atmosphere_areas.size(); i++) {
+		result[(int) i] = atmosphere_areas[i];
+	}
+	return result;
+}
+const std::vector<Area3D*> &AeroBody3D::get_atmosphere_areas_internal() const { return atmosphere_areas; }
 
-void AeroBody3D::add_aero_influencer(AeroInfluencer3D* influencer) { aero_influencers.append(influencer); }
-void AeroBody3D::remove_aero_influencer(AeroInfluencer3D* influencer) { aero_influencers.erase(influencer); }
+void AeroBody3D::add_aero_influencer(AeroInfluencer3D* influencer) { aero_influencers.push_back(influencer); }
+void AeroBody3D::remove_aero_influencer(AeroInfluencer3D* influencer) {
+	for (size_t i = 0; i < aero_influencers.size(); i++) {
+		if (aero_influencers[i] == influencer) {
+			aero_influencers.erase(aero_influencers.begin() + i);
+			break;
+		}
+	}
+}
 
-void AeroBody3D::add_aero_atmosphere(const Area3D* atmosphere) { atmosphere_areas.append(atmosphere); }
-void AeroBody3D::remove_aero_atmosphere(const Area3D* atmosphere) { atmosphere_areas.erase(atmosphere); }
+void AeroBody3D::add_aero_atmosphere(Area3D* atmosphere) { atmosphere_areas.push_back(atmosphere); }
+void AeroBody3D::remove_aero_atmosphere(Area3D* atmosphere) {
+	for (size_t i = 0; i < atmosphere_areas.size(); i++) {
+		if (atmosphere_areas[i] == atmosphere) {
+			atmosphere_areas.erase(atmosphere_areas.begin() + i);
+			break;
+		}
+	}
+}
 
-void AeroBody3D::set_substeps_override(const int p_substeps) {substeps_override = p_substeps;}
+void AeroBody3D::set_substeps_override(int p_substeps) {substeps_override = p_substeps;}
 int AeroBody3D::get_substeps_override() const {return substeps_override;}
 int AeroBody3D::get_substeps() const {
 	if (substeps_override > -1){
@@ -500,8 +561,7 @@ int AeroBody3D::get_current_substep() const { return current_substep; }
 
 int AeroBody3D::get_amount_of_active_influencers() const {
 	int count = 0;
-	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+	for (AeroInfluencer3D* influencer : aero_influencers) {
 		if (not influencer) continue;
 		if (not influencer->is_disabled()) count += 1;
 	}
@@ -552,8 +612,7 @@ double AeroBody3D::get_inclination() const {return inclination;}
 
 //debug
 void AeroBody3D::_update_debug_visibility() {
-	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+	for (AeroInfluencer3D* influencer : aero_influencers) {
 		if (not influencer) continue;
 		influencer->set_show_debug(show_debug and show_wing_debug_vectors);
 	}
@@ -569,8 +628,7 @@ void AeroBody3D::_update_debug_visibility() {
 }
 
 void AeroBody3D::_update_debug_scale() {
-	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+	for (AeroInfluencer3D* influencer : aero_influencers) {
 		if (not influencer) continue;
 		influencer->set_debug_scale(debug_scale);
 		influencer->set_debug_scaling_factor(debug_scaling_factor);
@@ -589,6 +647,9 @@ void AeroBody3D::_update_debug_scale() {
 
 void AeroBody3D::_update_debug() {
 	if (not is_inside_tree()) return;
+
+	//integrate_forces doesn't run in the editor, so keep the caches fresh for the debug pass
+	refresh_transform_cache();
 
 	if (mass_debug_point) mass_debug_point->set_position(get_center_of_mass());
 
@@ -648,7 +709,7 @@ void AeroBody3D::_update_debug() {
 			force_vector_sum += force_vector;
 			force_position_sum += influencer->get_relative_position() * force;
 
-			Vector3 drag_vector = double(UtilityFunctions::max(force_vector.dot(drag_direction), 0.0)) * drag_direction;
+			Vector3 drag_vector = Math::max(force_vector.dot(drag_direction), 0.0) * drag_direction;
 			double drag = drag_vector.length();
 			drag_sum += drag;
 			drag_vector_sum += drag_vector;
@@ -660,7 +721,7 @@ void AeroBody3D::_update_debug() {
 			lift_vector_sum += lift_vector;
 			lift_position_sum += influencer->get_relative_position() * lift;
 
-			Vector3 thrust_vector = double(UtilityFunctions::min(force_vector.dot(drag_direction), 0.0)) * drag_direction;
+			Vector3 thrust_vector = Math::min(force_vector.dot(drag_direction), 0.0) * drag_direction;
 			double thrust = thrust_vector.length();
 			thrust_sum += thrust;
 			thrust_vector_sum += thrust_vector;
@@ -669,132 +730,131 @@ void AeroBody3D::_update_debug() {
 
 		if (force_debug_vector) {
 			force_debug_vector->set("value", inverse_basis.xform(AeroUtils::v3log_with_base(force_vector_sum, debug_scaling_factor)) * debug_scale);
-			if (not UtilityFunctions::is_equal_approx(force_sum, 0.0)) force_debug_vector->set_position(inverse_basis.xform(force_position_sum / force_sum));
+			if (not Math::is_equal_approx(force_sum, 0.0)) force_debug_vector->set_position(inverse_basis.xform(force_position_sum / force_sum));
 		}
 		if (drag_debug_vector) {
 			drag_debug_vector->set("value", inverse_basis.xform(AeroUtils::v3log_with_base(drag_vector_sum, debug_scaling_factor)) * debug_scale);
-			if (not UtilityFunctions::is_equal_approx(drag_sum, 0.0)) drag_debug_vector->set_position(inverse_basis.xform(drag_position_sum / drag_sum));
+			if (not Math::is_equal_approx(drag_sum, 0.0)) drag_debug_vector->set_position(inverse_basis.xform(drag_position_sum / drag_sum));
 		}
 		if (lift_debug_vector) {
 			lift_debug_vector->set("value", inverse_basis.xform(AeroUtils::v3log_with_base(lift_vector_sum, debug_scaling_factor)) * debug_scale);
-			if (not UtilityFunctions::is_equal_approx(lift_sum, 0.0)) lift_debug_vector->set_position(inverse_basis.xform(lift_position_sum / lift_sum));
+			if (not Math::is_equal_approx(lift_sum, 0.0)) lift_debug_vector->set_position(inverse_basis.xform(lift_position_sum / lift_sum));
 		}
 		if (thrust_debug_vector) {
 			thrust_debug_vector->set("value", inverse_basis.xform(AeroUtils::v3log_with_base(thrust_vector_sum, debug_scaling_factor)) * debug_scale);
-			if (not UtilityFunctions::is_equal_approx(thrust_sum, 0.0)) thrust_debug_vector->set_position(inverse_basis.xform(thrust_position_sum / thrust_sum));
+			if (not Math::is_equal_approx(thrust_sum, 0.0)) thrust_debug_vector->set_position(inverse_basis.xform(thrust_position_sum / thrust_sum));
 		}
 	}
 
-	for (int i = 0; i < aero_influencers.size(); i++) {
-		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+	for (AeroInfluencer3D* influencer : aero_influencers) {
 		if (not influencer) continue;
 		influencer->update_debug_vectors();
 	}
 }
 
 //debug visibility
-void AeroBody3D::set_show_debug(const bool value) {
+void AeroBody3D::set_show_debug(bool value) {
 	show_debug = value;
 	_update_debug_visibility();
 }
 bool AeroBody3D::get_show_debug() const {return show_debug;}
 
 
-void AeroBody3D::set_update_debug(const bool value) {update_debug = value;}
+void AeroBody3D::set_update_debug(bool value) {update_debug = value;}
 bool AeroBody3D::get_update_debug() const {return update_debug;}
 
-void AeroBody3D::set_show_wing_debug_vectors(const bool value) {
+void AeroBody3D::set_show_wing_debug_vectors(bool value) {
 	show_wing_debug_vectors = value;
 	_update_debug_visibility();
 }
 bool AeroBody3D::get_show_wing_debug_vectors() const {return show_wing_debug_vectors;}
 
-void AeroBody3D::set_show_lift_vectors(const bool value) {
+void AeroBody3D::set_show_lift_vectors(bool value) {
 	show_lift = value;
 	_update_debug_visibility();
 }
 bool AeroBody3D::get_show_lift_vectors() const {return show_lift;}
 
-void AeroBody3D::set_show_drag_vectors(const bool value) {
+void AeroBody3D::set_show_drag_vectors(bool value) {
 	show_drag = value;
 	_update_debug_visibility();
 }
 bool AeroBody3D::get_show_drag_vectors() const {return show_drag;}
 
-void AeroBody3D::set_show_linear_velocity(const bool value) {
+void AeroBody3D::set_show_linear_velocity(bool value) {
 	show_linear_velocity = value;
 	_update_debug_visibility();
 }
 bool AeroBody3D::get_show_linear_velocity() const {return show_linear_velocity;}
 
-void AeroBody3D::set_show_angular_velocity(const bool value) {
+void AeroBody3D::set_show_angular_velocity(bool value) {
 	show_angular_velocity = value;
 	_update_debug_visibility();
 }
 bool AeroBody3D::get_show_angular_velocity() const {return show_angular_velocity;}
 
-void AeroBody3D::set_show_center_of_lift(const bool value) {
+void AeroBody3D::set_show_center_of_lift(bool value) {
 	show_center_of_lift = value;
 	_update_debug_visibility();
 }
 bool AeroBody3D::get_show_center_of_lift() const {return show_center_of_lift;}
 
-void AeroBody3D::set_show_torque(const bool value) {
+void AeroBody3D::set_show_torque(bool value) {
 	show_torque = value;
 	_update_debug_visibility();
 }
 bool AeroBody3D::get_show_torque() const {return show_torque;}
 
-void AeroBody3D::set_show_center_of_drag(const bool value) {
+void AeroBody3D::set_show_center_of_drag(bool value) {
 	show_center_of_drag = value;
 	_update_debug_visibility();
 }
 bool AeroBody3D::get_show_center_of_drag() const {return show_center_of_drag;}
 
-void AeroBody3D::set_show_center_of_mass(const bool value) {
+void AeroBody3D::set_show_center_of_mass(bool value) {
 	show_center_of_mass = value;
 	_update_debug_visibility();
 }
 bool AeroBody3D::get_show_center_of_mass() const {return show_center_of_mass;}
 
-void AeroBody3D::set_show_center_of_thrust(const bool value) {
+void AeroBody3D::set_show_center_of_thrust(bool value) {
 	show_center_of_thrust = value;
 	_update_debug_visibility();
 }
 bool AeroBody3D::get_show_center_of_thrust() const {return show_center_of_thrust;}
 
 //debug options
-void AeroBody3D::set_debug_linear_velocity(const Vector3 value) {debug_linear_velocity = value;}
+void AeroBody3D::set_debug_linear_velocity(Vector3 value) {debug_linear_velocity = value;}
 Vector3 AeroBody3D::get_debug_linear_velocity() const {return debug_linear_velocity;}
 
-void AeroBody3D::set_debug_angular_velocity(const Vector3 value) {debug_angular_velocity = value;}
+void AeroBody3D::set_debug_angular_velocity(Vector3 value) {debug_angular_velocity = value;}
 Vector3 AeroBody3D::get_debug_angular_velocity() const {return debug_angular_velocity;}
 
-void AeroBody3D::set_debug_scale(const double value) {
+void AeroBody3D::set_debug_scale(double value) {
 	debug_scale = value;
 	_update_debug_scale();
 }
 double AeroBody3D::get_debug_scale() const {return debug_scale;}
 
-void AeroBody3D::set_debug_scaling_factor(const double value) {
+void AeroBody3D::set_debug_scaling_factor(double value) {
 	debug_scaling_factor = value;
 	_update_debug_scale();
 }
 double AeroBody3D::get_debug_scaling_factor() const {return debug_scaling_factor;}
 
-void AeroBody3D::set_debug_width(const double value) {
+void AeroBody3D::set_debug_width(double value) {
 	debug_width = value;
 	_update_debug_scale();
 }
 double AeroBody3D::get_debug_width() const {return debug_width;}
 
-void AeroBody3D::set_influencer_debug_width(const double value) {
+void AeroBody3D::set_influencer_debug_width(double value) {
 	debug_influencer_width = value;
 	_update_debug_scale();
 }
 double AeroBody3D::get_influencer_debug_width() const {return debug_influencer_width;}
 
-void AeroBody3D::set_debug_center_width(const double value) {
+void AeroBody3D::set_debug_center_width(double value) {
 	debug_center_width = value;
 	_update_debug_scale();
 }

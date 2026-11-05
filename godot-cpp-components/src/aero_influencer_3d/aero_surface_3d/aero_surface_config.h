@@ -1,7 +1,6 @@
 #ifndef AERO_SURFACE_CONFIG
 #define AERO_SURFACE_CONFIG
 
-#include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/classes/resource.hpp>
 
@@ -20,13 +19,13 @@ public:
 	~AeroSurfaceConfig();
 
     void set_chord(double value);
-    double get_chord();
+    double get_chord() const;
     void set_span(double value);
-    double get_span();
+    double get_span() const;
     void set_area(double area);
-    double get_area();
+    double get_area() const;
     void set_aspect_ratio(double aspect_ratio);
-    double get_aspect_ratio();
+    double get_aspect_ratio() const;
     
 };
 

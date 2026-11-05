@@ -20,7 +20,6 @@ ForceAndTorque ManualAeroSurface3D::calculate_forces(double substep_delta) {
     Vector3 torque = Vector3(0, 0, 0);
 
     if (manual_config == nullptr) {
-        UtilityFunctions::print("couldn't access manual config");
         return force_and_torque;
     }
 
@@ -33,7 +32,7 @@ ForceAndTorque ManualAeroSurface3D::calculate_forces(double substep_delta) {
         induced_drag = (lift_force * lift_force) / (get_dynamic_pressure() * Math::PI * get_wing_config()->get_span() * get_wing_config()->get_span());
     }
 
-    if (UtilityFunctions::is_equal_approx(get_air_speed(), 0.0)) {
+    if (Math::is_equal_approx(get_air_speed(), 0.0)) {
         induced_drag = 0.0;
     }
 

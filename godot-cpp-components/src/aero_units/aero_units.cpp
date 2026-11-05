@@ -1,8 +1,5 @@
 #include "aero_units.h"
 
-#include <godot_cpp/classes/engine.hpp>
-#include <godot_cpp/classes/scene_tree.hpp>
-#include <godot_cpp/classes/window.hpp>
 
 #include <algorithm>
 #include <cmath>
@@ -74,45 +71,35 @@ AeroUnits::~AeroUnits()
 }
 
 
-double AeroUnits::get_speed_of_sound_at_pressure_and_density(double pressure, double density) {
+double AeroUnits::get_speed_of_sound_at_pressure_and_density(double pressure, double density) const {
 	return std::sqrt(ratio_of_specific_heat * (pressure / density));
 }
 
-double AeroUnits::speed_to_mach_at_altitude(double speed, double altitude) {
+double AeroUnits::speed_to_mach_at_altitude(double speed, double altitude) const {
 	return speed / get_mach_at_altitude(altitude);
 }
 
-double AeroUnits::get_altitude(Node3D* node) {
-	//Mirrors main: delegate to /root/FloatingOriginHelper if it exists, else use global Y.
-	SceneTree *scene_tree = Object::cast_to<SceneTree>(Engine::get_singleton()->get_main_loop());
-	if (scene_tree == nullptr) {
-		return node->get_global_position().y;
-	}
-	Window *root = scene_tree->get_root();
-	Object *helper = root->get_node_or_null(NodePath("/root/FloatingOriginHelper"));
-	if (helper != nullptr && helper->has_method("get_altitude")) {
-		return helper->call("get_altitude", node);
-	}
+double AeroUnits::get_altitude(Node3D* node) const {
 	return node->get_global_position().y;
 }
 
-double AeroUnits::get_temp_at_altitude(double altitude) {
+double AeroUnits::get_temp_at_altitude(double altitude) const {
 	return sample_column(COLUMN_TEMPERATURE, altitude);
 }
 
-double AeroUnits::get_pressure_at_altitude(double altitude) {
+double AeroUnits::get_pressure_at_altitude(double altitude) const {
 	return sample_column(COLUMN_PRESSURE, altitude);
 }
 
-double AeroUnits::get_density_at_altitude(double altitude) {
+double AeroUnits::get_density_at_altitude(double altitude) const {
 	return sample_column(COLUMN_DENSITY, altitude);
 }
 
-double AeroUnits::get_mach_at_altitude(double altitude) {
+double AeroUnits::get_mach_at_altitude(double altitude) const {
 	return sample_column(COLUMN_MACH, altitude);
 }
 
-Array AeroUnits::get_bounds(const String &key) {
+Array AeroUnits::get_bounds(const String &key) const {
 	//Mirrors main's get_bounds: returns [min, max] for the given key ("altitude" or a data column).
 	Array result;
 	if (points_.empty()) {
@@ -228,7 +215,7 @@ double AeroUnits::sample_column(int column, double altitude) const {
 	return column_value(last, column); //shouldn't reach here
 }
 
-double AeroUnits::get_ratio_of_specific_heat() {
+double AeroUnits::get_ratio_of_specific_heat() const {
 	return ratio_of_specific_heat;
 }
 

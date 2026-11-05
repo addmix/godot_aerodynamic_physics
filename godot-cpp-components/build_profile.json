@@ -1,22 +1,18 @@
 {
-	"enabled_classes": [
-        "OS",
-		"UtilityFunctions",
-        "ClassDB",
-        "GDScript",
-        "VehicleBody3D",
-        "Area3D",
-        "ProjectSettings",
-        "Engine",
-		"MainLoop",
-		"SceneTree",
-		"Window",
-        "PhysicsDirectBodyState3D",
-        "ResourceLoader",
-        "MeshInstance3D",
-        "Node3D",
-        "Sprite2D",
-        "PhysicsServer3D",
-        "Curve"
-	]
+  "enabled_classes": [
+    "ClassDB",
+    "OS",
+    "UtilityFunctions",
+    "Node3D",
+    "VehicleBody3D",
+    "Area3D",
+    "PhysicsServer3D",
+    "PhysicsDirectBodyState3D",
+    "ProjectSettings",
+    "Engine",
+    "ResourceLoader",
+    "Script",
+    "MeshInstance3D",
+    "Curve"
+  ]
 }

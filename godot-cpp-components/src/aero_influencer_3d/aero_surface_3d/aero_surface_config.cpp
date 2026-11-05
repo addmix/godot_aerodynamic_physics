@@ -24,14 +24,14 @@ void AeroSurfaceConfig::set_chord(double value) {
     chord = Math::abs(value);
     emit_changed();
 }
-double AeroSurfaceConfig::get_chord() {
+double AeroSurfaceConfig::get_chord() const {
     return chord;
 }
 void AeroSurfaceConfig::set_span(double value) {
     span = Math::abs(value);
     emit_changed();
 }
-double AeroSurfaceConfig::get_span() {
+double AeroSurfaceConfig::get_span() const {
     return span;
 }
 void AeroSurfaceConfig::set_area(double _area) {
@@ -41,7 +41,7 @@ void AeroSurfaceConfig::set_area(double _area) {
 	double _span = _aspect_ratio * chord / sqrt(area) * sqrt(_area);
 	double _chord = span / _aspect_ratio / sqrt(area) * sqrt(_area);
 
-	if (UtilityFunctions::is_equal_approx(_span, 0.0) || UtilityFunctions::is_equal_approx(_chord, 0.0)) {
+	if (Math::is_equal_approx(_span, 0.0) || Math::is_equal_approx(_chord, 0.0)) {
 		return;
 	}
 
@@ -50,23 +50,23 @@ void AeroSurfaceConfig::set_area(double _area) {
 
     emit_changed();
 }
-double AeroSurfaceConfig::get_area() {
+double AeroSurfaceConfig::get_area() const {
     return span * chord;
 }
 void AeroSurfaceConfig::set_aspect_ratio(double _aspect_ratio) {
-	if (UtilityFunctions::is_equal_approx(_aspect_ratio, 0.0) || !(UtilityFunctions::is_finite(_aspect_ratio))) return;
+	if (Math::is_equal_approx(_aspect_ratio, 0.0) || !(Math::is_finite(_aspect_ratio))) return;
 	double _area = get_area();
 
 	double _span = sqrt(_aspect_ratio * _area);
 	double _chord = sqrt(_area) / sqrt(_aspect_ratio);
 
-	if (UtilityFunctions::is_equal_approx(_span, 0.0) || UtilityFunctions::is_equal_approx(_chord, 0.0)) return;
+	if (Math::is_equal_approx(_span, 0.0) || Math::is_equal_approx(_chord, 0.0)) return;
 
 	span = _span;
 	chord = _chord;
 
     emit_changed();
 }
-double AeroSurfaceConfig::get_aspect_ratio() {
+double AeroSurfaceConfig::get_aspect_ratio() const {
     return span / chord;
 }

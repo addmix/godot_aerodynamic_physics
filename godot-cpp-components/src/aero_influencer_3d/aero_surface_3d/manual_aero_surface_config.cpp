@@ -5,6 +5,8 @@ using namespace godot;
 void ManualAeroSurfaceConfig::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_lift_coefficient", "angle_of_attack"), &ManualAeroSurfaceConfig::get_lift_coefficient);
     ClassDB::bind_method(D_METHOD("get_drag_coefficient", "angle_of_attack"), &ManualAeroSurfaceConfig::get_drag_coefficient);
+    ClassDB::bind_method(D_METHOD("get_drag_at_sweep_angle", "sweep_angle"), &ManualAeroSurfaceConfig::get_drag_at_sweep_angle);
+    ClassDB::bind_method(D_METHOD("get_drag_multiplier_at_mach", "mach"), &ManualAeroSurfaceConfig::get_drag_multiplier_at_mach);
 
 	//main has min/max lift coefficient commented out (LiftCurve handles the scaling internally).
 	//ClassDB::bind_method(D_METHOD("set_min_lift_coefficient", "value"), &ManualAeroSurfaceConfig::set_min_lift_coefficient);
@@ -19,10 +21,10 @@ void ManualAeroSurfaceConfig::_bind_methods() {
 
     ClassDB::bind_method(D_METHOD("set_min_drag_coefficient", "value"), &ManualAeroSurfaceConfig::set_min_drag_coefficient);
 	ClassDB::bind_method(D_METHOD("get_min_drag_coefficient"), &ManualAeroSurfaceConfig::get_min_drag_coefficient);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "min_drag_coefficient"), "set_min_drag_coefficient", "get_min_drag_coefficient");
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "min_drag_coefficient", PROPERTY_HINT_RANGE, "0,100,0.001,or_greater,exp,suffix:cD"), "set_min_drag_coefficient", "get_min_drag_coefficient");
     ClassDB::bind_method(D_METHOD("set_max_drag_coefficient", "value"), &ManualAeroSurfaceConfig::set_max_drag_coefficient);
 	ClassDB::bind_method(D_METHOD("get_max_drag_coefficient"), &ManualAeroSurfaceConfig::get_max_drag_coefficient);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "max_drag_coefficient"), "set_max_drag_coefficient", "get_max_drag_coefficient");
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "max_drag_coefficient", PROPERTY_HINT_RANGE, "0,100,0.001,or_greater,exp,suffix:cD"), "set_max_drag_coefficient", "get_max_drag_coefficient");
     ClassDB::bind_method(D_METHOD("set_drag_aoa_curve", "p_config"), &ManualAeroSurfaceConfig::set_drag_aoa_curve);
 	ClassDB::bind_method(D_METHOD("get_drag_aoa_curve"), &ManualAeroSurfaceConfig::get_drag_aoa_curve);
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "drag_aoa_curve", PROPERTY_HINT_RESOURCE_TYPE, "Curve"), "set_drag_aoa_curve", "get_drag_aoa_curve");

@@ -46,20 +46,16 @@ func _update_transform_substep(substep_delta : float) -> void:
 	last_position = position
 	last_rotation = basis
 	
-	#super._update_transform_substep(substep_delta)
+	super._update_transform_substep(substep_delta)
 
 
-func get_linear_velocity_substep() -> Vector3:
-	#TODO: normally this should just be `super() + (_linear_velocity * global_basis.inverse())`, but that would cause infinite recursion with the virtual function.
-	#for now use this workaround as this class might be converted to C++ in the future
-	var velocity : Vector3 = get_parent().get_linear_velocity_substep() + get_parent().get_angular_velocity_substep().cross(get_parent().global_basis * position) + (_linear_velocity * global_basis.inverse())
+func calculate_linear_velocity_substep() -> Vector3:
+	var velocity : Vector3 = super() + (_linear_velocity * global_basis.inverse())
 	
 	if disable_lift_dissymmetry:
 		velocity = global_basis.y.normalized() * velocity.dot(global_basis.y)
 	
 	return velocity
 
-func get_angular_velocity_substep() -> Vector3:
-	#TODO: normally this should just be `super() + (_angular_velocity * global_basis.inverse())`, but that would cause infinite recursion with the virtual function.
-	#for now use this workaround as this class might be converted to C++ in the future
-	return get_parent().get_angular_velocity_substep() + (_angular_velocity * global_basis.inverse())
+func calculate_angular_velocity_substep() -> Vector3:
+	return super() + (_angular_velocity * global_basis.inverse())

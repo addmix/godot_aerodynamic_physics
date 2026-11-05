@@ -103,12 +103,12 @@ func update_propeller_transforms() -> void:
 		new_blade.position = new_blade.default_transform.origin
 
 func _update_control_transform(substep_delta : float) -> void:
-	#super._update_control_transform(substep_delta)
+	super._update_control_transform(substep_delta)
 	
 	if propeller_speed_control_config:
 		angular_motor = propeller_speed_control_config.update(self, substep_delta)
 
-func get_angular_velocity_substep() -> Vector3:
+func calculate_angular_velocity_substep() -> Vector3:
 	if Engine.is_editor_hint() and propeller_speed_control_config:
 			return super() + propeller_speed_control_config.max_value * global_basis.inverse()
 	

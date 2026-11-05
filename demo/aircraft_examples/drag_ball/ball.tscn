@@ -18,7 +18,6 @@ rings = 16
 
 [node name="AeroInfluencer3D" type="AeroInfluencer3D" parent="." unique_id=256139528 node_paths=PackedStringArray("aero_body")]
 show_debug = true
-aero_body = NodePath("..")
 script = ExtResource("2_bawn3")
 radius = 0.2
 

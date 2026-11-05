@@ -28,7 +28,7 @@ func _ready():
 			throttle_control_config = throttle_control_config.duplicate(true)
 
 func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
-	var force_and_torque : PackedVector3Array = PackedVector3Array([Vector3.ZERO, Vector3.ZERO])# super._calculate_forces(substep_delta)
+	var force_and_torque : PackedVector3Array = PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 	
 	var force := global_transform.basis * get_thrust_force()
 	var torque := relative_position.cross(force)
@@ -42,7 +42,7 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	return force_and_torque
 
 func _update_control_transform(substep_delta : float) -> void:
-	#super._update_control_transform(substep_delta)
+	super._update_control_transform(substep_delta)
 	
 	if throttle_control_config:
 		throttle = throttle_control_config.update(self, substep_delta)

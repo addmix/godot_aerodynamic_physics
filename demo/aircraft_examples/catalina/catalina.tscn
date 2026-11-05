@@ -432,15 +432,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5125, 1.313, -2.986)
 
 [node name="FueslageBuoyancy" type="AeroInfluencer3D" parent="." index="2" unique_id=384960125 node_paths=PackedStringArray("aero_body")]
 show_debug = true
-aero_body = NodePath("..")
 script = ExtResource("2_yvgc5")
 buoyancy_mesh = ExtResource("3_2tceh")
 metadata/_custom_type_script = "uid://blp6761y154ht"
 
 [node name="FloatL" type="AeroInfluencer3D" parent="." index="3" unique_id=306506585 node_paths=PackedStringArray("aero_body")]
 show_debug = true
-aero_body = NodePath("..")
-default_transform = Transform3D(1, 0, 0, 0, 0.9926691362298, 0.1208635014252936, 0, -0.12086350142529358, 0.9926691362298002, -27.172499, 0.12441341554545282, -5.612114003561103)
 transform = Transform3D(1, 0, 0, 0, 0.9926691362298, 0.1208635014252936, 0, -0.12086350142529358, 0.9926691362298002, -27.172499, 0.12441341554545282, -5.612114003561103)
 script = ExtResource("2_yvgc5")
 buoyancy_mesh = ExtResource("4_lv6b5")
@@ -448,8 +445,6 @@ metadata/_custom_type_script = "uid://blp6761y154ht"
 
 [node name="FloatR" type="AeroInfluencer3D" parent="." index="4" unique_id=31919966 node_paths=PackedStringArray("aero_body")]
 show_debug = true
-aero_body = NodePath("..")
-default_transform = Transform3D(1, 0, 0, 0, 0.9926691362298004, 0.12086350142529362, 0, -0.12086350142529362, 0.9926691362298004, 27.172459, 0.12441341554545282, -5.612114003561103)
 transform = Transform3D(1, 0, 0, 0, 0.9926691362298004, 0.12086350142529362, 0, -0.12086350142529362, 0.9926691362298004, 27.172459, 0.12441341554545282, -5.612114003561103)
 script = ExtResource("2_yvgc5")
 buoyancy_mesh = ExtResource("4_lv6b5")
@@ -459,8 +454,6 @@ metadata/_custom_type_script = "uid://blp6761y154ht"
 manual_config = SubResource("Resource_vwm3g")
 wing_config = SubResource("Resource_6qk7s")
 show_debug = true
-aero_body = NodePath("..")
-default_transform = Transform3D(1, 0, 0, 0, 0.9927573419294456, -0.1201368388346467, 0, 0.1201368388346467, 0.9927573419294456, 0, 4.243060905662596, -6.913277240514427)
 transform = Transform3D(1, 0, 0, 0, 0.9927573419294456, -0.1201368388346467, 0, 0.1201368388346467, 0.9927573419294456, 0, 4.243060905662596, -6.913277240514427)
 
 [node name="Wing2" type="ManualAeroSurface3D" parent="Wing" index="0" unique_id=151451533 node_paths=PackedStringArray("aero_body")]
@@ -468,8 +461,6 @@ manual_config = SubResource("Resource_vwm3g")
 wing_config = SubResource("Resource_hsuvl")
 mirror_axis = 1
 show_debug = true
-aero_body = NodePath("../..")
-default_transform = Transform3D(0.998171886552097, -0.0435811257516329, -0.04187565372919923, 0.04361938736533599, 0.999048221581858, 0, 0.04183579738573417, -0.00182659036119061, 0.9991228300988586, 22.46982721646553, 0.4069279029529166, -0.3345438313580009)
 transform = Transform3D(0.998171886552097, -0.0435811257516329, -0.04187565372919923, 0.04361938736533599, 0.999048221581858, 0, 0.04183579738573417, -0.00182659036119061, 0.9991228300988586, 22.46982721646553, 0.4069279029529166, -0.3345438313580009)
 
 [node name="Aileron" type="ManualAeroSurface3D" parent="Wing/Wing2" index="0" unique_id=2014203271 node_paths=PackedStringArray("aero_body")]
@@ -477,8 +468,6 @@ manual_config = SubResource("Resource_1tns4")
 wing_config = SubResource("Resource_8a4f4")
 actuation_config = SubResource("Resource_0thx8")
 show_debug = true
-aero_body = NodePath("../../..")
-default_transform = Transform3D(0.9884938868086836, 0, 0.151260820247219, 0, 1, 0, -0.151260820247219, 0, 0.9884938868086836, 1.3355874856253156, 2.1684042999999996e-18, 4.459693561979232)
 transform = Transform3D(0.9884938868086836, 0, 0.151260820247219, 0, 1, 0, -0.151260820247219, 0, 0.9884938868086836, 1.3355874856253156, 2.1684042999999996e-18, 4.459693561979232)
 
 [node name="EngineR" type="AeroInfluencer3D" parent="Wing/Wing2" index="1" unique_id=447216322 node_paths=PackedStringArray("aero_body", "propeller_blade")]
@@ -487,8 +476,6 @@ show_debug = true
 show_torque = true
 show_lift = false
 show_thrust = true
-aero_body = NodePath("../../..")
-default_transform = Transform3D(0.998171886552097, -0.04806095952755912, 0.036647360973442, -0.04358112575163286, -0.15223295067801623, 0.98738331675499, -0.04187565372919919, -0.987175401282444, -0.15404920229458252, -18.442901590048216, 0.16904058993919868, -4.840144150267356)
 transform = Transform3D(0.998171886552097, -0.04806095952755912, 0.036647360973442, -0.04358112575163286, -0.15223295067801623, 0.98738331675499, -0.04187565372919919, -0.987175401282444, -0.15404920229458252, -18.442901590048216, 0.16904058993919868, -4.840144150267356)
 script = ExtResource("11_h0te8")
 propeller_amount = 3
@@ -500,8 +487,6 @@ manual_config = SubResource("Resource_ejmvr")
 wing_config = SubResource("Resource_rca78")
 actuation_config = SubResource("Resource_kigpq")
 show_debug = true
-aero_body = NodePath("../../../..")
-default_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.804408776796484, 0, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.804408776796484, 0, 0)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="Wing/Wing2/EngineR/Blade" index="0" unique_id=579484031]
@@ -512,8 +497,6 @@ size = Vector3(3.537813784316313, 0.06311671097091676, 0.37421620171153336)
 manual_config = SubResource("Resource_0xyeg")
 wing_config = SubResource("Resource_sctmh")
 show_debug = true
-aero_body = NodePath("..")
-default_transform = Transform3D(0.999999999999924, 2.3574953658499423e-08, 3.887001042152727e-07, -7.413951295453973e-18, 0.998165801930276, -0.06053950657949585, -3.894143672965396e-07, 0.06053950657949124, 0.9981658019302004, 4.693354366756635e-06, 4.51368567467843, 14.796052764602129)
 transform = Transform3D(0.999999999999924, 2.3574953658499423e-08, 3.887001042152727e-07, -7.413951295453973e-18, 0.998165801930276, -0.06053950657949585, -3.894143672965396e-07, 0.06053950657949124, 0.9981658019302004, 4.693354366756635e-06, 4.51368567467843, 14.796052764602129)
 
 [node name="Elevator" type="ManualAeroSurface3D" parent="TailHorizontal" index="0" unique_id=1801299919 node_paths=PackedStringArray("aero_body")]
@@ -521,16 +504,12 @@ manual_config = SubResource("Resource_1tns4")
 wing_config = SubResource("Resource_7qth2")
 actuation_config = SubResource("Resource_6axm8")
 show_debug = true
-aero_body = NodePath("../..")
-default_transform = Transform3D(1, 0, 0, 0, 1, 6.9388939039072245e-18, 0, 6.9388939039072245e-18, 1, 0, 0, 2.416899999996531)
 transform = Transform3D(1, 0, 0, 0, 1, 6.9388939039072245e-18, 0, 6.9388939039072245e-18, 1, 0, 0, 2.416899999996531)
 
 [node name="TailVertical" type="ManualAeroSurface3D" parent="." index="7" unique_id=882497649 node_paths=PackedStringArray("aero_body")]
 manual_config = SubResource("Resource_1tns4")
 wing_config = SubResource("Resource_3vvy3")
 show_debug = true
-aero_body = NodePath("..")
-default_transform = Transform3D(-2.38558259006959e-07, 0.999999999999924, 3.0778808702800373e-07, -0.790387085939972, 6.123233995736767e-17, -0.6126077491995342, -0.6126077491994877, -3.89414367296315e-07, 0.7903870859399119, 4.339032e-06, 3.777090264967476, 13.886219313768018)
 transform = Transform3D(-2.38558259006959e-07, 0.999999999999924, 3.0778808702800373e-07, -0.790387085939972, 6.123233995736767e-17, -0.6126077491995342, -0.6126077491994877, -3.89414367296315e-07, 0.7903870859399119, 4.339032e-06, 3.777090264967476, 13.886219313768018)
 
 [node name="Rudder" type="ManualAeroSurface3D" parent="TailVertical" index="0" unique_id=39495561 node_paths=PackedStringArray("aero_body")]
@@ -538,8 +517,6 @@ manual_config = SubResource("Resource_1tns4")
 wing_config = SubResource("Resource_ux024")
 actuation_config = SubResource("Resource_nrhy0")
 show_debug = true
-aero_body = NodePath("../..")
-default_transform = Transform3D(0.790387085939972, 0, -0.6126077491995342, 1.0562999060206643e-23, 1, 0, 0.6126077491995342, -5.293956000000001e-23, 0.790387085939972, -2.643239220808616, -1.0587165663335539e-21, 2.3992059440746556)
 transform = Transform3D(0.790387085939972, 0, -0.6126077491995342, 1.0562999060206643e-23, 1, 0, 0.6126077491995342, -5.293956000000001e-23, 0.790387085939972, -2.643239220808616, -1.0587165663335539e-21, 2.3992059440746556)
 
 [node name="Fueslage" parent="." index="8" unique_id=1857639569]

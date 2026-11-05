@@ -343,8 +343,6 @@ wing_config = SubResource("Resource_v517k")
 mirror_axis = 1
 debug_scale = nan
 show_debug = true
-aero_body = NodePath("..")
-default_transform = Transform3D(0.8160344353942169, -0.08715578344049064, -0.5713936635814729, 0.07139376214377201, 0.9961951632129492, -0.04999046797392449, 0.5735760933041143, 0, 0.8191518417756138, 6.09659, 0, -0.385974)
 transform = Transform3D(0.8160344353942169, -0.08715578344049064, -0.5713936635814729, 0.07139376214377201, 0.9961951632129492, -0.04999046797392449, 0.5735760933041143, 0, 0.8191518417756138, 6.09659, 0, -0.385974)
 rotation_order = 5
 
@@ -353,8 +351,6 @@ manual_config = SubResource("Resource_eqt1k")
 wing_config = SubResource("Resource_g0m4l")
 actuation_config = SubResource("Resource_4318d")
 show_debug = true
-aero_body = NodePath("../..")
-default_transform = Transform3D(0.9974469128014748, 0.07139384766170309, 0.0017879076191461, -0.07139375090639986, 0.9961942346299736, 0.04999044268506024, 0.00178790698757103, -0.04999049277480097, 0.9987480550706264, 4.041725433559929, 0.01748731315124296, 6.120662066865811)
 transform = Transform3D(0.9974469128014748, 0.07139384766170309, 0.0017879076191461, -0.07139375090639986, 0.9961942346299736, 0.04999044268506024, 0.00178790698757103, -0.04999049277480097, 0.9987480550706264, 4.041725433559929, 0.01748731315124296, 6.120662066865811)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="WingR/ElevonR1" index="0" unique_id=870591771]
@@ -366,8 +362,6 @@ manual_config = SubResource("Resource_eqt1k")
 wing_config = SubResource("Resource_fh64d")
 actuation_config = SubResource("Resource_xdhl4")
 show_debug = true
-aero_body = NodePath("../..")
-default_transform = Transform3D(0.33946676500780315, 0.07139384766170308, 0.9379049174397333, -0.07139374911510621, 0.9961942346299733, -0.04999043194147998, -0.937904764161861, -0.04999049277480096, 0.3432721232193496, 6.454565330260474, -0.33369700813381953, 2.568256742775021)
 transform = Transform3D(0.33946676500780315, 0.07139384766170308, 0.9379049174397333, -0.07139374911510621, 0.9961942346299733, -0.04999043194147998, -0.937904764161861, -0.04999049277480096, 0.3432721232193496, 6.454565330260474, -0.33369700813381953, 2.568256742775021)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="WingR/ElevonR2" index="0" unique_id=432605904]
@@ -379,8 +373,6 @@ manual_config = SubResource("Resource_eqt1k")
 wing_config = SubResource("Resource_6qdaa")
 mirror_axis = 1
 show_debug = true
-aero_body = NodePath("..")
-default_transform = Transform3D(0.8191519999999999, -3.4694469519536134e-18, -0.5735760000000001, 2.954451e-18, 1, -6.9388939039072245e-18, 0.573576, -6.9388939039072245e-18, 0.819152, 20.32, -1.2490009e-16, 4.5302299999999995)
 transform = Transform3D(0.8191519999999999, -3.4694469519536134e-18, -0.5735760000000001, 2.954451e-18, 1, -6.9388939039072245e-18, 0.573576, -6.9388939039072245e-18, 0.819152, 20.32, -1.2490009e-16, 4.5302299999999995)
 
 [node name="ElevonR3" type="ManualAeroSurface3D" parent="WingtipR" index="0" unique_id=1497746933 node_paths=PackedStringArray("aero_body")]
@@ -388,8 +380,6 @@ manual_config = SubResource("Resource_eqt1k")
 wing_config = SubResource("Resource_bjpaj")
 actuation_config = SubResource("Resource_34bpg")
 show_debug = true
-aero_body = NodePath("../..")
-default_transform = Transform3D(1, 6.821991329233871e-18, 1.1102230246251563e-16, -2.9544509200230004e-18, 1, 6.9388939039072245e-18, -5.551115e-17, 3.694019431376082e-18, 1, -3.0406912649209765, 1.5321093277054003e-16, 2.7853530638615487)
 transform = Transform3D(1, 6.821991329233871e-18, 1.1102230246251563e-16, -2.9544509200230004e-18, 1, 6.9388939039072245e-18, -5.551115e-17, 3.694019431376082e-18, 1, -3.0406912649209765, 1.5321093277054003e-16, 2.7853530638615487)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="WingtipR/ElevonR3" index="0" unique_id=809021659]
@@ -402,8 +392,6 @@ wing_config = SubResource("Resource_bjpaj")
 actuation_config = SubResource("Resource_mdphc")
 control_rotation_order = 3
 show_debug = true
-aero_body = NodePath("../..")
-default_transform = Transform3D(1, 6.821991329233871e-18, 1.1102230246251563e-16, -2.9544509200230004e-18, 1, 6.9388939039072245e-18, -5.551115e-17, 3.694019431376082e-18, 1, 2.490151515475638, 0.10000000000000012, 2.7853546769824735)
 transform = Transform3D(1, 6.821991329233871e-18, 1.1102230246251563e-16, -2.9544509200230004e-18, 1, 6.9388939039072245e-18, -5.551115e-17, 3.694019431376082e-18, 1, 2.490151515475638, 0.10000000000000012, 2.7853546769824735)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="WingtipR/RudderRU" index="0" unique_id=1508850615]
@@ -416,8 +404,6 @@ wing_config = SubResource("Resource_bjpaj")
 actuation_config = SubResource("Resource_mdphc")
 debug_scale = 1.0
 show_debug = true
-aero_body = NodePath("../..")
-default_transform = Transform3D(-1, -1.5099551461417133e-07, 1.1102230246251563e-16, 1.5099600000295446e-07, -1, -2.522380611060961e-13, 5.551115e-17, -4.843015715708973e-13, 1, 2.490151515475638, -0.09999999999999988, 2.7853546769824735)
 transform = Transform3D(-1, -1.5099551461417133e-07, 1.1102230246251563e-16, 1.5099600000295446e-07, -1, -2.522380611060961e-13, 5.551115e-17, -4.843015715708973e-13, 1, 2.490151515475638, -0.09999999999999988, 2.7853546769824735)
 rotation_order = 3
 
@@ -432,15 +418,11 @@ debug_width = 7.707413282654277e+140
 show_debug = true
 show_torque = true
 show_thrust = true
-aero_body = NodePath("..")
-default_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 7.57748)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 7.57748)
 
 [node name="AeroThruster3D" type="AeroInfluencer3D" parent="." index="6" unique_id=1562392617 node_paths=PackedStringArray("aero_body")]
 mirror_axis = 1
 show_debug = true
-aero_body = NodePath("..")
-default_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.017117169667846, 0, 4.911157713360666)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.017117169667846, 0, 4.911157713360666)
 script = ExtResource("7_xy21m")
 throttle_control_config = SubResource("Resource_cuqnb")

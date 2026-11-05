@@ -189,7 +189,7 @@ func calculate_mesh_data() -> void:
 #var cached_buoyancy_torque : Vector3 = Vector3.ZERO
 
 func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
-	var force_and_torque : PackedVector3Array = super._calculate_forces(substep_delta)
+	var force_and_torque : PackedVector3Array = PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 	
 	var force_sum : Vector3 = Vector3.ZERO
 	var torque_sum : Vector3 = Vector3.ZERO

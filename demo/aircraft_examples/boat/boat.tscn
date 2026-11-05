@@ -211,7 +211,6 @@ shape = SubResource("ConvexPolygonShape3D_gp0bn")
 
 [node name="AeroBuoyancyMesh3D" type="AeroInfluencer3D" parent="." index="4" unique_id=816207710 node_paths=PackedStringArray("aero_body")]
 show_debug = true
-aero_body = NodePath("..")
 script = ExtResource("2_ojow4")
 buoyancy_mesh = ExtResource("3_6e2ia")
 metadata/_custom_type_script = "uid://blp6761y154ht"
@@ -219,8 +218,6 @@ metadata/_custom_type_script = "uid://blp6761y154ht"
 [node name="OutboardRotate" type="AeroInfluencer3D" parent="." index="5" unique_id=318137762 node_paths=PackedStringArray("aero_body")]
 actuation_config = SubResource("Resource_yuxf8")
 show_debug = true
-aero_body = NodePath("..")
-default_transform = Transform3D(0.9998476951563912, 0.00152107744577545, 0.01738599476176408, 0, 0.9961946980917455, -0.08715574274765817, -0.01745240643728351, 0.08714246850588939, 0.9960429728140489, 0, 0.3721159610864453, 1.946746907040108)
 transform = Transform3D(0.9998476951563912, 0.00152107744577545, 0.01738599476176408, 0, 0.9961946980917455, -0.08715574274765817, -0.01745240643728351, 0.08714246850588939, 0.9960429728140489, 0, 0.3721159610864453, 1.946746907040108)
 metadata/_custom_type_script = "uid://c3n4g48jfeemj"
 
@@ -228,8 +225,6 @@ metadata/_custom_type_script = "uid://c3n4g48jfeemj"
 manual_config = SubResource("Resource_85l1x")
 wing_config = SubResource("Resource_j3mod")
 show_debug = true
-aero_body = NodePath("../..")
-default_transform = Transform3D(6.09317952840239e-17, 1, -6.059354761065439e-18, -0.9239376299075744, 5.861514313387751e-17, 0.3825431427182732, 0.3825431427182732, -1.7710574582708975e-17, 0.9239376299075744, 2.1885573832565102e-17, -1.0565670071897624, 0.00679333678503724)
 transform = Transform3D(6.09317952840239e-17, 1, -6.059354761065439e-18, -0.9239376299075744, 5.861514313387751e-17, 0.3825431427182732, 0.3825431427182732, -1.7710574582708975e-17, 0.9239376299075744, 2.1885573832565102e-17, -1.0565670071897624, 0.00679333678503724)
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
@@ -237,8 +232,6 @@ metadata/_custom_type_script = "uid://d1725od371u4a"
 manual_config = SubResource("Resource_85l1x")
 wing_config = SubResource("Resource_hcphs")
 show_debug = true
-aero_body = NodePath("../..")
-default_transform = Transform3D(-1, 1.224646799147353e-16, 0, -1.2246467991473535e-16, -1, 0, 0, 0, 1, 2.1885573832565102e-17, -0.8459867015728342, 0.21029735987245912)
 transform = Transform3D(-1, 1.224646799147353e-16, 0, -1.2246467991473535e-16, -1, 0, 0, 0, 1, 2.1885573832565102e-17, -0.8459867015728342, 0.21029735987245912)
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
@@ -247,8 +240,6 @@ show_debug = true
 show_torque = true
 show_lift = false
 show_thrust = true
-aero_body = NodePath("../..")
-default_transform = Transform3D(1, 0, 0, 0, 0.08715574274765812, 0.9961946980917454, 0, -0.9961946980917454, 0.08715574274765812, 0, -1.00819209637935, 0.2289692561721881)
 transform = Transform3D(1, 0, 0, 0, 0.08715574274765812, 0.9961946980917454, 0, -0.9961946980917454, 0.08715574274765812, 0, -1.00819209637935, 0.2289692561721881)
 script = ExtResource("6_8u34d")
 propeller_amount = 3
@@ -263,8 +254,6 @@ show_debug = true
 show_force = false
 show_lift = false
 show_drag = false
-aero_body = NodePath("../../..")
-default_transform = Transform3D(1, 0, 0, 0, 0.9063077870366502, -0.4226182617406995, 0, 0.4226182617406995, 0.9063077870366502, 0.12213315501424946, 0, 0)
 transform = Transform3D(1, 0, 0, 0, 0.9063077870366502, -0.4226182617406995, 0, 0.4226182617406995, 0.9063077870366502, 0.12213315501424946, 0, 0)
 metadata/_custom_type_script = "uid://d1725od371u4a"
 

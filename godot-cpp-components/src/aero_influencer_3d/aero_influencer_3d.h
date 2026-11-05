@@ -32,7 +32,7 @@ private:
 	bool omit_from_debug = false;
 	double debug_scale = 0.1;
 	double debug_scaling_factor = 2.0;
-	double debug_width = 0.05;
+	double debug_width = 0.1;
 	bool show_debug = false;
 
 	bool show_force = true;
@@ -63,8 +63,10 @@ private:
 	double mach = 0.0;
 	double dynamic_pressure = 0.0;
 
+protected:
 	Vector3 current_force;
 	Vector3 current_torque;
+private:
 
 	Node3D *force_debug_vector = nullptr;
 	Node3D *torque_debug_vector = nullptr;
@@ -93,24 +95,28 @@ public:
 	virtual ForceAndTorque calculate_forces(double substep_delta);
 	void _update_transform_substep(double substep_delta);
 	GDVIRTUAL1(_update_transform_substep, double);
+	void _update_transform_substep_with_override(double substep_delta);
 	void _update_control_transform(double substep_delta);
 	GDVIRTUAL1(_update_control_transform, double);
+	void _update_control_transform_with_override(double substep_delta);
 	bool is_overriding_body_sleep();
 	GDVIRTUAL0R(bool, is_overriding_body_sleep);
 
 	Vector3 calculate_relative_position();
 	Vector3 calculate_world_air_velocity();
 	Vector3 calculate_linear_velocity_substep();
+	GDVIRTUAL0R(Vector3, calculate_linear_velocity_substep);
+	Vector3 calculate_linear_velocity_substep_with_override();
 	Vector3 calculate_angular_velocity_substep();
+	GDVIRTUAL0R(Vector3, calculate_angular_velocity_substep);
+	Vector3 calculate_angular_velocity_substep_with_override();
 	Vector3 calculate_centrifugal_offset();
 	Vector3 calculate_linear_acceleration();
 	Vector3 calculate_angular_acceleration();
 
 	double get_control_command(StringName axis_name);
 	
-	void update_debug_scale();
 	void update_debug_vectors();
-	void update_debug();
 
 
 	
@@ -169,17 +175,16 @@ public:
 	double get_air_density() const;
 	Vector3 get_relative_position() const;
 	Vector3 get_linear_velocity_substep();
-	GDVIRTUAL0R(Vector3, get_linear_velocity_substep);
 	Vector3 get_angular_velocity_substep();
-	GDVIRTUAL0R(Vector3, get_angular_velocity_substep);
 	Vector3 get_local_air_velocity() const;
 	Vector3 get_world_air_velocity() const;
 	Vector3 get_drag_direction() const;
 	double get_air_speed() const;
 	double get_mach() const;
 	double get_dynamic_pressure() const;
-	Vector3 get_centrifugal_offset() const;
-	Vector3 get_linear_acceleration() const;
+	Vector3 get_centrifugal_offset();
+	GDVIRTUAL0R(Vector3, get_centrifugal_offset);
+	Vector3 get_linear_acceleration();
 	Vector3 get_angular_acceleration() const;
 	Vector3 get_current_force() const;
 	Vector3 get_current_torque() const;

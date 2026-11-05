@@ -6,7 +6,7 @@ class_name AeroDragInfluencer3D
 @export var drag_coefficient : float = 0.5
 
 func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
-	var force_and_torque : PackedVector3Array = PackedVector3Array([Vector3.ZERO, Vector3.ZERO])#super._calculate_forces(substep_delta)
+	var force_and_torque : PackedVector3Array = PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 	
 	#area of circle made by drag body
 	var area : float = PI * radius * radius

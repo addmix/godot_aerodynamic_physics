@@ -12,6 +12,7 @@ void AeroSurface3D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_sweep_angle"), &AeroSurface3D::get_sweep_angle);
     ClassDB::bind_method(D_METHOD("get_area"), &AeroSurface3D::get_area);
     ClassDB::bind_method(D_METHOD("get_projected_wing_area"), &AeroSurface3D::get_projected_wing_area);
+    ClassDB::bind_method(D_METHOD("get_aero_reference"), &AeroSurface3D::get_aero_reference);
     ClassDB::bind_method(D_METHOD("get_lift_direction"), &AeroSurface3D::get_lift_direction);
     ClassDB::bind_method(D_METHOD("get_lift_force"), &AeroSurface3D::get_lift_force);
     ClassDB::bind_method(D_METHOD("get_drag_force"), &AeroSurface3D::get_drag_force);
@@ -31,7 +32,12 @@ void AeroSurface3D::_enter_tree() {
 
 ForceAndTorque AeroSurface3D::calculate_forces(double substep_delta) {
     ForceAndTorque force_and_torque = AeroInfluencer3D::calculate_forces(substep_delta);
-    
+    if (wing_config.is_null()) {
+        area = 0.0;
+        projected_wing_area = 0.0;
+        aero_reference = 0.0;
+        return force_and_torque;
+    }
     angle_of_attack = get_global_basis().get_column(1).angle_to(-get_world_air_velocity()) - (Math::PI / 2.0);
     sweep_angle = get_global_basis().get_column(0).angle_to(-get_world_air_velocity()) - (Math::PI / 2.0);
 

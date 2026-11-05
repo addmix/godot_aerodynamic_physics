@@ -7,7 +7,7 @@ var buoyancy_force : Vector3
 var cached_force : Vector3 = Vector3.ZERO
 var cached_torque : Vector3 = Vector3.ZERO
 func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
-	var force_and_torque : PackedVector3Array = PackedVector3Array([Vector3.ZERO, Vector3.ZERO]) #super._calculate_forces(substep_delta)
+	var force_and_torque : PackedVector3Array = PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 	
 	if aero_body.current_substep == 0:
 		#there is no benefit to calculating buoyancy every substep, as transforms and areas only update every physics step

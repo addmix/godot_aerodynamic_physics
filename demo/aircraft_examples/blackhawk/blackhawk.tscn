@@ -352,8 +352,6 @@ metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 [node name="blackhawk" unique_id=1089370525 instance=ExtResource("1_o32yo")]
 substeps_override = 4
 show_debug = true
-substeps = 4
-prediction_timestep_fraction = 0.25
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.622818276083514, 0)
 collision_layer = 16385
 mass = 5675.0
@@ -401,8 +399,6 @@ show_debug = true
 show_torque = true
 show_lift = false
 show_thrust = true
-aero_body = NodePath("..")
-default_transform = Transform3D(1, 0, 0, 0, 0.998441, 0.0558215, 0, -0.0558215, 0.998441, 0, 1.4656, 0)
 transform = Transform3D(1, 0, 0, 0, 0.998441, 0.0558215, 0, -0.0558215, 0.998441, 0, 1.4656, 0)
 script = ExtResource("2_ppgta")
 cyclic_pitch = 10.0
@@ -417,8 +413,6 @@ manual_config = SubResource("Resource_f18v8")
 wing_config = SubResource("Resource_nkd7l")
 actuation_config = SubResource("Resource_wecnn")
 show_debug = true
-aero_body = NodePath("../..")
-default_transform = Transform3D(1, 0, 0, 0, 1, 6.93889e-18, 0, -6.93889e-18, 1, 3.9, 0, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 6.93889e-18, 0, -6.93889e-18, 1, 3.9, 0, 0)
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
@@ -431,8 +425,6 @@ size = Vector3(7.0351, 0.1, 0.5179)
 manual_config = SubResource("Resource_htcr8")
 wing_config = SubResource("Resource_oml6j")
 show_debug = true
-aero_body = NodePath("..")
-default_transform = Transform3D(1, 0, 0, 0, 0.973532, -0.228551, 0, 0.228551, 0.973532, 0, -0.212944, 8.94837)
 transform = Transform3D(1, 0, 0, 0, 0.973532, -0.228551, 0, 0.228551, 0.973532, 0, -0.212944, 8.94837)
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
@@ -440,8 +432,6 @@ metadata/_custom_type_script = "uid://d1725od371u4a"
 manual_config = SubResource("Resource_103ye")
 wing_config = SubResource("Resource_6tp0p")
 show_debug = true
-aero_body = NodePath("..")
-default_transform = Transform3D(6.12303e-17, 1, 0, -0.707107, 4.32964e-17, -0.707107, -0.707107, 4.32964e-17, 0.707107, 0, 0.378618, 9.09511)
 transform = Transform3D(6.12303e-17, 1, 0, -0.707107, 4.32964e-17, -0.707107, -0.707107, 4.32964e-17, 0.707107, 0, 0.378618, 9.09511)
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
@@ -450,8 +440,6 @@ show_debug = true
 show_torque = true
 show_lift = false
 show_thrust = true
-aero_body = NodePath("..")
-default_transform = Transform3D(0.34202, 0.939693, 0, -0.939693, 0.34202, 0, 0, 0, 1, 0.216564, 1.91582, 9.89796)
 transform = Transform3D(0.34202, 0.939693, 0, -0.939693, 0.34202, 0, 0, 0, 1, 0.216564, 1.91582, 9.89796)
 script = ExtResource("11_wecnn")
 propeller_amount = 4
@@ -463,8 +451,6 @@ manual_config = SubResource("Resource_ajjy4")
 wing_config = SubResource("Resource_3x6k4")
 actuation_config = SubResource("Resource_0r6mh")
 show_debug = true
-aero_body = NodePath("../..")
-default_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.939, 0, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.939, 0, 0)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="AeroPropeller3D/ManualAeroSurface3D" index="0" unique_id=1596576360]
@@ -474,7 +460,6 @@ size = Vector3(1.63875, 0.0300794, 0.405596)
 
 [node name="AeroBuoyancyMesh3D" type="AeroInfluencer3D" parent="." index="11" unique_id=1703560631 node_paths=PackedStringArray("aero_body")]
 show_debug = true
-aero_body = NodePath("..")
 script = ExtResource("15_l68jr")
 buoyancy_mesh = ExtResource("16_l68jr")
 metadata/_custom_type_script = "uid://blp6761y154ht"

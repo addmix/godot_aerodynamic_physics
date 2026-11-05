@@ -2,6 +2,8 @@
 #define AERO_BODY_3D
 
 #include <godot_cpp/variant/utility_functions.hpp>
+#include <godot_cpp/variant/packed_string_array.hpp>
+#include <godot_cpp/templates/vector.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/classes/gd_script.hpp>
 #include <godot_cpp/classes/vehicle_body3d.hpp>
@@ -53,11 +55,12 @@ private:
 
 	//exports and config properties
 	int substeps_override = -1;
+	int substeps = 1;
 	int current_substep = 0;
 	//experimental_energy_tracking
 
 
-	//debug //unimplemented
+	//debug
 	
 	//debug visibility
 	bool show_debug = false;
@@ -119,8 +122,6 @@ private:
 	////std::vector<AeroAtmosphere3D*>
 	TypedArray<Area3D> atmosphere_areas;
 
-	Ref<GDScript> point_3d_script = nullptr;
-	Ref<GDScript> vector_3d_script = nullptr;
 	
 	Node3D *linear_velocity_vector = nullptr;
 	Node3D *angular_velocity_vector = nullptr;
@@ -131,7 +132,7 @@ private:
 	Node3D *drag_debug_vector = nullptr;
 
 	Node3D *mass_debug_point = nullptr;
-	Node3D *thrust_debug_point = nullptr;
+	Node3D *thrust_debug_vector = nullptr;
 protected:
 	
 public:
@@ -143,7 +144,7 @@ public:
 	void _ready() override;
 	void _enter_tree() override;
 	void _physics_process(double delta) override;
-	//PackedStringArray _get_configuration_warnings() const override;
+	PackedStringArray _get_configuration_warnings() const override;
 	void integrate_forces(PhysicsDirectBodyState3D *body_state);
 
 	
@@ -194,7 +195,7 @@ public:
 	Vector3 get_linear_velocity_substep() const;
 	Vector3 get_angular_velocity_substep() const;
 	Vector3 get_linear_acceleration() const;
-	//Vector3 get_angular_acceleration() const;
+	Vector3 get_angular_acceleration() const;
 
 	Vector3 get_current_force() const;
 	Vector3 get_current_torque() const;
@@ -218,6 +219,8 @@ public:
 
 	//debug
 	void _update_debug();
+	void _update_debug_visibility();
+	void _update_debug_scale();
 
 	void set_show_debug(const bool value);
 	bool get_show_debug() const;
@@ -233,6 +236,9 @@ public:
 
 	void set_show_drag_vectors(const bool value);
 	bool get_show_drag_vectors() const;
+
+	void set_show_torque(const bool value);
+	bool get_show_torque() const;
 
 	void set_show_linear_velocity(const bool value);
 	bool get_show_linear_velocity() const;
@@ -264,6 +270,12 @@ public:
 
 	void set_debug_width(const double value);
 	double get_debug_width() const;
+
+	void set_debug_scaling_factor(const double value);
+	double get_debug_scaling_factor() const;
+
+	void set_influencer_debug_width(const double value);
+	double get_influencer_debug_width() const;
 
 	void set_debug_center_width(const double value);
 	double get_debug_center_width() const;

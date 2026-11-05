@@ -46,6 +46,9 @@ ForceAndTorque ManualAeroSurface3D::calculate_forces(double substep_delta) {
     force = lift_vector + drag_vector;
     torque = get_relative_position().cross(force);
 
+    current_force = force;
+    current_torque = torque;
+
     force_and_torque += ForceAndTorque(force, torque);
     return force_and_torque;
 }

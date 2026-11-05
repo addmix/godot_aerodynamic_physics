@@ -306,8 +306,6 @@ manual_config = SubResource("Resource_renod")
 wing_config = SubResource("Resource_1afel")
 actuation_config = SubResource("Resource_nufgv")
 show_debug = true
-aero_body = NodePath("..")
-default_transform = Transform3D(0.7071072188135197, 0.7071072188135202, -3.0908627355157625e-08, -0.7071072188135169, 0.7071072188135196, 7.462002735515752e-08, 7.462007353734321e-08, -3.090864648444529e-08, 0.9999999999999968, 0, 0, -1)
 transform = Transform3D(0.7071072188135197, 0.7071072188135202, -3.0908627355157625e-08, -0.7071072188135169, 0.7071072188135196, 7.462002735515752e-08, 7.462007353734321e-08, -3.090864648444529e-08, 0.9999999999999968, 0, 0, -1)
 rotation_order = 4
 
@@ -320,8 +318,6 @@ manual_config = SubResource("Resource_renod")
 wing_config = SubResource("Resource_1afel")
 actuation_config = SubResource("Resource_1so5l")
 show_debug = true
-aero_body = NodePath("..")
-default_transform = Transform3D(0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0, 1, 0, 0, -1)
 transform = Transform3D(0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0, 1, 0, 0, -1)
 rotation_order = 4
 
@@ -333,22 +329,16 @@ size = Vector3(0.798828, 0.0527344, 0.25)
 manual_config = SubResource("Resource_renod")
 wing_config = SubResource("Resource_vhgb1")
 show_debug = true
-aero_body = NodePath("..")
-default_transform = Transform3D(0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 0, 0, 1, 0, 0, 0.92699)
 transform = Transform3D(0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 0, 0, 1, 0, 0, 0.92699)
 
 [node name="Fins3" type="ManualAeroSurface3D" parent="." index="13" unique_id=609094168 node_paths=PackedStringArray("aero_body")]
 manual_config = SubResource("Resource_renod")
 wing_config = SubResource("Resource_vhgb1")
 show_debug = true
-aero_body = NodePath("..")
-default_transform = Transform3D(0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0, 1, 0, 0, 0.92699)
 transform = Transform3D(0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0, 1, 0, 0, 0.92699)
 
 [node name="AeroThruster3D" type="AeroInfluencer3D" parent="." index="14" unique_id=1492489952 node_paths=PackedStringArray("aero_body")]
 show_debug = true
-aero_body = NodePath("..")
-default_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.37386e-08, 1.45817)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.37386e-08, 1.45817)
 script = ExtResource("12_dsv8w")
 throttle_control_config = SubResource("Resource_mbj8a")
@@ -359,7 +349,6 @@ visible = false
 
 [node name="AeroBuoyancyMesh3D" type="AeroInfluencer3D" parent="." index="16" unique_id=525158980 node_paths=PackedStringArray("aero_body")]
 show_debug = true
-aero_body = NodePath("..")
 script = ExtResource("16_b4ni8")
 buoyancy_mesh = ExtResource("17_6g6ll")
 metadata/_custom_type_script = "uid://blp6761y154ht"

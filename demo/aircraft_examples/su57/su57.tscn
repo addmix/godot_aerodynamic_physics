@@ -433,8 +433,6 @@ shape = SubResource("BoxShape3D_sknif")
 actuation_config = SubResource("Resource_prjxi")
 show_debug = true
 show_thrust = true
-aero_body = NodePath("..")
-default_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.41904, 0, 8.09758)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.41904, 0, 8.09758)
 script = ExtResource("2_5b6kh")
 throttle_control_config = SubResource("Resource_vl4uj")
@@ -448,8 +446,6 @@ size = Vector3(0.25, 0.25, 3)
 actuation_config = SubResource("Resource_prjxi")
 show_debug = true
 show_thrust = true
-aero_body = NodePath("..")
-default_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.419, 0, 8.098)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.419, 0, 8.098)
 script = ExtResource("2_5b6kh")
 throttle_control_config = SubResource("Resource_vl4uj")
@@ -464,8 +460,6 @@ manual_config = SubResource("Resource_13llr")
 wing_config = SubResource("Resource_ekjou")
 mirror_axis = 1
 show_debug = true
-aero_body = NodePath("..")
-default_transform = Transform3D(0.675204, 0, -0.737631, 0, 1, 0, 0.737631, 0, 0.675204, 3.837484791675324, 0, 3.133361998805966)
 transform = Transform3D(0.675204, 0, -0.737631, 0, 1, 0, 0.737631, 0, 0.675204, 3.837484791675324, 0, 3.133361998805966)
 
 [node name="AileronR" type="ManualAeroSurface3D" parent="WingR" index="0" unique_id=284281997 node_paths=PackedStringArray("aero_body")]
@@ -473,8 +467,6 @@ manual_config = SubResource("Resource_13llr")
 wing_config = SubResource("Resource_qyjay")
 actuation_config = SubResource("Resource_f02ck")
 show_debug = true
-aero_body = NodePath("../..")
-default_transform = Transform3D(0.5, 0, 0.8660250000000002, 0, 1, 0, -0.8660250000000002, 0, 0.5, 2.7054934496972924, 0, 0.5853981273103952)
 transform = Transform3D(0.5, 0, 0.8660250000000002, 0, 1, 0, -0.8660250000000002, 0, 0.5, 2.7054934496972924, 0, 0.5853981273103952)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="WingR/AileronR" index="0" unique_id=1996630882]
@@ -485,16 +477,12 @@ size = Vector3(3.19043, 0.25, 1.0256180322232922)
 mirror_axis = 1
 actuation_config = SubResource("Resource_dne2k")
 show_debug = true
-aero_body = NodePath("..")
-default_transform = Transform3D(1.0000003094489522, 0, 0, 0, 1.0000000000000002, 0, 0, 0, 1.000000309448953, 2.850926884472843, -8.881784e-16, 7.51748)
 transform = Transform3D(1.0000003094489522, 0, 0, 0, 1.0000000000000002, 0, 0, 0, 1.000000309448953, 2.850926884472843, -8.881784e-16, 7.51748)
 
 [node name="ElevonR2" type="ManualAeroSurface3D" parent="ElevonControl" index="0" unique_id=702346979 node_paths=PackedStringArray("aero_body")]
 manual_config = SubResource("Resource_13llr")
 wing_config = SubResource("Resource_6hon5")
 show_debug = true
-aero_body = NodePath("../..")
-default_transform = Transform3D(0.7071067811865481, -1.2802792076377592e-08, -0.7071067811865472, -1.2802710065032828e-08, 0.9999999999999994, -3.090860346138312e-08, 0.7071067811865467, 3.090854707986201e-08, 0.7071067811865476, 0.9907128089521168, 0, 0)
 transform = Transform3D(0.7071067811865481, -1.2802792076377592e-08, -0.7071067811865472, -1.2802710065032828e-08, 0.9999999999999994, -3.090860346138312e-08, 0.7071067811865467, 3.090854707986201e-08, 0.7071067811865476, 0.9907128089521168, 0, 0)
 rotation_order = 4
 
@@ -506,8 +494,6 @@ size = Vector3(2.75366, 0.408203, 1.51563)
 manual_config = SubResource("Resource_1ghes")
 wing_config = SubResource("Resource_dfwn2")
 show_debug = true
-aero_body = NodePath("..")
-default_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.915119434911857)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.915119434911857)
 
 [node name="RudderR2" type="ManualAeroSurface3D" parent="." index="26" unique_id=323722456 node_paths=PackedStringArray("aero_body")]
@@ -516,8 +502,6 @@ wing_config = SubResource("Resource_uxcik")
 mirror_axis = 1
 actuation_config = SubResource("Resource_qc6jj")
 show_debug = true
-aero_body = NodePath("..")
-default_transform = Transform3D(0.320158, -0.907044, -0.273441, 0.689722, 0.421036, -0.589078, 0.649448, 0, 0.760406, 2.853, 1.338, 6.216)
 transform = Transform3D(0.320158, -0.907044, -0.273441, 0.689722, 0.421036, -0.589078, 0.649448, 0, 0.760406, 2.853, 1.338, 6.216)
 rotation_order = 5
 

@@ -185,8 +185,6 @@ manual_config = SubResource("Resource_m2rhy")
 wing_config = SubResource("Resource_dylod")
 actuation_config = SubResource("Resource_3ocix")
 show_debug = true
-aero_body = NodePath("..")
-default_transform = Transform3D(6.123233995736766e-17, 1, 0, -1, 6.123233995736766e-17, 0, 0, 0, 1, 0, -0.6395103987786441, 1.6947709974150575)
 transform = Transform3D(6.123233995736766e-17, 1, 0, -1, 6.123233995736766e-17, 0, 0, 0, 1, 0, -0.6395103987786441, 1.6947709974150575)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="Rudder" index="0" unique_id=63091899]
@@ -195,7 +193,6 @@ size = Vector3(1.010510072461784, 0.07490833214797021, 0.6891372122681787)
 
 [node name="AeroBuoyancyMesh3D" type="AeroInfluencer3D" parent="." index="5" unique_id=612877217 node_paths=PackedStringArray("aero_body")]
 show_debug = true
-aero_body = NodePath("..")
 script = ExtResource("8_bdfv4")
 buoyancy_mesh = ExtResource("9_3ocix")
 metadata/_custom_type_script = "uid://blp6761y154ht"
@@ -205,8 +202,6 @@ manual_config = SubResource("Resource_kx3he")
 wing_config = SubResource("Resource_i8owv")
 actuation_config = SubResource("Resource_m8ttw")
 show_debug = true
-aero_body = NodePath("..")
-default_transform = Transform3D(6.123233995736766e-17, 1, 0, -1, 6.123233995736765e-17, 0, 0, 0, 1, 0, 3.196154347436603, 0)
 transform = Transform3D(6.123233995736766e-17, 1, 0, -1, 6.123233995736765e-17, 0, 0, 0, 1, 0, 3.196154347436603, 0)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="Sail" index="0" unique_id=2081273161]

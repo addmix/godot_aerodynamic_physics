@@ -8,9 +8,10 @@
 - [User Feedback (Discord)](https://discord.gg/8Mq8fwuc5w)
 - Branding
 
+> See: [Compiling](docs/compiling.md)
+
 ## Future features
 > These features are not listed in any particular order.
-- C++ port (in development)
 - QOL/Usability
     - AeroBody simulation stability (water interactions need improvement)
     - Make AeroSurfaces visible in running projects

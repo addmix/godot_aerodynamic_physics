@@ -42,7 +42,7 @@
       "preLaunchTask": "build (double)"
     },
     {
-      "name": "editor (single)",
+      "name": "editor",
       "type": "cppdbg",
       "request": "launch",
       "program": "${config:gap.godotEditorSingleBin}",
@@ -59,7 +59,7 @@
       "preLaunchTask": "build (single)"
     },
     {
-      "name": "project (single)",
+      "name": "project",
       "type": "cppdbg",
       "request": "launch",
       "program": "${config:gap.godotEditorSingleBin}",

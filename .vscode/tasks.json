@@ -2,6 +2,16 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "build",
+            "group": "build",
+            "type": "shell",
+            "command": "${config:gap.shell}",
+            "args": ["${config:gap.shellFlag}", "${config:gap.buildExtensionSingle}"],
+            "options": { "cwd": "${workspaceFolder}/godot-cpp-components" },
+            "problemMatcher": "$gcc", // MSVC builds: change to "$msCompile"
+            "detail": "Compile the single-precision extension."
+        },
+        {
             "label": "build (double)",
             "group": { "kind": "build", "isDefault": true },
             "type": "shell",
@@ -12,14 +22,14 @@
             "detail": "Compile the double-precision extension."
         },
         {
-            "label": "build (single)",
+            "label": "build-godot-cpp",
             "group": "build",
             "type": "shell",
             "command": "${config:gap.shell}",
-            "args": ["${config:gap.shellFlag}", "${config:gap.buildExtensionSingle}"],
-            "options": { "cwd": "${workspaceFolder}/godot-cpp-components" },
+            "args": ["${config:gap.shellFlag}", "${config:gap.buildGodotCppSingle}"],
+            "options": { "cwd": "${workspaceFolder}/godot-cpp-components/godot-cpp" },
             "problemMatcher": "$gcc", // MSVC builds: change to "$msCompile"
-            "detail": "Compile the single-precision extension."
+            "detail": "Rebuild the godot-cpp submodule at single precision."
         },
         {
             "label": "build-godot-cpp (double)",
@@ -32,18 +42,8 @@
             "detail": "Rebuild the godot-cpp submodule at double precision."
         },
         {
-            "label": "build-godot-cpp (single)",
-            "group": "build",
-            "type": "shell",
-            "command": "${config:gap.shell}",
-            "args": ["${config:gap.shellFlag}", "${config:gap.buildGodotCppSingle}"],
-            "options": { "cwd": "${workspaceFolder}/godot-cpp-components/godot-cpp" },
-            "problemMatcher": "$gcc", // MSVC builds: change to "$msCompile"
-            "detail": "Rebuild the godot-cpp submodule at single precision."
-        },
-        {
             // Dumps extension_api.json from the editor.
-            "label": "extension-api (single)",
+            "label": "extension-api",
             "type": "shell",
             "command": "${config:gap.shell}",
             "args": ["${config:gap.shellFlag}", "${config:gap.godotEditorSingleBin} --headless --dump-extension-api"],

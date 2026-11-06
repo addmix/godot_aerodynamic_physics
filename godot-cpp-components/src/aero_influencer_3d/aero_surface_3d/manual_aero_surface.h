@@ -9,13 +9,14 @@ namespace godot {
 class ManualAeroSurface3D : public AeroSurface3D {
 	GDCLASS(ManualAeroSurface3D, AeroSurface3D);
 private:
-    Ref<ManualAeroSurfaceConfig> manual_config = Ref(memnew(ManualAeroSurfaceConfig));
+    Ref<ManualAeroSurfaceConfig> manual_config;
 protected:
 	static void _bind_methods();
 public:
 	//init/deinit, and godot virtual overrides.
 	ManualAeroSurface3D();
 	~ManualAeroSurface3D();
+	void _enter_tree() override;
 
     ForceAndTorque calculate_forces(double substep_delta);
 

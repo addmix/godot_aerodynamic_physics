@@ -10,7 +10,7 @@ namespace godot {
 class AeroSurface3D : public AeroInfluencer3D {
 	GDCLASS(AeroSurface3D, AeroInfluencer3D);
 private:
-    Ref<AeroSurfaceConfig> wing_config = Ref(memnew(AeroSurfaceConfig));
+    Ref<AeroSurfaceConfig> wing_config;
     double angle_of_attack = 0.0;
     double sweep_angle = 0.0;
     double area = 0.0;

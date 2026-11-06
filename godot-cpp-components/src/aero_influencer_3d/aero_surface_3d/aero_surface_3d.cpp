@@ -18,13 +18,14 @@ void AeroSurface3D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_drag_force"), &AeroSurface3D::get_drag_force);
 }
 
-AeroSurface3D::AeroSurface3D() {
-    area = wing_config->get_area(); //matches main's `var area : float = wing_config.get_area() if wing_config else 0.0`
-}
+AeroSurface3D::AeroSurface3D() {}
 AeroSurface3D::~AeroSurface3D() {}
 
 void AeroSurface3D::_enter_tree() {
     AeroInfluencer3D::_enter_tree();
+
+    //matches main's `var wing_config : AeroSurfaceConfig = AeroSurfaceConfig.new()`
+    if (wing_config.is_null()) wing_config = memnew(AeroSurfaceConfig);
 
     //initialize signal connections from resources (matches main's `wing_config = wing_config` re-trigger)
     set_wing_config(wing_config);

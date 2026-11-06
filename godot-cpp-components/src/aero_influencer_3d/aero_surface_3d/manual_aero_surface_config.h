@@ -11,17 +11,21 @@ namespace godot {
 class ManualAeroSurfaceConfig : public Resource {
 	GDCLASS(ManualAeroSurfaceConfig, Resource);
 private:
-	//Lift coefficient used where the lift_aoa_curve has a value of -1. (commented out in main)
 	//double min_lift_coefficient = -1.6;
-	//Lift coefficient used where the lift_aoa_curve has a value of 1. (commented out in main)
 	//double max_lift_coefficient = 1.6;
-	Ref<Curve> lift_aoa_curve; //main: LiftCurve.new() - initialized in constructor with easy_lift_curve.gd attached
+	Ref<Curve> lift_aoa_curve;
 	double min_drag_coefficient = 0.02;
 	double max_drag_coefficient = 1.0;
-	//main uses preload(...).duplicate() so each config instance owns its curves; replicate with ->duplicate().
-	Ref<Curve> drag_aoa_curve = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/core/resources/default_drag_aoa_curve.tres")->duplicate();
-	Ref<Curve> sweep_drag_multiplier_curve = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/core/resources/default_sweep_drag_multiplier.tres")->duplicate();
-	Ref<Curve> drag_at_mach_multiplier_curve = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/core/resources/default_drag_at_mach_curve.tres")->duplicate();
+	Ref<Curve> drag_aoa_curve;
+	Ref<Curve> sweep_drag_multiplier_curve;
+	Ref<Curve> drag_at_mach_multiplier_curve;
+
+	mutable bool _curves_built = false;
+	mutable Ref<Curve> default_lift_curve;
+	mutable Ref<Curve> default_drag_curve;
+	mutable Ref<Curve> default_sweep_curve;
+	mutable Ref<Curve> default_mach_curve;
+	void _build_default_curves() const;
 protected:
 	static void _bind_methods();
 public:

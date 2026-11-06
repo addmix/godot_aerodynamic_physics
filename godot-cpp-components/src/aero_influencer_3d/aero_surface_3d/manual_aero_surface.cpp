@@ -13,6 +13,12 @@ void ManualAeroSurface3D::_bind_methods() {
 ManualAeroSurface3D::ManualAeroSurface3D() {}
 ManualAeroSurface3D::~ManualAeroSurface3D() {}
 
+void ManualAeroSurface3D::_enter_tree() {
+    if (manual_config.is_null()) manual_config = memnew(ManualAeroSurfaceConfig);
+
+    AeroSurface3D::_enter_tree();
+}
+
 ForceAndTorque ManualAeroSurface3D::calculate_forces(double substep_delta) {
     ForceAndTorque force_and_torque = AeroSurface3D::calculate_forces(substep_delta);
 

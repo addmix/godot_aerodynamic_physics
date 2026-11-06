@@ -48,13 +48,13 @@ ManualAeroSurfaceConfig::ManualAeroSurfaceConfig() {
 ManualAeroSurfaceConfig::~ManualAeroSurfaceConfig() {}
 
 double ManualAeroSurfaceConfig::get_lift_coefficient(double angle_of_attack) const {
-	double sample = lift_aoa_curve->sample_baked(Math::remap(angle_of_attack, -Math::PI, Math::PI, lift_aoa_curve->get_min_domain(), lift_aoa_curve->get_max_domain()));
+	double sample = lift_aoa_curve->sample_baked(Math::remap((real_t) angle_of_attack, (real_t) -Math::PI, (real_t) Math::PI, lift_aoa_curve->get_min_domain(), lift_aoa_curve->get_max_domain()));
 	//main returns the raw sample; min/max_lift_coefficient scaling is commented out there.
 	return sample;
 }
 double ManualAeroSurfaceConfig::get_drag_coefficient(double angle_of_attack) const {
-    double sample = drag_aoa_curve->sample_baked(Math::remap(angle_of_attack, -Math::PI, Math::PI, drag_aoa_curve->get_min_domain(), drag_aoa_curve->get_max_domain()));
-    return Math::remap(sample, drag_aoa_curve->get_min_value(), drag_aoa_curve->get_max_value(), min_drag_coefficient, max_drag_coefficient);
+    double sample = drag_aoa_curve->sample_baked(Math::remap((real_t) angle_of_attack, (real_t) -Math::PI, (real_t) Math::PI, drag_aoa_curve->get_min_domain(), drag_aoa_curve->get_max_domain()));
+    return Math::remap((real_t) sample, drag_aoa_curve->get_min_value(), drag_aoa_curve->get_max_value(), (real_t) min_drag_coefficient, (real_t) max_drag_coefficient);
 }
 
 
@@ -78,7 +78,7 @@ Ref<Curve> ManualAeroSurfaceConfig::get_drag_aoa_curve() const {return drag_aoa_
 void ManualAeroSurfaceConfig::set_sweep_drag_multiplier_curve(const Ref<Curve> &p_curve) {sweep_drag_multiplier_curve = p_curve; }
 Ref<Curve> ManualAeroSurfaceConfig::get_sweep_drag_multiplier_curve() const {return sweep_drag_multiplier_curve;}
 double ManualAeroSurfaceConfig::get_drag_at_sweep_angle(double sweep_angle) const {
-    return sweep_drag_multiplier_curve->sample_baked(Math::abs(Math::remap(sweep_angle, 0.0, Math::PI, sweep_drag_multiplier_curve->get_min_domain(), sweep_drag_multiplier_curve->get_max_domain())));
+    return sweep_drag_multiplier_curve->sample_baked(Math::abs(Math::remap((real_t) sweep_angle, (real_t) 0.0, (real_t) Math::PI, sweep_drag_multiplier_curve->get_min_domain(), sweep_drag_multiplier_curve->get_max_domain())));
 }
 void ManualAeroSurfaceConfig::set_drag_at_mach_multiplier_curve(const Ref<Curve> &p_curve) {drag_at_mach_multiplier_curve = p_curve;}
 Ref<Curve> ManualAeroSurfaceConfig::get_drag_at_mach_multiplier_curve() const {return drag_at_mach_multiplier_curve;}

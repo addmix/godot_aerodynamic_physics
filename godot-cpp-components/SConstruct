@@ -71,13 +71,13 @@ sources = recursive_glob(env, 'src', '*.cpp')
 for file in sources:
     print(file)
 
+#no "lib" prefix in the shipped file name: SHLIBPREFIX defaults to "lib" on linux/macos
+env["SHLIBPREFIX"] = ""
 file = "{}{}{}".format(libname, env["suffix"], env["SHLIBSUFFIX"])
 
-if env["platform"] == "macos" or env["platform"] == "ios":
-    platlibname = "{}.{}.{}".format(libname, env["platform"], env["target"])
-    file = "{}.framework/{}".format(env["platform"], platlibname, platlibname)
-
-libraryfile = "bin/{}/{}".format(env["platform"], file)
+#the addon's own bin/, so the tracked .gdextension works for development builds and for the
+#packaged release without a second manifest
+libraryfile = "../bin/{}/{}".format(env["platform"], file)
 library = env.SharedLibrary(
     libraryfile,
     source=sources,

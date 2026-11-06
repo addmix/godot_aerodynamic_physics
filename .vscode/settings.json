@@ -48,32 +48,9 @@
 
 
 
-    "files.associations": {
-        "deque": "cpp",
-        "list": "cpp",
-        "string": "cpp",
-        "vector": "cpp",
-        "system_error": "cpp",
-        "array": "cpp",
-        "tuple": "cpp",
-        "utility": "cpp",
-        "*.tcc": "cpp",
-        "memory": "cpp",
-        "type_traits": "cpp",
-        "xutility": "cpp",
-        "cstdlib": "cpp"
-    },
     "files.exclude": {
-        "**/*.o": true,
+        "**/*.os": true,
         "**/*.obj": true,
-        "**/*.uid": true,
-        "**/*.import": true,
-        "**/*.pdb": true,
-        "**/*.TMP": true,
-        "**/*.ilk": true,
-        "**/*.lib": true,
-        "**/*.exp": true,
-        "**/~*.dll": true,
-    },
-    "cmake.sourceDirectory": "/home/jake/Documents/Godot projects/GAP C++/AerodynamicProject/addons/godot_aerodynamic_physics/godot-cpp-components/godot-cpp",
+        "**/.sconsign*.dblite": true,
+    }
 }

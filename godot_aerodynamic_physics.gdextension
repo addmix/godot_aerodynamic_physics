@@ -1,12 +1,39 @@
-; Godot Aerodynamic Physics - C++ port (godot-cpp-components)
-; The library is built with SCons inside godot-cpp-components/ and output to
-; godot-cpp-components/bin/<platform>/libgodot_aerodynamic_physics.<platform>.<target>.double.x86_64.so
+; Godot Aerodynamic Physics
+; Binaries live in bin/<platform>/, built by scons in the godot-cpp-components folder.
+
 [configuration]
 entry_symbol = "godot_aerodynamic_physics_init"
 compatibility_minimum = 4.7
 
 [libraries]
-linux.x86_64 = "res://addons/godot_aerodynamic_physics/godot-cpp-components/bin/linux/libgodot_aerodynamic_physics.linux.template_debug.double.x86_64.so"
+linux.debug.x86_64 = "res://addons/godot_aerodynamic_physics/bin/linux/godot_aerodynamic_physics.linux.template_debug.x86_64.so"
+linux.release.x86_64 = "res://addons/godot_aerodynamic_physics/bin/linux/godot_aerodynamic_physics.linux.template_release.x86_64.so"
+linux.debug.x86_64.double = "res://addons/godot_aerodynamic_physics/bin/linux/godot_aerodynamic_physics.linux.template_debug.double.x86_64.so"
+linux.release.x86_64.double = "res://addons/godot_aerodynamic_physics/bin/linux/godot_aerodynamic_physics.linux.template_release.double.x86_64.so"
+linux.debug.arm64 = "res://addons/godot_aerodynamic_physics/bin/linux/godot_aerodynamic_physics.linux.template_debug.arm64.so"
+linux.release.arm64 = "res://addons/godot_aerodynamic_physics/bin/linux/godot_aerodynamic_physics.linux.template_release.arm64.so"
+linux.debug.arm64.double = "res://addons/godot_aerodynamic_physics/bin/linux/godot_aerodynamic_physics.linux.template_debug.double.arm64.so"
+linux.release.arm64.double = "res://addons/godot_aerodynamic_physics/bin/linux/godot_aerodynamic_physics.linux.template_release.double.arm64.so"
+windows.debug.x86_64 = "res://addons/godot_aerodynamic_physics/bin/windows/godot_aerodynamic_physics.windows.template_debug.x86_64.dll"
+windows.release.x86_64 = "res://addons/godot_aerodynamic_physics/bin/windows/godot_aerodynamic_physics.windows.template_release.x86_64.dll"
+windows.debug.x86_64.double = "res://addons/godot_aerodynamic_physics/bin/windows/godot_aerodynamic_physics.windows.template_debug.double.x86_64.dll"
+windows.release.x86_64.double = "res://addons/godot_aerodynamic_physics/bin/windows/godot_aerodynamic_physics.windows.template_release.double.x86_64.dll"
+windows.debug.arm64 = "res://addons/godot_aerodynamic_physics/bin/windows/godot_aerodynamic_physics.windows.template_debug.arm64.dll"
+windows.release.arm64 = "res://addons/godot_aerodynamic_physics/bin/windows/godot_aerodynamic_physics.windows.template_release.arm64.dll"
+windows.debug.arm64.double = "res://addons/godot_aerodynamic_physics/bin/windows/godot_aerodynamic_physics.windows.template_debug.double.arm64.dll"
+windows.release.arm64.double = "res://addons/godot_aerodynamic_physics/bin/windows/godot_aerodynamic_physics.windows.template_release.double.arm64.dll"
+macos.debug = "res://addons/godot_aerodynamic_physics/bin/macos/godot_aerodynamic_physics.macos.template_debug.universal.dylib"
+macos.release = "res://addons/godot_aerodynamic_physics/bin/macos/godot_aerodynamic_physics.macos.template_release.universal.dylib"
+macos.debug.double = "res://addons/godot_aerodynamic_physics/bin/macos/godot_aerodynamic_physics.macos.template_debug.double.universal.dylib"
+macos.release.double = "res://addons/godot_aerodynamic_physics/bin/macos/godot_aerodynamic_physics.macos.template_release.double.universal.dylib"
+android.debug.arm64 = "res://addons/godot_aerodynamic_physics/bin/android/godot_aerodynamic_physics.android.template_debug.arm64.so"
+android.debug.arm64.double = "res://addons/godot_aerodynamic_physics/bin/android/godot_aerodynamic_physics.android.template_debug.double.arm64.so"
+android.release.arm64 = "res://addons/godot_aerodynamic_physics/bin/android/godot_aerodynamic_physics.android.template_release.arm64.so"
+android.release.arm64.double = "res://addons/godot_aerodynamic_physics/bin/android/godot_aerodynamic_physics.android.template_release.double.arm64.so"
+android.debug.x86_64 = "res://addons/godot_aerodynamic_physics/bin/android/godot_aerodynamic_physics.android.template_debug.x86_64.so"
+android.debug.x86_64.double = "res://addons/godot_aerodynamic_physics/bin/android/godot_aerodynamic_physics.android.template_debug.double.x86_64.so"
+android.release.x86_64 = "res://addons/godot_aerodynamic_physics/bin/android/godot_aerodynamic_physics.android.template_release.x86_64.so"
+android.release.x86_64.double = "res://addons/godot_aerodynamic_physics/bin/android/godot_aerodynamic_physics.android.template_release.double.x86_64.so"
 
 [icons]
 AeroBody3D = "res://addons/godot_aerodynamic_physics/icons/AeroBody3D.svg"

@@ -527,11 +527,11 @@ void AeroInfluencer3D::update_debug_vectors(){
 		lift_debug_vector->set("value", get_global_basis().xform_inv(AeroUtils::v3log_with_base(lift, debug_scaling_factor)) * debug_scale);
 	}
 	if (drag_debug_vector) {
-		Vector3 drag = Math::max(get_current_force().dot(get_drag_direction()), 0.0) * get_drag_direction();
+		Vector3 drag = Math::max(get_current_force().dot(get_drag_direction()), (real_t)0.0) * get_drag_direction();
 		drag_debug_vector->set("value", get_global_basis().xform_inv(AeroUtils::v3log_with_base(drag, debug_scaling_factor)) * debug_scale);
 	}
 	if (thrust_debug_vector) {
-		Vector3 thrust = Math::min(get_current_force().dot(get_drag_direction()), 0.0) * get_drag_direction();
+		Vector3 thrust = Math::min(get_current_force().dot(get_drag_direction()), (real_t)0.0) * get_drag_direction();
 		thrust_debug_vector->set("value", get_global_basis().xform_inv(AeroUtils::v3log_with_base(thrust, debug_scaling_factor)) * debug_scale);
 	}	
 

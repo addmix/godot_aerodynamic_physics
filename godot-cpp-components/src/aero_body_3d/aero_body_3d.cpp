@@ -709,7 +709,7 @@ void AeroBody3D::_update_debug() {
 			force_vector_sum += force_vector;
 			force_position_sum += influencer->get_relative_position() * force;
 
-			Vector3 drag_vector = Math::max(force_vector.dot(drag_direction), 0.0) * drag_direction;
+			Vector3 drag_vector = Math::max(force_vector.dot(drag_direction), (real_t)0.0) * drag_direction;
 			double drag = drag_vector.length();
 			drag_sum += drag;
 			drag_vector_sum += drag_vector;
@@ -721,7 +721,7 @@ void AeroBody3D::_update_debug() {
 			lift_vector_sum += lift_vector;
 			lift_position_sum += influencer->get_relative_position() * lift;
 
-			Vector3 thrust_vector = Math::min(force_vector.dot(drag_direction), 0.0) * drag_direction;
+			Vector3 thrust_vector = Math::min(force_vector.dot(drag_direction), (real_t)0.0) * drag_direction;
 			double thrust = thrust_vector.length();
 			thrust_sum += thrust;
 			thrust_vector_sum += thrust_vector;

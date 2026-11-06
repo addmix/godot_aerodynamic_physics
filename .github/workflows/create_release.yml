@@ -1,56 +1,150 @@
-# This is a basic workflow to help you get started with Actions
+# Builds the GDExtension for every supported platform/precision, packages the addon and attaches
+# the zip to a draft release.
+#
+#   git tag v0.9.0 && git push origin v0.9.0
+#   or "Run workflow" with a tag input.
 
 name: Create Release
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
     tags:
       - "v*.*.*"
-
-# Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
       tag:
-        description: 'The version for this release. eg: v1.5.2'
+        description: "The version for this release, e.g. v0.9.0"
         required: true
         type: string
-
 
 permissions:
   contents: write
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  release:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+  build:
+    name: ${{ matrix.platform.name }} ${{ matrix.target }} ${{ matrix.precision }}
+    runs-on: ${{ matrix.platform.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - { name: linux-x86_64,    os: ubuntu-latest,    scons_platform: linux,   arch: x86_64 }
+          - { name: linux-arm64,     os: ubuntu-24.04-arm, scons_platform: linux,   arch: arm64 }
+          - { name: windows-x86_64,  os: windows-latest,   scons_platform: windows, arch: x86_64 }
+          - { name: windows-arm64,   os: windows-latest,   scons_platform: windows, arch: arm64 }
+          - { name: macos-universal, os: macos-latest,     scons_platform: macos,   arch: universal }
+          - { name: android-arm64,   os: ubuntu-latest,    scons_platform: android, arch: arm64 }
+          - { name: android-x86_64,  os: ubuntu-latest,    scons_platform: android, arch: x86_64 }
+        target: [template_debug, template_release]
+        precision: [single, double]
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install scons
+        shell: bash
+
+      # the ubuntu images ship the Android NDK but no sdkmanager on PATH; godot-cpp finds it at
+      # $ANDROID_HOME/ndk/<ndk_version>, so hand it the version of the preinstalled one
+      - if: matrix.platform.scons_platform == 'android'
+        id: ndk
+        name: Locate preinstalled NDK
+        shell: bash
+        run: echo "version=$(basename "${ANDROID_NDK:-$ANDROID_NDK_LATEST_HOME}")" >> "$GITHUB_OUTPUT"
+
+      # godot-cpp is the slow part of a cold build; our own sources are always rebuilt.
+      - id: godotcpp
+        shell: bash
+        run: echo "sha=$(git -C godot-cpp-components/godot-cpp rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            godot-cpp-components/godot-cpp/bin
+            godot-cpp-components/godot-cpp/gen
+            godot-cpp-components/godot-cpp/.sconsign.dblite
+            godot-cpp-components/.sconsign.dblite
+          key: godot-cpp-${{ runner.os }}-${{ matrix.platform.arch }}-${{ matrix.target }}-${{ matrix.precision }}-${{ steps.godotcpp.outputs.sha }}-${{ hashFiles('godot-cpp-components/SConstruct', 'godot-cpp-components/build_profile.json', 'godot-cpp-components/extension_api*.json') }}
+
+      - name: Build
+        shell: bash
+        working-directory: godot-cpp-components
+        run: >-
+          scons -j 4
+          platform=${{ matrix.platform.scons_platform }}
+          arch=${{ matrix.platform.arch }}
+          target=${{ matrix.target }}
+          precision=${{ matrix.precision }}
+          custom_api_file=${{ matrix.precision == 'double' && 'extension_api_double.json' || 'extension_api.json' }}
+          build_profile=build_profile.json
+          ndk_version=${{ steps.ndk.outputs.version }}
+
+      # just the compiled library; the release job turns these into the shipped addon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gdext-${{ matrix.platform.name }}-${{ matrix.target }}-${{ matrix.precision }}
+          path: bin
+          if-no-files-found: error
+
+  release:
+    name: Package and publish
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+    steps:
       - uses: actions/checkout@v5
 
-      - name: Move and Zip
-        run: |
-          rm -r .git/
-          rm -r docs 
-          find . -name "*.blend" -type f -delete
-          find . -name "*.blend.import" -type f -delete
-
-          mkdir -p ../godot_aerodynamic_physics_temp/addons/godot_aerodynamic_physics
-          mv {.,}* ../godot_aerodynamic_physics_temp/addons/godot_aerodynamic_physics
-          mv ../godot_aerodynamic_physics_temp/addons ../godot_aerodynamic_physics
-          cd ..
-          zip -r godot_aerodynamic_physics.zip godot_aerodynamic_physics
-    
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
+      - uses: actions/download-artifact@v4
         with:
-          files: ../godot_aerodynamic_physics.zip
+          path: bin
+          pattern: gdext-*
+          merge-multiple: true
+
+      # every library the shipped .gdextension lists has to be there
+      - name: Check the artifacts match the manifest
+        shell: bash
+        run: |
+          for path in $(grep -o 'res://addons/godot_aerodynamic_physics/bin/[^"]*' godot_aerodynamic_physics.gdextension | sed 's#res://addons/godot_aerodynamic_physics/##'); do
+            test -e "$path" || { echo "missing $path"; exit 1; }
+          done
+
+      # strip dev-only files, then stage and zip the addon
+      - name: Package
+        shell: bash
+        run: |
+          rm -rf .git .github .vscode docs tests godot-cpp-components
+          rm -f .gitignore .gitmodules
+          find . \( -name "*.blend" -o -name "*.blend1" -o -name "*.blend.import" \) -delete
+
+          # stage as <name>-<version>/addons/godot_aerodynamic_physics/...: the editor's asset installer
+          # skips a folder that isn't addons/, so it still ends up in addons/godot_aerodynamic_physics
+          pkg=../pkg/godot_aerodynamic_physics-$TAG
+          mkdir -p "$pkg/addons/godot_aerodynamic_physics"
+          shopt -s dotglob nullglob
+          mv ./* "$pkg/addons/godot_aerodynamic_physics/"
+
+          # the asset name stays unversioned so the Asset Library keeps pulling the same URL, and a copy
+          # of the same tree goes to upload-artifact
+          mkdir -p "$GITHUB_WORKSPACE/dist/artifact"
+          ( cd ../pkg && zip -qr "$GITHUB_WORKSPACE/dist/godot_aerodynamic_physics.zip" godot_aerodynamic_physics-$TAG )
+          cp -r "$pkg" "$GITHUB_WORKSPACE/dist/artifact/"
+
+      - name: Upload addon for inspection
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot_aerodynamic_physics-${{ env.TAG }}
+          path: dist/artifact
+          if-no-files-found: error
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
           generate_release_notes: true
           tag_name: ${{ inputs.tag }}
           draft: true
-

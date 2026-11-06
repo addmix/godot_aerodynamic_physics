@@ -4,7 +4,8 @@
     // Modify this file to match your environment
     // 
     // By default, this matches my build environment, but it will work for you with slight modification
-    // Ensure that gap.godotEditorBin resolves to your godot editor binary, with a filepath or environment variable
+    // Ensure gap.godotEditorSingleBin and gap.godotEditorDoubleBin resolve to your godot editor binaries,
+    // with a filepath or environment variable
 
 
 
@@ -20,31 +21,43 @@
 
 
 
-    // Godot Editor binary location:
+    // Godot Editor binaries. A Godot build can only load an extension compiled at the same precision,
+    // so keep one of each. Debugging uses the double one, and the extension-api tasks dump their api
+    // from the matching binary.
 
-    // Linux recommendation: Place your godot binary inside ~/.local/bin/
-    // "gap.godotEditorBin": "godot",
-    "gap.godotEditorBin": "/var/home/jake/godot/bin/godot.linuxbsd.editor.double.x86_64",
+    // Linux recommendation: use full filepath
+    "gap.godotEditorSingleBin": "/var/home/jake/godot/bin/godot.linuxbsd.editor.x86_64",
+    "gap.godotEditorDoubleBin": "/var/home/jake/godot/bin/godot.linuxbsd.editor.double.x86_64",
     
-    // Windows recommendation: Add your godot binary to your system $PATH environment variable
-    // "gap.godotEditorBin": "godot.exe",
-    // "gap.godotEditorBin": "C:/path/to/godot/bin/godot.windows.editor.double.x86_64.exe",
+    // Windows recommendation: Add your godot binaries to your system $PATH environment variable
+    // "gap.godotEditorSingleBin": "godot.exe",
+    // "gap.godotEditorDoubleBin": "godot.windows.editor.double.x86_64.exe",
 
     
 
-    // Scons build command:
+    // Scons build commands. One per precision, for the extension and for the godot-cpp submodule:
+    // a Godot build only loads an extension compiled at its precision, and godot-cpp rebuilds itself
+    // when you switch, so keep these in pairs.
+    //
+    // note the ../ on the godot-cpp ones: those run inside godot-cpp-components/godot-cpp
 
     // Linux
-    // "gap.buildExtension": "scons precision=double custom_api_file=extension_api_double.json build_profile=build_profile.json",
-    // "gap.buildGodotCpp": "scons precision=double  custom_api_file=extension_api_double.json build_profile=build_profile.json",
-    
+    // "gap.buildExtensionDouble": "scons precision=double custom_api_file=extension_api_double.json build_profile=build_profile.json",
+    // "gap.buildExtensionSingle": "scons precision=single custom_api_file=extension_api.json build_profile=build_profile.json",
+    // "gap.buildGodotCppDouble": "scons precision=double custom_api_file=../extension_api_double.json build_profile=../build_profile.json",
+    // "gap.buildGodotCppSingle": "scons precision=single custom_api_file=../extension_api.json build_profile=../build_profile.json",
+
     // Linux (using distrobox, cuz Bazzite, lol)
-    "gap.buildExtension": "distrobox enter --no-tty --name godot-dev -- scons precision=double custom_api_file=extension_api_double.json build_profile=build_profile.json",
-    "gap.buildGodotCpp": "distrobox enter --no-tty --name godot-dev -- scons precision=double custom_api_file=extension_api_double.json build_profile=build_profile.json",
+    "gap.buildExtensionDouble": "distrobox enter --no-tty --name godot-dev -- scons precision=double custom_api_file=extension_api_double.json build_profile=build_profile.json",
+    "gap.buildExtensionSingle": "distrobox enter --no-tty --name godot-dev -- scons precision=single custom_api_file=extension_api.json build_profile=build_profile.json",
+    "gap.buildGodotCppDouble": "distrobox enter --no-tty --name godot-dev -- scons precision=double custom_api_file=../extension_api_double.json build_profile=../build_profile.json",
+    "gap.buildGodotCppSingle": "distrobox enter --no-tty --name godot-dev -- scons precision=single custom_api_file=../extension_api.json build_profile=../build_profile.json",
 
     // Windows (powershell)
-    // "gap.buildExtension": "scons precision=double custom_api_file=extension_api_double.json build_profile=build_profile.json",
-    // "gap.buildGodotCpp": "scons precision=double custom_api_file=extension_api_double.json build_profile=build_profile.json",
+    // "gap.buildExtensionDouble": "scons precision=double custom_api_file=extension_api_double.json build_profile=build_profile.json",
+    // "gap.buildExtensionSingle": "scons precision=single custom_api_file=extension_api.json build_profile=build_profile.json",
+    // "gap.buildGodotCppDouble": "scons precision=double custom_api_file=../extension_api_double.json build_profile=../build_profile.json",
+    // "gap.buildGodotCppSingle": "scons precision=single custom_api_file=../extension_api.json build_profile=../build_profile.json",
 
 
 

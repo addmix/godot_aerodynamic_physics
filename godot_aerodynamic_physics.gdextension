@@ -3,7 +3,7 @@
 
 [configuration]
 entry_symbol = "godot_aerodynamic_physics_init"
-compatibility_minimum = 4.7
+compatibility_minimum = 4.5
 
 [libraries]
 linux.debug.x86_64 = "res://addons/godot_aerodynamic_physics/bin/linux/godot_aerodynamic_physics.linux.template_debug.x86_64.so"

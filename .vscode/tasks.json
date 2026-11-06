@@ -2,25 +2,64 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build",
+            "label": "build (double)",
             "group": { "kind": "build", "isDefault": true },
             "type": "shell",
             "command": "${config:gap.shell}",
-            "args": ["${config:gap.shellFlag}", "${config:gap.buildExtension}"],
+            "args": ["${config:gap.shellFlag}", "${config:gap.buildExtensionDouble}"],
             "options": { "cwd": "${workspaceFolder}/godot-cpp-components" },
             "problemMatcher": "$gcc", // MSVC builds: change to "$msCompile"
-            "detail": "Compile the GDExtension. Command: gap.buildExtension in settings.json."
+            "detail": "Compile the double-precision extension."
         },
         {
-            // Rebuilds the godot-cpp submodule itself (only needed after regenerating extension_api or updating godot-cpp).
-            "label": "build-godot-cpp",
+            "label": "build (single)",
             "group": "build",
             "type": "shell",
             "command": "${config:gap.shell}",
-            "args": ["${config:gap.shellFlag}", "${config:gap.buildGodotCpp}"],
+            "args": ["${config:gap.shellFlag}", "${config:gap.buildExtensionSingle}"],
+            "options": { "cwd": "${workspaceFolder}/godot-cpp-components" },
+            "problemMatcher": "$gcc", // MSVC builds: change to "$msCompile"
+            "detail": "Compile the single-precision extension."
+        },
+        {
+            "label": "build-godot-cpp (double)",
+            "group": "build",
+            "type": "shell",
+            "command": "${config:gap.shell}",
+            "args": ["${config:gap.shellFlag}", "${config:gap.buildGodotCppDouble}"],
             "options": { "cwd": "${workspaceFolder}/godot-cpp-components/godot-cpp" },
             "problemMatcher": "$gcc", // MSVC builds: change to "$msCompile"
-            "detail": "Rebuild the godot-cpp submodule. Command: gap.buildGodotCpp in settings.json."
+            "detail": "Rebuild the godot-cpp submodule at double precision."
+        },
+        {
+            "label": "build-godot-cpp (single)",
+            "group": "build",
+            "type": "shell",
+            "command": "${config:gap.shell}",
+            "args": ["${config:gap.shellFlag}", "${config:gap.buildGodotCppSingle}"],
+            "options": { "cwd": "${workspaceFolder}/godot-cpp-components/godot-cpp" },
+            "problemMatcher": "$gcc", // MSVC builds: change to "$msCompile"
+            "detail": "Rebuild the godot-cpp submodule at single precision."
+        },
+        {
+            // Dumps extension_api.json from the editor.
+            "label": "extension-api (single)",
+            "type": "shell",
+            "command": "${config:gap.shell}",
+            "args": ["${config:gap.shellFlag}", "${config:gap.godotEditorSingleBin} --headless --dump-extension-api"],
+            "options": { "cwd": "${workspaceFolder}/godot-cpp-components" },
+            "problemMatcher": [],
+            "detail": "Writes extension_api.json from gap.godotEditorSingleBin."
+        },
+        {
+            // Dumps extension_api_double.json from the double-precision editor.
+            "label": "extension-api (double)",
+            "type": "shell",
+            "command": "${config:gap.shell}",
+            "args": ["${config:gap.shellFlag}", "${config:gap.godotEditorDoubleBin} --headless --dump-extension-api && mv extension_api.json extension_api_double.json"],
+            "options": { "cwd": "${workspaceFolder}/godot-cpp-components" },
+            "problemMatcher": [],
+            "detail": "Writes extension_api_double.json from gap.godotEditorDoubleBin."
         }
     ]
 }

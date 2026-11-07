@@ -15,7 +15,7 @@
       "program": "${config:gap.godotEditorDoubleBin}",
       "args": [
         "--editor",
-        //"--debug",
+        "--debug",
         //"--verbose",
         "--path",
         "../.."
@@ -31,7 +31,7 @@
       "request": "launch",
       "program": "${config:gap.godotEditorDoubleBin}",
       "args": [
-        //"--debug",
+        "--debug",
         //"--verbose",
         "--path",
         "../.."
@@ -48,7 +48,7 @@
       "program": "${config:gap.godotEditorSingleBin}",
       "args": [
         "--editor",
-        //"--debug",
+        "--debug",
         //"--verbose",
         "--path",
         "../.."
@@ -64,7 +64,7 @@
       "request": "launch",
       "program": "${config:gap.godotEditorSingleBin}",
       "args": [
-        //"--debug",
+        "--debug",
         //"--verbose",
         "--path",
         "../.."

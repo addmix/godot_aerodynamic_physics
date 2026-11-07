@@ -194,7 +194,9 @@ void AeroInfluencer3D::_ready() {
 		}
 	}
 
-	for (AeroInfluencer3D* influencer : aero_influencers) {
+	const size_t influencer_count = aero_influencers.size();
+	for (size_t i = 0; i < influencer_count; i++) {
+		AeroInfluencer3D* influencer = aero_influencers[i];
 		if (influencer) influencer->generate_mirror();
 	}
 
@@ -356,7 +358,9 @@ ForceAndTorque AeroInfluencer3D::calculate_forces(double substep_delta) {
 
 	ForceAndTorque total_force_and_torque;
 
-	for (AeroInfluencer3D* influencer : aero_influencers) {
+	const size_t influencer_count = aero_influencers.size();
+	for (size_t i = 0; i < influencer_count; i++) {
+		AeroInfluencer3D* influencer = aero_influencers[i];
 		if (not influencer) continue;
 		if (influencer->is_disabled()) continue;
 
@@ -384,7 +388,9 @@ void AeroInfluencer3D::_update_transform_substep_with_override(double substep_de
 	}
 }
 void AeroInfluencer3D::_update_transform_substep(double substep_delta) {
-	for (AeroInfluencer3D* influencer : aero_influencers) {
+	const size_t influencer_count = aero_influencers.size();
+	for (size_t i = 0; i < influencer_count; i++) {
+		AeroInfluencer3D* influencer = aero_influencers[i];
 		if (not influencer) continue;
 		if (influencer->is_disabled()) continue;
 		

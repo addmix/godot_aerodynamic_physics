@@ -221,7 +221,9 @@ void AeroBody3D::_enter_tree() {
 	}
 }
 void AeroBody3D::_ready() {
-	for (AeroInfluencer3D* influencer : aero_influencers) {
+	const size_t influencer_count = aero_influencers.size();
+	for (size_t i = 0; i < influencer_count; i++) {
+		AeroInfluencer3D* influencer = aero_influencers[i];
 		if (influencer) influencer->generate_mirror();
 	}
 

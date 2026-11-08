@@ -26,18 +26,19 @@ var angular_rate_error := Vector3.ZERO
 
 @export_group("Flight Assist")
 @export_subgroup("Angular rate tracking")
+@export var feed_forward : Vector3 = Vector3(1.0, 1.0, 1.0)
 ##If enabled, flight assist is enabled on the pitch (X) axis.
 @export var enable_flight_assist_x : bool = true
 ##PID controller used to evaluate appropriate control response.
-@export var pitch_assist_pid : aero_PID = aero_PID.new(0.5, 3, 0, true, -0.2, 0.2)
+@export var pitch_assist_pid : aero_PID
 ##If enabled, flight assist is enabled on the yaw (Y) axis.
 @export var enable_flight_assist_y : bool = true
 ##PID controller used to evaluate appropriate control response.
-@export var yaw_assist_pid : aero_PID = aero_PID.new(1, 0, 0)
+@export var yaw_assist_pid : aero_PID
 ##If enabled, flight assist is enabled on the roll (Z) axis.
 @export var enable_flight_assist_z : bool = true
 ##PID controller used to evaluate appropriate control response.
-@export var roll_assist_pid : aero_PID = aero_PID.new(0.2, 0, 0)
+@export var roll_assist_pid : aero_PID
 @export_subgroup("G Limiter")
 ##If enabled, the flight assist resource will attempt to keep felt G-forces below the g_limit.
 @export var enable_g_limiter : bool = true
@@ -278,13 +279,13 @@ func flight_assist(delta : float) -> void:
 	
 	#this is added to update/apply input changes from previous steps, such as target_direction
 	#without this line, controls can break when flight assist axes are disabled.
-	control_command = control_input 
-	if enable_flight_assist_x:
-		control_command.x = pitch_assist_pid.update(delta, angular_rate_error.x)
-	if enable_flight_assist_y:
-		control_command.y = yaw_assist_pid.update(delta, angular_rate_error.y)
-	if enable_flight_assist_z:
-		control_command.z = roll_assist_pid.update(delta, angular_rate_error.z)
+	control_command = control_input * feed_forward
+	if enable_flight_assist_x and pitch_assist_pid:
+		control_command.x += pitch_assist_pid.update(delta, angular_rate_error.x)
+	if enable_flight_assist_y and yaw_assist_pid:
+		control_command.y += yaw_assist_pid.update(delta, angular_rate_error.y)
+	if enable_flight_assist_z and roll_assist_pid:
+		control_command.z += roll_assist_pid.update(delta, angular_rate_error.z)
 	
 	#adjust for changing airspeed and density
 	if enable_control_adjustment:

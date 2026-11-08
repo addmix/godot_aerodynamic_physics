@@ -15,6 +15,7 @@ ManualAeroSurface3D::~ManualAeroSurface3D() {}
 
 void ManualAeroSurface3D::_enter_tree() {
     if (manual_config.is_null()) manual_config = memnew(ManualAeroSurfaceConfig);
+    manual_config->apply_default_curves();
 
     AeroSurface3D::_enter_tree();
 }
@@ -58,5 +59,8 @@ ForceAndTorque ManualAeroSurface3D::calculate_forces(double substep_delta) {
     return force_and_torque;
 }
 
-void ManualAeroSurface3D::set_manual_config(const Ref<ManualAeroSurfaceConfig> &p_config) {manual_config = p_config;};
+void ManualAeroSurface3D::set_manual_config(const Ref<ManualAeroSurfaceConfig> &p_config) {
+    manual_config = p_config;
+    if (manual_config.is_valid()) manual_config->apply_default_curves();
+};
 Ref<ManualAeroSurfaceConfig> ManualAeroSurface3D::get_manual_config() const {return manual_config;};

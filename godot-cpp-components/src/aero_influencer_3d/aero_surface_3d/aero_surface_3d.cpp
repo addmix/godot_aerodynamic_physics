@@ -59,12 +59,12 @@ ForceAndTorque AeroSurface3D::calculate_forces(double substep_delta) {
 void AeroSurface3D::set_wing_config(const Ref<AeroSurfaceConfig> &p_config) {
     wing_config = p_config;
 
-    if (wing_config == nullptr) return;
-
-    if (not wing_config->is_connected("changed", Callable(this, "update_gizmos"))) {
+    if (wing_config.is_valid() and not wing_config->is_connected("changed", Callable(this, "update_gizmos"))) {
         wing_config->connect("changed", Callable(this, "update_gizmos"));
-        update_gizmos();
     }
+
+    //redraw for every assignment, including a swap to an already-connected config or a cleared config
+    update_gizmos();
 };
 Ref<AeroSurfaceConfig> AeroSurface3D::get_wing_config() const {return wing_config;};
 

@@ -40,30 +40,28 @@ void ManualAeroSurfaceConfig::_bind_methods() {
 ManualAeroSurfaceConfig::ManualAeroSurfaceConfig() {}
 ManualAeroSurfaceConfig::~ManualAeroSurfaceConfig() {}
 
-void ManualAeroSurfaceConfig::_build_default_curves() const {
-	if (_curves_built) return;
-	_curves_built = true;
+void ManualAeroSurfaceConfig::apply_default_curves() const {
+	if (lift_aoa_curve.is_null()) {
+		Ref<Curve> curve = Ref<Curve>(memnew(Curve));
+		curve->set_script(ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/core/easy_lift_curve.gd"));
+		curve->call("recalculate");
+		lift_aoa_curve = curve;
+	}
 
-	default_lift_curve = Ref<Curve>(memnew(Curve));
-	default_lift_curve->set_script(ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/core/easy_lift_curve.gd"));
-	default_lift_curve->call("recalculate");
-
-	default_drag_curve = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/core/resources/default_drag_aoa_curve.tres")->duplicate();
-	default_sweep_curve = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/core/resources/default_sweep_drag_multiplier.tres")->duplicate();
-	default_mach_curve = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/core/resources/default_drag_at_mach_curve.tres")->duplicate();
+	if (drag_aoa_curve.is_null()) drag_aoa_curve = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/core/resources/default_drag_aoa_curve.tres")->duplicate();
+	if (sweep_drag_multiplier_curve.is_null()) sweep_drag_multiplier_curve = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/core/resources/default_sweep_drag_multiplier.tres")->duplicate();
+	if (drag_at_mach_multiplier_curve.is_null()) drag_at_mach_multiplier_curve = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/core/resources/default_drag_at_mach_curve.tres")->duplicate();
 }
 
 double ManualAeroSurfaceConfig::get_lift_coefficient(double angle_of_attack) const {
-	_build_default_curves();
-	const Ref<Curve> &curve = lift_aoa_curve.is_valid() ? lift_aoa_curve : default_lift_curve;
-	double sample = curve->sample_baked(Math::remap((real_t) angle_of_attack, (real_t) -Math::PI, (real_t) Math::PI, curve->get_min_domain(), curve->get_max_domain()));
+	apply_default_curves();
+	double sample = lift_aoa_curve->sample_baked(Math::remap((real_t) angle_of_attack, (real_t) -Math::PI, (real_t) Math::PI, lift_aoa_curve->get_min_domain(), lift_aoa_curve->get_max_domain()));
 	return sample;
 }
 double ManualAeroSurfaceConfig::get_drag_coefficient(double angle_of_attack) const {
-    _build_default_curves();
-    const Ref<Curve> &curve = drag_aoa_curve.is_valid() ? drag_aoa_curve : default_drag_curve;
-    double sample = curve->sample_baked(Math::remap((real_t) angle_of_attack, (real_t) -Math::PI, (real_t) Math::PI, curve->get_min_domain(), curve->get_max_domain()));
-    return Math::remap((real_t) sample, curve->get_min_value(), curve->get_max_value(), (real_t) min_drag_coefficient, (real_t) max_drag_coefficient);
+    apply_default_curves();
+    double sample = drag_aoa_curve->sample_baked(Math::remap((real_t) angle_of_attack, (real_t) -Math::PI, (real_t) Math::PI, drag_aoa_curve->get_min_domain(), drag_aoa_curve->get_max_domain()));
+    return Math::remap((real_t) sample, drag_aoa_curve->get_min_value(), drag_aoa_curve->get_max_value(), (real_t) min_drag_coefficient, (real_t) max_drag_coefficient);
 }
 
 
@@ -87,13 +85,12 @@ Ref<Curve> ManualAeroSurfaceConfig::get_drag_aoa_curve() const {return drag_aoa_
 void ManualAeroSurfaceConfig::set_sweep_drag_multiplier_curve(const Ref<Curve> &p_curve) {sweep_drag_multiplier_curve = p_curve; }
 Ref<Curve> ManualAeroSurfaceConfig::get_sweep_drag_multiplier_curve() const {return sweep_drag_multiplier_curve;}
 double ManualAeroSurfaceConfig::get_drag_at_sweep_angle(double sweep_angle) const {
-    _build_default_curves();
-    const Ref<Curve> &curve = sweep_drag_multiplier_curve.is_valid() ? sweep_drag_multiplier_curve : default_sweep_curve;
-    return curve->sample_baked(Math::abs(Math::remap((real_t) sweep_angle, (real_t) 0.0, (real_t) Math::PI, curve->get_min_domain(), curve->get_max_domain())));
+    apply_default_curves();
+    return sweep_drag_multiplier_curve->sample_baked(Math::abs(Math::remap((real_t) sweep_angle, (real_t) 0.0, (real_t) Math::PI, sweep_drag_multiplier_curve->get_min_domain(), sweep_drag_multiplier_curve->get_max_domain())));
 }
 void ManualAeroSurfaceConfig::set_drag_at_mach_multiplier_curve(const Ref<Curve> &p_curve) {drag_at_mach_multiplier_curve = p_curve;}
 Ref<Curve> ManualAeroSurfaceConfig::get_drag_at_mach_multiplier_curve() const {return drag_at_mach_multiplier_curve;}
 double ManualAeroSurfaceConfig::get_drag_multiplier_at_mach(double mach) const {
-    _build_default_curves();
-    return (drag_at_mach_multiplier_curve.is_valid() ? drag_at_mach_multiplier_curve : default_mach_curve)->sample_baked(mach);
+    apply_default_curves();
+    return drag_at_mach_multiplier_curve->sample_baked(mach);
 }

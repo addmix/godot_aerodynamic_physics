@@ -9,7 +9,7 @@ const AeroMathUtils = preload("../../utils/math_utils.gd")
 const AeroNodeUtils = preload("../../utils/node_utils.gd")
 
 ## Reference to the parent [AeroBody3D].
-@onready var aero_body : AeroBody3D = get_parent()
+@onready var aero_body : AeroBody3D = get_parent() if get_parent() is AeroBody3D else null
 ## FlightAssist resource used to configure flight assist features.
 @export var flight_assist : FlightAssist
 ## Control configuration resource used to define control axes and key bindings.
@@ -35,7 +35,7 @@ func _ready() -> void:
 			control_config = control_config.duplicate(true)
 
 func _physics_process(delta : float) -> void:
-	if Engine.is_editor_hint():
+	if Engine.is_editor_hint() or not aero_body:
 		return
 	
 	control_config.update(delta)

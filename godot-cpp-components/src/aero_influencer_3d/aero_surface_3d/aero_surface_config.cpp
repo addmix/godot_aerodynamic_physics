@@ -37,17 +37,17 @@ double AeroSurfaceConfig::get_span() const {
 void AeroSurfaceConfig::set_area(double _area) {
 	double _aspect_ratio = get_aspect_ratio();
 	double area = get_area();
-
+	
 	double _span = _aspect_ratio * chord / sqrt(area) * sqrt(_area);
 	double _chord = span / _aspect_ratio / sqrt(area) * sqrt(_area);
-
+	
 	if (Math::is_equal_approx(_span, 0.0) || Math::is_equal_approx(_chord, 0.0)) {
 		return;
 	}
-
+	
 	span = _span;
 	chord = _chord;
-
+    
     emit_changed();
 }
 double AeroSurfaceConfig::get_area() const {
@@ -56,15 +56,15 @@ double AeroSurfaceConfig::get_area() const {
 void AeroSurfaceConfig::set_aspect_ratio(double _aspect_ratio) {
 	if (Math::is_equal_approx(_aspect_ratio, 0.0) || !(Math::is_finite(_aspect_ratio))) return;
 	double _area = get_area();
-
+	
 	double _span = sqrt(_aspect_ratio * _area);
 	double _chord = sqrt(_area) / sqrt(_aspect_ratio);
-
+	
 	if (Math::is_equal_approx(_span, 0.0) || Math::is_equal_approx(_chord, 0.0)) return;
-
+	
 	span = _span;
 	chord = _chord;
-
+    
     emit_changed();
 }
 double AeroSurfaceConfig::get_aspect_ratio() const {

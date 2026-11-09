@@ -7,17 +7,17 @@ void AeroBody3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_substeps_override", "p_substeps"), &AeroBody3D::set_substeps_override);
 	ClassDB::bind_method(D_METHOD("get_substeps_override"), &AeroBody3D::get_substeps_override);
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "substeps_override"), "set_substeps_override", "get_substeps_override");
-
+	
 	//function bindings
 	ClassDB::bind_method(D_METHOD("add_aero_atmosphere", "p_aero_atmosphere"), &AeroBody3D::add_aero_atmosphere);
 	ClassDB::bind_method(D_METHOD("remove_aero_atmosphere", "p_aero_atmosphere"), &AeroBody3D::remove_aero_atmosphere);
 	
-
+	
 	//experimental_energy_tracking;
-
+	
 	//debug bindings
 	ADD_GROUP("Debug", "");
-
+	
 	ADD_SUBGROUP("Visibility", "");
 	//debug visibility
 	ClassDB::bind_method(D_METHOD("set_show_debug", "visible"), &AeroBody3D::set_show_debug);
@@ -56,7 +56,7 @@ void AeroBody3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_show_center_of_thrust", "show"), &AeroBody3D::set_show_center_of_thrust);
 	ClassDB::bind_method(D_METHOD("get_show_center_of_thrust"), &AeroBody3D::get_show_center_of_thrust);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "show_center_of_thrust"), "set_show_center_of_thrust", "get_show_center_of_thrust");
-
+	
 	ADD_SUBGROUP("Options", "");
 	ClassDB::bind_method(D_METHOD("set_debug_linear_velocity", "p_velocity"), &AeroBody3D::set_debug_linear_velocity);
 	ClassDB::bind_method(D_METHOD("get_debug_linear_velocity"), &AeroBody3D::get_debug_linear_velocity);
@@ -79,14 +79,14 @@ void AeroBody3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_debug_center_width", "p_width"), &AeroBody3D::set_debug_center_width);
 	ClassDB::bind_method(D_METHOD("get_debug_center_width"), &AeroBody3D::get_debug_center_width);
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "debug_center_width"), "set_debug_center_width", "get_debug_center_width");
-
-
+	
+	
 	ClassDB::bind_method(D_METHOD("get_amount_of_active_influencers"), &AeroBody3D::get_amount_of_active_influencers);
 	ClassDB::bind_method(D_METHOD("get_control_command", "axis_name"), &AeroBody3D::get_control_command);
 	ClassDB::bind_method(D_METHOD("get_relative_position"), &AeroBody3D::get_relative_position);
 	ClassDB::bind_method(D_METHOD("get_drag_direction"), &AeroBody3D::get_drag_direction);
 	ClassDB::bind_method(D_METHOD("interrupt_sleep"), &AeroBody3D::interrupt_sleep);
-
+	
 	//don't show these in inspector
 	ADD_GROUP("", "");
 	ADD_SUBGROUP("", "");
@@ -156,10 +156,10 @@ int AeroBody3D::substeps = 1;
 
 void AeroBody3D::refresh_transform_cache() {
 	global_transform_cache = get_global_transform();
-
+	
 	for (AeroInfluencer3D* influencer : aero_influencers) {
 		if (not influencer) continue;
-
+		
 		influencer->update_transform_cache(global_transform_cache);
 	}
 }
@@ -174,13 +174,13 @@ static Callable *substeps_refresh_callable = nullptr;
 
 void AeroBody3D::initialize_substeps() {
 	refresh_substeps();
-
+	
 	substeps_refresh_callable = memnew(Callable(callable_mp_static(&AeroBody3D::refresh_substeps)));
 	ProjectSettings::get_singleton()->connect("settings_changed", *substeps_refresh_callable);
 }
 void AeroBody3D::finalize_substeps() {
 	if (not substeps_refresh_callable) return;
-
+	
 	ProjectSettings::get_singleton()->disconnect("settings_changed", *substeps_refresh_callable);
 	memdelete(substeps_refresh_callable);
 	substeps_refresh_callable = nullptr;
@@ -193,12 +193,12 @@ AeroBody3D::AeroBody3D() {
 	set_linear_damp_mode(DAMP_MODE_REPLACE);
 	set_angular_damp_mode(DAMP_MODE_REPLACE);
 	set_center_of_mass_mode(CENTER_OF_MASS_MODE_CUSTOM);
-
+	
 	linear_velocity_substep = get_linear_velocity();
 	angular_velocity_substep = get_angular_velocity();
 	
 	PhysicsServer3D::get_singleton()->body_set_force_integration_callback(get_rid(), callable_mp(this, &AeroBody3D::integrate_forces));
-
+	
 	mass_debug_point = AeroUtils::create_debug_point_node("MassDebugPoint", Color(1.0, 1.0, 0.0), true, debug_center_width);
 	force_debug_vector = AeroUtils::create_debug_vector_node("ForceDebugVector", Color(1.0, 1.0, 1.0), true, debug_width);
 	torque_debug_vector = AeroUtils::create_debug_vector_node("TorqueDebugVector", Color(0.0, 0.0, 0.0), true, debug_width);
@@ -215,7 +215,7 @@ AeroBody3D::~AeroBody3D() {
 
 void AeroBody3D::_enter_tree() {
 	set_collision_layer_value(ProjectSettings::get_singleton()->get_setting("physics/aerodynamics/atmosphere_area_collision_layer", 15), true);
-
+	
 	if (Engine::get_singleton()->is_editor_hint()) {
 		update_configuration_warnings();
 	}
@@ -226,7 +226,7 @@ void AeroBody3D::_ready() {
 		AeroInfluencer3D* influencer = aero_influencers[i];
 		if (influencer) influencer->generate_mirror();
 	}
-
+	
 	if (mass_debug_point and not mass_debug_point->get_parent()) {
 		mass_debug_point->add_child(force_debug_vector, INTERNAL_MODE_FRONT);
 		mass_debug_point->add_child(lift_debug_vector, INTERNAL_MODE_FRONT);
@@ -237,10 +237,10 @@ void AeroBody3D::_ready() {
 		mass_debug_point->add_child(angular_velocity_vector, INTERNAL_MODE_FRONT);
 		add_child(mass_debug_point, INTERNAL_MODE_FRONT);
 	}
-
+	
 	set_show_debug(show_debug);
 	_update_debug_scale();
-
+	
 	if (Engine::get_singleton()->is_editor_hint()) {
 		update_configuration_warnings();
 	}
@@ -248,7 +248,7 @@ void AeroBody3D::_ready() {
 
 PackedStringArray AeroBody3D::_get_configuration_warnings() const {
 	PackedStringArray warnings;
-
+	
 	double default_linear_damp = ProjectSettings::get_singleton()->get_setting("physics/3d/default_linear_damp", 0.0);
 	if (get_linear_damp_mode() == DAMP_MODE_COMBINE) {
 		if (default_linear_damp + get_linear_damp() > 0.0) {
@@ -259,7 +259,7 @@ PackedStringArray AeroBody3D::_get_configuration_warnings() const {
 			warnings.append("Linear damping is greater than 0. Non-simulated drag will be present.");
 		}
 	}
-
+	
 	double default_angular_damp = ProjectSettings::get_singleton()->get_setting("physics/3d/default_angular_damp", 0.0);
 	if (get_angular_damp_mode() == DAMP_MODE_COMBINE) {
 		if (default_angular_damp + get_angular_damp() > 0.0) {
@@ -270,7 +270,7 @@ PackedStringArray AeroBody3D::_get_configuration_warnings() const {
 			warnings.append("Angular damping is greater than 0. Non-simulated drag will be present.");
 		}
 	}
-
+	
 	return warnings;
 }
 
@@ -290,28 +290,28 @@ void AeroBody3D::integrate_forces(PhysicsDirectBodyState3D *body_state) {
 	}
 	
 	if (body_state->is_sleeping() or get_substeps() == 0) return;
-
+	
 	last_linear_velocity = uncommitted_last_linear_velocity;
 	last_angular_velocity = uncommitted_last_angular_velocity;
-
+	
 	current_gravity = body_state->get_total_gravity();
-
+	
 	//I'm not sure if this is relevant in the C++ port.
 	//it was needed in GDScript because the center_of_mass property wasn't updated from the body_state center of mass
 	//if (not Engine::get_singleton()->is_editor_hint()) {
 	//	set_center_of_mass(body_state->get_transform().get_basis().xform_inv(body_state->get_center_of_mass()));
 	//}
-
+	
 	linear_velocity_substep = body_state->get_linear_velocity();
 	angular_velocity_substep = body_state->get_angular_velocity();
-
+	
 	refresh_transform_cache();
-
+	
 	ForceAndTorque total_force_and_torque = calculate_forces(body_state->get_step());
-
+	
 	body_state->apply_central_force(total_force_and_torque.force);
 	body_state->apply_torque(total_force_and_torque.torque);
-
+	
 	//TODO - should this be done every substep?
 	linear_acceleration = (body_state->get_linear_velocity() - last_linear_velocity) / body_state->get_step();
 	angular_acceleration = (body_state->get_angular_velocity() - last_angular_velocity) / body_state->get_step();
@@ -326,7 +326,7 @@ ForceAndTorque AeroBody3D::calculate_forces(double delta) {
 		linear_velocity_substep = get_linear_velocity();
 		angular_velocity_substep = get_angular_velocity();
 	}
-
+	
 	if (AeroUnits::get_singleton()) {
 		altitude = AeroUnits::get_singleton()->get_altitude(this);
 		mach = AeroUnits::get_singleton()->speed_to_mach_at_altitude(air_speed, altitude);
@@ -343,7 +343,7 @@ ForceAndTorque AeroBody3D::calculate_forces(double delta) {
 	for (Area3D* atmosphere : atmosphere_areas) {
 		if (not atmosphere) continue;
 		if (atmosphere->get("per_influencer_positioning")) continue;
-
+		
 		Variant wind_result = atmosphere->call("get_wind_at_position", get_global_position());
 		
 		wind += (Vector3) wind_result;
@@ -356,11 +356,11 @@ ForceAndTorque AeroBody3D::calculate_forces(double delta) {
 	bank_angle = global_euler.z;
 	heading = global_euler.y;
 	inclination = global_euler.x;
-
+	
 	
 	ForceAndTorque last_force_and_torque;
 	ForceAndTorque total_force_and_torque;
-
+	
 	int substep_count = get_substeps();
 	double substep_delta = get_substep_delta();
 	for (int substep = 0; substep < substep_count; substep++) {
@@ -368,41 +368,41 @@ ForceAndTorque AeroBody3D::calculate_forces(double delta) {
 		
 		air_velocity = -get_linear_velocity_substep() + wind;
 		air_speed = air_velocity.length();
-
+		
 		local_air_velocity = global_transform_cache.basis.xform_inv(air_velocity);
 		local_angular_velocity = global_transform_cache.basis.xform_inv(angular_velocity_substep);
 		angle_of_attack = global_transform_cache.basis.get_column(1).angle_to(-air_velocity) - (Math::PI / 2.0);
 		sideslip_angle = global_transform_cache.basis.get_column(0).angle_to(air_velocity) - (Math::PI / 2.0); 
 		relative_position = calculate_relative_position();
 		drag_direction = calculate_drag_direction();
-
+		
 		_update_transform_substep(substep_delta);
-
+		
 		ForceAndTorque substep_force_and_torque_sum;
 		for (int i = 0; i < aero_influencers.size(); i++) {
 			AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
 			if (not influencer) continue;
 			if (influencer->is_disabled()) continue;
-
+			
 			ForceAndTorque force_and_torque = influencer->calculate_forces_with_override(substep_delta);
 			
 			substep_force_and_torque_sum += force_and_torque;
 		}
-
+		
 		total_force_and_torque += substep_force_and_torque_sum;
 		last_force_and_torque = substep_force_and_torque_sum;
-
+		
 		linear_velocity_substep = calculate_linear_velocity_substep(last_force_and_torque.force) + current_gravity * substep_delta;
 		angular_velocity_substep = calculate_angular_velocity_substep(last_force_and_torque.torque);
-
+		
 		if (Engine::get_singleton()->is_editor_hint()) break; //only simulate 1 substep: see https://github.com/addmix/godot_aerodynamic_physics/issues/35
 	}
-
+	
 	total_force_and_torque /= substep_count;
-
+	
 	current_force = total_force_and_torque.force;
 	current_torque = total_force_and_torque.torque;
-
+	
 	/*
 	#other features needed for energy tracking to work:
 	#- separate thrust(energy creation) and drag(energy loss) from regular forces
@@ -456,7 +456,7 @@ ForceAndTorque AeroBody3D::calculate_forces(double delta) {
 		total_force_and_torque[1] = angular_velocity_change
 		current_torque = total_force_and_torque[1]
 	*/
-
+	
 	return total_force_and_torque;
 }
 void AeroBody3D::_update_transform_substep(double substep_delta) {
@@ -465,7 +465,7 @@ void AeroBody3D::_update_transform_substep(double substep_delta) {
 			AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
 			if (not influencer) continue;
 			if (influencer->is_disabled()) continue;
-
+			
 			influencer->_update_transform_substep_with_override(substep_delta);
 		}
 	}
@@ -493,14 +493,14 @@ double AeroBody3D::get_control_command(StringName axis_name) {
 }
 bool AeroBody3D::is_overriding_body_sleep() const {
 	bool overriding = false;
-
+	
 	for (AeroInfluencer3D* influencer : aero_influencers) {
 		if (not influencer) continue;
 		if (influencer->is_disabled()) continue;
-
+		
 		overriding = overriding or influencer->is_overriding_body_sleep_with_override();
 	}
-
+	
 	return overriding;
 }
 
@@ -567,7 +567,7 @@ int AeroBody3D::get_amount_of_active_influencers() const {
 		if (not influencer) continue;
 		if (not influencer->is_disabled()) count += 1;
 	}
-
+	
 	return count;
 }
 Vector3 AeroBody3D::get_relative_position() const { return relative_position; }
@@ -618,7 +618,7 @@ void AeroBody3D::_update_debug_visibility() {
 		if (not influencer) continue;
 		influencer->set_show_debug(show_debug and show_wing_debug_vectors);
 	}
-
+	
 	if (force_debug_vector) force_debug_vector->set_visible(show_debug);
 	if (torque_debug_vector) torque_debug_vector->set_visible(show_debug and show_torque);
 	if (linear_velocity_vector) linear_velocity_vector->set_visible(show_debug and show_linear_velocity);
@@ -636,7 +636,7 @@ void AeroBody3D::_update_debug_scale() {
 		influencer->set_debug_scaling_factor(debug_scaling_factor);
 		influencer->set_debug_width(debug_influencer_width);
 	}
-
+	
 	if (linear_velocity_vector) linear_velocity_vector->set("width", debug_width);
 	if (angular_velocity_vector) angular_velocity_vector->set("width", debug_width);
 	if (force_debug_vector) force_debug_vector->set("width", debug_width);
@@ -649,19 +649,19 @@ void AeroBody3D::_update_debug_scale() {
 
 void AeroBody3D::_update_debug() {
 	if (not is_inside_tree()) return;
-
+	
 	//integrate_forces doesn't run in the editor, so keep the caches fresh for the debug pass
 	refresh_transform_cache();
-
+	
 	if (mass_debug_point) mass_debug_point->set_position(get_center_of_mass());
-
+	
 	Vector3 linear_velocity_to_use = get_linear_velocity();
 	Vector3 angular_velocity_to_use = get_angular_velocity();
 	
 	if (Engine::get_singleton()->is_editor_hint()) {
 		linear_velocity_to_use = debug_linear_velocity;
 		angular_velocity_to_use = debug_angular_velocity;
-
+		
 		//Godot doesn't run the physics engine in-editor, so calculate the forces manually with the debug velocities.
 		Vector3 original_linear_velocity = get_linear_velocity();
 		Vector3 original_angular_velocity = get_angular_velocity();
@@ -671,18 +671,18 @@ void AeroBody3D::_update_debug() {
 		set_linear_velocity(original_linear_velocity);
 		set_angular_velocity(original_angular_velocity);
 	}
-
+	
 	Basis inverse_basis = get_global_transform().get_basis().inverse();
-
+	
 	if (force_debug_vector) force_debug_vector->set("value", inverse_basis.xform(AeroUtils::v3log_with_base(current_force, 2.0)));
 	if (torque_debug_vector) torque_debug_vector->set("value", inverse_basis.xform(AeroUtils::v3log_with_base(current_torque, 2.0)));
 	if (linear_velocity_vector) linear_velocity_vector->set("value", inverse_basis.xform(AeroUtils::v3log_with_base(linear_velocity_to_use, 2.0)));
 	if (angular_velocity_vector) angular_velocity_vector->set("value", inverse_basis.xform(AeroUtils::v3log_with_base(angular_velocity_to_use, 2.0)));
-
+	
 	//accumulate per-influencer forces
 	Vector<Node*> all_influencers;
 	AeroUtils::get_descendants_of_type(this, "AeroInfluencer3D", all_influencers);
-
+	
 	if (all_influencers.size() > 0) {
 		double force_sum = 0.0;
 		Vector3 force_vector_sum = Vector3();
@@ -696,40 +696,40 @@ void AeroBody3D::_update_debug() {
 		double thrust_sum = 0.0;
 		Vector3 thrust_vector_sum = Vector3();
 		Vector3 thrust_position_sum = Vector3();
-
+		
 		Vector3 drag_direction = get_drag_direction();
-
+		
 		for (int i = 0; i < all_influencers.size(); i++) {
 			AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(all_influencers[i]);
 			if (not influencer) continue;
 			//skip omitted or disabled influencers, they don't contribute to the debug vectors
 			if (influencer->is_omitted_from_debug() or influencer->is_disabled()) continue;
-
+			
 			Vector3 force_vector = influencer->get_current_force();
 			double force = force_vector.length();
 			force_sum += force;
 			force_vector_sum += force_vector;
 			force_position_sum += influencer->get_relative_position() * force;
-
+			
 			Vector3 drag_vector = Math::max(force_vector.dot(drag_direction), (real_t)0.0) * drag_direction;
 			double drag = drag_vector.length();
 			drag_sum += drag;
 			drag_vector_sum += drag_vector;
 			drag_position_sum += influencer->get_relative_position() * drag;
-
+			
 			Vector3 lift_vector = force_vector - force_vector.dot(drag_direction) * drag_direction;
 			double lift = lift_vector.length();
 			lift_sum += lift;
 			lift_vector_sum += lift_vector;
 			lift_position_sum += influencer->get_relative_position() * lift;
-
+			
 			Vector3 thrust_vector = Math::min(force_vector.dot(drag_direction), (real_t)0.0) * drag_direction;
 			double thrust = thrust_vector.length();
 			thrust_sum += thrust;
 			thrust_vector_sum += thrust_vector;
 			thrust_position_sum += influencer->get_relative_position() * thrust;
 		}
-
+		
 		if (force_debug_vector) {
 			force_debug_vector->set("value", inverse_basis.xform(AeroUtils::v3log_with_base(force_vector_sum, debug_scaling_factor)) * debug_scale);
 			if (not Math::is_equal_approx(force_sum, 0.0)) force_debug_vector->set_position(inverse_basis.xform(force_position_sum / force_sum));
@@ -747,7 +747,7 @@ void AeroBody3D::_update_debug() {
 			if (not Math::is_equal_approx(thrust_sum, 0.0)) thrust_debug_vector->set_position(inverse_basis.xform(thrust_position_sum / thrust_sum));
 		}
 	}
-
+	
 	for (AeroInfluencer3D* influencer : aero_influencers) {
 		if (not influencer) continue;
 		influencer->update_debug_vectors();

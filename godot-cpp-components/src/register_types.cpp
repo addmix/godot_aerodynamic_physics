@@ -23,13 +23,13 @@ void initialize_gdextension_types(ModuleInitializationLevel p_level)
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
-
+	
 	GDREGISTER_ABSTRACT_CLASS(AeroUnits);
 	aero_units = memnew(AeroUnits);
 	Engine::get_singleton()->register_singleton("AeroUnits", AeroUnits::get_singleton());
-
+	
 	AeroBody3D::initialize_substeps();
-
+	
 	GDREGISTER_CLASS(AeroBody3D);
 	GDREGISTER_CLASS(AeroInfluencer3D);
 	GDREGISTER_CLASS(AeroSurfaceConfig);
@@ -42,9 +42,9 @@ void uninitialize_gdextension_types(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
-
+	
 	AeroBody3D::finalize_substeps();
-
+	
 	Engine::get_singleton()->unregister_singleton("AeroUnits");
 	memdelete(aero_units);
 	aero_units = nullptr;
@@ -59,7 +59,7 @@ extern "C"
 		init_obj.register_initializer(initialize_gdextension_types);
 		init_obj.register_terminator(uninitialize_gdextension_types);
 		init_obj.set_minimum_library_initialization_level(MODULE_INITIALIZATION_LEVEL_SCENE);
-
+		
 		return init_obj.init();
 	}
 }

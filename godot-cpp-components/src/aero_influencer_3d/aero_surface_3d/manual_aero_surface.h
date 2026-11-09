@@ -17,9 +17,9 @@ public:
 	ManualAeroSurface3D();
 	~ManualAeroSurface3D();
 	void _enter_tree() override;
-
+    
     ForceAndTorque calculate_forces(double substep_delta);
-
+    
     void set_manual_config(const Ref<ManualAeroSurfaceConfig> &p_config);
 	Ref<ManualAeroSurfaceConfig> get_manual_config() const;
 };

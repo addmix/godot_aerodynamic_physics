@@ -24,7 +24,7 @@ private:
 	int mirror_scaling_fix_axis = 0;
 	bool _duplicate = false;
 	AeroInfluencer3D* mirror_duplicate = nullptr;
-
+	
 	Ref<Resource> actuation_config;//AeroInfluencerControlConfig actuation_config; //TODO
 	int control_rotation_order = 0;
 	
@@ -33,19 +33,19 @@ private:
 	double debug_scaling_factor = 2.0;
 	double debug_width = 0.1;
 	bool show_debug = false;
-
+	
 	bool show_force = true;
 	bool show_torque = false;
 	bool show_lift = true;
 	bool show_drag = true;
 	bool show_thrust = false;
-
+	
 	AeroBody3D *aero_body = nullptr;
 	AeroInfluencer3D *parent_influencer = nullptr;
 	std::vector<AeroInfluencer3D*> aero_influencers;
-
+	
 	Transform3D default_transform = Transform3D();
-
+	
 	double altitude = 0.0;
 	double air_density = 1.225;
 	Vector3 relative_position;
@@ -64,15 +64,15 @@ protected:
 	Vector3 current_force;
 	Vector3 current_torque;
 private:
-
+	
 	Node3D *force_debug_vector = nullptr;
 	Node3D *torque_debug_vector = nullptr;
 	Node3D *lift_debug_vector = nullptr;
 	Node3D *drag_debug_vector = nullptr;
 	Node3D *thrust_debug_vector = nullptr;
-
+	
 	Transform3D last_transform = Transform3D();
-
+	
 	bool calculate_forces_overridden = false;
 	bool update_transform_substep_overridden = false;
 	bool update_control_transform_overridden = false;
@@ -80,7 +80,7 @@ private:
 	bool angular_velocity_substep_overridden = false;
 	bool body_sleep_overridden = false;
 	bool in_body_sleep_override = false;
-
+	
 	Transform3D local_transform_cache = Transform3D();
 	Transform3D global_transform_cache = Transform3D();
 public:
@@ -97,17 +97,17 @@ public:
 	void _enter_tree() override;
 	void _exit_tree() override;
 	void _physics_process(double delta) override;
-
+	
 	void generate_mirror();
 	void update_mirror_transform();
 	Transform3D calculate_mirrored_transform(const Transform3D &p_transform) const;
-
+	
 	bool is_mirrored() const;
 	bool is_mirror_pending() const;
 	static void map_mirror_sources(AeroInfluencer3D *p_source, AeroInfluencer3D *p_mirror);
 	static void set_owner_recursive(Node *p_node, Node *p_owner);
-
-
+	
+	
 	ForceAndTorque calculate_forces_with_override(double substep_delta);
 	virtual ForceAndTorque calculate_forces(double substep_delta);
 	void _update_transform_substep(double substep_delta);
@@ -119,7 +119,7 @@ public:
 	bool is_overriding_body_sleep() const;
 	GDVIRTUAL0R(bool, is_overriding_body_sleep);
 	bool is_overriding_body_sleep_with_override();
-
+	
 	Vector3 calculate_relative_position() const;
 	Vector3 calculate_world_air_velocity() const;
 	Vector3 calculate_linear_velocity_substep() const;
@@ -131,28 +131,28 @@ public:
 	Vector3 calculate_centrifugal_offset();
 	Vector3 calculate_linear_acceleration();
 	Vector3 calculate_angular_acceleration() const;
-
+	
 	double get_control_command(StringName axis_name);
 	
 	void update_debug_vectors();
-
+	
 	void update_transform_cache(const Transform3D &parent_global_transform);
 	void set_cached_transform(const Transform3D &p_transform);
-
+	
 	const Transform3D &get_cached_local_transform() const;
 	const Transform3D &get_cached_global_transform() const;
 	Basis get_cached_global_basis() const;
 	Vector3 get_cached_position() const;
-
-
+	
+	
 	
 	//setters and getters
 	void set_disabled(int p_disabled);
 	int is_disabled() const;
-
+	
 	void set_can_override_body_sleep(bool override);
 	bool get_can_override_body_sleep() const;
-
+	
 	void set_mirror_axis(int axis);
 	int get_mirror_axis() const;
 	void set_mirror_scaling_fix_axis(int axis);
@@ -178,7 +178,7 @@ public:
 	double get_debug_width() const;
 	void set_show_debug(bool value);
 	bool get_show_debug() const;
-
+	
 	void set_show_force(bool show);
 	bool get_show_force() const;
 	void set_show_torque(bool show);
@@ -189,7 +189,7 @@ public:
 	bool get_show_drag() const;
 	void set_show_thrust(bool show);
 	bool get_show_thrust() const;
-
+	
 	void set_aero_body(AeroBody3D* new_body);
 	AeroBody3D* get_aero_body() const;
 	void set_aero_influencers(const TypedArray<AeroInfluencer3D> &new_arr);

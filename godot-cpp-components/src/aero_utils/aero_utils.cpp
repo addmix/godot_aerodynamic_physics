@@ -12,7 +12,7 @@ Vector3 AeroUtils::v3log_with_base(Vector3 vector, double base) {
 bool AeroUtils::is_of_type(Node* node, const StringName &type) {
     if (not node) return false;
     if (node->is_class(type)) return true;
-
+    
     Ref<Script> script = node->get_script();
     while (script.is_valid()) {
         if (script->get_global_name() == type) return true;
@@ -22,7 +22,7 @@ bool AeroUtils::is_of_type(Node* node, const StringName &type) {
 }
 Node* AeroUtils::get_first_child_of_type(Node* node, const StringName &type) {
     if (not node) return nullptr;
-
+    
     TypedArray<Node> children = node->get_children();
     for (int i = 0; i < children.size(); i++) {
         Node* child = Object::cast_to<Node>(children[i]);
@@ -32,7 +32,7 @@ Node* AeroUtils::get_first_child_of_type(Node* node, const StringName &type) {
 }
 void AeroUtils::get_descendants_of_type(Node* node, const StringName &type, Vector<Node*> &r_descendants) {
     if (not node) return;
-
+    
     TypedArray<Node> children = node->get_children();
     for (int i = 0; i < children.size(); i++) {
         Node* child = Object::cast_to<Node>(children[i]);
@@ -49,7 +49,7 @@ static Node3D* create_debug_node(const Ref<Script> &script, const StringName &na
     vector->set("color", color);
     vector->set("checker", checker);
     vector->set("width", width);
-
+    
     if (parent) parent->add_child(vector, Node::INTERNAL_MODE_FRONT);
     return vector;
 }

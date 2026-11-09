@@ -18,19 +18,19 @@ private:
     double aero_reference = 0.0;
 protected:
 	static void _bind_methods();
-
+    
     Vector3 lift_direction = Vector3(0, 0, 0);
-
+    
     double lift_force = 0.0;
     double drag_force = 0.0;
 public:
 	//init/deinit, and godot virtual overrides.
 	AeroSurface3D();
 	~AeroSurface3D();
-
+    
     void _enter_tree() override;
     ForceAndTorque calculate_forces(double substep_delta);
-
+    
     void set_wing_config(const Ref<AeroSurfaceConfig> &p_config);
 	Ref<AeroSurfaceConfig> get_wing_config() const;
     

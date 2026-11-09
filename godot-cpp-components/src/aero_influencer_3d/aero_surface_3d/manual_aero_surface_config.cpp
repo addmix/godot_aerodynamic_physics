@@ -7,7 +7,7 @@ void ManualAeroSurfaceConfig::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_drag_coefficient", "angle_of_attack"), &ManualAeroSurfaceConfig::get_drag_coefficient);
     ClassDB::bind_method(D_METHOD("get_drag_at_sweep_angle", "sweep_angle"), &ManualAeroSurfaceConfig::get_drag_at_sweep_angle);
     ClassDB::bind_method(D_METHOD("get_drag_multiplier_at_mach", "mach"), &ManualAeroSurfaceConfig::get_drag_multiplier_at_mach);
-
+	
 	//ClassDB::bind_method(D_METHOD("set_min_lift_coefficient", "value"), &ManualAeroSurfaceConfig::set_min_lift_coefficient);
 	//ClassDB::bind_method(D_METHOD("get_min_lift_coefficient"), &ManualAeroSurfaceConfig::get_min_lift_coefficient);
 	//ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "min_lift_coefficient"), "set_min_lift_coefficient", "get_min_lift_coefficient");
@@ -17,7 +17,7 @@ void ManualAeroSurfaceConfig::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_lift_aoa_curve", "p_config"), &ManualAeroSurfaceConfig::set_lift_aoa_curve);
 	ClassDB::bind_method(D_METHOD("get_lift_aoa_curve"), &ManualAeroSurfaceConfig::get_lift_aoa_curve);
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "lift_aoa_curve", PROPERTY_HINT_RESOURCE_TYPE, "Curve"), "set_lift_aoa_curve", "get_lift_aoa_curve");
-
+    
     ClassDB::bind_method(D_METHOD("set_min_drag_coefficient", "value"), &ManualAeroSurfaceConfig::set_min_drag_coefficient);
 	ClassDB::bind_method(D_METHOD("get_min_drag_coefficient"), &ManualAeroSurfaceConfig::get_min_drag_coefficient);
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "min_drag_coefficient", PROPERTY_HINT_RANGE, "0,100,0.001,or_greater,exp,suffix:cD"), "set_min_drag_coefficient", "get_min_drag_coefficient");
@@ -27,11 +27,11 @@ void ManualAeroSurfaceConfig::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_drag_aoa_curve", "p_config"), &ManualAeroSurfaceConfig::set_drag_aoa_curve);
 	ClassDB::bind_method(D_METHOD("get_drag_aoa_curve"), &ManualAeroSurfaceConfig::get_drag_aoa_curve);
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "drag_aoa_curve", PROPERTY_HINT_RESOURCE_TYPE, "Curve"), "set_drag_aoa_curve", "get_drag_aoa_curve");
-
+    
     ClassDB::bind_method(D_METHOD("set_sweep_drag_multiplier_curve", "p_config"), &ManualAeroSurfaceConfig::set_sweep_drag_multiplier_curve);
 	ClassDB::bind_method(D_METHOD("get_sweep_drag_multiplier_curve"), &ManualAeroSurfaceConfig::get_sweep_drag_multiplier_curve);
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "sweep_drag_multiplier_curve", PROPERTY_HINT_RESOURCE_TYPE, "Curve"), "set_sweep_drag_multiplier_curve", "get_sweep_drag_multiplier_curve");
-
+    
     ClassDB::bind_method(D_METHOD("set_drag_at_mach_multiplier_curve", "p_config"), &ManualAeroSurfaceConfig::set_drag_at_mach_multiplier_curve);
 	ClassDB::bind_method(D_METHOD("get_drag_at_mach_multiplier_curve"), &ManualAeroSurfaceConfig::get_drag_at_mach_multiplier_curve);
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "drag_at_mach_multiplier_curve", PROPERTY_HINT_RESOURCE_TYPE, "Curve"), "set_drag_at_mach_multiplier_curve", "get_drag_at_mach_multiplier_curve");
@@ -47,7 +47,7 @@ void ManualAeroSurfaceConfig::apply_default_curves() const {
 		curve->call("recalculate");
 		lift_aoa_curve = curve;
 	}
-
+	
 	if (drag_aoa_curve.is_null()) drag_aoa_curve = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/core/resources/default_drag_aoa_curve.tres")->duplicate();
 	if (sweep_drag_multiplier_curve.is_null()) sweep_drag_multiplier_curve = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/core/resources/default_sweep_drag_multiplier.tres")->duplicate();
 	if (drag_at_mach_multiplier_curve.is_null()) drag_at_mach_multiplier_curve = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/core/resources/default_drag_at_mach_curve.tres")->duplicate();

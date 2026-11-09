@@ -17,7 +17,7 @@ public:
 	//init/deinit, and godot virtual overrides.
 	AeroSurfaceConfig();
 	~AeroSurfaceConfig();
-
+    
     void set_chord(double value);
     double get_chord() const;
     void set_span(double value);

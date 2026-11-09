@@ -25,12 +25,12 @@ public:
 	//init/deinit, and godot virtual overrides.
 	ManualAeroSurfaceConfig();
 	~ManualAeroSurfaceConfig();
-
+	
 	void apply_default_curves() const;
-
+	
 	double get_lift_coefficient(double angle_of_attack) const;
 	double get_drag_coefficient(double angle_of_attack) const;
-
+	
 	//void set_min_lift_coefficient(double value);
 	//double get_min_lift_coefficient();
 	//void set_max_lift_coefficient(double value);

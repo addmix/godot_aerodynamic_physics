@@ -26,7 +26,7 @@ namespace godot {
 struct ForceAndTorque {
     Vector3 force{};
     Vector3 torque{};
-
+    
     ForceAndTorque() = default;
     ForceAndTorque(const Vector3& f, const Vector3& t)
         : force(f), torque(t) {}
@@ -52,14 +52,14 @@ class AeroInfluencer3D;//forward declaration
 class AeroBody3D : public VehicleBody3D {
 	GDCLASS(AeroBody3D, VehicleBody3D)
 private:
-
+	
 	//exports and config properties
 	int substeps_override = -1;
 	static int substeps;
 	int current_substep = 0;
 	//experimental_energy_tracking
-
-
+	
+	
 	//debug
 	
 	//debug visibility
@@ -84,7 +84,7 @@ private:
 	double debug_width = 0.3;
 	double debug_influencer_width = 0.1;
 	double debug_center_width = 0.4;
-
+	
 	std::vector<AeroInfluencer3D*> aero_influencers;
 	//aero_surfaces
 	Vector3 current_force = Vector3(0, 0, 0);
@@ -109,10 +109,10 @@ private:
 	double altitude = 0;
 	double air_density = 1.225;
 	double air_pressure = 101325.0;
-
+	
 	Vector3 relative_position = Vector3();
 	Vector3 drag_direction = Vector3();
-
+	
 	double angle_of_attack = 0;
 	double sideslip_angle = 0;
 	double bank_angle = 0;
@@ -120,15 +120,15 @@ private:
 	double inclination = 0;
 	
 	std::vector<Area3D*> atmosphere_areas;
-
+	
 	Node3D *linear_velocity_vector = nullptr;
 	Node3D *angular_velocity_vector = nullptr;
-
+	
 	Node3D *force_debug_vector = nullptr;
 	Node3D *torque_debug_vector = nullptr;
 	Node3D *lift_debug_vector = nullptr;
 	Node3D *drag_debug_vector = nullptr;
-
+	
 	Node3D *mass_debug_point = nullptr;
 	Node3D *thrust_debug_vector = nullptr;
 protected:
@@ -147,7 +147,7 @@ public:
 	void _physics_process(double delta) override;
 	PackedStringArray _get_configuration_warnings() const override;
 	void integrate_forces(PhysicsDirectBodyState3D *body_state);
-
+	
 	
 	ForceAndTorque calculate_forces(double delta);
 	void _update_transform_substep(double substep_delta);
@@ -165,27 +165,27 @@ public:
 	TypedArray<AeroInfluencer3D> get_aero_influencers() const;
 	TypedArray<Area3D> get_atmosphere_areas() const;
 	const std::vector<Area3D*> &get_atmosphere_areas_internal() const;
-
+	
 	void add_aero_influencer(AeroInfluencer3D* influencer);
 	void remove_aero_influencer(AeroInfluencer3D* influencer);
-
+	
 	void add_aero_atmosphere(Area3D* atmosphere);
 	void remove_aero_atmosphere(Area3D* atmosphere);
 	
 	
-
 	
-
-
+	
+	
+	
 	//setters and getters
-
-
-
-
+	
+	
+	
+	
 	void set_substeps_override(int p_substeps);
 	int get_substeps_override() const;
 	int get_substeps() const;
-
+	
 	void refresh_transform_cache();
 	const Transform3D &get_cached_global_transform() const;
 	Basis get_cached_global_basis() const;
@@ -193,8 +193,8 @@ public:
 	double get_substep_delta() const;
 	int get_current_substep() const;
 	//experimental_energy_tracking
-
-
+	
+	
 	int get_amount_of_active_influencers() const;
 	Vector3 get_relative_position() const;
 	Vector3 get_drag_direction() const;
@@ -202,7 +202,7 @@ public:
 	Vector3 get_angular_velocity_substep() const;
 	Vector3 get_linear_acceleration() const;
 	Vector3 get_angular_acceleration() const;
-
+	
 	Vector3 get_current_force() const;
 	Vector3 get_current_torque() const;
 	Vector3 get_current_gravity() const;
@@ -222,77 +222,77 @@ public:
 	double get_bank_angle() const;
 	double get_heading() const;
 	double get_inclination() const;
-
+	
 	//debug
 	void _update_debug();
 	void _update_debug_visibility();
 	void _update_debug_scale();
-
+	
 	void set_show_debug(bool value);
 	bool get_show_debug() const;
-
+	
 	void set_update_debug(bool value);
 	bool get_update_debug() const;
-
+	
 	void set_show_wing_debug_vectors(bool value);
 	bool get_show_wing_debug_vectors() const;
-
+	
 	void set_show_lift_vectors(bool value);
 	bool get_show_lift_vectors() const;
-
+	
 	void set_show_drag_vectors(bool value);
 	bool get_show_drag_vectors() const;
-
+	
 	void set_show_torque(bool value);
 	bool get_show_torque() const;
-
+	
 	void set_show_linear_velocity(bool value);
 	bool get_show_linear_velocity() const;
-
+	
 	void set_show_angular_velocity(bool value);
 	bool get_show_angular_velocity() const;
-
+	
 	void set_show_center_of_lift(bool value);
 	bool get_show_center_of_lift() const;
-
+	
 	void set_show_center_of_drag(bool value);
 	bool get_show_center_of_drag() const;
-
+	
 	void set_show_center_of_mass(bool value);
 	bool get_show_center_of_mass() const;
-
+	
 	void set_show_center_of_thrust(bool value);
 	bool get_show_center_of_thrust() const;
 	
 	//debug options
 	void set_debug_linear_velocity(Vector3 value);
 	Vector3 get_debug_linear_velocity() const;
-
+	
 	void set_debug_angular_velocity(Vector3 value);
 	Vector3 get_debug_angular_velocity() const;
-
+	
 	void set_debug_scale(double value);
 	double get_debug_scale() const;
-
+	
 	void set_debug_width(double value);
 	double get_debug_width() const;
-
+	
 	void set_debug_scaling_factor(double value);
 	double get_debug_scaling_factor() const;
-
+	
 	void set_influencer_debug_width(double value);
 	double get_influencer_debug_width() const;
-
+	
 	void set_debug_center_width(double value);
 	double get_debug_center_width() const;
-
-
-
-
-
-
-
-
+	
+	
+	
+	
+	
+	
+	
+	
 	
 };
 

@@ -13,18 +13,18 @@ void AeroUnits::_bind_methods()
     ClassDB::bind_method(D_METHOD("get_speed_of_sound_at_pressure_and_density", "pressure", "density"), &AeroUnits::get_speed_of_sound_at_pressure_and_density);
     ClassDB::bind_method(D_METHOD("speed_to_mach_at_altitude", "speed", "altitude"), &AeroUnits::speed_to_mach_at_altitude);
     ClassDB::bind_method(D_METHOD("get_altitude", "node"), &AeroUnits::get_altitude);
-
+    
     ClassDB::bind_method(D_METHOD("get_temp_at_altitude", "altitude"), &AeroUnits::get_temp_at_altitude);
     ClassDB::bind_method(D_METHOD("get_pressure_at_altitude", "altitude"), &AeroUnits::get_pressure_at_altitude);
     ClassDB::bind_method(D_METHOD("get_density_at_altitude", "altitude"), &AeroUnits::get_density_at_altitude);
     ClassDB::bind_method(D_METHOD("get_mach_at_altitude", "altitude"), &AeroUnits::get_mach_at_altitude);
     ClassDB::bind_method(D_METHOD("get_bounds", "key"), &AeroUnits::get_bounds);
-
+    
     ClassDB::bind_method(D_METHOD("get_ratio_of_specific_heat"), &AeroUnits::get_ratio_of_specific_heat);
 	ClassDB::bind_method(D_METHOD("set_ratio_of_specific_heat", "value"), &AeroUnits::set_ratio_of_specific_heat);
 	ClassDB::bind_method(D_METHOD("get_altitude_values"), &AeroUnits::get_altitude_values);
 	ClassDB::bind_method(D_METHOD("set_altitude_values", "value"), &AeroUnits::set_altitude_values);
-
+    
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "ratio_of_specific_heat"), "set_ratio_of_specific_heat", "get_ratio_of_specific_heat");
     ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "altitude_values"), "set_altitude_values", "get_altitude_values");
 }
@@ -46,7 +46,7 @@ AeroUnits::AeroUnits()
 {
 	//ERR_FAIL_COND(singleton != nullptr);
 	singleton = this;
-
+	
 	//Default standard atmosphere table, mirrors main's @export var altitude_values defaults.
 	altitude_values[0.0] = make_atmosphere_entry(288.0, 101325.0, 1.225);
 	altitude_values[2000.0] = make_atmosphere_entry(275.0, 79495.2, 1.0065);
@@ -60,7 +60,7 @@ AeroUnits::AeroUnits()
 	altitude_values[60000.0] = make_atmosphere_entry(245.0, 20.3, 0.0002883);
 	altitude_values[70000.0] = make_atmosphere_entry(217.0, 4.6, 0.00007424);
 	altitude_values[80000.0] = make_atmosphere_entry(196.0, 0.89, 0.0000157);
-
+	
 	recalculate_curves();
 }
 
@@ -107,7 +107,7 @@ Array AeroUnits::get_bounds(const String &key) const {
 		result.append(0.0);
 		return result;
 	}
-
+	
 	double min_value = 0.0;
 	double max_value = 0.0;
 	if (key == "altitude") {
@@ -130,7 +130,7 @@ Array AeroUnits::get_bounds(const String &key) const {
 		} else if (key == "mach") {
 			column = COLUMN_MACH;
 		}
-
+		
 		min_value = column_value(points_.front(), column);
 		max_value = min_value;
 		for (const AltitudePoint &point : points_) {
@@ -143,7 +143,7 @@ Array AeroUnits::get_bounds(const String &key) const {
 			}
 		}
 	}
-
+	
 	result.append(min_value);
 	result.append(max_value);
 	return result;
@@ -151,24 +151,24 @@ Array AeroUnits::get_bounds(const String &key) const {
 
 void AeroUnits::recalculate_curves() {
 	points_.clear();
-
+	
 	Array keys = altitude_values.keys();
 	for (int64_t i = 0; i < keys.size(); ++i) {
 		double altitude = keys.get(i);
-
+		
 		Dictionary entry = altitude_values[Variant(altitude)];
 		double temperature = entry["temperature"];
 		double pressure = entry["pressure"];
 		double density = entry["density"];
-
+		
 		//mach is dynamically calculated based on pressure and density and added to the dataset (mirrors main)
 		double mach = get_speed_of_sound_at_pressure_and_density(pressure, density);
 		entry["mach"] = mach;
 		altitude_values[Variant(altitude)] = entry;
-
+		
 		points_.push_back({altitude, temperature, pressure, density, mach});
 	}
-
+	
 	std::sort(points_.begin(), points_.end(), [](const AltitudePoint &a, const AltitudePoint &b) {
 		return a.altitude < b.altitude;
 	});
@@ -191,10 +191,10 @@ double AeroUnits::sample_column(int column, double altitude) const {
 	if (points_.empty()) {
 		return 0.0;
 	}
-
+	
 	const AltitudePoint &first = points_.front();
 	const AltitudePoint &last = points_.back();
-
+	
 	//Clamp outside the table bounds, matching Godot's baked curve sampling.
 	if (altitude <= first.altitude) {
 		return column_value(first, column);
@@ -202,7 +202,7 @@ double AeroUnits::sample_column(int column, double altitude) const {
 	if (altitude >= last.altitude) {
 		return column_value(last, column);
 	}
-
+	
 	for (size_t i = 0; i + 1 < points_.size(); ++i) {
 		const AltitudePoint &a = points_[i];
 		const AltitudePoint &b = points_[i + 1];
@@ -211,7 +211,7 @@ double AeroUnits::sample_column(int column, double altitude) const {
 			return column_value(a, column) + t * (column_value(b, column) - column_value(a, column));
 		}
 	}
-
+	
 	return column_value(last, column); //shouldn't reach here
 }
 

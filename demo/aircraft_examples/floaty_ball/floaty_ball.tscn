@@ -24,7 +24,7 @@ radius = 1.7
 radial_segments = 32
 rings = 16
 
-[node name="AeroInfluencer3D" type="AeroInfluencer3D" parent="." unique_id=1550478873 node_paths=PackedStringArray("aero_body")]
+[node name="AeroInfluencer3D" type="AeroInfluencer3D" parent="." unique_id=1550478873]
 show_debug = true
 script = ExtResource("2_wx2e6")
 radius = 1.7
@@ -33,13 +33,13 @@ drag_coefficient = 0.6
 [node name="CameraWithoutRotation" parent="." unique_id=277816281 instance=ExtResource("3_jckdf")]
 camera_distance = 5.0
 
-[node name="AeroBuoyancyMesh3D" type="AeroInfluencer3D" parent="." unique_id=808652481 node_paths=PackedStringArray("aero_body")]
+[node name="AeroBuoyancyMesh3D" type="AeroInfluencer3D" parent="." unique_id=808652481]
 show_debug = true
 script = ExtResource("4_glt2x")
 buoyancy_mesh = ExtResource("5_aiyxi")
 metadata/_custom_type_script = "uid://blp6761y154ht"
 
-[node name="AeroBuoyancySphere3D" type="AeroInfluencer3D" parent="." unique_id=201842634 node_paths=PackedStringArray("aero_body")]
+[node name="AeroBuoyancySphere3D" type="AeroInfluencer3D" parent="." unique_id=201842634]
 disabled = 1
 show_debug = true
 visible = false

@@ -26,9 +26,6 @@ public:
 	ManualAeroSurfaceConfig();
 	~ManualAeroSurfaceConfig();
 
-	//fills any unset curve with a fresh copy of its default, so the curves are editable in the inspector.
-	//deliberately not called from the constructor: an Object default makes Godot warn about
-	//"Instantiated ... used as default value" when it probes property defaults.
 	void apply_default_curves() const;
 
 	double get_lift_coefficient(double angle_of_attack) const;

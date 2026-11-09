@@ -209,33 +209,33 @@ mesh = SubResource("QuadMesh_gp0bn")
 visible = false
 shape = SubResource("ConvexPolygonShape3D_gp0bn")
 
-[node name="AeroBuoyancyMesh3D" type="AeroInfluencer3D" parent="." index="4" unique_id=816207710 node_paths=PackedStringArray("aero_body")]
+[node name="AeroBuoyancyMesh3D" type="AeroInfluencer3D" parent="." index="4" unique_id=816207710]
 show_debug = true
 script = ExtResource("2_ojow4")
 buoyancy_mesh = ExtResource("3_6e2ia")
 metadata/_custom_type_script = "uid://blp6761y154ht"
 
-[node name="OutboardRotate" type="AeroInfluencer3D" parent="." index="5" unique_id=318137762 node_paths=PackedStringArray("aero_body")]
+[node name="OutboardRotate" type="AeroInfluencer3D" parent="." index="5" unique_id=318137762]
 actuation_config = SubResource("Resource_yuxf8")
 show_debug = true
 transform = Transform3D(0.9998476951563912, 0.00152107744577545, 0.01738599476176408, 0, 0.9961946980917455, -0.08715574274765817, -0.01745240643728351, 0.08714246850588939, 0.9960429728140489, 0, 0.3721159610864453, 1.946746907040108)
 metadata/_custom_type_script = "uid://c3n4g48jfeemj"
 
-[node name="Rudder" type="ManualAeroSurface3D" parent="OutboardRotate" index="0" unique_id=996687812 node_paths=PackedStringArray("aero_body")]
+[node name="Rudder" type="ManualAeroSurface3D" parent="OutboardRotate" index="0" unique_id=996687812]
 manual_config = SubResource("Resource_85l1x")
 wing_config = SubResource("Resource_j3mod")
 show_debug = true
 transform = Transform3D(6.09317952840239e-17, 1, -6.059354761065439e-18, -0.9239376299075744, 5.861514313387751e-17, 0.3825431427182732, 0.3825431427182732, -1.7710574582708975e-17, 0.9239376299075744, 2.1885573832565102e-17, -1.0565670071897624, 0.00679333678503724)
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="Rudder2" type="ManualAeroSurface3D" parent="OutboardRotate" index="1" unique_id=5784558 node_paths=PackedStringArray("aero_body")]
+[node name="Rudder2" type="ManualAeroSurface3D" parent="OutboardRotate" index="1" unique_id=5784558]
 manual_config = SubResource("Resource_85l1x")
 wing_config = SubResource("Resource_hcphs")
 show_debug = true
 transform = Transform3D(-1, 1.224646799147353e-16, 0, -1.2246467991473535e-16, -1, 0, 0, 0, 1, 2.1885573832565102e-17, -0.8459867015728342, 0.21029735987245912)
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="AeroPropeller3D" type="AeroInfluencer3D" parent="OutboardRotate" index="2" unique_id=853248349 node_paths=PackedStringArray("aero_body", "propeller_blade")]
+[node name="AeroPropeller3D" type="AeroInfluencer3D" parent="OutboardRotate" index="2" unique_id=853248349 node_paths=PackedStringArray("propeller_blade")]
 show_debug = true
 show_torque = true
 show_lift = false
@@ -247,7 +247,7 @@ propeller_blade = NodePath("ManualAeroSurface3D")
 propeller_speed_control_config = SubResource("Resource_uiicu")
 disable_lift_dissymmetry = true
 
-[node name="ManualAeroSurface3D" type="ManualAeroSurface3D" parent="OutboardRotate/AeroPropeller3D" index="0" unique_id=540653217 node_paths=PackedStringArray("aero_body")]
+[node name="ManualAeroSurface3D" type="ManualAeroSurface3D" parent="OutboardRotate/AeroPropeller3D" index="0" unique_id=540653217]
 manual_config = SubResource("Resource_jhqwu")
 wing_config = SubResource("Resource_w1uje")
 show_debug = true
@@ -258,7 +258,7 @@ transform = Transform3D(1, 0, 0, 0, 0.9063077870366502, -0.4226182617406995, 0, 
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
 [node name="CSGBox3D" type="CSGBox3D" parent="OutboardRotate/AeroPropeller3D/ManualAeroSurface3D" index="0" unique_id=845171662]
-transform = Transform3D(1, 0, 0, 0, 1.0000000000000022, 5.551115e-17, 0, -5.551115e-17, 1.0000000000000022, 0, 0, 0.04941531829536017)
+transform = Transform3D(1, 0, 0, 0, 1.0000000000000022, 5.5511150000000004e-17, 0, -5.5511150000000004e-17, 1.0000000000000022, 0, 0, 0.04941531829536017)
 size = Vector3(0.1967637893067149, 0.01187669383898537, 0.19131065197871067)
 
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="OutboardRotate/AeroPropeller3D" index="1" unique_id=1084973412]
@@ -274,6 +274,6 @@ size = Vector3(0.3051432223910524, 0.5555105119756263, 0.46904054573883514)
 transform = Transform3D(1, 0, 0, 0, 0.996007793875625, 0.08926631245333552, 0, -0.08926631245333552, 0.996007793875625, 0, -0.6239883985798936, 0.03499681120693454)
 size = Vector3(0.09501928310100992, 1.164965463433873, 0.2204151855348755)
 
-[node name="FloatingHUD" parent="." index="7" unique_id=1323450826 instance=ExtResource("17_nof2j")]
+[node name="FloatingHUD" parent="." index="6" unique_id=1323450826 instance=ExtResource("17_nof2j")]
 
 [editable path="CameraWithoutRotation"]

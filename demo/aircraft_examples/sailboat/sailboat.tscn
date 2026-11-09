@@ -180,7 +180,7 @@ mesh = SubResource("QuadMesh_wnqtr")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." index="3" unique_id=1693420429]
 shape = SubResource("ConvexPolygonShape3D_m8ttw")
 
-[node name="Rudder" type="ManualAeroSurface3D" parent="." index="4" unique_id=2121508096 node_paths=PackedStringArray("aero_body")]
+[node name="Rudder" type="ManualAeroSurface3D" parent="." index="4" unique_id=2121508096]
 manual_config = SubResource("Resource_m2rhy")
 wing_config = SubResource("Resource_dylod")
 actuation_config = SubResource("Resource_3ocix")
@@ -191,13 +191,13 @@ transform = Transform3D(6.123233995736766e-17, 1, 0, -1, 6.123233995736766e-17, 
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.17159610241651535)
 size = Vector3(1.010510072461784, 0.07490833214797021, 0.6891372122681787)
 
-[node name="AeroBuoyancyMesh3D" type="AeroInfluencer3D" parent="." index="5" unique_id=612877217 node_paths=PackedStringArray("aero_body")]
+[node name="AeroBuoyancyMesh3D" type="AeroInfluencer3D" parent="." index="5" unique_id=612877217]
 show_debug = true
 script = ExtResource("8_bdfv4")
 buoyancy_mesh = ExtResource("9_3ocix")
 metadata/_custom_type_script = "uid://blp6761y154ht"
 
-[node name="Sail" type="ManualAeroSurface3D" parent="." index="6" unique_id=1207936626 node_paths=PackedStringArray("aero_body")]
+[node name="Sail" type="ManualAeroSurface3D" parent="." index="6" unique_id=1207936626]
 manual_config = SubResource("Resource_kx3he")
 wing_config = SubResource("Resource_i8owv")
 actuation_config = SubResource("Resource_m8ttw")

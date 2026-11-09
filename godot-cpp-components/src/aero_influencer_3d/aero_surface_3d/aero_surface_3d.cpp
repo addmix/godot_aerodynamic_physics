@@ -57,6 +57,8 @@ ForceAndTorque AeroSurface3D::calculate_forces(double substep_delta) {
 
 
 void AeroSurface3D::set_wing_config(const Ref<AeroSurfaceConfig> &p_config) {
+    if (wing_config == p_config) return;
+
     wing_config = p_config;
 
     if (wing_config.is_valid() and not wing_config->is_connected("changed", Callable(this, "update_gizmos"))) {
@@ -65,7 +67,10 @@ void AeroSurface3D::set_wing_config(const Ref<AeroSurfaceConfig> &p_config) {
 
     //redraw for every assignment, including a swap to an already-connected config or a cleared config
     update_gizmos();
-};
+
+    AeroSurface3D *other = Object::cast_to<AeroSurface3D>(get_mirror_duplicate());
+    if (other) other->set_wing_config(p_config);
+}
 Ref<AeroSurfaceConfig> AeroSurface3D::get_wing_config() const {return wing_config;};
 
 double AeroSurface3D::get_angle_of_attack() const {

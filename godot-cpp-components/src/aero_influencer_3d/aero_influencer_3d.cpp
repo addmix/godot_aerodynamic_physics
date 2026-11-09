@@ -47,10 +47,13 @@ void AeroInfluencer3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_mirror_scaling_fix_axis"), &AeroInfluencer3D::get_mirror_scaling_fix_axis);
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "mirror_scaling_fix_axis", PROPERTY_HINT_ENUM, "None,X,Y,Z"), "set_mirror_scaling_fix_axis", "get_mirror_scaling_fix_axis");
 	
-	ClassDB::bind_method(D_METHOD("is_duplicate"), &AeroInfluencer3D::is_duplicate);
+	ClassDB::bind_method(D_METHOD("is_mirrored"), &AeroInfluencer3D::is_mirrored);
+	ClassDB::bind_method(D_METHOD("is_mirror_pending"), &AeroInfluencer3D::is_mirror_pending);
 	
 	ClassDB::bind_method(D_METHOD("get_mirror_duplicate"), &AeroInfluencer3D::get_mirror_duplicate);
-	//ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "mirror_duplicate"), "", "get_mirror_duplicate");
+	ClassDB::bind_method(D_METHOD("set_duplicate", "value"), &AeroInfluencer3D::set_duplicate);
+	ClassDB::bind_method(D_METHOD("is_duplicate"), &AeroInfluencer3D::is_duplicate);
+
 
 	ADD_GROUP("Actuation Control", "");
 	ADD_SUBGROUP("", "");
@@ -166,12 +169,7 @@ AeroInfluencer3D::~AeroInfluencer3D() {
 
 void AeroInfluencer3D::_notification(int what) {
 	switch (what) {
-	case NOTIFICATION_TRANSFORM_CHANGED:
-		if (is_inside_tree()) generate_mirror();
-		break;
 	case NOTIFICATION_LOCAL_TRANSFORM_CHANGED:
-		//the one place the caches are synchronised: covers set_cached_transform() and anything
-		//writing position/transform directly (scripts, propeller instancing, the editor)
 		local_transform_cache = get_transform();
 
 		if (is_inside_tree()) {
@@ -183,16 +181,27 @@ void AeroInfluencer3D::_notification(int what) {
 			}
 
 			update_transform_cache(parent_global);
+
+			//mirroring is its own inverse, so whichever half was moved pushes the mirrored transform to the
+			//other. the equality check ends the bounce: the other half then pushes back the same value
+			if (Engine::get_singleton()->is_editor_hint() and mirror_duplicate) {
+				const Transform3D mirrored = calculate_mirrored_transform(get_transform());
+				if (mirror_duplicate->get_transform() != mirrored) mirror_duplicate->set_transform(mirrored);
+			}
 		}
 		break;
 	}
 }
 void AeroInfluencer3D::_ready() {
 	if (not Engine::get_singleton()->is_editor_hint()) {
-		if (actuation_config.is_valid()) {
-			actuation_config = actuation_config->duplicate(true);
-		}
+		if (actuation_config.is_valid()) set_actuation_config(actuation_config->duplicate(true));
 	}
+
+	//a node added to an already-ready body never reaches the body's _ready loop
+	Node *parent = get_parent();
+	if (parent and parent->is_node_ready()) generate_mirror();
+
+	if (_duplicate and mirror_duplicate) update_mirror_transform();
 
 	const size_t influencer_count = aero_influencers.size();
 	for (size_t i = 0; i < influencer_count; i++) {
@@ -219,11 +228,11 @@ void AeroInfluencer3D::_enter_tree() {
 	Node* parent = get_parent();
 	if (AeroBody3D* body = Object::cast_to<AeroBody3D>(parent)) {
 		aero_body = body;
-		body->add_aero_influencer(this); //self-registration, matches main's _enter_tree
+		body->add_aero_influencer(this);
 	} else if (AeroInfluencer3D* infl_parent = Object::cast_to<AeroInfluencer3D>(parent)) {
 		parent_influencer = infl_parent;
 		aero_body = infl_parent->get_aero_body();
-		if (infl_parent->_duplicate) _duplicate = true; //same class, private access OK
+		if (infl_parent->_duplicate) _duplicate = true;
 		infl_parent->aero_influencers.push_back(this);
 	}
 
@@ -231,13 +240,15 @@ void AeroInfluencer3D::_enter_tree() {
 	local_transform_cache = default_transform;
 	global_transform_cache = get_global_transform();
 
-	if (mirror_scaling_fix_axis != 0) {
-		set_mirror_scaling_fix_axis(mirror_scaling_fix_axis); //re-trigger setter now that we're in the tree
-	}
 
 	set_notify_local_transform(true);
 }
 void AeroInfluencer3D::_exit_tree() {
+	if (mirror_duplicate) {
+		if (mirror_duplicate->mirror_duplicate == this) mirror_duplicate->mirror_duplicate = nullptr;
+		mirror_duplicate = nullptr;
+	}
+
 	if (parent_influencer) {
 		for (size_t i = 0; i < parent_influencer->aero_influencers.size(); i++) {
 			if (parent_influencer->aero_influencers[i] == this) {
@@ -269,10 +280,8 @@ void AeroInfluencer3D::update_transform_cache(const Transform3D &parent_global_t
 	}
 }
 void AeroInfluencer3D::set_cached_transform(const Transform3D &p_transform) {
-	//most influencers don't actually move between substeps, so don't pay for an engine transform write
 	if (p_transform == local_transform_cache) return;
 
-	//the local transform notification updates the caches
 	set_transform(p_transform);
 }
 const Transform3D &AeroInfluencer3D::get_cached_local_transform() const {
@@ -548,79 +557,171 @@ void AeroInfluencer3D::update_debug_vectors(){
 }
 
 void AeroInfluencer3D::set_disabled(int p_disabled) {
+	if (disabled == p_disabled) return;
+
 	disabled = p_disabled;
 	update_gizmos();
+
+	if (mirror_duplicate) mirror_duplicate->set_disabled(p_disabled);
 }
 int AeroInfluencer3D::is_disabled() const {
 	return disabled;
 }
 void AeroInfluencer3D::set_can_override_body_sleep(bool override) {
+	if (can_override_body_sleep == override) return;
+	
 	can_override_body_sleep = override;
+
+	if (mirror_duplicate) mirror_duplicate->set_can_override_body_sleep(override);
 }
 bool AeroInfluencer3D::get_can_override_body_sleep() const {
 	return can_override_body_sleep;
 }
 void AeroInfluencer3D::set_mirror_axis(int axis) {
-	mirror_axis = axis; //mirror regeneration happens via NOTIFICATION_TRANSFORM_CHANGED and the _ready loops
+	if (mirror_axis == axis) return;
+
+	mirror_axis = axis;
+
+	if (axis == 0) {
+		if (mirror_duplicate) {
+			mirror_duplicate->mirror_duplicate = nullptr;
+			mirror_duplicate->queue_free();
+			mirror_duplicate = nullptr;
+		}
+		return;
+	}
+
+	if (mirror_duplicate) mirror_duplicate->mirror_axis = axis; //both halves reflect through the same axis
+
+	AeroInfluencer3D *mirrored_copy = _duplicate ? this : mirror_duplicate;
+	if (mirrored_copy) {
+		mirrored_copy->update_mirror_transform();
+	} else if (is_inside_tree()) {
+		generate_mirror();
+	}
 }
 int AeroInfluencer3D::get_mirror_axis() const {
 	return mirror_axis;
 }
 void AeroInfluencer3D::generate_mirror() {
-	if (mirror_axis == 0 or _duplicate) return; //no duplication
-	
-	if (mirror_duplicate) {
-		mirror_duplicate->queue_free();
-		mirror_duplicate = nullptr;
-	}
+	if (mirror_axis == 0 or _duplicate) return;
+	if (parent_influencer and parent_influencer->mirror_axis != 0) return;
+	if (mirror_duplicate) return;
 
+	//the copy is saved with the scene, so it may already be there under its generated name
+	if (Node *parent = get_parent()) {
+		AeroInfluencer3D *saved_copy = Object::cast_to<AeroInfluencer3D>(parent->get_node_or_null(String(get_name()) + String("Mirror")));
+		if (saved_copy and saved_copy->mirror_axis == mirror_axis and not saved_copy->mirror_duplicate) {
+			mirror_duplicate = saved_copy;
+			saved_copy->mirror_duplicate = this;
+			saved_copy->_duplicate = true;
+			map_mirror_sources(this, saved_copy);
+			saved_copy->update_mirror_transform();
+			return;
+		}
+	}
+	
 	//remove debug vectors befor duplication, to prevent duplicating them
 	bool temp_show_debug = get_show_debug();
 	set_show_debug(false);
 
 	int x = mirror_axis;
 	mirror_axis = 0;
-	mirror_duplicate = Object::cast_to<AeroInfluencer3D>(duplicate()); //Node::duplicate() default flags include DEEP - matches main's no-arg duplicate()
+	mirror_duplicate = Object::cast_to<AeroInfluencer3D>(duplicate());
 	
-	//restore debug vectors after duplication has completed.
 	set_show_debug(temp_show_debug);
 
-	if (not mirror_duplicate) return; //something went wrong when duplicating and type casting
+	if (not mirror_duplicate) return;
 
 	mirror_duplicate->_duplicate = true;
-	mirror_duplicate->mirror_duplicate = nullptr;
 	mirror_duplicate->set_name(String(get_name()) + String("Mirror"));
 
 	mirror_axis = x;
 	mirror_duplicate->mirror_axis = x;
 
-	Vector3 flip(1.0, 1.0, 1.0); //Vector3::ONE not available in this godot-cpp version
-	flip[x - 1] = -1.0;
-	mirror_duplicate->set_position(mirror_duplicate->get_position() * flip);
-	Basis b = mirror_duplicate->get_basis();
-	mirror_duplicate->set_basis(Basis::from_scale(flip) * b);
-	mirror_duplicate->default_transform = mirror_duplicate->get_transform(); //main: default_transform = transform
+	mirror_duplicate->mirror_duplicate = this;
+	map_mirror_sources(this, mirror_duplicate);
 
-	get_parent()->add_child(mirror_duplicate);
+	Node *parent = get_parent();
+	parent->add_child(mirror_duplicate);
+	mirror_duplicate->update_mirror_transform();
+
+	//keep the copy next to its original in the tree
+	parent->move_child(mirror_duplicate, get_index(true) + 1);
+
+	//give the copy the same owner so it is saved to the scene
+	if (Engine::get_singleton()->is_editor_hint() and get_owner()) {
+		Node *owner = get_owner();
+		if (owner == parent or owner->is_ancestor_of(parent)) {
+			set_owner_recursive(mirror_duplicate, owner);
+		}
+	}
+}
+bool AeroInfluencer3D::is_mirrored() const {
+	return mirror_axis != 0 or _duplicate;
+}
+bool AeroInfluencer3D::is_mirror_pending() const {
+	return mirror_axis != 0 and not _duplicate and not mirror_duplicate;
+}
+void AeroInfluencer3D::set_owner_recursive(Node *p_node, Node *p_owner) {
+	p_node->set_owner(p_owner);
+
+	for (int i = 0; i < p_node->get_child_count(); i++) {
+		set_owner_recursive(p_node->get_child(i), p_owner);
+	}
+}
+Transform3D AeroInfluencer3D::calculate_mirrored_transform(const Transform3D &p_transform) const {
+	Transform3D xform = p_transform;
+
+	//reflect through the axis that created the copy
+	if (mirror_axis != 0) {
+		Vector3 flip(1.0, 1.0, 1.0); //Vector3::ONE not available in this godot-cpp version
+		flip[mirror_axis - 1] = -1.0;
+		xform.basis = Basis::from_scale(flip) * xform.basis;
+		xform.origin = xform.origin * flip;
+	}
+
+	//optionally take the reflection back out of one axis, keeping the basis right handed
+	if (mirror_scaling_fix_axis != 0) {
+		xform.basis[mirror_scaling_fix_axis - 1] *= -1.0;
+	}
+
+	return xform;
+}
+void AeroInfluencer3D::update_mirror_transform() {
+	if (not _duplicate or not mirror_duplicate) return;
+
+	const Transform3D xform = calculate_mirrored_transform(mirror_duplicate->get_transform());
+	set_transform(xform);
+	default_transform = xform;
+}
+void AeroInfluencer3D::map_mirror_sources(AeroInfluencer3D *p_source, AeroInfluencer3D *p_mirror) {
+	for (int i = 0; i < p_source->get_child_count(); i++) {
+		AeroInfluencer3D *source_child = Object::cast_to<AeroInfluencer3D>(p_source->get_child(i));
+		if (not source_child) continue;
+
+		AeroInfluencer3D *mirror_child = Object::cast_to<AeroInfluencer3D>(p_mirror->find_child(String(source_child->get_name()), false, false));
+		if (not mirror_child) continue;
+
+		mirror_child->mirror_duplicate = source_child;
+		source_child->mirror_duplicate = mirror_child;
+		mirror_child->_duplicate = true;
+		mirror_child->mirror_axis = 0;
+		mirror_child->update_mirror_transform();
+		map_mirror_sources(source_child, mirror_child);
+	}
 }
 void AeroInfluencer3D::set_mirror_scaling_fix_axis(int axis) {
 	mirror_scaling_fix_axis = axis;
-	if (is_inside_tree()) {
-		//undo previous mirroring
-		if (_duplicate and _mirror_scaling_fix_axis != 0) {
-			Basis b = get_basis();
-			b[_mirror_scaling_fix_axis - 1] *= -1.0;
-			set_basis(b);
-		}
-		_mirror_scaling_fix_axis = axis;
-		//do new mirroring
-		if (_duplicate and _mirror_scaling_fix_axis != 0) {
-			Basis b = get_basis();
-			b[_mirror_scaling_fix_axis - 1] *= -1.0;
-			set_basis(b);
-			default_transform = get_basis(); //main: default_transform = basis (zero origin)
-		}
+
+	if (not mirror_duplicate) return;
+
+	if (not _duplicate) {
+		mirror_duplicate->set_mirror_scaling_fix_axis(axis);
+		return;
 	}
+
+	update_mirror_transform();
 }
 int AeroInfluencer3D::get_mirror_scaling_fix_axis() const {
 	return mirror_scaling_fix_axis;
@@ -635,13 +736,21 @@ AeroInfluencer3D* AeroInfluencer3D::get_mirror_duplicate() const {
 	return mirror_duplicate;
 }
 void AeroInfluencer3D::set_actuation_config(const Ref<Resource> &p_config) {
+	if (actuation_config == p_config) return;
+
 	actuation_config = p_config;
+
+	if (mirror_duplicate) mirror_duplicate->set_actuation_config(p_config);
 }
 Ref<Resource> AeroInfluencer3D::get_actuation_config() const {
 	return actuation_config;
 }
 void AeroInfluencer3D::set_control_rotation_order(int rotation_order) {
+	if (control_rotation_order == rotation_order) return;
+
 	control_rotation_order = rotation_order;
+
+	if (mirror_duplicate) mirror_duplicate->set_control_rotation_order(rotation_order);
 }
 int AeroInfluencer3D::get_control_rotation_order() const {
 	return control_rotation_order;
@@ -650,7 +759,11 @@ bool AeroInfluencer3D::is_omitted_from_debug() const {
 	return omit_from_debug;
 }
 void AeroInfluencer3D::set_omit_from_debug(bool omit) {
+	if (omit_from_debug == omit) return;
+
 	omit_from_debug = omit;
+
+	if (mirror_duplicate) mirror_duplicate->set_omit_from_debug(omit);
 }
 void AeroInfluencer3D::set_debug_scale(double value) {
 	debug_scale = value;

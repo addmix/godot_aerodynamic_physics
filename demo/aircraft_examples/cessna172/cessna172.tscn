@@ -488,14 +488,55 @@ transform = Transform3D(1, 5.50469e-16, 2.38698e-15, -2.47025e-15, 1, -7.1991e-1
 visible = false
 size = Vector3(2.83724, 0.146557, 0.400159)
 
-[node name="HorizontalStab" type="ManualAeroSurface3D" parent="." index="14" unique_id=1295677440]
+[node name="WingR1Mirror" type="ManualAeroSurface3D" parent="." index="14" unique_id=376573293]
+manual_config = SubResource("Resource_8ihwy")
+wing_config = SubResource("Resource_4u4b6")
+mirror_axis = 1
+show_debug = true
+transform = Transform3D(-0.999858, 0.0168242, 0, 0.0168242, 0.999858, 0, 0, 0, 1, -1.50973, 0.675157, -1.85714)
+
+[node name="Flap" type="ManualAeroSurface3D" parent="WingR1Mirror" index="0" unique_id=458720735]
+manual_config = SubResource("Resource_8ihwy")
+wing_config = SubResource("Resource_snyt3")
+actuation_config = SubResource("Resource_cp2h5")
+show_debug = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.01053)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="WingR1Mirror/Flap" index="0" unique_id=307273299]
+transform = Transform3D(1, -5.55112e-16, 0, 5.55112e-16, 1, 0, 0, 0, 1, 0, 8.88178e-16, 0.127996)
+visible = false
+size = Vector3(1.99478, 0.0454879, 0.510548)
+
+[node name="WingR2" type="ManualAeroSurface3D" parent="WingR1Mirror" index="1" unique_id=1414873140]
+manual_config = SubResource("Resource_8ihwy")
+wing_config = SubResource("Resource_i3e03")
+show_debug = true
+show_torque = true
+show_thrust = true
+transform = Transform3D(0.9989359518124928, -0.04613015224113451, 0, 0.04613015224113451, 0.9989359518124928, 0, 0, 0, 1, 2.4704969031905866, 0.075848636507725, 0.04244418146555129)
+
+[node name="Aileron" type="ManualAeroSurface3D" parent="WingR1Mirror/WingR2" index="0" unique_id=487159803]
+manual_config = SubResource("Resource_8ihwy")
+wing_config = SubResource("Resource_keinb")
+actuation_config = SubResource("Resource_4mn0n")
+show_debug = true
+show_torque = true
+show_thrust = true
+transform = Transform3D(0.989364, 0, 0.145461, 0, 1, -1.7347234759768067e-18, -0.145461, 0, 0.989364, -0.07505819999999996, -1.1102230246251563e-16, 0.8491647939709599)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="WingR1Mirror/WingR2/Aileron" index="0" unique_id=1831198598]
+transform = Transform3D(1, 5.50469e-16, 2.38698e-15, -2.47025e-15, 1, -7.1991e-16, 1.58207e-15, 1.69806e-17, 1, 0, 0, 0.0906042)
+visible = false
+size = Vector3(2.83724, 0.146557, 0.400159)
+
+[node name="HorizontalStab" type="ManualAeroSurface3D" parent="." index="15" unique_id=1295677440]
 manual_config = SubResource("Resource_8ihwy")
 wing_config = SubResource("Resource_g185g")
 show_debug = true
 show_torque = true
 transform = Transform3D(1, 0, 0, 0, 0.99889, 0.0471065, 0, -0.0471065, 0.99889, 0, 0.210207, 2.68076)
 
-[node name="Elevator2" type="ManualAeroSurface3D" parent="." index="15" unique_id=1852727079]
+[node name="Elevator2" type="ManualAeroSurface3D" parent="." index="16" unique_id=1852727079]
 manual_config = SubResource("Resource_8ihwy")
 wing_config = SubResource("Resource_2trr8")
 actuation_config = SubResource("Resource_qhb2b")
@@ -509,7 +550,7 @@ transform = Transform3D(1, -5.55112e-16, 0, 5.55112e-16, 1, -4.92661e-16, 0, 4.9
 visible = false
 size = Vector3(3.43267, 0.0454879, 0.510548)
 
-[node name="VerticalStab" type="ManualAeroSurface3D" parent="." index="16" unique_id=2079185050]
+[node name="VerticalStab" type="ManualAeroSurface3D" parent="." index="17" unique_id=2079185050]
 manual_config = SubResource("Resource_rvxpo")
 wing_config = SubResource("Resource_3wa4j")
 show_debug = true
@@ -522,14 +563,14 @@ actuation_config = SubResource("Resource_dufvg")
 show_debug = true
 show_torque = true
 show_thrust = true
-transform = Transform3D(0.908829, 1.54074e-33, -0.417169, 4.24757e-33, 1, 1.6940700000000002e-33, 0.417169, 3.08149e-33, 0.908829, -0.52477, -2.9501300000000003e-19, 0.499497)
+transform = Transform3D(0.908829, 1.5407400000000001e-33, -0.417169, 4.24757e-33, 1, 1.6940700000000002e-33, 0.417169, 3.08149e-33, 0.908829, -0.52477, -2.9501300000000003e-19, 0.499497)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="VerticalStab/Rudder" index="0" unique_id=862024946]
-transform = Transform3D(1, -5.551120000000009e-16, 0, 5.55112e-16, 0.999999999999992, -4.614528e-31, -7.77156117237611e-16, 1.5777217999999999e-30, 1, -8.881784e-16, 8.881779999999998e-16, 0.32276313112239796)
+transform = Transform3D(1, -5.551120000000009e-16, 0, 5.55112e-16, 0.999999999999992, -4.614528e-31, -7.77156117237611e-16, 1.5777218e-30, 1, -8.881784e-16, 8.881779999999998e-16, 0.32276313112239796)
 visible = false
 size = Vector3(1.57572, 0.0454879, 0.8638856751504136)
 
-[node name="VehicleWheel3D" type="VehicleWheel3D" parent="." index="17" unique_id=1890083258]
+[node name="VehicleWheel3D" type="VehicleWheel3D" parent="." index="18" unique_id=1890083258]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.16734, -2.95022)
 wheel_radius = 0.155
 suspension_travel = 0.1
@@ -544,7 +585,7 @@ height = 0.107076
 sides = 16
 material = SubResource("StandardMaterial3D_4tt3o")
 
-[node name="VehicleWheel3D2" type="VehicleWheel3D" parent="." index="18" unique_id=1600416538]
+[node name="VehicleWheel3D2" type="VehicleWheel3D" parent="." index="19" unique_id=1600416538]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.20138, -1.10981, -1.25764)
 wheel_radius = 0.155
 suspension_travel = 0.15
@@ -558,7 +599,7 @@ height = 0.107076
 sides = 16
 material = SubResource("StandardMaterial3D_4tt3o")
 
-[node name="VehicleWheel3D3" type="VehicleWheel3D" parent="." index="19" unique_id=523544035]
+[node name="VehicleWheel3D3" type="VehicleWheel3D" parent="." index="20" unique_id=523544035]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.201, -1.11, -1.25776)
 wheel_radius = 0.155
 suspension_travel = 0.15
@@ -572,10 +613,10 @@ height = 0.107076
 sides = 16
 material = SubResource("StandardMaterial3D_4tt3o")
 
-[node name="AeroBuoyancyMesh3D" type="AeroInfluencer3D" parent="." index="20" unique_id=5723858]
+[node name="AeroBuoyancyMesh3D" type="AeroInfluencer3D" parent="." index="21" unique_id=5723858]
 show_debug = true
 script = ExtResource("14_lo3t1")
 buoyancy_mesh = ExtResource("15_op60t")
 metadata/_custom_type_script = "uid://blp6761y154ht"
 
-[node name="FloatingHUD" parent="." index="21" unique_id=1323450826 instance=ExtResource("18_7qotf")]
+[node name="FloatingHUD" parent="." index="22" unique_id=1323450826 instance=ExtResource("18_7qotf")]

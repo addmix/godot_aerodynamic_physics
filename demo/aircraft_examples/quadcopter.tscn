@@ -272,7 +272,7 @@ shape = SubResource("BoxShape3D_g7o4j")
 transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, 0, 0, 0)
 shape = SubResource("BoxShape3D_g7o4j")
 
-[node name="PropellerFL" type="AeroInfluencer3D" parent="." unique_id=1661587731 node_paths=PackedStringArray("aero_body", "propeller_blade")]
+[node name="PropellerFL" type="AeroInfluencer3D" parent="." unique_id=1661587731 node_paths=PackedStringArray("propeller_blade")]
 debug_scale = 0.01
 debug_width = 0.01
 show_debug = true
@@ -285,7 +285,7 @@ propeller_blade = NodePath("ManualAeroSurface3D")
 propeller_speed_control_config = SubResource("Resource_fy07o")
 disable_lift_dissymmetry = true
 
-[node name="ManualAeroSurface3D" type="ManualAeroSurface3D" parent="PropellerFL" unique_id=2030216784 node_paths=PackedStringArray("aero_body")]
+[node name="ManualAeroSurface3D" type="ManualAeroSurface3D" parent="PropellerFL" unique_id=2030216784]
 manual_config = SubResource("Resource_oxj7v")
 wing_config = SubResource("Resource_ge450")
 debug_scale = 0.01
@@ -297,7 +297,7 @@ transform = Transform3D(1, 0, 0, 0, 0.965926, -0.258819, 0, 0.258819, 0.965926, 
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.00745521)
 size = Vector3(0.115479, 0.00203427, 0.0296937)
 
-[node name="PropellerRR" type="AeroInfluencer3D" parent="." unique_id=84157280 node_paths=PackedStringArray("aero_body", "propeller_blade")]
+[node name="PropellerRR" type="AeroInfluencer3D" parent="." unique_id=84157280 node_paths=PackedStringArray("propeller_blade")]
 debug_scale = 0.01
 debug_width = 0.01
 show_debug = true
@@ -310,7 +310,7 @@ propeller_blade = NodePath("ManualAeroSurface3D")
 propeller_speed_control_config = SubResource("Resource_fy07o")
 disable_lift_dissymmetry = true
 
-[node name="ManualAeroSurface3D" type="ManualAeroSurface3D" parent="PropellerRR" unique_id=1288059856 node_paths=PackedStringArray("aero_body")]
+[node name="ManualAeroSurface3D" type="ManualAeroSurface3D" parent="PropellerRR" unique_id=1288059856]
 manual_config = SubResource("Resource_oxj7v")
 wing_config = SubResource("Resource_ge450")
 debug_scale = 0.01
@@ -322,7 +322,7 @@ transform = Transform3D(1, 0, 0, 0, 0.965926, -0.258819, 0, 0.258819, 0.965926, 
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.00745521)
 size = Vector3(0.115479, 0.00203427, 0.0296937)
 
-[node name="PropellerFR" type="AeroInfluencer3D" parent="." unique_id=277956257 node_paths=PackedStringArray("aero_body", "propeller_blade")]
+[node name="PropellerFR" type="AeroInfluencer3D" parent="." unique_id=277956257 node_paths=PackedStringArray("propeller_blade")]
 debug_scale = 0.01
 debug_width = 0.01
 show_debug = true
@@ -335,7 +335,7 @@ propeller_blade = NodePath("ManualAeroSurface3D")
 propeller_speed_control_config = SubResource("Resource_3a861")
 disable_lift_dissymmetry = true
 
-[node name="ManualAeroSurface3D" type="ManualAeroSurface3D" parent="PropellerFR" unique_id=1630228645 node_paths=PackedStringArray("aero_body")]
+[node name="ManualAeroSurface3D" type="ManualAeroSurface3D" parent="PropellerFR" unique_id=1630228645]
 manual_config = SubResource("Resource_oxj7v")
 wing_config = SubResource("Resource_ge450")
 debug_scale = 0.01
@@ -347,7 +347,7 @@ transform = Transform3D(1, 0, 0, 0, 0.965926, -0.258819, 0, 0.258819, 0.965926, 
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.00745521)
 size = Vector3(0.115479, 0.00203427, 0.0296937)
 
-[node name="PropellerRL" type="AeroInfluencer3D" parent="." unique_id=1623254215 node_paths=PackedStringArray("aero_body", "propeller_blade")]
+[node name="PropellerRL" type="AeroInfluencer3D" parent="." unique_id=1623254215 node_paths=PackedStringArray("propeller_blade")]
 debug_scale = 0.01
 debug_width = 0.01
 show_debug = true
@@ -360,7 +360,7 @@ propeller_blade = NodePath("ManualAeroSurface3D")
 propeller_speed_control_config = SubResource("Resource_3a861")
 disable_lift_dissymmetry = true
 
-[node name="ManualAeroSurface3D" type="ManualAeroSurface3D" parent="PropellerRL" unique_id=1658491358 node_paths=PackedStringArray("aero_body")]
+[node name="ManualAeroSurface3D" type="ManualAeroSurface3D" parent="PropellerRL" unique_id=1658491358]
 manual_config = SubResource("Resource_oxj7v")
 wing_config = SubResource("Resource_ge450")
 debug_scale = 0.01
@@ -372,7 +372,7 @@ transform = Transform3D(1, 0, 0, 0, 0.965926, -0.258819, 0, 0.258819, 0.965926, 
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.00745521)
 size = Vector3(0.115479, 0.00203427, 0.0296937)
 
-[node name="AeroDragInfluencer3D" type="AeroInfluencer3D" parent="." unique_id=50047244 node_paths=PackedStringArray("aero_body")]
+[node name="AeroDragInfluencer3D" type="AeroInfluencer3D" parent="." unique_id=50047244]
 debug_scale = 0.01
 debug_width = 0.01
 show_debug = true

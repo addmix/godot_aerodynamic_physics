@@ -333,7 +333,7 @@ drag_at_mach_multiplier_curve = SubResource("Curve_oml6j")
 
 [sub_resource type="AeroSurfaceConfig" id="Resource_3x6k4"]
 chord = 0.40000000000000013
-span = 1.6500000000000001
+span = 1.65
 
 [sub_resource type="Resource" id="Resource_8u3u3"]
 resource_name = "yaw"
@@ -394,7 +394,7 @@ shape = SubResource("CapsuleShape3D_3hujt")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.11664, -0.642627)
 shape = SubResource("BoxShape3D_l68jr")
 
-[node name="AeroCyclicPropeller3D" type="AeroInfluencer3D" parent="." index="6" unique_id=1584518312 node_paths=PackedStringArray("aero_body", "propeller_blade")]
+[node name="AeroCyclicPropeller3D" type="AeroInfluencer3D" parent="." index="6" unique_id=1584518312 node_paths=PackedStringArray("propeller_blade")]
 show_debug = true
 show_torque = true
 show_lift = false
@@ -408,7 +408,7 @@ propeller_blade = NodePath("ManualAeroSurface3D")
 propeller_speed_control_config = SubResource("Resource_k52rn")
 disable_lift_dissymmetry = true
 
-[node name="ManualAeroSurface3D" type="ManualAeroSurface3D" parent="AeroCyclicPropeller3D" index="0" unique_id=902800505 node_paths=PackedStringArray("aero_body")]
+[node name="ManualAeroSurface3D" type="ManualAeroSurface3D" parent="AeroCyclicPropeller3D" index="0" unique_id=902800505]
 manual_config = SubResource("Resource_f18v8")
 wing_config = SubResource("Resource_nkd7l")
 actuation_config = SubResource("Resource_wecnn")
@@ -421,21 +421,21 @@ transform = Transform3D(1, 0, 0, 0, 1, 2.08167e-15, 0, -2.08167e-15, 1, 0, 6.661
 material_overlay = SubResource("StandardMaterial3D_o32yo")
 size = Vector3(7.0351, 0.1, 0.5179)
 
-[node name="TailHorizontal" type="ManualAeroSurface3D" parent="." index="7" unique_id=1693317300 node_paths=PackedStringArray("aero_body")]
+[node name="TailHorizontal" type="ManualAeroSurface3D" parent="." index="7" unique_id=1693317300]
 manual_config = SubResource("Resource_htcr8")
 wing_config = SubResource("Resource_oml6j")
 show_debug = true
 transform = Transform3D(1, 0, 0, 0, 0.973532, -0.228551, 0, 0.228551, 0.973532, 0, -0.212944, 8.94837)
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="TailVertical" type="ManualAeroSurface3D" parent="." index="8" unique_id=1087049340 node_paths=PackedStringArray("aero_body")]
+[node name="TailVertical" type="ManualAeroSurface3D" parent="." index="8" unique_id=1087049340]
 manual_config = SubResource("Resource_103ye")
 wing_config = SubResource("Resource_6tp0p")
 show_debug = true
 transform = Transform3D(6.12303e-17, 1, 0, -0.707107, 4.32964e-17, -0.707107, -0.707107, 4.32964e-17, 0.707107, 0, 0.378618, 9.09511)
 metadata/_custom_type_script = "uid://d1725od371u4a"
 
-[node name="AeroPropeller3D" type="AeroInfluencer3D" parent="." index="9" unique_id=1312986307 node_paths=PackedStringArray("aero_body", "propeller_blade")]
+[node name="AeroPropeller3D" type="AeroInfluencer3D" parent="." index="9" unique_id=1312986307 node_paths=PackedStringArray("propeller_blade")]
 show_debug = true
 show_torque = true
 show_lift = false
@@ -446,7 +446,7 @@ propeller_amount = 4
 propeller_blade = NodePath("ManualAeroSurface3D")
 propeller_speed_control_config = SubResource("Resource_gd3qx")
 
-[node name="ManualAeroSurface3D" type="ManualAeroSurface3D" parent="AeroPropeller3D" index="0" unique_id=651708343 node_paths=PackedStringArray("aero_body")]
+[node name="ManualAeroSurface3D" type="ManualAeroSurface3D" parent="AeroPropeller3D" index="0" unique_id=651708343]
 manual_config = SubResource("Resource_ajjy4")
 wing_config = SubResource("Resource_3x6k4")
 actuation_config = SubResource("Resource_0r6mh")
@@ -458,10 +458,10 @@ transform = Transform3D(1, -6.10623e-16, 0, 6.10623e-16, 1, 0, 0, 0, 1, 0, 0, 0.
 material_overlay = SubResource("StandardMaterial3D_o32yo")
 size = Vector3(1.63875, 0.0300794, 0.405596)
 
-[node name="AeroBuoyancyMesh3D" type="AeroInfluencer3D" parent="." index="11" unique_id=1703560631 node_paths=PackedStringArray("aero_body")]
+[node name="AeroBuoyancyMesh3D" type="AeroInfluencer3D" parent="." index="11" unique_id=1703560631]
 show_debug = true
 script = ExtResource("15_l68jr")
 buoyancy_mesh = ExtResource("16_l68jr")
 metadata/_custom_type_script = "uid://blp6761y154ht"
 
-[node name="FloatingHUD" parent="." index="13" unique_id=1323450826 instance=ExtResource("19_qni5f")]
+[node name="FloatingHUD" parent="." index="12" unique_id=1323450826 instance=ExtResource("19_qni5f")]

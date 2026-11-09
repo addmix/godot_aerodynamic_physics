@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://bt71s1mntdvdi"]
+[gd_scene format=4 uid="uid://bt71s1mntdvdi"]
 
 [ext_resource type="PackedScene" uid="uid://ch1pn8fij8h3f" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/catalina/catalina.glb" id="1_8heaw"]
 [ext_resource type="Script" uid="uid://cc5dwx5pqkaur" path="res://addons/godot_aerodynamic_physics/core/controls/aero_control_component.gd" id="2_0pbsb"]
@@ -15,6 +15,8 @@
 [ext_resource type="Script" uid="uid://cblxodmmwvpt6" path="res://addons/godot_aerodynamic_physics/core/controls/aero_influencer_control_config.gd" id="10_0pbsb"]
 [ext_resource type="Script" uid="uid://bsu5rdrtiqph7" path="res://addons/godot_aerodynamic_physics/core/aero_influencer_3d/aero_mover_3d/aero_propeller_3d.gd" id="11_h0te8"]
 [ext_resource type="Script" uid="uid://cii4ohipynhcc" path="res://addons/godot_aerodynamic_physics/core/easy_lift_curve.gd" id="12_h0te8"]
+[ext_resource type="Shader" uid="uid://chdh08i2dbrj2" path="res://addons/godot_aerodynamic_physics/utils/vector_3d/vector_3d.gdshader" id="16_jduiy"]
+[ext_resource type="Script" uid="uid://dmckuukxkhgwa" path="res://addons/godot_aerodynamic_physics/utils/vector_3d/vector_3d.gd" id="17_65nru"]
 [ext_resource type="PackedScene" uid="uid://ctn1rdc7k7icw" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/floating_hud.tscn" id="19_65nru"]
 
 [sub_resource type="Resource" id="Resource_rrmb4"]
@@ -287,6 +289,63 @@ use_separate_minmax = true
 max_value = Vector3(0.25, 0, 0)
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_16k3l"]
+render_priority = 0
+shader = ExtResource("16_jduiy")
+shader_parameter/_length = 0.0
+shader_parameter/_width = 0.1
+shader_parameter/_color = Vector3(0, 0, 0)
+shader_parameter/checker_pattern = true
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_utkc8"]
+_surfaces = [{
+"aabb": AABB(-1, -1, -1, 2, 2, 2),
+"format": 34359738375,
+"material": SubResource("ShaderMaterial_16k3l"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("AAAAAAAAgL8AAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIC/AAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AACAPwAAAAAAAAAAAAAAAAAAgL8AAAAAAACAvwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAgL8AAAAAAAAAAAAAAAAAAIC/AACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAIC/AACAPwAAAAAAAAAAAAAAAAAAgD8AAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAgD8AAAAAAAAAAAAAAAAAAIA/AACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAACAvwAAAAAAAAAAAAAAAAAAAAAAAIC//38AAAAA/7////9//3//v///////fwCA/38AAAAA/7//f/9//38AgP///3//f/+//38AAAAA/78AAP9//3//v/9//3//fwCA/38AAAAA/7///////38AgAAA/3//f/+//3///wAA/7///////38AgP///3//f/+//3///wAA/7////9//3//v/9//3//fwCA/3///wAA/7//f/9//38AgAAA/3//f/+//3///wAA/78AAP9//3//v///////fwCA")
+}]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vwm3g"]
+render_priority = 0
+shader = ExtResource("16_jduiy")
+shader_parameter/_length = 0.0
+shader_parameter/_width = 0.1
+shader_parameter/_color = Vector3(0, 0, 0)
+shader_parameter/checker_pattern = false
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_6qk7s"]
+_surfaces = [{
+"aabb": AABB(-1, -1, -1, 2, 2, 2),
+"format": 34359738375,
+"material": SubResource("ShaderMaterial_vwm3g"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("AAAAAAAAgL8AAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIC/AAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AACAPwAAAAAAAAAAAAAAAAAAgL8AAAAAAACAvwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAgL8AAAAAAAAAAAAAAAAAAIC/AACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAIC/AACAPwAAAAAAAAAAAAAAAAAAgD8AAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAgD8AAAAAAAAAAAAAAAAAAIA/AACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAACAvwAAAAAAAAAAAAAAAAAAAAAAAIC//38AAAAA/7////9//3//v///////fwCA/38AAAAA/7//f/9//38AgP///3//f/+//38AAAAA/78AAP9//3//v/9//3//fwCA/38AAAAA/7///////38AgAAA/3//f/+//3///wAA/7///////38AgP///3//f/+//3///wAA/7////9//3//v/9//3//fwCA/3///wAA/7//f/9//38AgAAA/3//f/+//3///wAA/78AAP9//3//v///////fwCA")
+}]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hsuvl"]
+render_priority = 0
+shader = ExtResource("16_jduiy")
+shader_parameter/_length = 0.0
+shader_parameter/_width = 0.1
+shader_parameter/_color = Vector3(0, 0, 0)
+shader_parameter/checker_pattern = false
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_lvl4a"]
+_surfaces = [{
+"aabb": AABB(-1, -1, -1, 2, 2, 2),
+"format": 34359738375,
+"material": SubResource("ShaderMaterial_hsuvl"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("AAAAAAAAgL8AAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIC/AAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AACAPwAAAAAAAAAAAAAAAAAAgL8AAAAAAACAvwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAgL8AAAAAAAAAAAAAAAAAAIC/AACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAIC/AACAPwAAAAAAAAAAAAAAAAAAgD8AAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAgD8AAAAAAAAAAAAAAAAAAIA/AACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAACAvwAAAAAAAAAAAAAAAAAAAAAAAIC//38AAAAA/7////9//3//v///////fwCA/38AAAAA/7//f/9//38AgP///3//f/+//38AAAAA/78AAP9//3//v/9//3//fwCA/38AAAAA/7///////38AgAAA/3//f/+//3///wAA/7///////38AgP///3//f/+//3///wAA/7////9//3//v/9//3//fwCA/3///wAA/7//f/9//38AgAAA/3//f/+//3///wAA/78AAP9//3//v///////fwCA")
+}]
+
 [sub_resource type="Curve" id="Curve_jmvpa"]
 _limits = [0.0, 1.0, -180.0, 180.0]
 bake_resolution = 21
@@ -430,47 +489,47 @@ Propeller Pitch: T/G"
 [node name="FlightInfoLabel" parent="CameraRotator/Camera3D" index="1" unique_id=1224388868 instance=ExtResource("2_km0hj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5125, 1.313, -2.986)
 
-[node name="FueslageBuoyancy" type="AeroInfluencer3D" parent="." index="2" unique_id=384960125 node_paths=PackedStringArray("aero_body")]
+[node name="FueslageBuoyancy" type="AeroInfluencer3D" parent="." index="2" unique_id=384960125]
 show_debug = true
 script = ExtResource("2_yvgc5")
 buoyancy_mesh = ExtResource("3_2tceh")
 metadata/_custom_type_script = "uid://blp6761y154ht"
 
-[node name="FloatL" type="AeroInfluencer3D" parent="." index="3" unique_id=306506585 node_paths=PackedStringArray("aero_body")]
+[node name="FloatL" type="AeroInfluencer3D" parent="." index="3" unique_id=306506585]
 show_debug = true
 transform = Transform3D(1, 0, 0, 0, 0.9926691362298, 0.1208635014252936, 0, -0.12086350142529358, 0.9926691362298002, -27.172499, 0.12441341554545282, -5.612114003561103)
 script = ExtResource("2_yvgc5")
 buoyancy_mesh = ExtResource("4_lv6b5")
 metadata/_custom_type_script = "uid://blp6761y154ht"
 
-[node name="FloatR" type="AeroInfluencer3D" parent="." index="4" unique_id=31919966 node_paths=PackedStringArray("aero_body")]
+[node name="FloatR" type="AeroInfluencer3D" parent="." index="4" unique_id=31919966]
 show_debug = true
 transform = Transform3D(1, 0, 0, 0, 0.9926691362298004, 0.12086350142529362, 0, -0.12086350142529362, 0.9926691362298004, 27.172459, 0.12441341554545282, -5.612114003561103)
 script = ExtResource("2_yvgc5")
 buoyancy_mesh = ExtResource("4_lv6b5")
 metadata/_custom_type_script = "uid://blp6761y154ht"
 
-[node name="Wing" type="ManualAeroSurface3D" parent="." index="5" unique_id=9829038 node_paths=PackedStringArray("aero_body")]
+[node name="Wing" type="ManualAeroSurface3D" parent="." index="5" unique_id=9829038]
 manual_config = SubResource("Resource_vwm3g")
 wing_config = SubResource("Resource_6qk7s")
 show_debug = true
 transform = Transform3D(1, 0, 0, 0, 0.9927573419294456, -0.1201368388346467, 0, 0.1201368388346467, 0.9927573419294456, 0, 4.243060905662596, -6.913277240514427)
 
-[node name="Wing2" type="ManualAeroSurface3D" parent="Wing" index="0" unique_id=151451533 node_paths=PackedStringArray("aero_body")]
+[node name="Wing2" type="ManualAeroSurface3D" parent="Wing" index="0" unique_id=151451533]
 manual_config = SubResource("Resource_vwm3g")
 wing_config = SubResource("Resource_hsuvl")
 mirror_axis = 1
 show_debug = true
 transform = Transform3D(0.998171886552097, -0.0435811257516329, -0.04187565372919923, 0.04361938736533599, 0.999048221581858, 0, 0.04183579738573417, -0.00182659036119061, 0.9991228300988586, 22.46982721646553, 0.4069279029529166, -0.3345438313580009)
 
-[node name="Aileron" type="ManualAeroSurface3D" parent="Wing/Wing2" index="0" unique_id=2014203271 node_paths=PackedStringArray("aero_body")]
+[node name="Aileron" type="ManualAeroSurface3D" parent="Wing/Wing2" index="0" unique_id=2014203271]
 manual_config = SubResource("Resource_1tns4")
 wing_config = SubResource("Resource_8a4f4")
 actuation_config = SubResource("Resource_0thx8")
 show_debug = true
 transform = Transform3D(0.9884938868086836, 0, 0.151260820247219, 0, 1, 0, -0.151260820247219, 0, 0.9884938868086836, 1.3355874856253156, 2.1684042999999996e-18, 4.459693561979232)
 
-[node name="EngineR" type="AeroInfluencer3D" parent="Wing/Wing2" index="1" unique_id=447216322 node_paths=PackedStringArray("aero_body", "propeller_blade")]
+[node name="EngineR" type="AeroInfluencer3D" parent="Wing/Wing2" index="1" unique_id=447216322 node_paths=PackedStringArray("propeller_blade")]
 mirror_scaling_fix_axis = 1
 show_debug = true
 show_torque = true
@@ -482,7 +541,7 @@ propeller_amount = 3
 propeller_blade = NodePath("Blade")
 propeller_speed_control_config = SubResource("Resource_segqd")
 
-[node name="Blade" type="ManualAeroSurface3D" parent="Wing/Wing2/EngineR" index="0" unique_id=839777504 node_paths=PackedStringArray("aero_body")]
+[node name="Blade" type="ManualAeroSurface3D" parent="Wing/Wing2/EngineR" index="0" unique_id=839777504]
 manual_config = SubResource("Resource_ejmvr")
 wing_config = SubResource("Resource_rca78")
 actuation_config = SubResource("Resource_kigpq")
@@ -493,26 +552,143 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.804408776796484, 0, 0)
 transform = Transform3D(1, 0, 0, 0, 1.0000000000000764, -3.4347525000000003e-16, 0, 3.4347525000000003e-16, 1.0000000000000764, 0, 5.3290705e-15, 0.09529135376214626)
 size = Vector3(3.537813784316313, 0.06311671097091676, 0.37421620171153336)
 
-[node name="TailHorizontal" type="ManualAeroSurface3D" parent="." index="6" unique_id=1271634780 node_paths=PackedStringArray("aero_body")]
+[node name="Wing2Mirror" type="ManualAeroSurface3D" parent="Wing" index="1" unique_id=1329734399]
+manual_config = SubResource("Resource_vwm3g")
+wing_config = SubResource("Resource_hsuvl")
+mirror_axis = 1
+show_debug = true
+transform = Transform3D(-0.998171886552097, 0.0435811257516329, 0.04187565372919923, 0.04361938736533599, 0.999048221581858, 0, 0.04183579738573417, -0.00182659036119061, 0.9991228300988586, -22.46982721646553, 0.4069279029529166, -0.3345438313580009)
+
+[node name="Aileron" type="ManualAeroSurface3D" parent="Wing/Wing2Mirror" index="0" unique_id=1768531606]
+manual_config = SubResource("Resource_1tns4")
+wing_config = SubResource("Resource_8a4f4")
+actuation_config = SubResource("Resource_0thx8")
+show_debug = true
+transform = Transform3D(0.9884938868086836, 0, 0.151260820247219, 0, 1, 0, -0.151260820247219, 0, 0.9884938868086836, 1.3355874856253156, 2.1684042999999996e-18, 4.459693561979232)
+
+[node name="EngineR" type="AeroInfluencer3D" parent="Wing/Wing2Mirror" index="1" unique_id=1914295789 node_paths=PackedStringArray("propeller_blade")]
+mirror_scaling_fix_axis = 1
+show_debug = true
+show_torque = true
+show_lift = false
+show_thrust = true
+transform = Transform3D(-0.998171886552097, 0.04806095952755912, -0.036647360973442, -0.04358112575163286, -0.15223295067801623, 0.98738331675499, -0.04187565372919919, -0.987175401282444, -0.15404920229458252, -18.442901590048216, 0.16904058993919868, -4.840144150267356)
+script = ExtResource("11_h0te8")
+propeller_amount = 3
+propeller_blade = NodePath("Blade")
+propeller_speed_control_config = SubResource("Resource_segqd")
+
+[node name="Blade" type="ManualAeroSurface3D" parent="Wing/Wing2Mirror/EngineR" index="0" unique_id=53140139]
+manual_config = SubResource("Resource_ejmvr")
+wing_config = SubResource("Resource_rca78")
+actuation_config = SubResource("Resource_kigpq")
+show_debug = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.804408776796484, 0, 0)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Wing/Wing2Mirror/EngineR/Blade" index="0" unique_id=1817075659]
+transform = Transform3D(1, 0, 0, 0, 1.0000000000000764, -3.4347525000000003e-16, 0, 3.4347525000000003e-16, 1.0000000000000764, 0, 5.3290705e-15, 0.09529135376214626)
+size = Vector3(3.537813784316313, 0.06311671097091676, 0.37421620171153336)
+
+[node name="_ManualAeroSurface3D_23352" type="ManualAeroSurface3D" parent="Wing/Wing2Mirror/EngineR" index="1" unique_id=1741679589]
+manual_config = SubResource("Resource_ejmvr")
+wing_config = SubResource("Resource_rca78")
+actuation_config = SubResource("Resource_kigpq")
+show_debug = true
+transform = Transform3D(-0.4999999999999998, 0, 0.8660254037844387, 0, 1, 0, -0.8660254037844387, 0, -0.4999999999999998, -0.9022043883982416, 0, -1.5626638395173602)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Wing/Wing2Mirror/EngineR/_ManualAeroSurface3D_23352" index="0" unique_id=1582391137]
+transform = Transform3D(1, 0, 0, 0, 1.0000000000000764, -3.4347525000000003e-16, 0, 3.4347525000000003e-16, 1.0000000000000764, 0, 5.3290705e-15, 0.09529135376214626)
+size = Vector3(3.537813784316313, 0.06311671097091676, 0.37421620171153336)
+
+[node name="ForceDebug" type="MeshInstance3D" parent="Wing/Wing2Mirror/EngineR/_ManualAeroSurface3D_23352" index="1" unique_id=1120484205]
+custom_aabb = AABB(0, 0, 0, 100, 100, 100)
+mesh = SubResource("ArrayMesh_utkc8")
+script = ExtResource("17_65nru")
+checker = true
+
+[node name="LiftDebug" type="MeshInstance3D" parent="Wing/Wing2Mirror/EngineR/_ManualAeroSurface3D_23352" index="2" unique_id=798111617]
+custom_aabb = AABB(0, 0, 0, 100, 100, 100)
+mesh = SubResource("ArrayMesh_6qk7s")
+script = ExtResource("17_65nru")
+color = Color(0, 0, 1, 1)
+
+[node name="DragDebug" type="MeshInstance3D" parent="Wing/Wing2Mirror/EngineR/_ManualAeroSurface3D_23352" index="3" unique_id=728502563]
+custom_aabb = AABB(0, 0, 0, 100, 100, 100)
+mesh = SubResource("ArrayMesh_lvl4a")
+script = ExtResource("17_65nru")
+color = Color(1, 0, 0, 1)
+
+[node name="_ManualAeroSurface3D_23353" type="ManualAeroSurface3D" parent="Wing/Wing2Mirror/EngineR" index="2" unique_id=1431287202]
+manual_config = SubResource("Resource_ejmvr")
+wing_config = SubResource("Resource_rca78")
+actuation_config = SubResource("Resource_kigpq")
+show_debug = true
+transform = Transform3D(-0.5000000000000004, 0, -0.8660254037844384, 0, 1, 0, 0.8660254037844384, 0, -0.5000000000000004, -0.9022043883982428, 0, 1.5626638395173595)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Wing/Wing2Mirror/EngineR/_ManualAeroSurface3D_23353" index="0" unique_id=105675930]
+transform = Transform3D(1, 0, 0, 0, 1.0000000000000764, -3.4347525000000003e-16, 0, 3.4347525000000003e-16, 1.0000000000000764, 0, 5.3290705e-15, 0.09529135376214626)
+size = Vector3(3.537813784316313, 0.06311671097091676, 0.37421620171153336)
+
+[node name="ForceDebug" type="MeshInstance3D" parent="Wing/Wing2Mirror/EngineR/_ManualAeroSurface3D_23353" index="1" unique_id=1283343670]
+custom_aabb = AABB(0, 0, 0, 100, 100, 100)
+mesh = SubResource("ArrayMesh_utkc8")
+script = ExtResource("17_65nru")
+checker = true
+
+[node name="LiftDebug" type="MeshInstance3D" parent="Wing/Wing2Mirror/EngineR/_ManualAeroSurface3D_23353" index="2" unique_id=757730359]
+custom_aabb = AABB(0, 0, 0, 100, 100, 100)
+mesh = SubResource("ArrayMesh_6qk7s")
+script = ExtResource("17_65nru")
+color = Color(0, 0, 1, 1)
+
+[node name="DragDebug" type="MeshInstance3D" parent="Wing/Wing2Mirror/EngineR/_ManualAeroSurface3D_23353" index="3" unique_id=1584906113]
+custom_aabb = AABB(0, 0, 0, 100, 100, 100)
+mesh = SubResource("ArrayMesh_lvl4a")
+script = ExtResource("17_65nru")
+color = Color(1, 0, 0, 1)
+
+[node name="@ManualAeroSurface3D@23354" type="ManualAeroSurface3D" parent="Wing/Wing2Mirror/EngineR" index="3" unique_id=250915378]
+manual_config = SubResource("Resource_ejmvr")
+wing_config = SubResource("Resource_rca78")
+actuation_config = SubResource("Resource_kigpq")
+show_debug = true
+transform = Transform3D(-0.4999999999999998, 0, 0.8660254037844387, 0, 1, 0, -0.8660254037844387, 0, -0.4999999999999998, -0.9022043883982416, 0, -1.5626638395173602)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Wing/Wing2Mirror/EngineR/@ManualAeroSurface3D@23354" index="0" unique_id=218634560]
+transform = Transform3D(1, 0, 0, 0, 1.0000000000000764, -3.4347525000000003e-16, 0, 3.4347525000000003e-16, 1.0000000000000764, 0, 5.3290705e-15, 0.09529135376214626)
+size = Vector3(3.537813784316313, 0.06311671097091676, 0.37421620171153336)
+
+[node name="@ManualAeroSurface3D@23355" type="ManualAeroSurface3D" parent="Wing/Wing2Mirror/EngineR" index="4" unique_id=779297369]
+manual_config = SubResource("Resource_ejmvr")
+wing_config = SubResource("Resource_rca78")
+actuation_config = SubResource("Resource_kigpq")
+show_debug = true
+transform = Transform3D(-0.5000000000000004, 0, -0.8660254037844384, 0, 1, 0, 0.8660254037844384, 0, -0.5000000000000004, -0.9022043883982428, 0, 1.5626638395173595)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Wing/Wing2Mirror/EngineR/@ManualAeroSurface3D@23355" index="0" unique_id=813673354]
+transform = Transform3D(1, 0, 0, 0, 1.0000000000000764, -3.4347525000000003e-16, 0, 3.4347525000000003e-16, 1.0000000000000764, 0, 5.3290705e-15, 0.09529135376214626)
+size = Vector3(3.537813784316313, 0.06311671097091676, 0.37421620171153336)
+
+[node name="TailHorizontal" type="ManualAeroSurface3D" parent="." index="6" unique_id=1271634780]
 manual_config = SubResource("Resource_0xyeg")
 wing_config = SubResource("Resource_sctmh")
 show_debug = true
 transform = Transform3D(0.999999999999924, 2.3574953658499423e-08, 3.887001042152727e-07, -7.413951295453973e-18, 0.998165801930276, -0.06053950657949585, -3.894143672965396e-07, 0.06053950657949124, 0.9981658019302004, 4.693354366756635e-06, 4.51368567467843, 14.796052764602129)
 
-[node name="Elevator" type="ManualAeroSurface3D" parent="TailHorizontal" index="0" unique_id=1801299919 node_paths=PackedStringArray("aero_body")]
+[node name="Elevator" type="ManualAeroSurface3D" parent="TailHorizontal" index="0" unique_id=1801299919]
 manual_config = SubResource("Resource_1tns4")
 wing_config = SubResource("Resource_7qth2")
 actuation_config = SubResource("Resource_6axm8")
 show_debug = true
 transform = Transform3D(1, 0, 0, 0, 1, 6.9388939039072245e-18, 0, 6.9388939039072245e-18, 1, 0, 0, 2.416899999996531)
 
-[node name="TailVertical" type="ManualAeroSurface3D" parent="." index="7" unique_id=882497649 node_paths=PackedStringArray("aero_body")]
+[node name="TailVertical" type="ManualAeroSurface3D" parent="." index="7" unique_id=882497649]
 manual_config = SubResource("Resource_1tns4")
 wing_config = SubResource("Resource_3vvy3")
 show_debug = true
 transform = Transform3D(-2.38558259006959e-07, 0.999999999999924, 3.0778808702800373e-07, -0.790387085939972, 6.123233995736767e-17, -0.6126077491995342, -0.6126077491994877, -3.89414367296315e-07, 0.7903870859399119, 4.339032e-06, 3.777090264967476, 13.886219313768018)
 
-[node name="Rudder" type="ManualAeroSurface3D" parent="TailVertical" index="0" unique_id=39495561 node_paths=PackedStringArray("aero_body")]
+[node name="Rudder" type="ManualAeroSurface3D" parent="TailVertical" index="0" unique_id=39495561]
 manual_config = SubResource("Resource_1tns4")
 wing_config = SubResource("Resource_ux024")
 actuation_config = SubResource("Resource_nrhy0")
@@ -548,7 +724,7 @@ transform = Transform3D(-0.9999999999999244, -1.3142376508619873e-08, -3.8847779
 shape = SubResource("ConvexPolygonShape3D_8f6hu")
 
 [node name="CollisionShape3D6" type="CollisionShape3D" parent="." index="14" unique_id=1243430882]
-transform = Transform3D(-0.9997503398608264, 0.02234408082724301, -3.847482985835883e-07, 0.02234408082723648, 0.9997503398609, 2.126032440374903e-08, 3.851272846774716e-07, 1.2658169457058221e-08, -0.999999999999926, -27.17139398668139, 0.12884503379842194, -5.538838735166767)
+transform = Transform3D(-0.9997503398608264, 0.02234408082724301, -3.847482985835883e-07, 0.02234408082723648, 0.9997503398609, 2.126032440374903e-08, 3.851272846774716e-07, 1.265816945705822e-08, -0.999999999999926, -27.17139398668139, 0.12884503379842194, -5.538838735166767)
 shape = SubResource("ConvexPolygonShape3D_vpgbi")
 
 [node name="CollisionShape3D7" type="CollisionShape3D" parent="." index="15" unique_id=2101258719]

@@ -85,8 +85,7 @@ private:
 	double debug_influencer_width = 0.1;
 	double debug_center_width = 0.4;
 
-	////std::vector<AeroInfluencer3D*>
-	std::vector<AeroInfluencer3D*> aero_influencers; //pointer list, so the substep loops don't box Variants
+	std::vector<AeroInfluencer3D*> aero_influencers;
 	//aero_surfaces
 	Vector3 current_force = Vector3(0, 0, 0);
 	Vector3 current_torque = Vector3(0, 0, 0);
@@ -119,11 +118,9 @@ private:
 	double bank_angle = 0;
 	double heading = 0;
 	double inclination = 0;
-
-	////std::vector<AeroAtmosphere3D*>
+	
 	std::vector<Area3D*> atmosphere_areas;
 
-	
 	Node3D *linear_velocity_vector = nullptr;
 	Node3D *angular_velocity_vector = nullptr;
 
@@ -161,8 +158,8 @@ public:
 	Vector3 calculate_linear_velocity_substep(Vector3 force) const;
 	Vector3 calculate_angular_velocity_substep(Vector3 torque) const;
 	
-	double get_control_command(StringName axis_name); //unimplemented
-	bool is_overriding_body_sleep() const; //unimplemented
+	double get_control_command(StringName axis_name);
+	bool is_overriding_body_sleep() const;
 	void interrupt_sleep();
 	
 	TypedArray<AeroInfluencer3D> get_aero_influencers() const;

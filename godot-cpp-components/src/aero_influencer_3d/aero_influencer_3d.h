@@ -22,7 +22,6 @@ private:
 	
 	int mirror_axis = 0;
 	int mirror_scaling_fix_axis = 0;
-	int _mirror_scaling_fix_axis = 0;
 	bool _duplicate = false;
 	AeroInfluencer3D* mirror_duplicate = nullptr;
 
@@ -41,12 +40,9 @@ private:
 	bool show_drag = true;
 	bool show_thrust = false;
 
-	//internal values (not export properties)
 	AeroBody3D *aero_body = nullptr;
-	AeroInfluencer3D *parent_influencer = nullptr; //resolved in _enter_tree so the substep path doesn't call get_parent()
-	//see if it's possible/probably to convert this to a native array
-	//std::vector<AeroInfluencer3D*>
-	std::vector<AeroInfluencer3D*> aero_influencers; //pointer list, so the substep loops don't box Variants
+	AeroInfluencer3D *parent_influencer = nullptr;
+	std::vector<AeroInfluencer3D*> aero_influencers;
 
 	Transform3D default_transform = Transform3D();
 
@@ -103,6 +99,14 @@ public:
 	void _physics_process(double delta) override;
 
 	void generate_mirror();
+	void update_mirror_transform();
+	Transform3D calculate_mirrored_transform(const Transform3D &p_transform) const;
+
+	bool is_mirrored() const;
+	bool is_mirror_pending() const;
+	static void map_mirror_sources(AeroInfluencer3D *p_source, AeroInfluencer3D *p_mirror);
+	static void set_owner_recursive(Node *p_node, Node *p_owner);
+
 
 	ForceAndTorque calculate_forces_with_override(double substep_delta);
 	virtual ForceAndTorque calculate_forces(double substep_delta);
@@ -132,9 +136,7 @@ public:
 	
 	void update_debug_vectors();
 
-	//recompute this influencer's cached global transform from the parent's, then cascade into children
 	void update_transform_cache(const Transform3D &parent_global_transform);
-	//apply a transform and let the caches follow (use instead of set_transform/set_basis)
 	void set_cached_transform(const Transform3D &p_transform);
 
 	const Transform3D &get_cached_local_transform() const;
@@ -156,7 +158,7 @@ public:
 	void set_mirror_scaling_fix_axis(int axis);
 	int get_mirror_scaling_fix_axis() const;
 	void set_duplicate(bool value);
-	bool is_duplicate() const; //doesn't need setter because it is never expected to be changed outside of aeroinfluencer 
+	bool is_duplicate() const;
 	AeroInfluencer3D* get_mirror_duplicate() const;
 	
 	void set_actuation_config(const Ref<Resource> &p_config);

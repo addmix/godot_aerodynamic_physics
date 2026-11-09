@@ -16,7 +16,7 @@ shape = SubResource("SphereShape3D_x8fbi")
 radial_segments = 32
 rings = 16
 
-[node name="AeroInfluencer3D" type="AeroInfluencer3D" parent="." unique_id=256139528 node_paths=PackedStringArray("aero_body")]
+[node name="AeroInfluencer3D" type="AeroInfluencer3D" parent="." unique_id=256139528]
 show_debug = true
 script = ExtResource("2_bawn3")
 radius = 0.2

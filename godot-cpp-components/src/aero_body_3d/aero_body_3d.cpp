@@ -228,14 +228,15 @@ void AeroBody3D::_ready() {
 	}
 	
 	if (mass_debug_point and not mass_debug_point->get_parent()) {
-		mass_debug_point->add_child(force_debug_vector, INTERNAL_MODE_FRONT);
-		mass_debug_point->add_child(lift_debug_vector, INTERNAL_MODE_FRONT);
-		mass_debug_point->add_child(drag_debug_vector, INTERNAL_MODE_FRONT);
-		mass_debug_point->add_child(thrust_debug_vector, INTERNAL_MODE_FRONT);
-		mass_debug_point->add_child(torque_debug_vector, INTERNAL_MODE_FRONT);
-		mass_debug_point->add_child(linear_velocity_vector, INTERNAL_MODE_FRONT);
-		mass_debug_point->add_child(angular_velocity_vector, INTERNAL_MODE_FRONT);
-		add_child(mass_debug_point, INTERNAL_MODE_FRONT);
+		//the second argument is force_readable_name, so the internal mode has to be passed explicitly
+		mass_debug_point->add_child(force_debug_vector, false, INTERNAL_MODE_FRONT);
+		mass_debug_point->add_child(lift_debug_vector, false, INTERNAL_MODE_FRONT);
+		mass_debug_point->add_child(drag_debug_vector, false, INTERNAL_MODE_FRONT);
+		mass_debug_point->add_child(thrust_debug_vector, false, INTERNAL_MODE_FRONT);
+		mass_debug_point->add_child(torque_debug_vector, false, INTERNAL_MODE_FRONT);
+		mass_debug_point->add_child(linear_velocity_vector, false, INTERNAL_MODE_FRONT);
+		mass_debug_point->add_child(angular_velocity_vector, false, INTERNAL_MODE_FRONT);
+		add_child(mass_debug_point, false, INTERNAL_MODE_FRONT);
 	}
 	
 	set_show_debug(show_debug);

@@ -50,7 +50,8 @@ static Node3D* create_debug_node(const Ref<Script> &script, const StringName &na
     vector->set("checker", checker);
     vector->set("width", width);
     
-    if (parent) parent->add_child(vector, Node::INTERNAL_MODE_FRONT);
+    //the second argument is force_readable_name, so the internal mode has to be passed explicitly
+    if (parent) parent->add_child(vector, false, Node::INTERNAL_MODE_FRONT);
     return vector;
 }
 

@@ -289,13 +289,32 @@ use_separate_minmax = true
 max_value = Vector3(0.25, 0, 0)
 metadata/_custom_type_script = "uid://cblxodmmwvpt6"
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_16k3l"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jduiy"]
 render_priority = 0
 shader = ExtResource("16_jduiy")
 shader_parameter/_length = 0.0
 shader_parameter/_width = 0.1
 shader_parameter/_color = Vector3(0, 0, 0)
 shader_parameter/checker_pattern = true
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_65nru"]
+_surfaces = [{
+"aabb": AABB(-1, -1, -1, 2, 2, 2),
+"format": 34359738375,
+"material": SubResource("ShaderMaterial_jduiy"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("AAAAAAAAgL8AAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIC/AAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AACAPwAAAAAAAAAAAAAAAAAAgL8AAAAAAACAvwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAgL8AAAAAAAAAAAAAAAAAAIC/AACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAIC/AACAPwAAAAAAAAAAAAAAAAAAgD8AAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAgD8AAAAAAAAAAAAAAAAAAIA/AACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAACAvwAAAAAAAAAAAAAAAAAAAAAAAIC//38AAAAA/7////9//3//v///////fwCA/38AAAAA/7//f/9//38AgP///3//f/+//38AAAAA/78AAP9//3//v/9//3//fwCA/38AAAAA/7///////38AgAAA/3//f/+//3///wAA/7///////38AgP///3//f/+//3///wAA/7////9//3//v/9//3//fwCA/3///wAA/7//f/9//38AgAAA/3//f/+//3///wAA/78AAP9//3//v///////fwCA")
+}]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_16k3l"]
+render_priority = 0
+shader = ExtResource("16_jduiy")
+shader_parameter/_length = 0.0
+shader_parameter/_width = 0.1
+shader_parameter/_color = Vector3(0, 0, 0)
+shader_parameter/checker_pattern = false
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_utkc8"]
 _surfaces = [{
@@ -333,13 +352,51 @@ shader = ExtResource("16_jduiy")
 shader_parameter/_length = 0.0
 shader_parameter/_width = 0.1
 shader_parameter/_color = Vector3(0, 0, 0)
-shader_parameter/checker_pattern = false
+shader_parameter/checker_pattern = true
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_lvl4a"]
 _surfaces = [{
 "aabb": AABB(-1, -1, -1, 2, 2, 2),
 "format": 34359738375,
 "material": SubResource("ShaderMaterial_hsuvl"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("AAAAAAAAgL8AAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIC/AAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AACAPwAAAAAAAAAAAAAAAAAAgL8AAAAAAACAvwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAgL8AAAAAAAAAAAAAAAAAAIC/AACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAIC/AACAPwAAAAAAAAAAAAAAAAAAgD8AAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAgD8AAAAAAAAAAAAAAAAAAIA/AACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAACAvwAAAAAAAAAAAAAAAAAAAAAAAIC//38AAAAA/7////9//3//v///////fwCA/38AAAAA/7//f/9//38AgP///3//f/+//38AAAAA/78AAP9//3//v/9//3//fwCA/38AAAAA/7///////38AgAAA/3//f/+//3///wAA/7///////38AgP///3//f/+//3///wAA/7////9//3//v/9//3//fwCA/3///wAA/7//f/9//38AgAAA/3//f/+//3///wAA/78AAP9//3//v///////fwCA")
+}]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8ix2c"]
+render_priority = 0
+shader = ExtResource("16_jduiy")
+shader_parameter/_length = 0.0
+shader_parameter/_width = 0.1
+shader_parameter/_color = Vector3(0, 0, 0)
+shader_parameter/checker_pattern = false
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_s5u7q"]
+_surfaces = [{
+"aabb": AABB(-1, -1, -1, 2, 2, 2),
+"format": 34359738375,
+"material": SubResource("ShaderMaterial_8ix2c"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("AAAAAAAAgL8AAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIC/AAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AACAPwAAAAAAAAAAAAAAAAAAgL8AAAAAAACAvwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAgL8AAAAAAAAAAAAAAAAAAIC/AACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAIC/AACAPwAAAAAAAAAAAAAAAAAAgD8AAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAgD8AAAAAAAAAAAAAAAAAAIA/AACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAACAvwAAAAAAAAAAAAAAAAAAAAAAAIC//38AAAAA/7////9//3//v///////fwCA/38AAAAA/7//f/9//38AgP///3//f/+//38AAAAA/78AAP9//3//v/9//3//fwCA/38AAAAA/7///////38AgAAA/3//f/+//3///wAA/7///////38AgP///3//f/+//3///wAA/7////9//3//v/9//3//fwCA/3///wAA/7//f/9//38AgAAA/3//f/+//3///wAA/78AAP9//3//v///////fwCA")
+}]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_x57iw"]
+render_priority = 0
+shader = ExtResource("16_jduiy")
+shader_parameter/_length = 0.0
+shader_parameter/_width = 0.1
+shader_parameter/_color = Vector3(0, 0, 0)
+shader_parameter/checker_pattern = false
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_1tns4"]
+_surfaces = [{
+"aabb": AABB(-1, -1, -1, 2, 2, 2),
+"format": 34359738375,
+"material": SubResource("ShaderMaterial_x57iw"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 24,
@@ -600,21 +657,22 @@ transform = Transform3D(-0.4999999999999998, 0, 0.8660254037844387, 0, 1, 0, -0.
 transform = Transform3D(1, 0, 0, 0, 1.0000000000000764, -3.4347525000000003e-16, 0, 3.4347525000000003e-16, 1.0000000000000764, 0, 5.3290705e-15, 0.09529135376214626)
 size = Vector3(3.537813784316313, 0.06311671097091676, 0.37421620171153336)
 
-[node name="ForceDebug" type="MeshInstance3D" parent="Wing/Wing2Mirror/EngineR/_ManualAeroSurface3D_23352" index="1" unique_id=1120484205]
+[node name="ForceDebug2" type="MeshInstance3D" parent="Wing/Wing2Mirror/EngineR/_ManualAeroSurface3D_23352" index="1" unique_id=1120484205]
+custom_aabb = AABB(0, 0, 0, 100, 100, 100)
+mesh = SubResource("ArrayMesh_65nru")
+script = ExtResource("17_65nru")
+color = Color(0, 0, 0, 1)
+checker = true
+
+[node name="LiftDebug2" type="MeshInstance3D" parent="Wing/Wing2Mirror/EngineR/_ManualAeroSurface3D_23352" index="2" unique_id=798111617]
 custom_aabb = AABB(0, 0, 0, 100, 100, 100)
 mesh = SubResource("ArrayMesh_utkc8")
 script = ExtResource("17_65nru")
-checker = true
-
-[node name="LiftDebug" type="MeshInstance3D" parent="Wing/Wing2Mirror/EngineR/_ManualAeroSurface3D_23352" index="2" unique_id=798111617]
-custom_aabb = AABB(0, 0, 0, 100, 100, 100)
-mesh = SubResource("ArrayMesh_6qk7s")
-script = ExtResource("17_65nru")
 color = Color(0, 0, 1, 1)
 
-[node name="DragDebug" type="MeshInstance3D" parent="Wing/Wing2Mirror/EngineR/_ManualAeroSurface3D_23352" index="3" unique_id=728502563]
+[node name="DragDebug2" type="MeshInstance3D" parent="Wing/Wing2Mirror/EngineR/_ManualAeroSurface3D_23352" index="3" unique_id=728502563]
 custom_aabb = AABB(0, 0, 0, 100, 100, 100)
-mesh = SubResource("ArrayMesh_lvl4a")
+mesh = SubResource("ArrayMesh_6qk7s")
 script = ExtResource("17_65nru")
 color = Color(1, 0, 0, 1)
 
@@ -629,21 +687,22 @@ transform = Transform3D(-0.5000000000000004, 0, -0.8660254037844384, 0, 1, 0, 0.
 transform = Transform3D(1, 0, 0, 0, 1.0000000000000764, -3.4347525000000003e-16, 0, 3.4347525000000003e-16, 1.0000000000000764, 0, 5.3290705e-15, 0.09529135376214626)
 size = Vector3(3.537813784316313, 0.06311671097091676, 0.37421620171153336)
 
-[node name="ForceDebug" type="MeshInstance3D" parent="Wing/Wing2Mirror/EngineR/_ManualAeroSurface3D_23353" index="1" unique_id=1283343670]
+[node name="ForceDebug2" type="MeshInstance3D" parent="Wing/Wing2Mirror/EngineR/_ManualAeroSurface3D_23353" index="1" unique_id=1283343670]
 custom_aabb = AABB(0, 0, 0, 100, 100, 100)
-mesh = SubResource("ArrayMesh_utkc8")
+mesh = SubResource("ArrayMesh_lvl4a")
 script = ExtResource("17_65nru")
+color = Color(0, 0, 0, 1)
 checker = true
 
-[node name="LiftDebug" type="MeshInstance3D" parent="Wing/Wing2Mirror/EngineR/_ManualAeroSurface3D_23353" index="2" unique_id=757730359]
+[node name="LiftDebug2" type="MeshInstance3D" parent="Wing/Wing2Mirror/EngineR/_ManualAeroSurface3D_23353" index="2" unique_id=757730359]
 custom_aabb = AABB(0, 0, 0, 100, 100, 100)
-mesh = SubResource("ArrayMesh_6qk7s")
+mesh = SubResource("ArrayMesh_s5u7q")
 script = ExtResource("17_65nru")
 color = Color(0, 0, 1, 1)
 
-[node name="DragDebug" type="MeshInstance3D" parent="Wing/Wing2Mirror/EngineR/_ManualAeroSurface3D_23353" index="3" unique_id=1584906113]
+[node name="DragDebug2" type="MeshInstance3D" parent="Wing/Wing2Mirror/EngineR/_ManualAeroSurface3D_23353" index="3" unique_id=1584906113]
 custom_aabb = AABB(0, 0, 0, 100, 100, 100)
-mesh = SubResource("ArrayMesh_lvl4a")
+mesh = SubResource("ArrayMesh_1tns4")
 script = ExtResource("17_65nru")
 color = Color(1, 0, 0, 1)
 
@@ -724,7 +783,7 @@ transform = Transform3D(-0.9999999999999244, -1.3142376508619873e-08, -3.8847779
 shape = SubResource("ConvexPolygonShape3D_8f6hu")
 
 [node name="CollisionShape3D6" type="CollisionShape3D" parent="." index="14" unique_id=1243430882]
-transform = Transform3D(-0.9997503398608264, 0.02234408082724301, -3.847482985835883e-07, 0.02234408082723648, 0.9997503398609, 2.126032440374903e-08, 3.851272846774716e-07, 1.265816945705822e-08, -0.999999999999926, -27.17139398668139, 0.12884503379842194, -5.538838735166767)
+transform = Transform3D(-0.9997503398608264, 0.02234408082724301, -3.847482985835883e-07, 0.02234408082723648, 0.9997503398609, 2.126032440374903e-08, 3.851272846774716e-07, 1.2658169457058221e-08, -0.999999999999926, -27.17139398668139, 0.12884503379842194, -5.538838735166767)
 shape = SubResource("ConvexPolygonShape3D_vpgbi")
 
 [node name="CollisionShape3D7" type="CollisionShape3D" parent="." index="15" unique_id=2101258719]

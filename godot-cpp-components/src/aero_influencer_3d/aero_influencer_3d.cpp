@@ -578,15 +578,30 @@ bool AeroInfluencer3D::get_can_override_body_sleep() const {
 	return can_override_body_sleep;
 }
 void AeroInfluencer3D::set_mirror_axis(int axis) {
-	if (mirror_axis == axis) return;
-	
+	if (_duplicate and mirror_duplicate and mirror_duplicate->get_parent() != get_parent()) return;
+
+	if (mirror_axis == axis) {
+		if (axis != 0 and not _duplicate and not mirror_duplicate and is_inside_tree()) generate_mirror();
+		return;
+	}
+
 	mirror_axis = axis;
-	
+
 	if (axis == 0) {
+		if (_duplicate and mirror_duplicate) {
+			mirror_duplicate->set_mirror_axis(0);
+			return;
+		}
+
 		if (mirror_duplicate) {
-			mirror_duplicate->mirror_duplicate = nullptr;
-			mirror_duplicate->queue_free();
+			AeroInfluencer3D *copy = mirror_duplicate;
 			mirror_duplicate = nullptr;
+			copy->mirror_duplicate = nullptr;
+			copy->_duplicate = false;
+			copy->set_disabled(true); //stop it contributing before it is gone
+
+			copy->set_name(copy->get_name() + String("_mirror_removed"));
+			copy->call_deferred("queue_free");
 		}
 		return;
 	}
@@ -611,7 +626,7 @@ void AeroInfluencer3D::generate_mirror() {
 	//the copy is saved with the scene, so it may already be there under its generated name
 	if (Node *parent = get_parent()) {
 		AeroInfluencer3D *saved_copy = Object::cast_to<AeroInfluencer3D>(parent->get_node_or_null(String(get_name()) + String("Mirror")));
-		if (saved_copy and saved_copy->mirror_axis == mirror_axis and not saved_copy->mirror_duplicate) {
+		if (saved_copy and saved_copy != this and not saved_copy->is_queued_for_deletion() and saved_copy->mirror_axis == mirror_axis and not saved_copy->mirror_duplicate) {
 			mirror_duplicate = saved_copy;
 			saved_copy->mirror_duplicate = this;
 			saved_copy->_duplicate = true;

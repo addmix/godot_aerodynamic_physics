@@ -225,10 +225,10 @@ func target_direction(delta : float) -> void:
 	# local Y axis (up). This results in the aerobody rolling into maneuvers in a realistic way.
 	var local_desired_acceleration : Vector3 = local_direction_target * linear_velocity.length() - local_velocity_direction * linear_velocity.length() + Vector3(0, 9.8, 0) * global_transform.basis
 	var roll_error : float = -local_desired_acceleration.x
-
+	
 	error.z = roll_error
 	
-
+	
 	# Feed the error we calculated into PIDs
 	# In most cases, these PIDs are (P:1, I:0, D:0), because that's all that is needed.
 	direction_pitch_pid.update(delta, error.x)
@@ -236,6 +236,7 @@ func target_direction(delta : float) -> void:
 	direction_roll_pid.update(delta, error.z)
 	
 	# The result of those PIDs is applied to the control input.
+	#TODO: add option so that previous inputs can override these inputs
 	control_input.x += direction_pitch_pid.output
 	control_input.y += direction_yaw_pid.output
 	control_input.z += direction_roll_pid.output

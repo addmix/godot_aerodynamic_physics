@@ -186,7 +186,7 @@ public:
 	int get_substeps_override() const;
 	int get_substeps() const;
 	
-	void refresh_transform_cache();
+	void update_transform_cache();
 	const Transform3D &get_cached_global_transform() const;
 	Basis get_cached_global_basis() const;
 	double get_prediction_timestep_fraction() const;

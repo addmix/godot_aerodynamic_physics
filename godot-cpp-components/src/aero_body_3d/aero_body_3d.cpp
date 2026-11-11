@@ -154,7 +154,7 @@ void AeroBody3D::_bind_methods() {
 
 int AeroBody3D::substeps = 1;
 
-void AeroBody3D::refresh_transform_cache() {
+void AeroBody3D::update_transform_cache() {
 	global_transform_cache = get_global_transform();
 	
 	for (AeroInfluencer3D* influencer : aero_influencers) {
@@ -305,7 +305,7 @@ void AeroBody3D::integrate_forces(PhysicsDirectBodyState3D *body_state) {
 	linear_velocity_substep = body_state->get_linear_velocity();
 	angular_velocity_substep = body_state->get_angular_velocity();
 	
-	refresh_transform_cache();
+	update_transform_cache();
 	
 	ForceAndTorque total_force_and_torque = calculate_forces(body_state->get_step());
 	
@@ -651,7 +651,7 @@ void AeroBody3D::_update_debug() {
 	if (not is_inside_tree()) return;
 	
 	//integrate_forces doesn't run in the editor, so keep the caches fresh for the debug pass
-	refresh_transform_cache();
+	update_transform_cache();
 	
 	if (mass_debug_point) mass_debug_point->set_position(get_center_of_mass());
 	

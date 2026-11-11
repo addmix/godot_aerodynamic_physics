@@ -341,6 +341,7 @@ Airbrake: B"
 manual_config = SubResource("Resource_eqt1k")
 wing_config = SubResource("Resource_v517k")
 mirror_axis = 1
+mirror_id = 1436134044
 show_debug = true
 transform = Transform3D(0.8160344353942169, -0.08715578344049064, -0.5713936635814729, 0.07139376214377201, 0.9961951632129492, -0.04999046797392449, 0.5735760933041143, 0, 0.8191518417756138, 6.09659, 0, -0.385974)
 rotation_order = 5
@@ -371,6 +372,7 @@ size = Vector3(1, 0.180664, 3.02588)
 manual_config = SubResource("Resource_eqt1k")
 wing_config = SubResource("Resource_v517k")
 mirror_axis = 1
+mirror_id = -1436134044
 show_debug = true
 transform = Transform3D(-0.8160344353942169, 0.08715578344049064, 0.5713936635814729, 0.07139376214377201, 0.9961951632129492, -0.04999046797392449, 0.5735760933041143, 0, 0.8191518417756138, -6.09659, 0, -0.385974)
 rotation_order = 5
@@ -401,6 +403,7 @@ size = Vector3(1, 0.180664, 3.02588)
 manual_config = SubResource("Resource_eqt1k")
 wing_config = SubResource("Resource_6qdaa")
 mirror_axis = 1
+mirror_id = 1047965363
 show_debug = true
 transform = Transform3D(0.8191519999999999, -3.4694469519536134e-18, -0.5735760000000001, 2.954451e-18, 1, -6.9388939039072245e-18, 0.573576, -6.9388939039072245e-18, 0.819152, 20.32, -1.2490009e-16, 4.5302299999999995)
 
@@ -443,6 +446,7 @@ size = Vector3(1, 0.180664, 3.02588)
 manual_config = SubResource("Resource_eqt1k")
 wing_config = SubResource("Resource_6qdaa")
 mirror_axis = 1
+mirror_id = -1047965363
 show_debug = true
 transform = Transform3D(-0.8191519999999999, 3.4694469519536134e-18, 0.5735760000000001, 2.954451e-18, 1, -6.9388939039072245e-18, 0.573576, -6.9388939039072245e-18, 0.819152, -20.32, -1.2490009e-16, 4.5302299999999995)
 
@@ -491,6 +495,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 7.57748)
 
 [node name="AeroThruster3D" type="AeroInfluencer3D" parent="." index="8" unique_id=1562392617]
 mirror_axis = 1
+mirror_id = 464402406
 show_debug = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.017117169667846, 0, 4.911157713360666)
 script = ExtResource("7_xy21m")
@@ -500,6 +505,7 @@ metadata/_custom_type_script = "uid://3kjm0rdymoth"
 
 [node name="AeroThruster3DMirror" type="AeroInfluencer3D" parent="." index="9" unique_id=550278591]
 mirror_axis = 1
+mirror_id = -464402406
 show_debug = true
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, 1, -4.017117169667846, 0, 4.911157713360666)
 script = ExtResource("7_xy21m")

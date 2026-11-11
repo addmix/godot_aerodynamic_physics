@@ -5,6 +5,7 @@
 #include <godot_cpp/classes/node3d.hpp>
 #include <vector>
 #include <godot_cpp/core/gdvirtual.gen.inc>
+#include <godot_cpp/variant/utility_functions.hpp>
 #include "aero_body_3d/aero_body_3d.h"
 #include "aero_utils/aero_utils.h"
 
@@ -20,6 +21,7 @@ private:
 	bool disabled = false;
 	bool can_override_body_sleep = true;
 	
+	int64_t mirror_id = 0;
 	int mirror_axis = 0;
 	int mirror_scaling_fix_axis = 0;
 	bool _duplicate = false;
@@ -100,11 +102,16 @@ public:
 	
 	void generate_mirror();
 	void update_mirror_transform();
+	void set_mirror_id(int64_t p_id);
+	int64_t get_mirror_id() const;
 	Transform3D calculate_mirrored_transform(const Transform3D &p_transform) const;
 	
 	bool is_mirrored() const;
 	bool is_mirror_pending() const;
 	static void map_mirror_sources(AeroInfluencer3D *p_source, AeroInfluencer3D *p_mirror);
+	static int64_t new_mirror_id();
+	AeroInfluencer3D *get_sibling_mirror(int64_t p_id) const;
+	void adopt_mirror(AeroInfluencer3D *p_copy);
 	static void set_owner_recursive(Node *p_node, Node *p_owner);
 	
 	

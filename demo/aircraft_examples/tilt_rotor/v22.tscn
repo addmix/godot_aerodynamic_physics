@@ -494,6 +494,7 @@ size = Vector3(5.994, 0.069, 0.65)
 manual_config = SubResource("Resource_1qrr3")
 wing_config = SubResource("Resource_r16qn")
 mirror_axis = 1
+mirror_id = 1436134044
 show_debug = true
 transform = Transform3D(0.990956, -0.0682243, 0.115551, 0.0677651, 0.99767, 0.00790182, -0.115821, 0, 0.99327, 3.75894, -0.0947487, -0.544295)
 
@@ -512,6 +513,7 @@ size = Vector3(1, 0.24707, 2.9751)
 manual_config = SubResource("Resource_1qrr3")
 wing_config = SubResource("Resource_r16qn")
 mirror_axis = 1
+mirror_id = -1436134044
 show_debug = true
 transform = Transform3D(-0.990956, 0.0682243, -0.115551, 0.0677651, 0.99767, 0.00790182, -0.115821, 0, 0.99327, -3.75894, -0.0947487, -0.544295)
 
@@ -547,6 +549,7 @@ size = Vector3(1, 0.24707, 2.9751)
 manual_config = SubResource("Resource_1qrr3")
 wing_config = SubResource("Resource_tvwmo")
 mirror_axis = 1
+mirror_id = 367122091
 show_debug = true
 transform = Transform3D(-4.2222e-08, 1, -1.13133e-08, -0.965926, -4.37114e-08, -0.258819, -0.258819, 0, 0.965926, 2.51853, -0.324212, 9.17393)
 
@@ -565,6 +568,7 @@ size = Vector3(1, 0.24707, 2.9751)
 manual_config = SubResource("Resource_1qrr3")
 wing_config = SubResource("Resource_tvwmo")
 mirror_axis = 1
+mirror_id = -367122091
 show_debug = true
 transform = Transform3D(4.2222e-08, -1, 1.13133e-08, -0.965926, -4.37114e-08, -0.258819, -0.258819, 0, 0.965926, -2.51853, -0.324212, 9.17393)
 

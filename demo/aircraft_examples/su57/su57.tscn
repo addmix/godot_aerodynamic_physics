@@ -459,6 +459,7 @@ size = Vector3(0.25, 0.25, 3)
 manual_config = SubResource("Resource_13llr")
 wing_config = SubResource("Resource_ekjou")
 mirror_axis = 1
+mirror_id = 1436134044
 show_debug = true
 transform = Transform3D(0.675204, 0, -0.737631, 0, 1, 0, 0.737631, 0, 0.675204, 3.837484791675324, 0, 3.133361998805966)
 
@@ -477,6 +478,7 @@ size = Vector3(3.19043, 0.25, 1.0256180322232922)
 manual_config = SubResource("Resource_13llr")
 wing_config = SubResource("Resource_ekjou")
 mirror_axis = 1
+mirror_id = -1436134044
 show_debug = true
 transform = Transform3D(-0.675204, 0, 0.737631, 0, 1, 0, 0.737631, 0, 0.675204, -3.837484791675324, 0, 3.133361998805966)
 
@@ -493,6 +495,7 @@ size = Vector3(3.19043, 0.25, 1.0256180322232922)
 
 [node name="ElevonControl" type="AeroInfluencer3D" parent="." index="25" unique_id=1508430274]
 mirror_axis = 1
+mirror_id = 118100963
 actuation_config = SubResource("Resource_dne2k")
 show_debug = true
 transform = Transform3D(1.0000003094489522, 0, 0, 0, 1.0000000000000002, 0, 0, 0, 1.000000309448953, 2.850926884472843, -8.881784e-16, 7.51748)
@@ -510,6 +513,7 @@ size = Vector3(2.75366, 0.408203, 1.51563)
 
 [node name="ElevonControlMirror" type="AeroInfluencer3D" parent="." index="26" unique_id=282115294]
 mirror_axis = 1
+mirror_id = -118100963
 actuation_config = SubResource("Resource_dne2k")
 show_debug = true
 transform = Transform3D(-1.0000003094489522, 0, 0, 0, 1.0000000000000002, 0, 0, 0, 1.000000309448953, -2.850926884472843, -8.881784e-16, 7.51748)
@@ -535,6 +539,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.915119434911857)
 manual_config = SubResource("Resource_13llr")
 wing_config = SubResource("Resource_uxcik")
 mirror_axis = 1
+mirror_id = 570774728
 actuation_config = SubResource("Resource_qc6jj")
 show_debug = true
 transform = Transform3D(0.320158, -0.907044, -0.273441, 0.689722, 0.421036, -0.589078, 0.649448, 0, 0.760406, 2.853, 1.338, 6.216)
@@ -548,6 +553,7 @@ size = Vector3(2.42773, 0.117432, 1.80713)
 manual_config = SubResource("Resource_13llr")
 wing_config = SubResource("Resource_uxcik")
 mirror_axis = 1
+mirror_id = -570774728
 actuation_config = SubResource("Resource_qc6jj")
 show_debug = true
 transform = Transform3D(-0.320158, 0.907044, 0.273441, 0.689722, 0.421036, -0.589078, 0.649448, 0, 0.760406, -2.853, 1.338, 6.216)

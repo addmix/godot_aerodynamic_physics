@@ -51,6 +51,9 @@ void AeroInfluencer3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("is_mirror_pending"), &AeroInfluencer3D::is_mirror_pending);
 	
 	ClassDB::bind_method(D_METHOD("get_mirror_duplicate"), &AeroInfluencer3D::get_mirror_duplicate);
+	ClassDB::bind_method(D_METHOD("set_mirror_id", "p_id"), &AeroInfluencer3D::set_mirror_id);
+	ClassDB::bind_method(D_METHOD("get_mirror_id"), &AeroInfluencer3D::get_mirror_id);
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "mirror_id", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "set_mirror_id", "get_mirror_id");
 	ClassDB::bind_method(D_METHOD("set_duplicate", "value"), &AeroInfluencer3D::set_duplicate);
 	ClassDB::bind_method(D_METHOD("is_duplicate"), &AeroInfluencer3D::is_duplicate);
 	
@@ -597,6 +600,7 @@ void AeroInfluencer3D::set_mirror_axis(int axis) {
 			AeroInfluencer3D *copy = mirror_duplicate;
 			mirror_duplicate = nullptr;
 			copy->mirror_duplicate = nullptr;
+			mirror_id = 0; //a pair made again gets a fresh id
 			copy->_duplicate = false;
 			copy->set_disabled(true); //stop it contributing before it is gone
 
@@ -618,22 +622,52 @@ void AeroInfluencer3D::set_mirror_axis(int axis) {
 int AeroInfluencer3D::get_mirror_axis() const {
 	return mirror_axis;
 }
+void AeroInfluencer3D::set_mirror_id(int64_t p_id) {
+	mirror_id = p_id;
+}
+int64_t AeroInfluencer3D::get_mirror_id() const {
+	return mirror_id;
+}
+int64_t AeroInfluencer3D::new_mirror_id() {
+	return (int64_t) UtilityFunctions::randi() + 1;
+}
+AeroInfluencer3D *AeroInfluencer3D::get_sibling_mirror(int64_t p_id) const {
+	Node *parent = get_parent();
+	if (not parent or p_id == 0) return nullptr;
+	
+	for (int i = 0; i < parent->get_child_count(); i++) {
+		AeroInfluencer3D *sibling = Object::cast_to<AeroInfluencer3D>(parent->get_child(i));
+		if (sibling and sibling->mirror_id == p_id) return sibling;
+	}
+	
+	return nullptr;
+}
+void AeroInfluencer3D::adopt_mirror(AeroInfluencer3D *p_copy) {
+	if (not p_copy or p_copy == this or mirror_duplicate) return;
+	
+	if (mirror_id == 0) mirror_id = new_mirror_id();
+	p_copy->mirror_id = -mirror_id;
+	
+	mirror_duplicate = p_copy;
+	p_copy->mirror_duplicate = this;
+	p_copy->_duplicate = true;
+	
+	map_mirror_sources(this, p_copy);
+	p_copy->update_mirror_transform();
+}
 void AeroInfluencer3D::generate_mirror() {
 	if (mirror_axis == 0 or _duplicate) return;
 	if (parent_influencer and parent_influencer->mirror_axis != 0) return;
 	if (mirror_duplicate) return;
 	
-	//the copy is saved with the scene, so it may already be there under its generated name
-	if (Node *parent = get_parent()) {
-		AeroInfluencer3D *saved_copy = Object::cast_to<AeroInfluencer3D>(parent->get_node_or_null(String(get_name()) + String("Mirror")));
-		if (saved_copy and saved_copy != this and not saved_copy->is_queued_for_deletion() and saved_copy->mirror_axis == mirror_axis and not saved_copy->mirror_duplicate) {
-			mirror_duplicate = saved_copy;
-			saved_copy->mirror_duplicate = this;
-			saved_copy->_duplicate = true;
-			map_mirror_sources(this, saved_copy);
-			saved_copy->update_mirror_transform();
-			return;
+	AeroInfluencer3D *partner = mirror_id != 0 ? get_sibling_mirror(-mirror_id) : nullptr;
+	if (partner and not partner->mirror_duplicate) {
+		if (mirror_id < 0) {
+			partner->adopt_mirror(this); //this node is the copy, so the partner is the original
+		} else {
+			adopt_mirror(partner);
 		}
+		return;
 	}
 	
 	//remove debug vectors befor duplication, to prevent duplicating them
@@ -648,6 +682,8 @@ void AeroInfluencer3D::generate_mirror() {
 	
 	if (not mirror_duplicate) return;
 	
+	mirror_id = new_mirror_id();
+	mirror_duplicate->mirror_id = -mirror_id; //the copy carries the negated id
 	mirror_duplicate->_duplicate = true;
 	mirror_duplicate->set_name(String(get_name()) + String("Mirror"));
 	
@@ -711,11 +747,19 @@ void AeroInfluencer3D::update_mirror_transform() {
 	default_transform = xform;
 }
 void AeroInfluencer3D::map_mirror_sources(AeroInfluencer3D *p_source, AeroInfluencer3D *p_mirror) {
+	std::vector<AeroInfluencer3D*> mirror_children;
+	for (int i = 0; i < p_mirror->get_child_count(); i++) {
+		AeroInfluencer3D *child = Object::cast_to<AeroInfluencer3D>(p_mirror->get_child(i));
+		if (child) mirror_children.push_back(child);
+	}
+	
+	int index = 0;
 	for (int i = 0; i < p_source->get_child_count(); i++) {
 		AeroInfluencer3D *source_child = Object::cast_to<AeroInfluencer3D>(p_source->get_child(i));
 		if (not source_child) continue;
 		
-		AeroInfluencer3D *mirror_child = Object::cast_to<AeroInfluencer3D>(p_mirror->find_child(String(source_child->get_name()), false, false));
+		AeroInfluencer3D *mirror_child = index < (int) mirror_children.size() ? mirror_children[index] : nullptr;
+		index++;
 		if (not mirror_child) continue;
 		
 		mirror_child->mirror_duplicate = source_child;

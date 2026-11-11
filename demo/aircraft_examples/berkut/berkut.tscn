@@ -410,6 +410,7 @@ shape = SubResource("BoxShape3D_evj55")
 manual_config = SubResource("Resource_3aslk")
 wing_config = SubResource("Resource_xm78o")
 mirror_axis = 1
+mirror_id = 1436134044
 show_debug = true
 transform = Transform3D(0.939693, 0, 0.34202, 0, 1, 0, -0.34202, 0, 0.939693, 4.52924, 0, 2.6191085208624307)
 
@@ -428,6 +429,7 @@ size = Vector3(1.78967, 0.0777806, 1.45473)
 manual_config = SubResource("Resource_3aslk")
 wing_config = SubResource("Resource_xm78o")
 mirror_axis = 1
+mirror_id = -1436134044
 show_debug = true
 transform = Transform3D(-0.939693, 0, -0.34202, 0, 1, 0, -0.34202, 0, 0.939693, -4.52924, 0, 2.6191085208624307)
 
@@ -444,6 +446,7 @@ size = Vector3(1.78967, 0.0777806, 1.45473)
 
 [node name="CanardRRotate" type="AeroInfluencer3D" parent="." index="13" unique_id=299556968]
 mirror_axis = 1
+mirror_id = 435924293
 actuation_config = SubResource("Resource_tso66")
 show_debug = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.06333, 0, -0.961261)
@@ -460,6 +463,7 @@ size = Vector3(1.78967, 0.0777806, 1.45473)
 
 [node name="CanardRRotateMirror" type="AeroInfluencer3D" parent="." index="14" unique_id=290479802]
 mirror_axis = 1
+mirror_id = -435924293
 actuation_config = SubResource("Resource_tso66")
 show_debug = true
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, 1, -2.06333, 0, -0.961261)
@@ -478,6 +482,7 @@ size = Vector3(1.78967, 0.0777806, 1.45473)
 manual_config = SubResource("Resource_3aslk")
 wing_config = SubResource("Resource_f8ilg")
 mirror_axis = 1
+mirror_id = 367122091
 show_debug = true
 transform = Transform3D(0.10002800000000008, -0.9905090793343412, -0.09426234989931362, 0.720866, 0.13744442826808292, -0.6793095851898523, 0.6858180000000001, -5.43934752814077e-07, 0.7277733418679541, 2.8631, 1.4713, 7.6651)
 
@@ -496,6 +501,7 @@ size = Vector3(1.78967, 0.0777806, 1.45473)
 manual_config = SubResource("Resource_3aslk")
 wing_config = SubResource("Resource_f8ilg")
 mirror_axis = 1
+mirror_id = -367122091
 show_debug = true
 transform = Transform3D(-0.10002800000000008, 0.9905090793343412, 0.09426234989931362, 0.720866, 0.13744442826808292, -0.6793095851898523, 0.6858180000000001, -5.43934752814077e-07, 0.7277733418679541, -2.8631, 1.4713, 7.6651)
 
@@ -514,6 +520,7 @@ size = Vector3(1.78967, 0.0777806, 1.45473)
 manual_config = SubResource("Resource_3aslk")
 wing_config = SubResource("Resource_7e6ah")
 mirror_axis = 1
+mirror_id = 1571632761
 actuation_config = SubResource("Resource_lbuia")
 show_debug = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.81934, 0, 8.98568)
@@ -526,6 +533,7 @@ size = Vector3(1, 0.0954192, 2.6382)
 manual_config = SubResource("Resource_3aslk")
 wing_config = SubResource("Resource_7e6ah")
 mirror_axis = 1
+mirror_id = -1571632761
 actuation_config = SubResource("Resource_lbuia")
 show_debug = true
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, 1, -2.81934, 0, 8.98568)

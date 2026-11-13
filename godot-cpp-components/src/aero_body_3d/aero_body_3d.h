@@ -4,11 +4,13 @@
 #include <godot_cpp/variant/packed_string_array.hpp>
 #include <godot_cpp/templates/vector.hpp>
 #include <vector>
+#include <cmath>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/classes/vehicle_body3d.hpp>
 #include <godot_cpp/classes/area3d.hpp>
 #include <godot_cpp/classes/project_settings.hpp>
 #include <godot_cpp/variant/callable.hpp>
+#include <godot_cpp/variant/packed_vector3_array.hpp>
 #include <godot_cpp/variant/callable_method_pointer.hpp>
 #include <godot_cpp/core/memory.hpp>
 #include <godot_cpp/classes/engine.hpp>
@@ -150,6 +152,7 @@ public:
 	
 	
 	ForceAndTorque calculate_forces(double delta);
+	PackedVector3Array calculate_forces_manual(const Transform3D &p_transform, const Vector3 &p_linear_velocity, const Vector3 &p_angular_velocity, double p_altitude = NAN, double p_air_density = NAN, double p_air_pressure = NAN, const Vector3 &p_gravity = Vector3(), double p_delta = -1.0);
 	void _update_transform_substep(double substep_delta);
 	Vector3 calculate_relative_position() const;
 	Vector3 calculate_drag_direction() const;
@@ -186,7 +189,7 @@ public:
 	int get_substeps_override() const;
 	int get_substeps() const;
 	
-	void update_transform_cache();
+	void update_transform_cache(const Transform3D &p_transform);
 	const Transform3D &get_cached_global_transform() const;
 	Basis get_cached_global_basis() const;
 	double get_prediction_timestep_fraction() const;

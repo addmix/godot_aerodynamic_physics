@@ -86,6 +86,7 @@ void AeroBody3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_relative_position"), &AeroBody3D::get_relative_position);
 	ClassDB::bind_method(D_METHOD("get_drag_direction"), &AeroBody3D::get_drag_direction);
 	ClassDB::bind_method(D_METHOD("interrupt_sleep"), &AeroBody3D::interrupt_sleep);
+	ClassDB::bind_method(D_METHOD("calculate_forces_manual", "transform", "linear_velocity", "angular_velocity", "altitude", "air_density", "air_pressure", "gravity", "delta"), &AeroBody3D::calculate_forces_manual, DEFVAL(NAN), DEFVAL(NAN), DEFVAL(NAN), DEFVAL(Vector3()), DEFVAL(-1.0));
 	
 	//don't show these in inspector
 	ADD_GROUP("", "");
@@ -154,8 +155,8 @@ void AeroBody3D::_bind_methods() {
 
 int AeroBody3D::substeps = 1;
 
-void AeroBody3D::update_transform_cache() {
-	global_transform_cache = get_global_transform();
+void AeroBody3D::update_transform_cache(const Transform3D &p_transform) {
+	global_transform_cache = p_transform;
 	
 	for (AeroInfluencer3D* influencer : aero_influencers) {
 		if (not influencer) continue;
@@ -296,46 +297,21 @@ void AeroBody3D::integrate_forces(PhysicsDirectBodyState3D *body_state) {
 	last_angular_velocity = uncommitted_last_angular_velocity;
 	
 	current_gravity = body_state->get_total_gravity();
-	
-	//I'm not sure if this is relevant in the C++ port.
-	//it was needed in GDScript because the center_of_mass property wasn't updated from the body_state center of mass
-	//if (not Engine::get_singleton()->is_editor_hint()) {
-	//	set_center_of_mass(body_state->get_transform().get_basis().xform_inv(body_state->get_center_of_mass()));
-	//}
-	
 	linear_velocity_substep = body_state->get_linear_velocity();
 	angular_velocity_substep = body_state->get_angular_velocity();
 	
-	update_transform_cache();
-	
-	ForceAndTorque total_force_and_torque = calculate_forces(body_state->get_step());
-	
-	body_state->apply_central_force(total_force_and_torque.force);
-	body_state->apply_torque(total_force_and_torque.torque);
-	
-	//TODO - should this be done every substep?
-	linear_acceleration = (body_state->get_linear_velocity() - last_linear_velocity) / body_state->get_step();
-	angular_acceleration = (body_state->get_angular_velocity() - last_angular_velocity) / body_state->get_step();
-	
-	uncommitted_last_linear_velocity = body_state->get_linear_velocity();
-	uncommitted_last_angular_velocity = body_state->get_angular_velocity();
-}
-
-ForceAndTorque AeroBody3D::calculate_forces(double delta) {
-	//this is necessary to prevent velocity accumulation with debug in the editor
-	if (Engine::get_singleton()->is_editor_hint()) {
-		linear_velocity_substep = get_linear_velocity();
-		angular_velocity_substep = get_angular_velocity();
-	}
+	//the body state holds the transform the physics step actually used, which is one step fresher than the
+	//node's global transform during force integration
+	update_transform_cache(body_state->get_transform());
 	
 	if (AeroUnits::get_singleton()) {
 		altitude = AeroUnits::get_singleton()->get_altitude(this);
-		mach = AeroUnits::get_singleton()->speed_to_mach_at_altitude(air_speed, altitude);
+		// mach = AeroUnits::get_singleton()->speed_to_mach_at_altitude(air_speed, altitude);
 		air_density = AeroUnits::get_singleton()->get_density_at_altitude(altitude);
 		air_pressure = AeroUnits::get_singleton()->get_pressure_at_altitude(altitude);
 	} else {
-		altitude = 0.0;
-		mach = 0.0;
+		altitude = global_transform_cache.origin.y;
+		// mach = air_speed / 343.0;
 		air_density = 1.225;
 		air_pressure = 101325.0;
 	}
@@ -352,12 +328,26 @@ ForceAndTorque AeroBody3D::calculate_forces(double delta) {
 			air_density = atmosphere->call("get_density_at_position", get_global_position());
 		}
 	}
+
+	ForceAndTorque total_force_and_torque = calculate_forces(body_state->get_step());
 	
+	body_state->apply_central_force(total_force_and_torque.force);
+	body_state->apply_torque(total_force_and_torque.torque);
+	
+	//TODO - should this be done every substep?
+	linear_acceleration = (body_state->get_linear_velocity() - last_linear_velocity) / body_state->get_step();
+	angular_acceleration = (body_state->get_angular_velocity() - last_angular_velocity) / body_state->get_step();
+	
+	uncommitted_last_linear_velocity = body_state->get_linear_velocity();
+	uncommitted_last_angular_velocity = body_state->get_angular_velocity();
+}
+
+ForceAndTorque AeroBody3D::calculate_forces(double delta) {	
+	//TODO: change this to be relative to gravity
 	Vector3 global_euler = global_transform_cache.basis.get_euler();
 	bank_angle = global_euler.z;
 	heading = global_euler.y;
 	inclination = global_euler.x;
-	
 	
 	ForceAndTorque last_force_and_torque;
 	ForceAndTorque total_force_and_torque;
@@ -370,6 +360,10 @@ ForceAndTorque AeroBody3D::calculate_forces(double delta) {
 		air_velocity = -get_linear_velocity_substep() + wind;
 		air_speed = air_velocity.length();
 		
+		//update mach each substep
+		if (AeroUnits::get_singleton()) mach = AeroUnits::get_singleton()->speed_to_mach_at_altitude(air_speed, altitude);
+		else mach = air_speed / 343.0;
+
 		local_air_velocity = global_transform_cache.basis.xform_inv(air_velocity);
 		local_angular_velocity = global_transform_cache.basis.xform_inv(angular_velocity_substep);
 		angle_of_attack = global_transform_cache.basis.get_column(1).angle_to(-air_velocity) - (Math::PI / 2.0);
@@ -460,6 +454,41 @@ ForceAndTorque AeroBody3D::calculate_forces(double delta) {
 	
 	return total_force_and_torque;
 }
+//runs the force calculation from explicit inputs instead of the physics body state, for tools like a wind tunnel.
+//the state set here is overwritten on the next integrate_forces().
+//returns a PackedVector3Array of [force, torque]. any environment value left out falls back to the same
+//sources integrate_forces() uses, so altitude defaults to the transform's height and density/pressure to AeroUnits.
+PackedVector3Array AeroBody3D::calculate_forces_manual(const Transform3D &p_transform, const Vector3 &p_linear_velocity, const Vector3 &p_angular_velocity, double p_altitude, double p_air_density, double p_air_pressure, const Vector3 &p_gravity, double p_delta) {
+	update_transform_cache(p_transform);
+	
+	//calculate_forces() builds the air velocity as -linear_velocity_substep + wind, so wind is expected to be folded in already
+	wind = Vector3();
+	linear_velocity_substep = p_linear_velocity;
+	angular_velocity_substep = p_angular_velocity;
+	
+	current_gravity = p_gravity;
+	
+	if (Math::is_nan(p_altitude)) p_altitude = p_transform.origin.y;
+	altitude = p_altitude;
+	
+	AeroUnits *aero_units = AeroUnits::get_singleton();
+	if (Math::is_nan(p_air_density)) p_air_density = aero_units ? aero_units->get_density_at_altitude(altitude) : 1.225;
+	if (Math::is_nan(p_air_pressure)) p_air_pressure = aero_units ? aero_units->get_pressure_at_altitude(altitude) : 101325.0;
+	air_density = p_air_density;
+	air_pressure = p_air_pressure;
+	
+	if (p_delta <= 0.0) p_delta = 1.0 / (double) ProjectSettings::get_singleton()->get_setting("physics/common/physics_ticks_per_second", 60.0);
+	
+	ForceAndTorque force_and_torque;
+	if (get_substeps() > 0) {
+		force_and_torque = calculate_forces(p_delta);
+	} else {
+		current_force = Vector3();
+		current_torque = Vector3();
+	}
+	
+	return PackedVector3Array({ force_and_torque.force, force_and_torque.torque });
+}
 void AeroBody3D::_update_transform_substep(double substep_delta) {
 	if (not Engine::get_singleton()->is_editor_hint()) {
 		for (int i = 0; i < aero_influencers.size(); i++) {
@@ -474,7 +503,7 @@ void AeroBody3D::_update_transform_substep(double substep_delta) {
 
 Vector3 AeroBody3D::calculate_linear_velocity_substep(Vector3 force) const { return linear_velocity_substep + (force / get_mass() * get_substep_delta()); }
 Vector3 AeroBody3D::calculate_angular_velocity_substep(Vector3 torque) const { return angular_velocity_substep + (get_inverse_inertia_tensor().xform(torque) * get_substep_delta()); }
-Vector3 AeroBody3D::calculate_relative_position() const { return get_global_basis().xform(-get_center_of_mass()); }
+Vector3 AeroBody3D::calculate_relative_position() const { return global_transform_cache.basis.xform(-get_center_of_mass()); }
 Vector3 AeroBody3D::calculate_drag_direction() const { return air_velocity.normalized(); }
 //Vector3 AeroBody3D::calculate_linear_acceleration() const {
 //	return (linear_velocity_substep - last_linear_velocity) / substep_delta;
@@ -652,28 +681,22 @@ void AeroBody3D::_update_debug() {
 	if (not is_inside_tree()) return;
 	
 	//integrate_forces doesn't run in the editor, so keep the caches fresh for the debug pass
-	update_transform_cache();
+	update_transform_cache(get_global_transform());
 	
 	if (mass_debug_point) mass_debug_point->set_position(get_center_of_mass());
 	
 	Vector3 linear_velocity_to_use = get_linear_velocity();
 	Vector3 angular_velocity_to_use = get_angular_velocity();
 	
+	//in a running project, _integrate_forces() has already run the simulation, so this is only needed for the editor.
 	if (Engine::get_singleton()->is_editor_hint()) {
-		linear_velocity_to_use = debug_linear_velocity;
-		angular_velocity_to_use = debug_angular_velocity;
-		
-		//Godot doesn't run the physics engine in-editor, so calculate the forces manually with the debug velocities.
-		Vector3 original_linear_velocity = get_linear_velocity();
-		Vector3 original_angular_velocity = get_angular_velocity();
-		set_linear_velocity(debug_linear_velocity);
-		set_angular_velocity(debug_angular_velocity);
-		calculate_forces(get_substep_delta());
-		set_linear_velocity(original_linear_velocity);
-		set_angular_velocity(original_angular_velocity);
+		linear_velocity_substep = debug_linear_velocity;
+		angular_velocity_substep = debug_angular_velocity;
+
+		calculate_forces(get_physics_process_delta_time());
 	}
 	
-	Basis inverse_basis = get_global_transform().get_basis().inverse();
+	Basis inverse_basis = global_transform_cache.basis.inverse();
 	
 	if (force_debug_vector) force_debug_vector->set("value", inverse_basis.xform(AeroUtils::v3log_with_base(current_force, 2.0)));
 	if (torque_debug_vector) torque_debug_vector->set("value", inverse_basis.xform(AeroUtils::v3log_with_base(current_torque, 2.0)));

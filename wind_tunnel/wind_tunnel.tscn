@@ -1,0 +1,63 @@
+[gd_scene format=3 uid="uid://5xkf8khkd4u1"]
+
+[ext_resource type="Script" uid="uid://o13cc7vyfujj" path="res://addons/godot_aerodynamic_physics/wind_tunnel/wind_tunnel.gd" id="1_0j80l"]
+[ext_resource type="Script" uid="uid://fpja68jul0t3" path="res://addons/godot_aerodynamic_physics/wind_tunnel/graph.gd" id="2_1ggli"]
+
+[sub_resource type="SystemFont" id="SystemFont_j07fm"]
+subpixel_positioning = 0
+
+[node name="WindTunnel" type="VBoxContainer" unique_id=662806165]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0j80l")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=2018735754]
+layout_mode = 2
+alignment = 1
+
+[node name="RecalculateButton" type="Button" parent="HBoxContainer" unique_id=1039227820]
+layout_mode = 2
+text = "Recalculate"
+
+[node name="AircraftName" type="Label" parent="HBoxContainer" unique_id=258261269]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 6
+horizontal_alignment = 1
+
+[node name="FoldableContainer" type="FoldableContainer" parent="." unique_id=1216438875]
+layout_mode = 2
+size_flags_vertical = 3
+title = "Pitch Moments"
+
+[node name="PitchMomentsGraph" type="PanelContainer" parent="FoldableContainer" unique_id=265535516]
+unique_name_in_owner = true
+clip_contents = true
+layout_mode = 2
+size_flags_vertical = 3
+script = ExtResource("2_1ggli")
+title = "Pitch Moments"
+font = SubResource("SystemFont_j07fm")
+metadata/_custom_type_script = "uid://fpja68jul0t3"
+
+[node name="FoldableContainer2" type="FoldableContainer" parent="." unique_id=1010172399]
+layout_mode = 2
+size_flags_vertical = 3
+title = "Sideslip Moments"
+
+[node name="SideslipMomentsGraph" type="PanelContainer" parent="FoldableContainer2" unique_id=699337667]
+unique_name_in_owner = true
+clip_contents = true
+layout_mode = 2
+size_flags_vertical = 3
+script = ExtResource("2_1ggli")
+title = "Sideslip Moments"
+lower_bound = Vector2(180, -180)
+upper_bound = Vector2(-180, 180)
+font = SubResource("SystemFont_j07fm")
+metadata/_custom_type_script = "uid://fpja68jul0t3"
+
+[connection signal="pressed" from="HBoxContainer/RecalculateButton" to="." method="_on_recalculate_button_pressed"]

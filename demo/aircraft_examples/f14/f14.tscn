@@ -20,6 +20,21 @@
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_3wjhu"]
 friction = 0.0
 
+[sub_resource type="GDScript" id="GDScript_yuw0c"]
+script/source = "extends MeshInstance3D
+
+func _process(delta: float) -> void:
+	$\"WingR\".rotation.y = $\"../SwingR\".rotation.y
+	$\"WingL\".rotation.y = -$\"../SwingR\".rotation.y
+	$WingR/AileronR.rotation.x = $\"../SwingR/AileronR\".rotation.x
+	$WingL/AileronL.rotation.x = $\"../SwingL/AileronR\".rotation.x
+	$\"../VerticalStabilizer/RudderR\".rotation.y = -$\"../VerticalStabR/Rudder\".rotation.x
+	$\"../VerticalStabilizer/RudderL\".rotation.y = $\"../VerticalStabL/Rudder\".rotation.x
+	
+	$\"ElevonR\".rotation.x = $\"../ElevonRControl\".rotation.x
+	$\"ElevonL\".rotation.x = -$\"../ElevonRControlMirror\".rotation.x
+"
+
 [sub_resource type="Resource" id="Resource_rrmb4"]
 script = ExtResource("3_qedox")
 p = 0.001
@@ -57,9 +72,9 @@ i = 0.0
 
 [sub_resource type="Resource" id="Resource_b1qmm"]
 script = ExtResource("3_qedox")
-p = 2.5
-i = 10.0
-d = 0.01
+p = 3.0
+i = 7.0
+d = 0.03
 clamp_integral = true
 min_integral = -0.1
 max_integral = 0.1
@@ -87,13 +102,12 @@ metadata/_custom_type_script = "uid://b4xqlunpiyivk"
 [sub_resource type="Resource" id="Resource_tfg1l"]
 script = ExtResource("4_6jy66")
 max_angular_rates = Vector3(2, 1, 3)
-feed_forward = Vector3(0.5, 1.5, 1.5)
+feed_forward = Vector3(0.65, 1.5, 1.5)
 pitch_assist_pid = SubResource("Resource_b1qmm")
 yaw_assist_pid = SubResource("Resource_y8hps")
 roll_assist_pid = SubResource("Resource_rj6ac")
 g_limit = 6.5
-aoa_limit_start = 20.0
-aoa_limit_end = 30.0
+aoa_limit_start = 15.0
 bank_angle_pid = SubResource("Resource_eo8u4")
 heading_pid = SubResource("Resource_0euej")
 inclination_pid = SubResource("Resource_nb4wf")
@@ -173,21 +187,6 @@ script/source = "extends Node
 func _physics_process(delta: float) -> void:
 	var wing_sweep_command : float = clamp(remap(aero_body.air_speed, min_speed, max_speed, 0.0, 1.0), 0.0, 1.0)
 	#get_parent().set_control_input(\"wing_sweep\", wing_sweep_command)
-"
-
-[sub_resource type="GDScript" id="GDScript_yuw0c"]
-script/source = "extends MeshInstance3D
-
-func _process(delta: float) -> void:
-	$\"WingR\".rotation.y = $\"../SwingR\".rotation.y
-	$\"WingL\".rotation.y = -$\"../SwingR\".rotation.y
-	$WingR/AileronR.rotation.x = $\"../SwingR/AileronR\".rotation.x
-	$WingL/AileronL.rotation.x = $\"../SwingL/AileronR\".rotation.x
-	$\"../VerticalStabilizer/RudderR\".rotation.y = -$\"../VerticalStabR/Rudder\".rotation.x
-	$\"../VerticalStabilizer/RudderL\".rotation.y = $\"../VerticalStabL/Rudder\".rotation.x
-	
-	$\"ElevonR\".rotation.x = $\"../ElevonRControl\".rotation.x
-	$\"ElevonL\".rotation.x = -$\"../ElevonRControlMirror\".rotation.x
 "
 
 [sub_resource type="Curve" id="Curve_cck4l"]
@@ -451,7 +450,7 @@ size = Vector3(4.24179, 0.633604, 4.58273)
 radius = 0.800698
 height = 7.89659
 
-[node name="f14" unique_id=275117473 instance=ExtResource("1_6mwa3")]
+[node name="F-14" unique_id=275117473 instance=ExtResource("1_6mwa3")]
 show_debug = true
 debug_scale = 0.2
 debug_center_width = 0.5
@@ -459,10 +458,25 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4653842452275496, 0)
 collision_layer = 16385
 mass = 27500.0
 physics_material_override = SubResource("PhysicsMaterial_3wjhu")
-center_of_mass = Vector3(0, 0.5199999999999996, 2.5999999999999996)
+center_of_mass = Vector3(0, -0.14000000000000057, 2.5999999999999996)
 can_sleep = false
+linear_velocity = Vector3(0, 0, -250)
 
-[node name="AeroControlComponent" type="Node" parent="." index="1" unique_id=402715082]
+[node name="Fueslage" parent="." index="1" unique_id=606266740]
+script = SubResource("GDScript_yuw0c")
+
+[node name="RudderL" parent="VerticalStabilizer" parent_id_path=PackedInt32Array(1082275849) index="0" unique_id=273134555]
+transform = Transform3D(1, 0, 0, 0, 0.8910065109719711, -0.45399052567818454, 0, 0.45399052567818454, 0.8910065109719711, -1.77549, 2.4004982, 8.694992)
+rotation_order = 0
+
+[node name="RudderR" parent="VerticalStabilizer" parent_id_path=PackedInt32Array(1082275849) index="1" unique_id=1170194249]
+transform = Transform3D(1, 0, 0, 0, 0.8910065109719711, -0.45399052567818454, 0, 0.45399052567818454, 0.8910065109719711, 1.7754871, 2.4004982, 8.694992)
+rotation_order = 0
+
+[node name="Fueslage_aero" parent="." index="3" unique_id=21484611]
+visible = false
+
+[node name="AeroControlComponent" type="Node" parent="." index="4" unique_id=402715082]
 script = ExtResource("2_2l6s8")
 flight_assist = SubResource("Resource_tfg1l")
 control_config = SubResource("Resource_ryexn")
@@ -471,7 +485,7 @@ metadata/_custom_type_script = "uid://cc5dwx5pqkaur"
 [node name="WingSweeper" type="Node" parent="AeroControlComponent" index="0" unique_id=69324801]
 script = SubResource("GDScript_ckcso")
 
-[node name="CameraRotator" type="Node3D" parent="." index="2" unique_id=7277811]
+[node name="CameraRotator" type="Node3D" parent="." index="5" unique_id=7277811]
 script = ExtResource("7_ryexn")
 
 [node name="Camera3D" type="Camera3D" parent="CameraRotator" index="0" unique_id=419183352]
@@ -492,20 +506,6 @@ Launch Ball: Space"
 
 [node name="FlightInfoLabel" parent="CameraRotator/Camera3D" index="1" unique_id=807166952 instance=ExtResource("7_cck4l")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5125, 1.313, -2.986)
-
-[node name="Fueslage" parent="." index="3" unique_id=606266740]
-script = SubResource("GDScript_yuw0c")
-
-[node name="RudderL" parent="VerticalStabilizer" parent_id_path=PackedInt32Array(1082275849) index="0" unique_id=273134555]
-transform = Transform3D(1, 0, 0, 0, 0.8910065109719711, -0.45399052567818454, 0, 0.45399052567818454, 0.8910065109719711, -1.77549, 2.4004982, 8.694992)
-rotation_order = 0
-
-[node name="RudderR" parent="VerticalStabilizer" parent_id_path=PackedInt32Array(1082275849) index="1" unique_id=1170194249]
-transform = Transform3D(1, 0, 0, 0, 0.8910065109719711, -0.45399052567818454, 0, 0.45399052567818454, 0.8910065109719711, 1.7754871, 2.4004982, 8.694992)
-rotation_order = 0
-
-[node name="Fueslage_aero" parent="." index="5" unique_id=21484611]
-visible = false
 
 [node name="Chine" type="ManualAeroSurface3D" parent="." index="6" unique_id=1670088184]
 manual_config = SubResource("ManualAeroSurfaceConfig_b1qmm")
@@ -677,7 +677,7 @@ debug_scale = 0.2
 show_debug = true
 show_torque = true
 show_thrust = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.46592, 0, 8.08014)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.46592, -0.13805448543854082, 8.08014)
 script = ExtResource("13_yuw0c")
 throttle_control_config = SubResource("Resource_mvt6k")
 max_thrust_force = 120000.0
@@ -688,7 +688,7 @@ debug_scale = 0.2
 show_debug = true
 show_torque = true
 show_thrust = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.466, 0, 8.08)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.466, -0.13805448543854082, 8.08)
 script = ExtResource("13_yuw0c")
 throttle_control_config = SubResource("Resource_mvt6k")
 max_thrust_force = 120000.0
@@ -703,7 +703,7 @@ transform = Transform3D(6.12303e-17, -1, 0, 1, 6.12303e-17, 0, 0, 0, 1, -5.11812
 shape = SubResource("CapsuleShape3D_ckcso")
 
 [node name="CollisionShape3D8" type="CollisionShape3D" parent="." index="19" unique_id=791323897]
-transform = Transform3D(6.12303e-17, -1, 0, 1, 6.12303e-17, 0, 0, 0, 1, -5.746782468044006e-17, -2.378822067855948, 2.7517979626147633)
+transform = Transform3D(6.12303e-17, -1, 0, 1, 6.12303e-17, 0, 0, 0, 1, 0, -2.275999999998021, 2.980999999999767)
 shape = SubResource("CapsuleShape3D_ckcso")
 
 [node name="CollisionShape3D5" type="CollisionShape3D" parent="." index="20" unique_id=1177668918]

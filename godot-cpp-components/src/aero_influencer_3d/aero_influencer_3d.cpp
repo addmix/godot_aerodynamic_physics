@@ -17,6 +17,9 @@ void AeroInfluencer3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("update_debug_vectors"), &AeroInfluencer3D::update_debug_vectors);
 	ClassDB::bind_method(D_METHOD("set_cached_transform", "transform"), &AeroInfluencer3D::set_cached_transform);
 	ClassDB::bind_method(D_METHOD("get_cached_local_transform"), &AeroInfluencer3D::get_cached_local_transform);
+	ClassDB::bind_method(D_METHOD("get_cached_global_transform"), &AeroInfluencer3D::get_cached_global_transform);
+	ClassDB::bind_method(D_METHOD("get_cached_global_basis"), &AeroInfluencer3D::get_cached_global_basis);
+	ClassDB::bind_method(D_METHOD("get_cached_position"), &AeroInfluencer3D::get_cached_position);
 	//calculate_relative_position();
 	//calculate_world_air_velocity();
 	//calculate_linear_velocity();

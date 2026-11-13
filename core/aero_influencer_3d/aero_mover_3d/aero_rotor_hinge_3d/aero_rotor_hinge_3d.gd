@@ -6,9 +6,19 @@ extends AeroMover3D
 class_name AeroRotorHinge3D
 
 ##Length of the simulated blade, from the hinge root, to the tip.
-@export var blade_length : float = 10.0
+@export var blade_length : float = 10.0:
+	set(x):
+		if blade_length == x: return
+		
+		blade_length = x
+		notify_flight_model_changed()
 ##Mass of the simulated blade.
-@export var blade_mass : float = 100.0
+@export var blade_mass : float = 100.0:
+	set(x):
+		if blade_mass == x: return
+		
+		blade_mass = x
+		notify_flight_model_changed()
 
 var flap_velocity : float = 0.0
 var leadlag_velocity : float = 0.0
@@ -23,8 +33,8 @@ func _update_transform_substep(substep_delta : float) -> void:
 	super._update_transform_substep(substep_delta)
 	
 	#should we use the torque instead of the force?
-	var force : Vector3 = get_current_force() * global_basis
-	var linear_acceleration : Vector3 = get_linear_acceleration() * global_basis
+	var force : Vector3 = get_current_force() * get_cached_global_basis()
+	var linear_acceleration : Vector3 = get_linear_acceleration() * get_cached_global_basis()
 	
 	leadlag_velocity += force.z / blade_mass * substep_delta #might need to be negative
 	leadlag_velocity += linear_acceleration.z * substep_delta

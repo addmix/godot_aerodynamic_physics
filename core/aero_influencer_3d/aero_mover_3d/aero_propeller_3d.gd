@@ -27,10 +27,16 @@ class_name AeroPropeller3D
 		#reinitialize instances array
 		propeller_instances = [propeller_blade]
 		update_propeller_amount()
+		notify_flight_model_changed()
 var propeller_instances : Array[AeroInfluencer3D] = []
 
 @export_group("Speed Control")
-@export var propeller_speed_control_config := create_speed_control_config()
+@export var propeller_speed_control_config := create_speed_control_config():
+	set(x):
+		if propeller_speed_control_config == x: return
+		
+		propeller_speed_control_config = x
+		notify_flight_model_changed()
 func create_speed_control_config() -> AeroInfluencerControlConfig:
 	var config := AeroInfluencerControlConfig.new()
 	config.use_separate_minmax = true
@@ -113,9 +119,3 @@ func _update_control_transform(substep_delta : float) -> void:
 	
 	if propeller_speed_control_config:
 		angular_motor = propeller_speed_control_config.update(self, substep_delta)
-
-func calculate_angular_velocity_substep() -> Vector3:
-	if Engine.is_editor_hint() and propeller_speed_control_config:
-			return super() + propeller_speed_control_config.max_value * global_basis.inverse()
-	
-	return super()

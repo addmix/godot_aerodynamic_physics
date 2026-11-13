@@ -5,13 +5,26 @@ class_name AeroBuoyancyMesh3D
 @export_tool_button("Recalculate mesh data") var action = calculate_mesh_data
 @export var buoyancy_mesh : Mesh:
 	set(x):
+		if buoyancy_mesh == x: return
+		
 		buoyancy_mesh = x
 		calculate_mesh_data()
 		if buoyancy_mesh_debug:
 			buoyancy_mesh_debug.mesh = buoyancy_mesh
+		notify_flight_model_changed()
 
-@export var skin_friction : float = 0.02
-@export var aero_force_multiplier : float = 1.0
+@export var skin_friction : float = 0.02:
+	set(x):
+		if skin_friction == x: return
+		
+		skin_friction = x
+		notify_flight_model_changed()
+@export var aero_force_multiplier : float = 1.0:
+	set(x):
+		if aero_force_multiplier == x: return
+		
+		aero_force_multiplier = x
+		notify_flight_model_changed()
 
 @export var show_buoyancy_mesh_debug : bool = true
 var buoyancy_mesh_debug : MeshInstance3D
@@ -197,9 +210,9 @@ func _calculate_forces(_substep_delta : float = 0.0) -> PackedVector3Array:
 	
 	
 	for vertex_index : int in vertex_positions.size():
-		var vertex_position : Vector3 =  relative_position + global_basis * vertex_positions[vertex_index]
-		var global_vertex_position : Vector3 = global_position + global_basis * vertex_positions[vertex_index]
-		var vertex_buoyancy_factor : Vector3 = global_basis * vertex_buoyancy_coefficients[vertex_index]
+		var vertex_position : Vector3 =  relative_position + get_cached_global_basis() * vertex_positions[vertex_index]
+		var global_vertex_position : Vector3 = get_cached_global_transform().origin + get_cached_global_basis() * vertex_positions[vertex_index]
+		var vertex_buoyancy_factor : Vector3 = get_cached_global_basis() * vertex_buoyancy_coefficients[vertex_index]
 		var vertex_radius : float = vertex_sizes[vertex_index]
 		
 		var vertex_density : float = aero_body.air_density 

@@ -28,7 +28,7 @@ var aerobody : AeroBody3D = null:
 func recalculate() -> void:
 	%AircraftName.text = aerobody.name
 	
-	var angles_to_simulate : int = 256
+	var angles_to_simulate : int = 64
 	
 	var pitch_moment_x := PackedVector2Array()
 	var pitch_moment_y := PackedVector2Array()

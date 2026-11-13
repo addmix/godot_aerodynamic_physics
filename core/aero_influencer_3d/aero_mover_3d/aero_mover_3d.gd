@@ -5,13 +5,33 @@ class_name AeroMover3D
 const AeroTransformUtils = preload("../../../utils/transform_utils.gd")
 
 ##Rate (in meters per second) the AeroMover3D will move.
-@export var linear_motor : Vector3 = Vector3.ZERO
+@export var linear_motor : Vector3 = Vector3.ZERO:
+	set(x):
+		if linear_motor == x: return
+		
+		linear_motor = x
+		notify_flight_model_changed()
 ##Rate (in radians per second) the AeroMover3D will rotate.
-@export var angular_motor : Vector3 = Vector3.ZERO
+@export var angular_motor : Vector3 = Vector3.ZERO:
+	set(x):
+		if angular_motor == x: return
+		
+		angular_motor = x
+		notify_flight_model_changed()
 
-@export var disable_lift_dissymmetry : bool = false
+@export var disable_lift_dissymmetry : bool = false:
+	set(x):
+		if disable_lift_dissymmetry == x: return
+		
+		disable_lift_dissymmetry = x
+		notify_flight_model_changed()
 
-@export var use_movement_as_velocity : bool = false
+@export var use_movement_as_velocity : bool = false:
+	set(x):
+		if use_movement_as_velocity == x: return
+		
+		use_movement_as_velocity = x
+		notify_flight_model_changed()
 
 var _linear_velocity : Vector3 = Vector3.ZERO
 var _angular_velocity : Vector3 = Vector3.ZERO
@@ -50,12 +70,12 @@ func _update_transform_substep(substep_delta : float) -> void:
 
 
 func calculate_linear_velocity_substep() -> Vector3:
-	var velocity : Vector3 = super() + (_linear_velocity * global_basis.inverse())
+	var velocity : Vector3 = super() + (_linear_velocity * get_cached_global_basis().inverse())
 	
 	if disable_lift_dissymmetry:
-		velocity = global_basis.y.normalized() * velocity.dot(global_basis.y)
+		velocity = get_cached_global_basis().y.normalized() * velocity.dot(get_cached_global_basis().y)
 	
 	return velocity
 
 func calculate_angular_velocity_substep() -> Vector3:
-	return super() + (_angular_velocity * global_basis.inverse())
+	return super() + (_angular_velocity * get_cached_global_basis().inverse())

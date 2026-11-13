@@ -42,7 +42,7 @@ func _draw() -> void:
 	var center = (_upper_bound + _lower_bound) / 2.0
 	var coord = domain - center
 	
-	var label_size := Vector2(36, 16)
+	var label_size := Vector2(50, 16)
 	var left_label_offset := Vector2(-label_size.x - margin, label_size.y * 0.5)
 	var bottom_label_offset := Vector2(-label_size.x * 0.5, label_size.y)
 	

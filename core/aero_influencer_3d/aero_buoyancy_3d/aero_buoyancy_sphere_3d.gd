@@ -2,7 +2,12 @@
 extends AeroBuoyancy3D
 class_name AeroBuoyancySphere3D
 
-@export var radius : float = 1.0
+@export var radius : float = 1.0:
+	set(x):
+		if radius == x: return
+		
+		radius = x
+		notify_flight_model_changed()
 
 
 func calculate_buoyancy() -> void:
@@ -14,7 +19,7 @@ func calculate_buoyancy() -> void:
 				# use precomputed center of pressure?
 				continue
 			
-			var submerged_height : float = clamp(-(atmosphere.get_distance_to_surface(global_position) - radius), 0.0, 2.0 * radius)
+			var submerged_height : float = clamp(-(atmosphere.get_distance_to_surface(get_cached_global_transform().origin) - radius), 0.0, 2.0 * radius)
 			#calculate submerged volume of sphere
 			var submerged_volume : float = ((PI * submerged_height * submerged_height) / 3.0) * (3.0 * radius - submerged_height)
 			

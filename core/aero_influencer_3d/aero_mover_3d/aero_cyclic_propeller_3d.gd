@@ -3,11 +3,26 @@ extends AeroPropeller3D
 class_name AeroCyclicPropeller3D
 
 ##Cyclic control value. Control takes place cyclicly, and changes based on a blade's position through the cycle.
-@export var cyclic := Vector2.ZERO
+@export var cyclic := Vector2.ZERO:
+	set(x):
+		if cyclic == x: return
+		
+		cyclic = x
+		notify_flight_model_changed()
 ##Maximum rotation angle (degrees) of cyclic control.
-@export var cyclic_pitch : float = 15.0
+@export var cyclic_pitch : float = 15.0:
+	set(x):
+		if cyclic_pitch == x: return
+		
+		cyclic_pitch = x
+		notify_flight_model_changed()
 
-@export var cyclic_control_config :=  create_cyclic_control_config()
+@export var cyclic_control_config :=  create_cyclic_control_config():
+	set(x):
+		if cyclic_control_config == x: return
+		
+		cyclic_control_config = x
+		notify_flight_model_changed()
 func create_cyclic_control_config() -> AeroInfluencerControlConfig:
 	var config := AeroInfluencerControlConfig.new()
 	config.max_value = Vector3(1.0, 1.0, 0.0)

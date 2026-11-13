@@ -51,6 +51,16 @@ void ManualAeroSurfaceConfig::apply_default_curves() const {
 	if (drag_aoa_curve.is_null()) drag_aoa_curve = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/core/resources/default_drag_aoa_curve.tres")->duplicate();
 	if (sweep_drag_multiplier_curve.is_null()) sweep_drag_multiplier_curve = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/core/resources/default_sweep_drag_multiplier.tres")->duplicate();
 	if (drag_at_mach_multiplier_curve.is_null()) drag_at_mach_multiplier_curve = ResourceLoader::get_singleton()->load("res://addons/godot_aerodynamic_physics/core/resources/default_drag_at_mach_curve.tres")->duplicate();
+	
+	if (not curves_watched) {
+		//defaults are assigned lazily from const getters, so the change watch has to be installed through a const_cast
+		ManualAeroSurfaceConfig *self = const_cast<ManualAeroSurfaceConfig *>(this);
+		watch_curve(self, Ref<Curve>(), lift_aoa_curve);
+		watch_curve(self, Ref<Curve>(), drag_aoa_curve);
+		watch_curve(self, Ref<Curve>(), sweep_drag_multiplier_curve);
+		watch_curve(self, Ref<Curve>(), drag_at_mach_multiplier_curve);
+		curves_watched = true;
+	}
 }
 
 double ManualAeroSurfaceConfig::get_lift_coefficient(double angle_of_attack) const {
@@ -71,24 +81,70 @@ double ManualAeroSurfaceConfig::get_drag_coefficient(double angle_of_attack) con
 //void ManualAeroSurfaceConfig::set_max_lift_coefficient(double value) {max_lift_coefficient = value;}
 //double ManualAeroSurfaceConfig::get_max_lift_coefficient() {return max_lift_coefficient;}
 
-void ManualAeroSurfaceConfig::set_lift_aoa_curve(const Ref<Curve> &p_curve) {lift_aoa_curve = p_curve;}
+void ManualAeroSurfaceConfig::watch_curve(ManualAeroSurfaceConfig *p_config, const Ref<Curve> &p_previous, const Ref<Curve> &p_next) {
+	if (not p_config) return;
+	
+	Callable callback(p_config, "emit_changed");
+	
+	if (p_previous.is_valid() and p_previous != p_next and p_previous->is_connected("changed", callback)) {
+		p_previous->disconnect("changed", callback);
+	}
+	if (p_next.is_valid() and not p_next->is_connected("changed", callback)) {
+		p_next->connect("changed", callback);
+	}
+}
+void ManualAeroSurfaceConfig::set_lift_aoa_curve(const Ref<Curve> &p_curve) {
+	if (lift_aoa_curve == p_curve) return;
+	
+	watch_curve(this, lift_aoa_curve, p_curve);
+	lift_aoa_curve = p_curve;
+	emit_changed();
+}
 Ref<Curve> ManualAeroSurfaceConfig::get_lift_aoa_curve() const {return lift_aoa_curve;}
 
-void ManualAeroSurfaceConfig::set_min_drag_coefficient(double value) {min_drag_coefficient = value;}
+void ManualAeroSurfaceConfig::set_min_drag_coefficient(double value) {
+	if (min_drag_coefficient == value) return;
+	
+	min_drag_coefficient = value;
+	emit_changed();
+}
 double ManualAeroSurfaceConfig::get_min_drag_coefficient() const {return min_drag_coefficient;}
-void ManualAeroSurfaceConfig::set_max_drag_coefficient(double value) {max_drag_coefficient = value;}
+void ManualAeroSurfaceConfig::set_max_drag_coefficient(double value) {
+	if (max_drag_coefficient == value) return;
+	
+	max_drag_coefficient = value;
+	emit_changed();
+}
 double ManualAeroSurfaceConfig::get_max_drag_coefficient() const {return max_drag_coefficient;}
 
-void ManualAeroSurfaceConfig::set_drag_aoa_curve(const Ref<Curve> &p_curve) {drag_aoa_curve = p_curve;}
+void ManualAeroSurfaceConfig::set_drag_aoa_curve(const Ref<Curve> &p_curve) {
+	if (drag_aoa_curve == p_curve) return;
+	
+	watch_curve(this, drag_aoa_curve, p_curve);
+	drag_aoa_curve = p_curve;
+	emit_changed();
+}
 Ref<Curve> ManualAeroSurfaceConfig::get_drag_aoa_curve() const {return drag_aoa_curve;}
 
-void ManualAeroSurfaceConfig::set_sweep_drag_multiplier_curve(const Ref<Curve> &p_curve) {sweep_drag_multiplier_curve = p_curve; }
+void ManualAeroSurfaceConfig::set_sweep_drag_multiplier_curve(const Ref<Curve> &p_curve) {
+	if (sweep_drag_multiplier_curve == p_curve) return;
+	
+	watch_curve(this, sweep_drag_multiplier_curve, p_curve);
+	sweep_drag_multiplier_curve = p_curve;
+	emit_changed();
+}
 Ref<Curve> ManualAeroSurfaceConfig::get_sweep_drag_multiplier_curve() const {return sweep_drag_multiplier_curve;}
 double ManualAeroSurfaceConfig::get_drag_at_sweep_angle(double sweep_angle) const {
     apply_default_curves();
     return sweep_drag_multiplier_curve->sample_baked(Math::abs(Math::remap((real_t) sweep_angle, (real_t) 0.0, (real_t) Math::PI, sweep_drag_multiplier_curve->get_min_domain(), sweep_drag_multiplier_curve->get_max_domain())));
 }
-void ManualAeroSurfaceConfig::set_drag_at_mach_multiplier_curve(const Ref<Curve> &p_curve) {drag_at_mach_multiplier_curve = p_curve;}
+void ManualAeroSurfaceConfig::set_drag_at_mach_multiplier_curve(const Ref<Curve> &p_curve) {
+	if (drag_at_mach_multiplier_curve == p_curve) return;
+	
+	watch_curve(this, drag_at_mach_multiplier_curve, p_curve);
+	drag_at_mach_multiplier_curve = p_curve;
+	emit_changed();
+}
 Ref<Curve> ManualAeroSurfaceConfig::get_drag_at_mach_multiplier_curve() const {return drag_at_mach_multiplier_curve;}
 double ManualAeroSurfaceConfig::get_drag_multiplier_at_mach(double mach) const {
     apply_default_curves();

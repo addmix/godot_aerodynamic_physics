@@ -86,6 +86,10 @@ void AeroBody3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_relative_position"), &AeroBody3D::get_relative_position);
 	ClassDB::bind_method(D_METHOD("get_drag_direction"), &AeroBody3D::get_drag_direction);
 	ClassDB::bind_method(D_METHOD("interrupt_sleep"), &AeroBody3D::interrupt_sleep);
+	ClassDB::bind_method(D_METHOD("notify_flight_model_changed"), &AeroBody3D::notify_flight_model_changed);
+	ClassDB::bind_method(D_METHOD("_flush_flight_model_changed"), &AeroBody3D::_flush_flight_model_changed);
+	
+	ADD_SIGNAL(MethodInfo("flight_model_changed"));
 	ClassDB::bind_method(D_METHOD("calculate_forces_manual", "transform", "linear_velocity", "angular_velocity", "altitude", "air_density", "air_pressure", "gravity", "delta"), &AeroBody3D::calculate_forces_manual, DEFVAL(NAN), DEFVAL(NAN), DEFVAL(NAN), DEFVAL(Vector3()), DEFVAL(-1.0));
 	
 	//don't show these in inspector
@@ -240,6 +244,10 @@ void AeroBody3D::_ready() {
 		add_child(mass_debug_point, false, INTERNAL_MODE_FRONT);
 	}
 	
+	watched_mass = get_mass();
+	watched_inertia = get_inertia();
+	watched_center_of_mass = get_center_of_mass();
+	
 	set_show_debug(show_debug);
 	_update_debug_scale();
 	
@@ -280,6 +288,37 @@ void AeroBody3D::_physics_process(double delta) {
 	if (show_debug and update_debug) {
 		_update_debug();
 	}	
+	
+	//the physics engine doesn't tell us when mass/inertia/center of mass change, so watch them in the editor
+	if (Engine::get_singleton()->is_editor_hint()) _check_flight_model_changed();
+}
+
+void AeroBody3D::notify_flight_model_changed() {
+	if (flight_model_changed_pending) return; //one event per frame covers a burst of edits
+	
+	flight_model_changed_pending = true;
+	call_deferred("_flush_flight_model_changed");
+}
+void AeroBody3D::_flush_flight_model_changed() {
+	flight_model_changed_pending = false;
+	
+	//nodes leaving the tree raise this while the scene is being torn down, which isn't a model change
+	if (not is_inside_tree()) return;
+	
+	emit_signal("flight_model_changed");
+}
+void AeroBody3D::_check_flight_model_changed() {
+	const Vector3 inertia = get_inertia();
+	const Vector3 center_of_mass = get_center_of_mass();
+	const double mass = get_mass();
+	
+	if (mass == watched_mass and inertia == watched_inertia and center_of_mass == watched_center_of_mass) return;
+	
+	watched_mass = mass;
+	watched_inertia = inertia;
+	watched_center_of_mass = center_of_mass;
+	
+	notify_flight_model_changed();
 }
 
 // I'd bet that there's a more performant way to implement this.
@@ -556,21 +595,29 @@ TypedArray<Area3D> AeroBody3D::get_atmosphere_areas() const {
 }
 const std::vector<Area3D*> &AeroBody3D::get_atmosphere_areas_internal() const { return atmosphere_areas; }
 
-void AeroBody3D::add_aero_influencer(AeroInfluencer3D* influencer) { aero_influencers.push_back(influencer); }
+void AeroBody3D::add_aero_influencer(AeroInfluencer3D* influencer) {
+	aero_influencers.push_back(influencer);
+	notify_flight_model_changed();
+}
 void AeroBody3D::remove_aero_influencer(AeroInfluencer3D* influencer) {
 	for (size_t i = 0; i < aero_influencers.size(); i++) {
 		if (aero_influencers[i] == influencer) {
 			aero_influencers.erase(aero_influencers.begin() + i);
+			notify_flight_model_changed();
 			break;
 		}
 	}
 }
 
-void AeroBody3D::add_aero_atmosphere(Area3D* atmosphere) { atmosphere_areas.push_back(atmosphere); }
+void AeroBody3D::add_aero_atmosphere(Area3D* atmosphere) {
+	atmosphere_areas.push_back(atmosphere);
+	notify_flight_model_changed();
+}
 void AeroBody3D::remove_aero_atmosphere(Area3D* atmosphere) {
 	for (size_t i = 0; i < atmosphere_areas.size(); i++) {
 		if (atmosphere_areas[i] == atmosphere) {
 			atmosphere_areas.erase(atmosphere_areas.begin() + i);
+			notify_flight_model_changed();
 			break;
 		}
 	}

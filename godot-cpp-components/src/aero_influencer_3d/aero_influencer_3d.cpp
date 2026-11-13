@@ -50,6 +50,14 @@ void AeroInfluencer3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("is_mirrored"), &AeroInfluencer3D::is_mirrored);
 	ClassDB::bind_method(D_METHOD("is_mirror_pending"), &AeroInfluencer3D::is_mirror_pending);
 	
+	ClassDB::bind_method(D_METHOD("notify_flight_model_changed"), &AeroInfluencer3D::notify_flight_model_changed);
+	ADD_SIGNAL(MethodInfo("flight_model_changed"));
+	
+	//lets tools mute the signal while they move nodes around on purpose
+	ClassDB::bind_method(D_METHOD("set_suppress_flight_model_changed", "suppress"), &AeroInfluencer3D::set_suppress_flight_model_changed);
+	ClassDB::bind_method(D_METHOD("get_suppress_flight_model_changed"), &AeroInfluencer3D::get_suppress_flight_model_changed);
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "suppress_flight_model_changed", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "set_suppress_flight_model_changed", "get_suppress_flight_model_changed");
+	
 	ClassDB::bind_method(D_METHOD("get_mirror_duplicate"), &AeroInfluencer3D::get_mirror_duplicate);
 	ClassDB::bind_method(D_METHOD("set_mirror_id", "p_id"), &AeroInfluencer3D::set_mirror_id);
 	ClassDB::bind_method(D_METHOD("get_mirror_id"), &AeroInfluencer3D::get_mirror_id);
@@ -189,8 +197,15 @@ void AeroInfluencer3D::_notification(int what) {
 			//other. the equality check ends the bounce: the other half then pushes back the same value
 			if (Engine::get_singleton()->is_editor_hint() and mirror_duplicate) {
 				const Transform3D mirrored = calculate_mirrored_transform(get_transform());
-				if (mirror_duplicate->get_transform() != mirrored) mirror_duplicate->set_transform(mirrored);
+				if (mirror_duplicate->get_transform() != mirrored) {
+					const bool was_suppressed = mirror_duplicate->suppress_flight_model_changed;
+					mirror_duplicate->suppress_flight_model_changed = true;
+					mirror_duplicate->set_transform(mirrored);
+					mirror_duplicate->suppress_flight_model_changed = was_suppressed;
+				}
 			}
+			
+			notify_flight_model_changed();
 		}
 		break;
 	}
@@ -566,6 +581,7 @@ void AeroInfluencer3D::set_disabled(int p_disabled) {
 	update_gizmos();
 	
 	if (mirror_duplicate) mirror_duplicate->set_disabled(p_disabled);
+	if (not _duplicate) notify_flight_model_changed();
 }
 int AeroInfluencer3D::is_disabled() const {
 	return disabled;
@@ -576,6 +592,7 @@ void AeroInfluencer3D::set_can_override_body_sleep(bool override) {
 	can_override_body_sleep = override;
 	
 	if (mirror_duplicate) mirror_duplicate->set_can_override_body_sleep(override);
+	if (not _duplicate) notify_flight_model_changed();
 }
 bool AeroInfluencer3D::get_can_override_body_sleep() const {
 	return can_override_body_sleep;
@@ -607,6 +624,7 @@ void AeroInfluencer3D::set_mirror_axis(int axis) {
 			copy->set_name(copy->get_name() + String("_mirror_removed"));
 			copy->call_deferred("queue_free");
 		}
+		if (not _duplicate) notify_flight_model_changed();
 		return;
 	}
 	
@@ -618,6 +636,8 @@ void AeroInfluencer3D::set_mirror_axis(int axis) {
 	} else if (is_inside_tree()) {
 		generate_mirror();
 	}
+	
+	if (not _duplicate) notify_flight_model_changed();
 }
 int AeroInfluencer3D::get_mirror_axis() const {
 	return mirror_axis;
@@ -743,7 +763,12 @@ void AeroInfluencer3D::update_mirror_transform() {
 	if (not _duplicate or not mirror_duplicate) return;
 	
 	const Transform3D xform = calculate_mirrored_transform(mirror_duplicate->get_transform());
+	
+	const bool was_suppressed = suppress_flight_model_changed;
+	suppress_flight_model_changed = true;
 	set_transform(xform);
+	suppress_flight_model_changed = was_suppressed;
+	
 	default_transform = xform;
 }
 void AeroInfluencer3D::map_mirror_sources(AeroInfluencer3D *p_source, AeroInfluencer3D *p_mirror) {
@@ -773,14 +798,15 @@ void AeroInfluencer3D::map_mirror_sources(AeroInfluencer3D *p_source, AeroInflue
 void AeroInfluencer3D::set_mirror_scaling_fix_axis(int axis) {
 	mirror_scaling_fix_axis = axis;
 	
-	if (not mirror_duplicate) return;
-	
-	if (not _duplicate) {
-		mirror_duplicate->set_mirror_scaling_fix_axis(axis);
-		return;
+	if (mirror_duplicate) {
+		if (not _duplicate) {
+			mirror_duplicate->set_mirror_scaling_fix_axis(axis);
+		} else {
+			update_mirror_transform();
+		}
 	}
 	
-	update_mirror_transform();
+	if (not _duplicate) notify_flight_model_changed();
 }
 int AeroInfluencer3D::get_mirror_scaling_fix_axis() const {
 	return mirror_scaling_fix_axis;
@@ -794,12 +820,38 @@ bool AeroInfluencer3D::is_duplicate() const {
 AeroInfluencer3D* AeroInfluencer3D::get_mirror_duplicate() const {
 	return mirror_duplicate;
 }
+void AeroInfluencer3D::set_suppress_flight_model_changed(bool p_suppress) {
+	suppress_flight_model_changed = p_suppress;
+}
+bool AeroInfluencer3D::get_suppress_flight_model_changed() const {
+	return suppress_flight_model_changed;
+}
+//tells listeners (the wind tunnel tool, mostly) that something changed that affects the simulation
+void AeroInfluencer3D::notify_flight_model_changed() {
+	if (suppress_flight_model_changed) return;
+	
+	emit_signal("flight_model_changed");
+	if (aero_body) aero_body->notify_flight_model_changed();
+}
+//configs are shared resources, so their own edits (curves, limits) have to be forwarded too
+void AeroInfluencer3D::watch_config_resource(const Ref<Resource> &p_previous, const Ref<Resource> &p_next) {
+	Callable callback = callable_mp(this, &AeroInfluencer3D::notify_flight_model_changed);
+	
+	if (p_previous.is_valid() and p_previous != p_next and p_previous->is_connected("changed", callback)) {
+		p_previous->disconnect("changed", callback);
+	}
+	if (p_next.is_valid() and not p_next->is_connected("changed", callback)) {
+		p_next->connect("changed", callback);
+	}
+}
 void AeroInfluencer3D::set_actuation_config(const Ref<Resource> &p_config) {
 	if (actuation_config == p_config) return;
 	
+	watch_config_resource(actuation_config, p_config);
 	actuation_config = p_config;
 	
 	if (mirror_duplicate) mirror_duplicate->set_actuation_config(p_config);
+	if (not _duplicate) notify_flight_model_changed();
 }
 Ref<Resource> AeroInfluencer3D::get_actuation_config() const {
 	return actuation_config;
@@ -810,6 +862,7 @@ void AeroInfluencer3D::set_control_rotation_order(int rotation_order) {
 	control_rotation_order = rotation_order;
 	
 	if (mirror_duplicate) mirror_duplicate->set_control_rotation_order(rotation_order);
+	if (not _duplicate) notify_flight_model_changed();
 }
 int AeroInfluencer3D::get_control_rotation_order() const {
 	return control_rotation_order;

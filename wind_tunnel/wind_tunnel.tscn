@@ -22,6 +22,13 @@ alignment = 1
 layout_mode = 2
 text = "Recalculate"
 
+[node name="TestingSpeed" type="SpinBox" parent="HBoxContainer" unique_id=388565565]
+layout_mode = 2
+max_value = 500.0
+step = 25.0
+value = 250.0
+suffix = "m/s"
+
 [node name="AircraftName" type="Label" parent="HBoxContainer" unique_id=258261269]
 unique_name_in_owner = true
 layout_mode = 2
@@ -61,3 +68,4 @@ font = SubResource("SystemFont_j07fm")
 metadata/_custom_type_script = "uid://fpja68jul0t3"
 
 [connection signal="pressed" from="HBoxContainer/RecalculateButton" to="." method="_on_recalculate_button_pressed"]
+[connection signal="value_changed" from="HBoxContainer/TestingSpeed" to="." method="_on_testing_speed_value_changed"]

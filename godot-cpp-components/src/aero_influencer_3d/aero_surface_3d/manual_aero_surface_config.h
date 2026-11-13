@@ -11,6 +11,9 @@ namespace godot {
 class ManualAeroSurfaceConfig : public Resource {
 	GDCLASS(ManualAeroSurfaceConfig, Resource);
 private:
+	static void watch_curve(ManualAeroSurfaceConfig *p_config, const Ref<Curve> &p_previous, const Ref<Curve> &p_next);
+	mutable bool curves_watched = false;
+	
 	//double min_lift_coefficient = -1.6;
 	//double max_lift_coefficient = 1.6;
 	mutable Ref<Curve> lift_aoa_curve;

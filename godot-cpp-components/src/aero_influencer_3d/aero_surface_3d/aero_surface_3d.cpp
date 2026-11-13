@@ -59,6 +59,7 @@ ForceAndTorque AeroSurface3D::calculate_forces(double substep_delta) {
 void AeroSurface3D::set_wing_config(const Ref<AeroSurfaceConfig> &p_config) {
     if (wing_config == p_config) return;
     
+    watch_config_resource(wing_config, p_config);
     wing_config = p_config;
     
     if (wing_config.is_valid() and not wing_config->is_connected("changed", Callable(this, "update_gizmos"))) {
@@ -70,6 +71,8 @@ void AeroSurface3D::set_wing_config(const Ref<AeroSurfaceConfig> &p_config) {
     
     AeroSurface3D *other = Object::cast_to<AeroSurface3D>(get_mirror_duplicate());
     if (other) other->set_wing_config(p_config);
+    
+    if (not is_duplicate()) notify_flight_model_changed();
 }
 Ref<AeroSurfaceConfig> AeroSurface3D::get_wing_config() const {return wing_config;};
 

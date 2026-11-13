@@ -16,6 +16,18 @@
 [ext_resource type="ArrayMesh" uid="uid://cs0vlbs2pbabv" path="res://addons/godot_aerodynamic_physics/demo/aircraft_examples/cessna172/fueslage_aero_mesh.res" id="15_op60t"]
 [ext_resource type="PackedScene" uid="uid://ctn1rdc7k7icw" path="res://addons/godot_aerodynamic_physics/demo/misc_demo_assets/floating_hud.tscn" id="18_7qotf"]
 
+[sub_resource type="GDScript" id="GDScript_op60t"]
+script/source = "extends MeshInstance3D
+
+func _physics_process(delta: float) -> void:
+	$Wing/AileronR.rotation.x = $\"../WingR1/WingR2/Aileron\".rotation.x
+	if get_node_or_null(\"../WingR1Mirror/WingR2/Aileron\"):
+		$Wing/AileronL.rotation.x = $\"../WingR1Mirror/WingR2/Aileron\".rotation.x
+	$Wing/Flaps.rotation.x = $\"../WingR1/Flap\".rotation.x
+	$HorizontalStabilizer/Elevator.rotation.x = $\"../Elevator2\".rotation.x
+	$Rudder.rotation.y = -$\"../VerticalStab/Rudder\".rotation.x
+"
+
 [sub_resource type="Resource" id="Resource_scrto"]
 script = ExtResource("3_4yv37")
 p = 0.001
@@ -143,18 +155,6 @@ metadata/_custom_type_script = "uid://dfbhcpt1rr3ai"
 [sub_resource type="Resource" id="Resource_lo3t1"]
 script = ExtResource("4_5oq5f")
 axis_configs = Array[ExtResource("3_b1b2v")]([SubResource("Resource_34386"), SubResource("Resource_o6rpv"), SubResource("Resource_wtjbh"), SubResource("Resource_jsx6i"), SubResource("Resource_b1qmm"), SubResource("Resource_ey0gl")])
-
-[sub_resource type="GDScript" id="GDScript_op60t"]
-script/source = "extends MeshInstance3D
-
-func _physics_process(delta: float) -> void:
-	$Wing/AileronR.rotation.x = $\"../WingR1/WingR2/Aileron\".rotation.x
-	if get_node_or_null(\"../WingR1Mirror/WingR2/Aileron\"):
-		$Wing/AileronL.rotation.x = $\"../WingR1Mirror/WingR2/Aileron\".rotation.x
-	$Wing/Flaps.rotation.x = $\"../WingR1/Flap\".rotation.x
-	$HorizontalStabilizer/Elevator.rotation.x = $\"../Elevator2\".rotation.x
-	$Rudder.rotation.y = -$\"../VerticalStab/Rudder\".rotation.x
-"
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_qu8wf"]
 height = 4.31507
@@ -350,16 +350,10 @@ show_debug = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.300238504398001, 0)
 collision_layer = 16385
 mass = 1111.0
-center_of_mass = Vector3(0, 0.00999999999999978, -1.59)
+center_of_mass = Vector3(0, 0.00999999999999978, -1.3900000000000006)
 can_sleep = false
 
-[node name="AeroControlComponent" type="Node" parent="." index="1" unique_id=924905178]
-script = ExtResource("2_4u4b6")
-flight_assist = SubResource("Resource_t1hlr")
-control_config = SubResource("Resource_lo3t1")
-metadata/_custom_type_script = "uid://cc5dwx5pqkaur"
-
-[node name="Fueslage" parent="." index="2" unique_id=342153118]
+[node name="Fueslage" parent="." index="1" unique_id=342153118]
 script = SubResource("GDScript_op60t")
 
 [node name="Rudder" parent="Fueslage" index="3" unique_id=924637721]
@@ -373,7 +367,16 @@ rotation_order = 5
 transform = Transform3D(0.9890177336503876, -0.06049092023489863, 0.13485092174021704, 0.06104854386080376, 0.9981347981572808, -2.4367424050764086e-10, -0.1345993975377547, 0.00823245265152559, 0.9908658985482416, 4.0009294, 0.78784645, -1.011156)
 rotation_order = 5
 
-[node name="CameraRotator" type="Node3D" parent="." index="3" unique_id=1059591262]
+[node name="Fueslage_aero" parent="." index="2" unique_id=2027176335]
+visible = false
+
+[node name="AeroControlComponent" type="Node" parent="." index="3" unique_id=924905178]
+script = ExtResource("2_4u4b6")
+flight_assist = SubResource("Resource_t1hlr")
+control_config = SubResource("Resource_lo3t1")
+metadata/_custom_type_script = "uid://cc5dwx5pqkaur"
+
+[node name="CameraRotator" type="Node3D" parent="." index="4" unique_id=1059591262]
 script = ExtResource("7_cp2h5")
 
 [node name="Camera3D" type="Camera3D" parent="CameraRotator" index="0" unique_id=1364845764]
@@ -390,9 +393,6 @@ Throttle: Shift/Ctrl
 Flaps: T/G"
 
 [node name="FlightInfoLabel" parent="CameraRotator/Camera3D" index="1" unique_id=1734181071 instance=ExtResource("7_ey0gl")]
-
-[node name="Fueslage_aero" parent="." index="4" unique_id=2027176335]
-visible = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." index="5" unique_id=1955918201]
 transform = Transform3D(1, 0, 0, 0, 6.12303e-17, 1, 0, -1, 6.12303e-17, 0, -0.208549, -1.64491)

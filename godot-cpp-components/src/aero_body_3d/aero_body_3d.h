@@ -59,6 +59,12 @@ private:
 	int substeps_override = -1;
 	static int substeps;
 	int current_substep = 0;
+	//the signal is coalesced and emitted at the end of the frame, so a scene teardown can't leak events
+	bool flight_model_changed_pending = false;
+	//last seen rigid body values, only used to detect edits from the inspector
+	double watched_mass = 0.0;
+	Vector3 watched_inertia;
+	Vector3 watched_center_of_mass;
 	//experimental_energy_tracking
 	
 	
@@ -152,6 +158,9 @@ public:
 	
 	
 	ForceAndTorque calculate_forces(double delta);
+	void notify_flight_model_changed();
+	void _flush_flight_model_changed();
+	void _check_flight_model_changed();
 	PackedVector3Array calculate_forces_manual(const Transform3D &p_transform, const Vector3 &p_linear_velocity, const Vector3 &p_angular_velocity, double p_altitude = NAN, double p_air_density = NAN, double p_air_pressure = NAN, const Vector3 &p_gravity = Vector3(), double p_delta = -1.0);
 	void _update_transform_substep(double substep_delta);
 	Vector3 calculate_relative_position() const;

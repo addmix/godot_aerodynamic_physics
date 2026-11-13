@@ -62,10 +62,13 @@ ForceAndTorque ManualAeroSurface3D::calculate_forces(double substep_delta) {
 void ManualAeroSurface3D::set_manual_config(const Ref<ManualAeroSurfaceConfig> &p_config) {
     if (manual_config == p_config) return;
     
+    watch_config_resource(manual_config, p_config);
     manual_config = p_config;
     if (manual_config.is_valid()) manual_config->apply_default_curves();
     
     ManualAeroSurface3D *other = Object::cast_to<ManualAeroSurface3D>(get_mirror_duplicate());
     if (other) other->set_manual_config(p_config);
+    
+    if (not is_duplicate()) notify_flight_model_changed();
 }
 Ref<ManualAeroSurfaceConfig> ManualAeroSurface3D::get_manual_config() const {return manual_config;};

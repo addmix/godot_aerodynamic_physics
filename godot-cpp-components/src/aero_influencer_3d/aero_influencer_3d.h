@@ -26,6 +26,8 @@ private:
 	int mirror_scaling_fix_axis = 0;
 	bool _duplicate = false;
 	AeroInfluencer3D* mirror_duplicate = nullptr;
+	//set while the simulator itself writes transforms, so those writes don't raise flight_model_changed
+	bool suppress_flight_model_changed = false;
 	
 	Ref<Resource> actuation_config;//AeroInfluencerControlConfig actuation_config; //TODO
 	int control_rotation_order = 0;
@@ -102,6 +104,9 @@ public:
 	
 	void generate_mirror();
 	void update_mirror_transform();
+	void notify_flight_model_changed();
+	void set_suppress_flight_model_changed(bool p_suppress);
+	bool get_suppress_flight_model_changed() const;
 	void set_mirror_id(int64_t p_id);
 	int64_t get_mirror_id() const;
 	Transform3D calculate_mirrored_transform(const Transform3D &p_transform) const;
@@ -169,6 +174,7 @@ public:
 	AeroInfluencer3D* get_mirror_duplicate() const;
 	
 	void set_actuation_config(const Ref<Resource> &p_config);
+	void watch_config_resource(const Ref<Resource> &p_previous, const Ref<Resource> &p_next);
 	Ref<Resource> get_actuation_config() const;
 	void set_control_rotation_order(int rotation_order);
 	int get_control_rotation_order() const;

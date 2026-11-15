@@ -158,53 +158,54 @@ show_debug = true
 collision_layer = 16385
 mass = 1500.0
 
-[node name="AeroControlComponent" type="Node" parent="." index="0" unique_id=1016004223]
+[node name="AeroControlComponent" type="Node" parent="." index="1" unique_id=1016004223]
 script = ExtResource("2_1v2fn")
 control_config = SubResource("Resource_rnlel")
 metadata/_custom_type_script = "uid://cc5dwx5pqkaur"
 
-[node name="CameraWithoutRotation" parent="." index="1" unique_id=1220757516 instance=ExtResource("5_lsv46")]
+[node name="CameraWithoutRotation" parent="." index="2" unique_id=1220757516 instance=ExtResource("5_lsv46")]
 camera_distance = 8.0
 
 [node name="Label3D" type="Label3D" parent="CameraWithoutRotation/Camera3D" parent_id_path=PackedInt32Array(1220757516, 906426946) index="0" unique_id=298591488]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.11, 1.57529, -2.9862)
 text = "Controls:
 Rudder: A/D
-Sail: Q/E"
+Sail: Q/E
+Camera: Right Click + Drag"
 
 [node name="FlightInfoLabel" parent="CameraWithoutRotation/Camera3D" parent_id_path=PackedInt32Array(1220757516, 906426946) index="1" unique_id=1060073430 instance=ExtResource("6_jg8xp")]
 
 [node name="MeshInstance3D" parent="CameraWithoutRotation/Camera3D" parent_id_path=PackedInt32Array(1220757516, 906426946) index="2" unique_id=181835651]
 mesh = SubResource("QuadMesh_wnqtr")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="3" unique_id=1693420429]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="4" unique_id=1693420429]
 shape = SubResource("ConvexPolygonShape3D_m8ttw")
 
-[node name="Rudder" type="ManualAeroSurface3D" parent="." index="4" unique_id=2121508096]
+[node name="Rudder" type="ManualAeroSurface3D" parent="." index="5" unique_id=2121508096]
 manual_config = SubResource("Resource_m2rhy")
 wing_config = SubResource("Resource_dylod")
 actuation_config = SubResource("Resource_3ocix")
 show_debug = true
 transform = Transform3D(6.123233995736766e-17, 1, 0, -1, 6.123233995736766e-17, 0, 0, 0, 1, 0, -0.6395103987786441, 1.6947709974150575)
 
-[node name="CSGBox3D" type="CSGBox3D" parent="Rudder" index="0" unique_id=63091899]
+[node name="CSGBox3D" type="CSGBox3D" parent="Rudder" index="3" unique_id=63091899]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.17159610241651535)
 size = Vector3(1.010510072461784, 0.07490833214797021, 0.6891372122681787)
 
-[node name="AeroBuoyancyMesh3D" type="AeroInfluencer3D" parent="." index="5" unique_id=612877217]
+[node name="AeroBuoyancyMesh3D" type="AeroInfluencer3D" parent="." index="6" unique_id=612877217]
 show_debug = true
 script = ExtResource("8_bdfv4")
 buoyancy_mesh = ExtResource("9_3ocix")
 metadata/_custom_type_script = "uid://blp6761y154ht"
 
-[node name="Sail" type="ManualAeroSurface3D" parent="." index="6" unique_id=1207936626]
+[node name="Sail" type="ManualAeroSurface3D" parent="." index="7" unique_id=1207936626]
 manual_config = SubResource("Resource_kx3he")
 wing_config = SubResource("Resource_i8owv")
 actuation_config = SubResource("Resource_m8ttw")
 show_debug = true
 transform = Transform3D(6.123233995736766e-17, 1, 0, -1, 6.123233995736765e-17, 0, 0, 0, 1, 0, 3.196154347436603, 0)
 
-[node name="CSGBox3D" type="CSGBox3D" parent="Sail" index="0" unique_id=2081273161]
+[node name="CSGBox3D" type="CSGBox3D" parent="Sail" index="3" unique_id=2081273161]
 transform = Transform3D(1, -1.3681806e-30, 6.162975822039079e-33, 0, 0.9999999999999776, 5.551115123125659e-17, -6.1629758220390165e-33, -5.551115123125659e-17, 0.9999999999999776, 0, 0, 0.7246000000013735)
 size = Vector3(5, 0, 3)
 

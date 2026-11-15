@@ -244,6 +244,7 @@ void AeroBody3D::_ready() {
 		add_child(mass_debug_point, false, INTERNAL_MODE_FRONT);
 	}
 	
+	inverse_inertia_tensor_cache = get_inverse_inertia_tensor();
 	watched_mass = get_mass();
 	watched_inertia = get_inertia();
 	watched_center_of_mass = get_center_of_mass();
@@ -338,6 +339,7 @@ void AeroBody3D::integrate_forces(PhysicsDirectBodyState3D *body_state) {
 	current_gravity = body_state->get_total_gravity();
 	linear_velocity_substep = body_state->get_linear_velocity();
 	angular_velocity_substep = body_state->get_angular_velocity();
+	inverse_inertia_tensor_cache = body_state->get_inverse_inertia_tensor();
 	
 	//the body state holds the transform the physics step actually used, which is one step fresher than the
 	//node's global transform during force integration
@@ -432,7 +434,9 @@ ForceAndTorque AeroBody3D::calculate_forces(double delta) {
 		if (Engine::get_singleton()->is_editor_hint()) break; //only simulate 1 substep: see https://github.com/addmix/godot_aerodynamic_physics/issues/35
 	}
 	
-	total_force_and_torque /= substep_count;
+	// TODO: Remove this condition in the future, making sure to keep total_force_and_torque /= substep_count; 
+	// currently substeps in the editor are limited to 1 substep to ensure debug vectors display correctly. 
+	if (not Engine::get_singleton()->is_editor_hint()) total_force_and_torque /= substep_count;
 	
 	current_force = total_force_and_torque.force;
 	current_torque = total_force_and_torque.torque;
@@ -499,6 +503,7 @@ ForceAndTorque AeroBody3D::calculate_forces(double delta) {
 //sources integrate_forces() uses, so altitude defaults to the transform's height and density/pressure to AeroUnits.
 PackedVector3Array AeroBody3D::calculate_forces_manual(const Transform3D &p_transform, const Vector3 &p_linear_velocity, const Vector3 &p_angular_velocity, double p_altitude, double p_air_density, double p_air_pressure, const Vector3 &p_gravity, double p_delta) {
 	update_transform_cache(p_transform);
+	inverse_inertia_tensor_cache = get_inverse_inertia_tensor();
 	
 	//calculate_forces() builds the air velocity as -linear_velocity_substep + wind, so wind is expected to be folded in already
 	wind = Vector3();
@@ -541,7 +546,7 @@ void AeroBody3D::_update_transform_substep(double substep_delta) {
 }
 
 Vector3 AeroBody3D::calculate_linear_velocity_substep(Vector3 force) const { return linear_velocity_substep + (force / get_mass() * get_substep_delta()); }
-Vector3 AeroBody3D::calculate_angular_velocity_substep(Vector3 torque) const { return angular_velocity_substep + (get_inverse_inertia_tensor().xform(torque) * get_substep_delta()); }
+Vector3 AeroBody3D::calculate_angular_velocity_substep(Vector3 torque) const { return angular_velocity_substep + (inverse_inertia_tensor_cache.xform(torque) * get_substep_delta()); }
 Vector3 AeroBody3D::calculate_relative_position() const { return global_transform_cache.basis.xform(-get_center_of_mass()); }
 Vector3 AeroBody3D::calculate_drag_direction() const { return air_velocity.normalized(); }
 //Vector3 AeroBody3D::calculate_linear_acceleration() const {

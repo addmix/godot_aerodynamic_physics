@@ -109,6 +109,7 @@ private:
 	
 	Vector3 wind = Vector3(0, 0, 0);
 	Transform3D global_transform_cache = Transform3D();
+	Basis inverse_inertia_tensor_cache = Basis();
 	Vector3 air_velocity = Vector3(0, 0, 0);
 	Vector3 local_air_velocity = Vector3(0, 0, 0);
 	Vector3 local_angular_velocity = Vector3(0, 0, 0);

@@ -183,34 +183,39 @@ AeroInfluencer3D::~AeroInfluencer3D() {
 
 void AeroInfluencer3D::_notification(int what) {
 	switch (what) {
-	case NOTIFICATION_LOCAL_TRANSFORM_CHANGED:
-		local_transform_cache = get_transform();
-		
-		if (is_inside_tree()) {
-			Transform3D parent_global = Transform3D();
-			if (parent_influencer) {
-				parent_global = parent_influencer->get_cached_global_transform();
-			} else if (aero_body) {
-				parent_global = aero_body->get_cached_global_transform();
-			}
+		case NOTIFICATION_LOCAL_TRANSFORM_CHANGED: {
+			const Transform3D new_transform = get_transform();
 			
-			update_transform_cache(parent_global);
+			//transforms the simulation computed are pushed from the cache, so they need no work here
+			if (new_transform == local_transform_cache) break;
+			local_transform_cache = new_transform;
 			
-			//mirroring is its own inverse, so whichever half was moved pushes the mirrored transform to the
-			//other. the equality check ends the bounce: the other half then pushes back the same value
-			if (Engine::get_singleton()->is_editor_hint() and mirror_duplicate) {
-				const Transform3D mirrored = calculate_mirrored_transform(get_transform());
-				if (mirror_duplicate->get_transform() != mirrored) {
-					const bool was_suppressed = mirror_duplicate->suppress_flight_model_changed;
-					mirror_duplicate->suppress_flight_model_changed = true;
-					mirror_duplicate->set_transform(mirrored);
-					mirror_duplicate->suppress_flight_model_changed = was_suppressed;
+			if (is_inside_tree()) {
+				Transform3D parent_global = Transform3D();
+				if (parent_influencer) {
+					parent_global = parent_influencer->get_cached_global_transform();
+				} else if (aero_body) {
+					parent_global = aero_body->get_cached_global_transform();
 				}
+				
+				update_transform_cache(parent_global);
+				
+				//mirroring is its own inverse, so whichever half was moved pushes the mirrored transform to the
+				//other. the equality check ends the bounce: the other half then pushes back the same value
+				if (Engine::get_singleton()->is_editor_hint() and mirror_duplicate) {
+					const Transform3D mirrored = calculate_mirrored_transform(local_transform_cache);
+					if (mirror_duplicate->get_cached_local_transform() != mirrored) {
+						const bool was_suppressed = mirror_duplicate->suppress_flight_model_changed;
+						mirror_duplicate->suppress_flight_model_changed = true;
+						mirror_duplicate->set_transform(mirrored);
+						mirror_duplicate->suppress_flight_model_changed = was_suppressed;
+					}
+				}
+				
+				notify_flight_model_changed();
 			}
-			
-			notify_flight_model_changed();
+			break;
 		}
-		break;
 	}
 }
 void AeroInfluencer3D::_ready() {
@@ -303,7 +308,30 @@ void AeroInfluencer3D::update_transform_cache(const Transform3D &parent_global_t
 void AeroInfluencer3D::set_cached_transform(const Transform3D &p_transform) {
 	if (p_transform == local_transform_cache) return;
 	
-	set_transform(p_transform);
+	local_transform_cache = p_transform;
+	
+	Transform3D parent_global = Transform3D();
+	if (parent_influencer) {
+		parent_global = parent_influencer->get_cached_global_transform();
+	} else if (aero_body) {
+		parent_global = aero_body->get_cached_global_transform();
+	}
+	
+	update_transform_cache(parent_global);
+}
+//the substeps only move the cache, so the node is written here, once per update
+void AeroInfluencer3D::apply_cached_transform() {
+	if (get_transform() != local_transform_cache) {
+		//the cache is already current, so the transform notification would only be overhead
+		set_notify_local_transform(false);
+		set_transform(local_transform_cache);
+		set_notify_local_transform(true);
+	}
+	
+	for (AeroInfluencer3D* influencer : aero_influencers) {
+		if (not influencer) continue;
+		influencer->apply_cached_transform();
+	}
 }
 const Transform3D &AeroInfluencer3D::get_cached_local_transform() const {
 	return local_transform_cache;
@@ -765,7 +793,7 @@ Transform3D AeroInfluencer3D::calculate_mirrored_transform(const Transform3D &p_
 void AeroInfluencer3D::update_mirror_transform() {
 	if (not _duplicate or not mirror_duplicate) return;
 	
-	const Transform3D xform = calculate_mirrored_transform(mirror_duplicate->get_transform());
+	const Transform3D xform = calculate_mirrored_transform(mirror_duplicate->get_cached_local_transform());
 	
 	const bool was_suppressed = suppress_flight_model_changed;
 	suppress_flight_model_changed = true;
@@ -832,6 +860,9 @@ bool AeroInfluencer3D::get_suppress_flight_model_changed() const {
 //tells listeners (the wind tunnel tool, mostly) that something changed that affects the simulation
 void AeroInfluencer3D::notify_flight_model_changed() {
 	if (suppress_flight_model_changed) return;
+	
+	//nothing to do when nobody is listening, which is the normal case for a running game
+	if (not has_connections("flight_model_changed") and (not aero_body or not aero_body->has_connections("flight_model_changed"))) return;
 	
 	emit_signal("flight_model_changed");
 	if (aero_body) aero_body->notify_flight_model_changed();

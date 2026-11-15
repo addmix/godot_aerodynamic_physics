@@ -44,9 +44,9 @@ func _update_control_transform(substep_delta : float) -> void:
 		
 		cyclic = Vector2(cyclic_control_config.current_value.x, cyclic_control_config.current_value.y)
 	
-	var rotor_offset : float = basis.get_euler(EULER_ORDER_XZY).y
+	var rotor_offset : float = get_cached_local_transform().basis.get_euler(EULER_ORDER_XZY).y
 	for influencer : AeroInfluencer3D in propeller_instances:
-		var angular_position : float = rotor_offset + influencer.rotation.y
+		var angular_position : float = rotor_offset + influencer.get_cached_local_transform().basis.get_euler().y
 		
 		var cyclic_effect : float = cos(angular_position) * cyclic.x + sin(angular_position) * cyclic.y
 		cyclic_effect *= deg_to_rad(cyclic_pitch)

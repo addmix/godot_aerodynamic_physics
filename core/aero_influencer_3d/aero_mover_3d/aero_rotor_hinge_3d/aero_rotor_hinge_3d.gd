@@ -65,4 +65,4 @@ func _update_transform_substep(substep_delta : float) -> void:
 	set_cached_transform(local_transform)
 
 func get_centrifugal_offset() -> Vector3:
-	return position + Vector3(blade_length * 0.5, 0, 0)
+	return get_cached_position() + Vector3(blade_length * 0.5, 0, 0)

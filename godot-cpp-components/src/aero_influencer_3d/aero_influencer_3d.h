@@ -150,6 +150,7 @@ public:
 	
 	void update_transform_cache(const Transform3D &parent_global_transform);
 	void set_cached_transform(const Transform3D &p_transform);
+	void apply_cached_transform();
 	
 	const Transform3D &get_cached_local_transform() const;
 	const Transform3D &get_cached_global_transform() const;

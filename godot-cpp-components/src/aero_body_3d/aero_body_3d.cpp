@@ -295,12 +295,14 @@ void AeroBody3D::_physics_process(double delta) {
 }
 
 void AeroBody3D::notify_flight_model_changed() {
-	if (flight_model_changed_pending) return; //one event per frame covers a burst of edits
+	if (flight_model_changed_pending) return; //one event per update covers a burst of edits
 	
 	flight_model_changed_pending = true;
 	call_deferred("_flush_flight_model_changed");
 }
 void AeroBody3D::_flush_flight_model_changed() {
+	//already emitted for this physics update, the deferred call is only a fallback for editor changes
+	if (not flight_model_changed_pending) return;
 	flight_model_changed_pending = false;
 	
 	//nodes leaving the tree raise this while the scene is being torn down, which isn't a model change
@@ -381,6 +383,14 @@ void AeroBody3D::integrate_forces(PhysicsDirectBodyState3D *body_state) {
 	
 	uncommitted_last_linear_velocity = body_state->get_linear_velocity();
 	uncommitted_last_angular_velocity = body_state->get_angular_velocity();
+	
+	for (AeroInfluencer3D* influencer : aero_influencers) {
+		if (not influencer) continue;
+		
+		influencer->apply_cached_transform();
+	}
+	
+	_flush_flight_model_changed();
 }
 
 ForceAndTorque AeroBody3D::calculate_forces(double delta) {	

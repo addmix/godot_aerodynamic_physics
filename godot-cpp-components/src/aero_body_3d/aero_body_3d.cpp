@@ -417,7 +417,7 @@ ForceAndTorque AeroBody3D::calculate_forces(double delta) {
 
 		local_air_velocity = global_transform_cache.basis.xform_inv(air_velocity);
 		local_angular_velocity = global_transform_cache.basis.xform_inv(angular_velocity_substep);
-		angle_of_attack = global_transform_cache.basis.get_column(1).angle_to(-air_velocity) - (Math::PI / 2.0);
+		angle_of_attack = Math::atan2(air_velocity.dot(global_transform_cache.basis.get_column(1)), air_velocity.dot(global_transform_cache.basis.get_column(2)));
 		sideslip_angle = global_transform_cache.basis.get_column(0).angle_to(air_velocity) - (Math::PI / 2.0); 
 		relative_position = calculate_relative_position();
 		drag_direction = calculate_drag_direction();

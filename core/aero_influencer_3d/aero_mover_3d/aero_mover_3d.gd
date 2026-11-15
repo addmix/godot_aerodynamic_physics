@@ -51,8 +51,8 @@ func _update_transform_substep(substep_delta : float) -> void:
 		_linear_velocity = (cached_transform.origin - last_position) / substep_delta
 		_linear_velocity -= linear_motor #cancel out any movement caused by motor
 		
-		var axis_angle : Quaternion = AeroTransformUtils.quat_to_axis_angle(cached_transform.basis * last_rotation.inverse())
-		_angular_velocity = Vector3(axis_angle.x, axis_angle.y, axis_angle.z) * axis_angle.w / substep_delta * cached_transform.basis * 2.0 #i'm not entirely sure why the 2.0 is needed, but testing showed that it's needed.
+		var axis_angle : Vector3 = AeroTransformUtils.quat_to_axis_angle(cached_transform.basis * last_rotation.inverse())
+		_angular_velocity = axis_angle / substep_delta * cached_transform.basis * 2.0 #i'm not entirely sure why the 2.0 is needed, but testing showed that it's needed.
 		_angular_velocity -= angular_motor #cancel out any rotation caused by motor
 	
 	#motors

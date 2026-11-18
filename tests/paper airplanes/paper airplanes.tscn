@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://c2m116f1mskcn"]
+
+[ext_resource type="Script" uid="uid://bxesilyfs2lso" path="res://addons/godot_aerodynamic_physics/tests/paper airplanes/paper_airplanes.gd" id="1_aeoh8"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_aeoh8"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_b643g"]
+sky_material = SubResource("ProceduralSkyMaterial_aeoh8")
+
+[sub_resource type="Environment" id="Environment_vyj3r"]
+background_mode = 2
+sky = SubResource("Sky_b643g")
+glow_enabled = true
+
+[node name="PaperAirplanes" type="Node3D" unique_id=80004815]
+script = ExtResource("1_aeoh8")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1122867095]
+environment = SubResource("Environment_vyj3r")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=8253268]
+transform = Transform3D(-0.8660254037844387, -0.4330127018922192, 0.25, 0, 0.5000000000000001, 0.8660254037844386, -0.49999999999999994, 0.75, -0.43301270189221946, 0, 0, 0)
+shadow_enabled = true
+
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=2135420014]
+size = Vector3(100, 1, 100)
+
+[node name="Button" type="Button" parent="." unique_id=1593618470]
+offset_right = 8.0
+offset_bottom = 8.0
+text = "Spawn planes"
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

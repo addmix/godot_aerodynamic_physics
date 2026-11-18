@@ -25,6 +25,9 @@ func _has_gizmo(for_node_3d : Node3D) -> bool:
 func _redraw(gizmo : EditorNode3DGizmo) -> void:
 	gizmo.clear()
 	var aero_surface : AeroSurface3D = gizmo.get_node_3d()
+	#the config can be cleared in the inspector, which clears the gizmo
+	if not aero_surface.wing_config:
+		return
 	
 	var st := SurfaceTool.new()
 	

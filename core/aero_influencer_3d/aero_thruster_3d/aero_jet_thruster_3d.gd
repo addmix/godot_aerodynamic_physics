@@ -4,15 +4,36 @@ class_name AeroJetThruster3D
 
 @export_group("Simulation Parameters")
 ##Area (in meters squared) of the JetThrusterComponent's intake.
-@export var intake_area : float = 0.5
+@export var intake_area : float = 0.5:
+	set(x):
+		if intake_area == x: return
+		
+		intake_area = x
+		notify_flight_model_changed()
 ##Area (in meters squared) of the JetThrusterComponent's exhaust. (Unused)
 #@export var exit_area : float = 1.0
 ##Maxmimum air velocity the intake fan can create in static thrust, at max throttle.
-@export var intake_fan_max_velocity : float = 300.0
+@export var intake_fan_max_velocity : float = 300.0:
+	set(x):
+		if intake_fan_max_velocity == x: return
+		
+		intake_fan_max_velocity = x
+		notify_flight_model_changed()
 ##Velocity of exhaust gasses at max throttle.
-@export var exhaust_velocity : float = 1000
+@export var exhaust_velocity : float = 1000:
+	set(x):
+		if exhaust_velocity == x: return
+		
+		exhaust_velocity = x
+		notify_flight_model_changed()
 ##Maximum amount of fuel (in kilograms) the engine can burn per second.
-@export var max_fuel_flow : float = 0.1 #flow rate in kilograms per second
+##Flow rate in kilograms per second.
+@export var max_fuel_flow : float = 0.1:
+	set(x):
+		if max_fuel_flow == x: return
+		
+		max_fuel_flow = x
+		notify_flight_model_changed()
 ##Ratio of fuel volume before, and after combustion. (Unused)
 #@export var fuel_expansion_ratio : float = 10.0
 

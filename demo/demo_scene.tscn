@@ -97,10 +97,12 @@ var vehicles := {
 }
 
 var water_spawns : Array[String] = [
-	\"PBY Catalina\",
 	\"Boat\",
 	\"Sailboat\",
 	\"Floaty ball\",
+]
+var upwind_spawns : Array[String] = [
+	\"PBY Catalina\",
 ]
 
 func _ready() -> void:
@@ -122,10 +124,12 @@ func _on_button_pressed() -> void:
 	
 	$\"..\".add_child(vehicle_instance)
 	
+	vehicle_instance.global_transform = global_transform * vehicle_instance.transform
 	if vehicle_name in water_spawns:
 		vehicle_instance.global_transform = $WaterSpawn.global_transform * vehicle_instance.transform
-	else:
-		vehicle_instance.global_transform = global_transform * vehicle_instance.transform
+	if vehicle_name in upwind_spawns:
+		vehicle_instance.global_transform = $UpwindWaterSpawn.global_transform * vehicle_instance.transform
+	
 "
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_0xmma"]
@@ -226,7 +230,10 @@ text = "Press F5 to return to vehicle selection"
 horizontal_alignment = 1
 
 [node name="WaterSpawn" type="Marker3D" parent="VehicleSpawner" unique_id=2108868646]
-transform = Transform3D(-0.2588190451025207, 0, 0.9659258262890684, 0, 1, 0, -0.9659258262890684, 0, -0.2588190451025207, 0, -0.5, 991.9770866800802)
+transform = Transform3D(-0.25881904510252063, 0, 0.9659258262890684, 0, 1, 0, -0.9659258262890684, 0, -0.25881904510252063, 0, -0.5, 991.976999999999)
+
+[node name="UpwindWaterSpawn" type="Marker3D" parent="VehicleSpawner" unique_id=1759550898]
+transform = Transform3D(-1.6653345e-16, 0, -1.0000000000000002, 0, 1, 0, 1.0000000000000002, 0, -1.6653345e-16, 0, -0.5, 991.976999999999)
 
 [node name="AeroWaterAtmosphere3D" type="Area3D" parent="." unique_id=364326081]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 5580.072630985623)

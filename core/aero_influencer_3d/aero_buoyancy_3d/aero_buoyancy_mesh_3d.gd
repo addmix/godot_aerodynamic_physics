@@ -5,13 +5,26 @@ class_name AeroBuoyancyMesh3D
 @export_tool_button("Recalculate mesh data") var action = calculate_mesh_data
 @export var buoyancy_mesh : Mesh:
 	set(x):
+		if buoyancy_mesh == x: return
+		
 		buoyancy_mesh = x
 		calculate_mesh_data()
 		if buoyancy_mesh_debug:
 			buoyancy_mesh_debug.mesh = buoyancy_mesh
+		notify_flight_model_changed()
 
-@export var skin_friction : float = 0.02
-@export var aero_force_multiplier : float = 1.0
+@export var skin_friction : float = 0.02:
+	set(x):
+		if skin_friction == x: return
+		
+		skin_friction = x
+		notify_flight_model_changed()
+@export var aero_force_multiplier : float = 1.0:
+	set(x):
+		if aero_force_multiplier == x: return
+		
+		aero_force_multiplier = x
+		notify_flight_model_changed()
 
 @export var show_buoyancy_mesh_debug : bool = true
 var buoyancy_mesh_debug : MeshInstance3D
@@ -22,7 +35,7 @@ var vertex_buoyancy_coefficients : PackedVector3Array
 var vertex_sizes : PackedFloat64Array
 
 func _init() -> void:
-	super._init()
+	#super._init()
 	
 	buoyancy_mesh_debug = MeshInstance3D.new()
 	if buoyancy_mesh:
@@ -36,12 +49,14 @@ func _init() -> void:
 	buoyancy_mesh_debug.visible = false
 
 func _ready() -> void:
-	super._ready()
+	#super._ready()
 	
 	add_child(buoyancy_mesh_debug, INTERNAL_MODE_FRONT)
+	
+	update_debug_visibility()
 
-func update_debug_visibility(_show_debug : bool = false) -> void:
-	super.update_debug_visibility(_show_debug)
+func update_debug_visibility() -> void:
+	#super.update_debug_visibility(_show_debug)
 	
 	buoyancy_mesh_debug.visible = show_debug and show_buoyancy_mesh_debug
 
@@ -186,8 +201,8 @@ func calculate_mesh_data() -> void:
 #var cached_buoyancy_force : Vector3 = Vector3.ZERO
 #var cached_buoyancy_torque : Vector3 = Vector3.ZERO
 
-func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
-	var force_and_torque : PackedVector3Array = super._calculate_forces(substep_delta)
+func _calculate_forces(_substep_delta : float = 0.0) -> PackedVector3Array:
+	var force_and_torque : PackedVector3Array = PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 	
 	var force_sum : Vector3 = Vector3.ZERO
 	var torque_sum : Vector3 = Vector3.ZERO
@@ -195,9 +210,9 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	
 	
 	for vertex_index : int in vertex_positions.size():
-		var vertex_position : Vector3 =  relative_position + global_basis * vertex_positions[vertex_index]
-		var global_vertex_position : Vector3 = global_position + global_basis * vertex_positions[vertex_index]
-		var vertex_buoyancy_factor : Vector3 = global_basis * vertex_buoyancy_coefficients[vertex_index]
+		var vertex_position : Vector3 =  relative_position + get_cached_global_basis() * vertex_positions[vertex_index]
+		var global_vertex_position : Vector3 = get_cached_global_transform().origin + get_cached_global_basis() * vertex_positions[vertex_index]
+		var vertex_buoyancy_factor : Vector3 = get_cached_global_basis() * vertex_buoyancy_coefficients[vertex_index]
 		var vertex_radius : float = vertex_sizes[vertex_index]
 		
 		var vertex_density : float = aero_body.air_density 
@@ -233,10 +248,10 @@ func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
 	#buoyancy_force = force_sum
 	#center_of_pressure = force_position_sum
 	
-	_current_force = force_sum
-	_current_torque = torque_sum#(relative_position + force_position_sum).cross(force_sum)
+	var force := force_sum
+	var torque := torque_sum#(relative_position + force_position_sum).cross(force_sum)
 	
-	return PackedVector3Array([force_and_torque[0] + _current_force, force_and_torque[1] + _current_torque])
+	return PackedVector3Array([force_and_torque[0] + force, force_and_torque[1] + torque])
 
 func calculate_mesh_buoyancy(vertex_position : Vector3, vertex_buoyancy_factor : Vector3, vertex_density : float, distance_to_surface : float) -> PackedVector3Array:
 	#early return when density == 0.0. Because there will be no buoyant force.

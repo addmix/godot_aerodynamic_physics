@@ -1,15 +1,22 @@
 # From https://github.com/addmix/godot_utils
 
-const E := 2.718281828459045
+## Euler's number (not to be confused with Euler's constant)
+const E := 2.718281828459045235360287471352
 
 
 
-#type-less functions
+# type-less functions
 
+## Returns the derivative (rate of change) of the provided values, given the current value, previous value, and the timestep between them.
+static func derivative_of(current : Variant, previous : Variant, delta : float) -> Variant:
+	return (current - previous) / delta
 
-
+## An alternative syntax for ternary if/else.
 static func toggle(condition : bool, _true : Variant, _false : Variant) -> Variant:
-	return float(condition) * _true + float(!condition) * _false
+	if condition:
+		return _true
+	else:
+		return _false
 
 
 
@@ -22,20 +29,27 @@ static func bias(x : float, bias : float) -> float:
 	var k : float = f * f * f
 	return (x * k) / (x * k - x + 1)
 
+## Similar to [code]@GlobalScope.ease()[/code], except it works for negative numbers. The sign of the input will be the same as the sign of the output.[br]
 static func improved_ease(value : float, curve : float = 1.0) -> float:
 	return ease(abs(value), curve) * sign(value)
 
+
 #branchlessly toggles a float between two values given a condition
+## Type-safe version of [code]toggle()[/code]
 static func float_toggle(condition : bool, _true : float, _false : float) -> float:
 	return float(condition) * _true + float(!condition) * _false
 
+## This is a logarithm function that allows a base to be specified. [br]
+## [code]@GlobalScope.log()[/code] returns the natural logarithm of the given number. (Logarithm of base e, approx 2.718. See: [code]E[/code])
 static func log_with_base(value : float, base : float) -> float:
 	return log(value) / log(base)
 
+
+# TEST: not sure if this math is correct.
 static func mix(a : float, b : float, amount : float) -> float:
 	return (a - amount) * a + amount * b
 
-#deprecated, use GDScript global move_toward() function
+## DEPRECATED: Use [code]@GlobalScope.move_toward()[/code]
 static func move_to(position : float, target : float, speed : float = 1.0) -> float:
 	var direction : float = sign(target - position)
 	var new_position = position + direction * speed
@@ -43,11 +57,20 @@ static func move_to(position : float, target : float, speed : float = 1.0) -> fl
 
 	return float_toggle(direction == new_direction, new_position, target)
 
+## Checks if [code]number[/code] can be evenly divided by [code]multiple[/code], with a [code]tolerance[/code] that allows for slight inaccuracies.
+# TODO: Should tolerance be used as a percentage tolerance, rather than a flat number?
+static func number_is_divisible_with_tolerance(number : float, multiple : float, tolerance : float) -> bool:
+	var multiple_of_32 = number / multiple 
+	var absolute_difference : float = abs(multiple_of_32 - round(multiple_of_32)) * multiple
+	return absolute_difference <= tolerance or is_equal_approx(absolute_difference, tolerance)
+
 #smooth minimum
+# https://iquilezles.org/articles/smin/
 static func polynomial_smin(a : float, b : float, k : float =0.1) -> float:
 	var h = clamp(0.5 + 0.5 * (a - b) / k, 0.0, 1.0)
 	return mix(a, b, h) - k * h * (1.0 - h)
 
+## Sigmoid easing function.
 static func sigmoid(x : float, e : float = E) -> float:
 	return pow(e, x) / pow(e, x) + 1.0
 
@@ -119,7 +142,7 @@ static func multiply(a : Array, b : Array) -> Array:
 				matrix[i][j] = matrix[i][j] + a[i][k] * b[k][j]
 	return matrix
 
-#plane intersection function
+#plane intersection fucntion
 #http://tbirdal.blogspot.com/2016/10/a-better-approach-to-plane-intersection.html
 static func ray_plane_intersection(p1 : Vector3, n1 : Vector3, p2 : Vector3, n2 : Vector3, p0 : Vector3) -> Array[Vector3]:
 

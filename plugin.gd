@@ -21,21 +21,33 @@ const surface_gizmo = preload("./core/gizmos/aero_surface_3d_gizmo.gd")
 var surface_gizmo_instance = surface_gizmo.new()
 const propeller_gizmo = preload("./core/gizmos/aero_propeller_3d_gizmo.gd")
 var propeller_gizmo_instance = propeller_gizmo.new()
+const wind_tunnel = preload("./wind_tunnel/wind_tunnel.tscn")
+var wind_tunnel_instance = wind_tunnel.instantiate()
+var wind_tunnel_dock : EditorDock = create_wind_tunnel_dock()
+func create_wind_tunnel_dock() -> EditorDock:
+	var dock := EditorDock.new()
+	dock.add_child(wind_tunnel_instance)
+	dock.title = "Wind Tunnel"
+	dock.dock_icon = aerobody3d_icon
+	dock.available_layouts = EditorDock.DOCK_LAYOUT_VERTICAL | EditorDock.DOCK_LAYOUT_FLOATING
+	dock.default_slot = EditorDock.DOCK_SLOT_RIGHT_BL
+	return dock
 
 #nodes
-const aero_body_3d = preload("./core/aero_body_3d.gd")
-const aero_influencer_3d = preload("./core/aero_influencer_3d/aero_influencer_3d.gd")
+#const aero_body_3d = preload("./core/aero_body_3d.gd")
+#const aero_influencer_3d = preload("./core/aero_influencer_3d/aero_influencer_3d.gd")
 const aero_drag_influencer_3d = preload("./core/aero_influencer_3d/drag_influencer/aero_drag_influencer.gd")
 const aero_mover_3d = preload("./core/aero_influencer_3d/aero_mover_3d/aero_mover_3d.gd")
 const aero_propeller_3d = preload("./core/aero_influencer_3d/aero_mover_3d/aero_propeller_3d.gd")
 const aero_cyclic_propeller_3d = preload("./core/aero_influencer_3d/aero_mover_3d/aero_cyclic_propeller_3d.gd")
-const aero_surface_3d = preload("./core/aero_influencer_3d/aero_surface_3d/aero_surface_3d.gd")
-const aero_surface_config = preload("./core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd")
-const manual_aero_surface_3d = preload("./core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd")
-const manual_aero_surface_config = preload("./core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_config.gd")
+#const aero_surface_3d = preload("./core/aero_influencer_3d/aero_surface_3d/aero_surface_3d.gd")
+#const aero_surface_config = preload("./core/aero_influencer_3d/aero_surface_3d/aero_surface_config.gd")
+#const manual_aero_surface_3d = preload("./core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_3d.gd")
+#const manual_aero_surface_config = preload("./core/aero_influencer_3d/aero_surface_3d/manual_aero_surface_3d/manual_aero_surface_config.gd")
 const aero_thruster_3d = preload("./core/aero_influencer_3d/aero_thruster_3d/aero_thruster_3d.gd")
 const aero_jet_thruster_3d = preload("./core/aero_influencer_3d/aero_thruster_3d/aero_jet_thruster_3d.gd")
 const flight_assist = preload("./core/flight_assist.gd")
+
 
 func _enter_tree():
 	ifndef("physics/aerodynamics/substeps", 1)
@@ -43,25 +55,33 @@ func _enter_tree():
 	if ProjectSettings.get_setting("layer_names/3d_physics/layer_15") == "":
 		ProjectSettings.set_setting("layer_names/3d_physics/layer_15", "Atmosphere Areas")
 	
-	add_autoload_singleton("AeroUnits", path + "/core/singletons/aero_units.gd")
+	#add_autoload_singleton("AeroUnits", path + "/core/singletons/aero_units.gd")
 	add_node_3d_gizmo_plugin(surface_gizmo_instance)
 	add_node_3d_gizmo_plugin(propeller_gizmo_instance)
+	add_dock(wind_tunnel_dock)
+	scene_changed.connect(wind_tunnel_instance._on_editor_scene_changed)
 	
-	add_custom_type("AeroBody3D", "VehicleBody3D", aero_body_3d, aerobody3d_icon)
-	add_custom_type("AeroInfluencer3D", "Node3D", aero_influencer_3d, aeroinfluencer3d_icon)
+	#add_custom_type("AeroBody3D", "VehicleBody3D", aero_body_3d, aerobody3d_icon)
+	#add_custom_type("AeroInfluencer3D", "Node3D", aero_influencer_3d, aeroinfluencer3d_icon)
 	add_custom_type("AeroDragInfluencer3D", "Node3D", aero_drag_influencer_3d, aeroinfluencer3d_icon)
 	add_custom_type("AeroMover3D", "Node3D", aero_mover_3d, aeroinfluencer3d_icon)
 	add_custom_type("AeroPropeller3D", "Node3D", aero_propeller_3d, aeropropeller3d_icon)
 	add_custom_type("AeroCyclicPropeller3D", "Node3D", aero_cyclic_propeller_3d, aeropropeller3d_icon)
-	add_custom_type("AeroSurface3D", "Node3D", aero_surface_3d, aerosurface3d_icon)
-	add_custom_type("AeroSurfaceConfig", "Resource", aero_surface_config, object_icon)
-	add_custom_type("ManualAeroSurface3D", "Node3D", manual_aero_surface_3d, aerosurface3d_icon)
-	add_custom_type("ManualAeroSurfaceConfig", "Resource", manual_aero_surface_config, object_icon)
+	#add_custom_type("AeroSurface3D", "Node3D", aero_surface_3d, aerosurface3d_icon)
+	#add_custom_type("AeroSurfaceConfig", "Resource", aero_surface_config, object_icon)
+	#add_custom_type("ManualAeroSurface3D", "Node3D", manual_aero_surface_3d, aerosurface3d_icon)
+	#add_custom_type("ManualAeroSurfaceConfig", "Resource", manual_aero_surface_config, object_icon)
 	add_custom_type("AeroThruster3D", "Node3D", aero_thruster_3d, aerothruster3d_icon)
 	add_custom_type("AeroJetThruster3D", "Node3D", aero_jet_thruster_3d, aerothruster3d_icon)
 	add_custom_type("FlightAssist", "Resource", flight_assist, object_icon)
 
 func _exit_tree():
+	remove_node_3d_gizmo_plugin(surface_gizmo_instance)
+	remove_node_3d_gizmo_plugin(propeller_gizmo_instance)
+	scene_changed.disconnect(wind_tunnel_instance._on_editor_scene_changed)
+	remove_dock(wind_tunnel_dock)
+	wind_tunnel_dock.queue_free()
+	
 	remove_custom_type("AeroBody3D")
 	remove_custom_type("AeroInfluencer3D")
 	remove_custom_type("AeroMover3D")
@@ -75,9 +95,7 @@ func _exit_tree():
 	remove_custom_type("AeroJetThruster3D")
 	remove_custom_type("FlightAssist")
 	
-	remove_autoload_singleton("AeroUnits")
-	remove_node_3d_gizmo_plugin(surface_gizmo_instance)
-	remove_node_3d_gizmo_plugin(propeller_gizmo_instance)
+	#remove_autoload_singleton("AeroUnits")
 
 static func ifndef(setting : String, default_value : Variant) -> Variant:
 	if not ProjectSettings.has_setting(setting):

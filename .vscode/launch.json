@@ -1,0 +1,78 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  // "program" resolves via gap.godotEditorDoubleBin / gap.godotEditorSingleBin in .vscode/settings.json
+
+  // WINDOWS + MSVC: change each "type" below from "cppdbg" to "cppvsdbg".
+  // WINDOWS + MinGW: keep "cppdbg" and add "MIMode": "gdb" and "miDebuggerPath": "<path to gdb.exe>".
+  "configurations": [
+    {
+      "name": "editor (double)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${config:gap.godotEditorDoubleBin}",
+      "args": [
+        "--editor",
+        //"--debug",
+        //"--verbose",
+        "--path",
+        "../.."
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart",
+      "preLaunchTask": "build (double)"
+    },
+    {
+      "name": "project (double)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${config:gap.godotEditorDoubleBin}",
+      "args": [
+        //"--debug",
+        //"--verbose",
+        "--path",
+        "../.."
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart",
+      "preLaunchTask": "build (double)"
+    },
+    {
+      "name": "editor",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${config:gap.godotEditorSingleBin}",
+      "args": [
+        "--editor",
+        //"--debug",
+        //"--verbose",
+        "--path",
+        "../.."
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart",
+      "preLaunchTask": "build (single)"
+    },
+    {
+      "name": "project",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${config:gap.godotEditorSingleBin}",
+      "args": [
+        //"--debug",
+        //"--verbose",
+        "--path",
+        "../.."
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart",
+      "preLaunchTask": "build (single)"
+    }
+  ]
+}

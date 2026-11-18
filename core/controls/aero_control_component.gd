@@ -6,13 +6,23 @@ class_name AeroControlComponent
 
 ## Include for the AeroMathUtils library.
 const AeroMathUtils = preload("../../utils/math_utils.gd")
+const AeroNodeUtils = preload("../../utils/node_utils.gd")
 
 ## Reference to the parent [AeroBody3D].
-@onready var aero_body : AeroBody3D = get_parent()
+@onready var aero_body : AeroBody3D = get_parent() if get_parent() is AeroBody3D else null
 ## FlightAssist resource used to configure flight assist features.
 @export var flight_assist : FlightAssist
 ## Control configuration resource used to define control axes and key bindings.
 @export var control_config : AeroControlConfig = AeroControlConfig.new()
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings := PackedStringArray()
+	#The AeroBody3D only uses the first direct child of this type, so extra components are ignored.
+	if get_parent() is AeroBody3D:
+		var first_component : AeroControlComponent = AeroNodeUtils.get_first_child_of_type(get_parent(), AeroControlComponent)
+		if first_component and first_component != self:
+			warnings.append("Multiple AeroControlComponents found on the same AeroBody3D. Only the first one is used.")
+	return warnings
 
 func _ready() -> void:
 	#resource_local_to_scene impacts editability in some cases, so we manually duplicate the flight_assist resource.
@@ -25,7 +35,7 @@ func _ready() -> void:
 			control_config = control_config.duplicate(true)
 
 func _physics_process(delta : float) -> void:
-	if Engine.is_editor_hint():
+	if Engine.is_editor_hint() or not aero_body:
 		return
 	
 	control_config.update(delta)

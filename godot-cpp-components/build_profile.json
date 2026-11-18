@@ -1,0 +1,18 @@
+{
+  "enabled_classes": [
+    "ClassDB",
+    "OS",
+    "UtilityFunctions",
+    "Node3D",
+    "VehicleBody3D",
+    "Area3D",
+    "PhysicsServer3D",
+    "PhysicsDirectBodyState3D",
+    "ProjectSettings",
+    "Engine",
+    "ResourceLoader",
+    "Script",
+    "MeshInstance3D",
+    "Curve"
+  ]
+}

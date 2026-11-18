@@ -4,7 +4,12 @@ class_name AeroThruster3D
 
 
 @export_group("Thrust Control")
-@export var throttle_control_config := create_throttle_control_config()
+@export var throttle_control_config := create_throttle_control_config():
+	set(x):
+		if throttle_control_config == x: return
+		
+		throttle_control_config = x
+		notify_flight_model_changed()
 func create_throttle_control_config() -> AeroInfluencerControlConfig:
 	var config := AeroInfluencerControlConfig.new()
 	config.use_separate_minmax = true
@@ -16,25 +21,38 @@ func create_throttle_control_config() -> AeroInfluencerControlConfig:
 	return config
 
 ##Throttle value used to simulate the JetThrusterComponent
-@export var throttle : Vector3 = Vector3.ZERO
+@export var throttle : Vector3 = Vector3.ZERO:
+	set(x):
+		if throttle == x: return
+		
+		throttle = x
+		notify_flight_model_changed()
 
 @export_group("Simulation Parameters")
-@export var max_thrust_force : float = 10000.0
+@export var max_thrust_force : float = 10000.0:
+	set(x):
+		if max_thrust_force == x: return
+		
+		max_thrust_force = x
+		notify_flight_model_changed()
 
 func _ready():
-	super._ready()
+	#super._ready()
 	if not Engine.is_editor_hint():
 		if throttle_control_config:
 			throttle_control_config = throttle_control_config.duplicate(true)
 
 func _calculate_forces(substep_delta : float = 0.0) -> PackedVector3Array:
-	var force_and_torque : PackedVector3Array = super._calculate_forces(substep_delta)
+	var force_and_torque : PackedVector3Array = PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 	
-	_current_force = global_transform.basis * get_thrust_force()
-	_current_torque = relative_position.cross(_current_force)
+	var force := get_cached_global_basis() * get_thrust_force()
+	var torque := relative_position.cross(force)
 	
-	force_and_torque[0] += _current_force
-	force_and_torque[1] += _current_torque
+	#_current_force = get_cached_global_basis() * get_thrust_force()
+	#_current_torque = relative_position.cross(_current_force)
+	
+	force_and_torque[0] += force
+	force_and_torque[1] += torque
 	
 	return force_and_torque
 
@@ -45,9 +63,7 @@ func _update_control_transform(substep_delta : float) -> void:
 		throttle = throttle_control_config.update(self, substep_delta)
 
 func get_thrust_force() -> Vector3:
-	if Engine.is_editor_hint() and throttle_control_config:
-		return max_thrust_force * throttle_control_config.min_value
 	return max_thrust_force * throttle
 
 func is_overriding_body_sleep() -> bool:
-	return throttle.length_squared() > 0.0 or super()
+	return throttle.length_squared() > 0.0# or super()

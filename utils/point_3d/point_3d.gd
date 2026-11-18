@@ -4,19 +4,25 @@
 extends MeshInstance3D
 class_name AeroDebugPoint3D
 
+## Creates a point to visualize a Vector3. Displayed value is relative to the parent node's local space. [br]
+
+## Color the Point3D will be displayed as.
 @export var color := Color(1, 1, 1):
 	set(x):
 		color = x
 		material.set_shader_parameter("_color", color)
+## Width of the Vector3D at the thickest point.
 @export var width := 0.1:
 	set(x):
 		width = x
 		material.set_shader_parameter("_width", width)
+## If enabled, the Vector3D will have a checkered pattern of black and [code]color[/code].
 @export var checker := true:
 	set(x):
 		checker = x
 		material.set_shader_parameter("checker_pattern", checker)
 
+## Internal variable. Material is created during _init.
 var material := ShaderMaterial.new()
 
 var _mesh : Array[Vector3] = [Vector3(0, -1, 0), Vector3(-1, 0, 0), Vector3(0, 1, 0), Vector3(1, 0, 0)]

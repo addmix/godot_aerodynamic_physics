@@ -4,39 +4,48 @@ class_name aero_PID
 
 const aeroMathUtils = preload("../utils/math_utils.gd")
 
-##Proportional error response multiplier. This is proportional to the error.
-@export var p : float = 1.0
-##Integral error response multiplier. This continually grows if error is not reduced.
-@export var i : float = 0.2
-##Derivative error response multiplier. This resists changes in error value.
-@export var d : float = 0.0
+## A Resource class used to calculate PID control responses. [br]
+## Resources behave as shared instances. For most cases, be sure that PID resources have [code]local_to_scene[/code] set to true, or creating and assigning a duplicate (example: inside _init() or _ready() [code]pid = pid.duplicate()[/code])
+
+## Proportional gain. (Applies a factor based on the error magnitude.)
+@export var p : float = 0.2
+## Integral gain. (Applies a factor based on the sum of the error over time.)
+@export var i : float = 0.05
+## Derivative gain. (Applies a factor based on the measured velocity of the error.)
+@export var d : float = 1.0
 
 @export_category("Clamp Integral")
-##If enabled, the integral error sum will be clamped between [code]min_integral[/code] and [code]max_integral[/code]
+## If true, [code]_integral_error[/code] is clamped between [code]min_integral[/code] and [code]max_integral[/code]
 @export var clamp_integral : bool = false
+## The minimum value used when [code]clamp_integral[/code] is enabled.
 @export var min_integral : float = -1
+## The maximum value used when [code]clamp_integral[/code] is enabled.
 @export var max_integral : float = 1
 @export_category("")
 
-##Output command of this PID controller. This value is returned by [code]update()[/code]
+## The output value of the PID algorithm. This value is also returned by [code]update()[/code]. [br]
 var output : float = 0
 
+## The error measured during the last call to [code]update()[/code]
 var _last_error : float
+## Sum of error over time. (see: [code]clamp_integral[/code])
 var _integral_error : float
 
+## Proportional output component of the PID. Equal to [code]p * error[/code]
 var proportional_output : float = 0.0
+## Integral output component of the PID. Equal to [code]i * _integral_error[/code]
 var integral_output : float = 0.0
+## Derivative output component of the PID. Equal to [code]d * error velocity[/code]
 var derivative_output : float = 0.0
 
-func _init(_p : float = p, _i : float = i, _d : float = d, _clamp_integral : bool = clamp_integral, _min_integral : float = min_integral, _max_integral : float = max_integral) -> void:
+func _init(_p : float = p, _i : float = i, _d : float = d) -> void:
 	self.p = _p
 	self.i = _i
 	self.d = _d
-	self.clamp_integral = _clamp_integral
-	self.min_integral = _min_integral
-	self.max_integral = _max_integral
 
-##Function to update the PID.
+## Updates the PID and returns a corrective input. [br]
+## This does not have to be called every frame, however [code]delta[/code] must be the time elapsed since the last call. [br]
+## [code]error[/code] is the error that is trying to be corrected. 
 func update(delta : float, error : float) -> float:
 	var derivative : float = (error - _last_error) / delta
 	_integral_error += error * delta

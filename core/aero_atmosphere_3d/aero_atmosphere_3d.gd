@@ -20,14 +20,15 @@ func _init() -> void:
 	
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
+
 #this isn't a great solution, but it's easier than the alternative.
 func _on_body_entered(body : PhysicsBody3D) -> void:
 	if body is AeroBody3D:
-		body.atmosphere_areas.append(self)
+		body.add_aero_atmosphere(self)
 #this isn't a great solution, but it's easier than the alternative.
 func _on_body_exited(body : PhysicsBody3D) -> void:
 	if body is AeroBody3D:
-		body.atmosphere_areas.erase(self)
+		body.remove_aero_atmosphere(self)
 
 func is_inside_atmosphere(_position : Vector3) -> bool:
 	return get_distance_to_surface(_position) < 0.0

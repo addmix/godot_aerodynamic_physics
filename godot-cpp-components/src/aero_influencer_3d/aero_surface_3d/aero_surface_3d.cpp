@@ -43,17 +43,18 @@ ForceAndTorque AeroSurface3D::calculate_forces(double substep_delta) {
     const Vector3 normal = global_basis.get_column(1);
     const Vector3 chord = global_basis.get_column(2);
     
-    angle_of_attack = Math::atan2(get_drag_direction().dot(normal), get_drag_direction().dot(chord));
+    const Vector3 air = get_drag_direction();
+    const real_t along_chord = air.dot(chord);
+    const real_t along_normal = air.dot(normal);
+    angle_of_attack = Math::atan2(along_normal, along_chord);
+    
     sweep_angle = global_basis.get_column(0).angle_to(-get_world_air_velocity()) - (Math::PI / 2.0);
     
     area = wing_config->get_area();
     projected_wing_area = Math::abs(area * sin(angle_of_attack));
     
-    //this is to prevent chaotic lift direction when the surface's normal is nearly parallel with the airflow.
-    const Vector3 planar = normal * get_drag_direction().dot(chord) - chord * get_drag_direction().dot(normal);
-    Vector3 lift = normal - get_drag_direction() * normal.dot(get_drag_direction());
-    if (lift.dot(planar) < 0.0) lift = -lift;
-    lift_direction = lift.length_squared() > 1e-4 ? lift.normalized() : planar.normalized();
+    const Vector3 lift = normal * along_chord - chord * along_normal;
+    lift_direction = lift.length_squared() > 1e-4 ? lift.normalized() : normal;
     
     aero_reference = get_dynamic_pressure() * area;
     

@@ -22,6 +22,7 @@ d = 0.01
 
 [sub_resource type="Resource" id="Resource_04mii"]
 script = ExtResource("3_2v3d0")
+p = 1.0
 i = 0.05
 d = 0.1
 
@@ -35,26 +36,31 @@ d = 4.0
 script = ExtResource("3_2v3d0")
 p = 0.8
 i = 0.0
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_vlo1y"]
 script = ExtResource("3_2v3d0")
 p = 25.0
 i = 0.0
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_cujy0"]
 script = ExtResource("3_2v3d0")
 p = 10.0
 i = 0.0
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_hfop5"]
 script = ExtResource("3_2v3d0")
 p = 10.0
 i = 0.0
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_b7dno"]
 script = ExtResource("3_2v3d0")
 p = 0.03
 i = 0.02
+d = 0.0
 clamp_integral = true
 min_integral = -0.4
 max_integral = 0.4
@@ -63,11 +69,13 @@ max_integral = 0.4
 script = ExtResource("3_2v3d0")
 p = 0.0
 i = 0.4
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_1lpet"]
 script = ExtResource("3_2v3d0")
 p = 0.2
 i = 0.02
+d = 0.0
 clamp_integral = true
 min_integral = -0.1
 max_integral = 0.1
@@ -75,6 +83,7 @@ max_integral = 0.1
 [sub_resource type="Resource" id="Resource_fitu8"]
 script = ExtResource("4_1r57k")
 max_angular_rates = Vector3(8, 4, 8)
+feed_forward = Vector3(0, 0, 0)
 pitch_assist_pid = SubResource("Resource_b7dno")
 yaw_assist_pid = SubResource("Resource_1lpet")
 roll_assist_pid = SubResource("Resource_b7dno")

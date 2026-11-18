@@ -24,35 +24,45 @@ d = 0.01
 
 [sub_resource type="Resource" id="Resource_b4ni8"]
 script = ExtResource("3_egaj7")
+p = 1.0
 i = 0.05
 d = 0.1
 
 [sub_resource type="Resource" id="Resource_6g6ll"]
 script = ExtResource("3_egaj7")
+p = 1.0
 i = 0.0
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_441jo"]
 script = ExtResource("3_egaj7")
+p = 1.0
 i = 0.0
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_h0ct5"]
 script = ExtResource("3_egaj7")
+p = 1.0
 i = 0.0
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_7qi55"]
 script = ExtResource("3_egaj7")
 p = 10.0
 i = 0.0
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_fr6c6"]
 script = ExtResource("3_egaj7")
 p = 10.0
 i = 0.0
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_sql4j"]
 script = ExtResource("3_egaj7")
 p = 0.05
 i = 5.0
+d = 0.0
 clamp_integral = true
 min_integral = -0.2
 max_integral = 0.2
@@ -61,16 +71,19 @@ max_integral = 0.2
 script = ExtResource("3_egaj7")
 p = 0.0
 i = 0.0
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_bjwcm"]
 script = ExtResource("3_egaj7")
 p = 0.0
 i = 0.4
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_j63ru"]
 script = ExtResource("3_egaj7")
 p = 0.05
 i = 5.0
+d = 0.0
 clamp_integral = true
 min_integral = -0.2
 max_integral = 0.2
@@ -78,6 +91,7 @@ max_integral = 0.2
 [sub_resource type="Resource" id="Resource_p8htk"]
 script = ExtResource("4_nxse0")
 max_angular_rates = Vector3(1, 1, 1)
+feed_forward = Vector3(0, 0, 0)
 pitch_assist_pid = SubResource("Resource_sql4j")
 yaw_assist_pid = SubResource("Resource_j63ru")
 roll_assist_pid = SubResource("Resource_cvfk0")

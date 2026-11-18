@@ -27,6 +27,7 @@ d = 0.01
 
 [sub_resource type="Resource" id="Resource_eo8u4"]
 script = ExtResource("3_h0te8")
+p = 1.0
 i = 0.05
 d = 0.1
 
@@ -34,37 +35,46 @@ d = 0.1
 script = ExtResource("3_h0te8")
 p = 2.0
 i = 0.0
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_xyrqe"]
 script = ExtResource("3_h0te8")
 p = 0.01
 i = 0.0
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_kw2nn"]
 script = ExtResource("3_h0te8")
+p = 1.0
 i = 0.0
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_0euej"]
 script = ExtResource("3_h0te8")
 p = 10.0
 i = 0.0
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_nb4wf"]
 script = ExtResource("3_h0te8")
 p = 10.0
 i = 0.0
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_svion"]
 script = ExtResource("3_h0te8")
 p = 2.0
 i = 0.0
+d = 0.0
 clamp_integral = true
 min_integral = -0.3
 max_integral = 0.3
 
 [sub_resource type="Resource" id="Resource_cn0tc"]
 script = ExtResource("3_h0te8")
+p = 1.0
 i = 0.0
+d = 0.0
 clamp_integral = true
 min_integral = -0.2
 max_integral = 0.2
@@ -73,14 +83,17 @@ max_integral = 0.2
 script = ExtResource("3_h0te8")
 p = 0.0
 i = 0.4
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_7ibqc"]
 script = ExtResource("3_h0te8")
 p = 2.0
 i = 0.0
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_utkc8"]
 script = ExtResource("4_jduiy")
+feed_forward = Vector3(0, 0, 0)
 enable_flight_assist = false
 max_angular_rates = Vector3(2, 1, 4)
 pitch_assist_pid = SubResource("Resource_svion")

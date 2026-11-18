@@ -22,6 +22,7 @@ d = 0.01
 
 [sub_resource type="Resource" id="Resource_rsy8r"]
 script = ExtResource("3_hyo05")
+p = 1.0
 i = 0.05
 d = 0.1
 
@@ -35,26 +36,31 @@ d = 4.0
 script = ExtResource("3_hyo05")
 p = 0.8
 i = 0.0
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_wruso"]
 script = ExtResource("3_hyo05")
 p = 25.0
 i = 0.0
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_x3iit"]
 script = ExtResource("3_hyo05")
 p = 10.0
 i = 0.0
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_n4pj1"]
 script = ExtResource("3_hyo05")
 p = 10.0
 i = 0.0
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_piqeh"]
 script = ExtResource("3_hyo05")
 p = 0.5
 i = 5.0
+d = 0.0
 clamp_integral = true
 min_integral = -0.1
 max_integral = 0.1
@@ -63,18 +69,23 @@ max_integral = 0.1
 script = ExtResource("3_hyo05")
 p = 0.2
 i = 0.0
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_1qfso"]
 script = ExtResource("3_hyo05")
 p = 0.0
 i = 0.4
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_bvmql"]
 script = ExtResource("3_hyo05")
+p = 1.0
 i = 0.0
+d = 0.0
 
 [sub_resource type="Resource" id="Resource_qpum4"]
 script = ExtResource("4_a0mgf")
+feed_forward = Vector3(0, 0, 0)
 pitch_assist_pid = SubResource("Resource_piqeh")
 yaw_assist_pid = SubResource("Resource_bvmql")
 roll_assist_pid = SubResource("Resource_t6xgy")

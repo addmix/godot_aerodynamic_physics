@@ -30,6 +30,7 @@ func create_wind_tunnel_dock() -> EditorDock:
 	dock.title = "Wind Tunnel"
 	dock.dock_icon = aerobody3d_icon
 	dock.available_layouts = EditorDock.DOCK_LAYOUT_VERTICAL | EditorDock.DOCK_LAYOUT_FLOATING
+	dock.default_slot = EditorDock.DOCK_SLOT_RIGHT_BL
 	return dock
 
 #nodes

@@ -1,7 +1,8 @@
 @tool
-extends VBoxContainer
+extends Control
 ##The wind tunnel dock: the panels, the settings they are flown at, and the routing that decides which aircraft is being
-##looked at. the sweeps live at the bottom of this script, and know nothing of graphs, labels or the editor.
+##looked at. the sweeps live in aircraft_sweeps.gd, and are flown on a worker thread against a copy of the aircraft so the
+##editor is left free while they run.
 
 #the color each curve is drawn in, in the order the sweeps reach for them
 const CURVE_COLORS := [
@@ -10,18 +11,25 @@ const CURVE_COLORS := [
 ]
 #what a field says when there is nothing to report
 const NO_DATA := "n/a"
+#the sweeps themselves, which the dock runs on a worker thread
+const AircraftSweeps = preload("res://addons/godot_aerodynamic_physics/wind_tunnel/aircraft_sweeps.gd")
+#the air the sweeps fall back to while the atmosphere tables have nothing to say
+const SEA_LEVEL_DENSITY := 1.225
+const SEA_LEVEL_PRESSURE := 101325.0
 
 @export_group("Sweep")
 ##Airspeed every point of a sweep is flown at.
 @export var test_speed : float = 250:
 	set(value):
 		test_speed = value
+		static_stale = true
 		queue_recalculate()
 
 ##Points simulated in each sweep. Drop it for a quick look at the shape of a curve, raise it to smooth the curves out.
 @export var sweep_datapoints : int = 96:
 	set(value):
 		sweep_datapoints = maxi(value, 2)
+		static_stale = true
 		queue_recalculate()
 
 @export_group("Reference dimensions")
@@ -37,13 +45,16 @@ const NO_DATA := "n/a"
 @export var altitude : float = 5000.0:
 	set(value):
 		altitude = value
+		static_stale = true
 		turn_performance_stale = true
 		queue_recalculate()
 
-##The load factor the airframe is cleared for, which caps the turn rate the wing could otherwise reach.
+##The load factor the airframe is cleared for, which caps the turn rate the wing could otherwise reach. Naming an aircraft
+##takes it from that aircraft's flight assist g limiter, to the next whole g above it.
 @export var load_limit : float = 9.0:
 	set(value):
 		load_limit = value
+		if is_node_ready(): %LoadLimit.value = value
 		turn_performance_stale = true
 		queue_recalculate()
 
@@ -72,8 +83,16 @@ var aerobody : AeroBody3D = null:
 		#nothing is redrawn for an aircraft that is not there: the last one's results stay on screen, so they can still be
 		#read while another scene is open
 		if aerobody:
+			pull_load_limit()
 			queue_flight_model_changed()
 			aerobody.flight_model_changed.connect(queue_flight_model_changed)
+
+#the load the airframe is cleared for is the aircraft's own: the next whole g above what its flight assist limits it to
+func pull_load_limit() -> void:
+	for child : Node in aerobody.get_children():
+		if child is AeroControlComponent and child.flight_assist:
+			load_limit = floorf(child.flight_assist.g_limit) + 1.0
+			return
 
 
 #virtuals
@@ -81,6 +100,20 @@ var aerobody : AeroBody3D = null:
 func _ready() -> void:
 	resized.connect(fit_graph_columns)
 	fit_graph_columns()
+	
+	#an aircraft named before the dock was built has already set the load limit, which goes on display now the field is there
+	%LoadLimit.value = load_limit
+	
+	#the sweeps' copy of the aircraft lives in a viewport of its own: it is in a tree, so it initializes exactly as it does in a
+	#scene, but it never draws and its world is its own
+	simulation_view = SubViewport.new()
+	simulation_view.own_world_3d = true
+	simulation_view.render_target_update_mode = SubViewport.UPDATE_DISABLED
+	add_child(simulation_view)
+	
+	#a tab that was not being looked at is flown when it is opened, and a dock that was closed catches up when it reopens
+	%Tabs.tab_changed.connect(queue_recalculate.unbind(1))
+	visibility_changed.connect(queue_recalculate)
 	
 	#the performance chart carries a family of lines, so its readout reports the one under the cursor rather than every line
 	#crossing it, and says what the value it reports is measured in
@@ -142,16 +175,26 @@ func fit_graph_columns() -> void:
 
 #recalculating
 
-#set while a recalculation is waiting for the next idle frame, which is what keeps a burst of changes to one sweep
+#the tabs a sweep is flown for: the static analysis, and the turn performance
+const STATIC_TAB := 0
+const PERFORMANCE_TAB := 2
+#set while a recalculation is waiting for the end of the frame, which is what folds a burst of changes into one sweep
 var recalculation_queued := false
+#a sweep that lands sooner than this never puts the sheet up, so quick recalculations do not flash it
+const BUSY_SHEET_DELAY := 300
+#when the sweep in flight started, in milliseconds
+var busy_since_msec := 0
+
+#set when something the static analysis is flown from changed: the aircraft, the air, the speed or the sample count
+var static_stale := true
 
 #set when something the turn performance is flown from changed: the aircraft, its configuration or the air the dock is
 #declared to fly in. the settings that only move the other graphs leave it alone, so a change of test speed or datapoint
 #count does not fly the turn sweep again
 var turn_performance_stale := true
 
-#asks for a recalculation on the next idle frame, so dragging a spinbox or moving a wing re-runs the sweeps once the
-#changes settle instead of once per change
+#asks for a recalculation at the end of the frame, so a burst of changes within one frame starts one sweep. the sweeps fly
+#on a worker, so the dock keeps up with the aircraft while it is being edited instead of waiting for the edits to settle
 func queue_recalculate() -> void:
 	#the exported setters also run while the dock is still being built, where there is nothing to report on yet
 	if not is_inside_tree(): return
@@ -160,10 +203,49 @@ func queue_recalculate() -> void:
 	recalculation_queued = true
 	recalculate.call_deferred()
 
+func _process(_delta : float) -> void:
+	#a finished sweep is taken the moment it lands
+	if worker_task != -1:
+		if WorkerThreadPool.is_task_completed(worker_task):
+			WorkerThreadPool.wait_for_task_completion(worker_task)
+			worker_task = -1
+			finish_sweeps()
+			set_busy(false)
+		else:
+			#a sweep that is still flying after a moment is worth showing: the sheet comes up late so a quick one never flashes it
+			if not busy_sheet.visible:
+				if Time.get_ticks_msec() - busy_since_msec < BUSY_SHEET_DELAY: return
+				set_busy(true)
+
 #the aircraft changing shape or moving an influencer changes what it can turn at, so the performance sweep is queued too
 func queue_flight_model_changed() -> void:
+	static_stale = true
 	turn_performance_stale = true
 	queue_recalculate()
+
+#the sweep in flight, and the copy of the aircraft the worker flies it against. the dock touches none of these until the
+#task is done, and the thread touches nothing else
+var worker_task := -1
+var worker_copy : AeroBody3D
+var worker_sweeps : AircraftSweeps
+var worker_results := {}
+var worker_runs_static := false
+var worker_runs_turn := false
+var worker_dirty := false
+
+#the sheet drawn over the dock while the sweeps are flying, so it is clear the numbers are being worked out and that the
+#settings under it are not to be touched until they land. the root stacks it over the panel, so it fills the dock wherever
+#the editor moves the dock to
+@onready var busy_sheet : ColorRect = %BusySheet
+#where the copy of the aircraft the worker flies is put
+var simulation_view : SubViewport
+
+#raises or drops the sheet, which also swallows the clicks that would change the settings under it
+func set_busy(busy : bool) -> void:
+	busy_sheet.visible = busy
+
+func is_busy() -> bool:
+	return busy_sheet.visible
 
 #one pass over the aircraft: every graph refilled from the sweeps, then the metrics
 func recalculate() -> void:
@@ -171,17 +253,122 @@ func recalculate() -> void:
 	
 	#with no aircraft named the dock keeps what it is showing rather than blanking it, which is what leaves the last
 	#aircraft's results there to be read while another scene is open
-	if not aerobody: return
+	if not aerobody or not is_visible_in_tree(): return
 	
 	%AircraftName.text = aerobody.name
 	
-	var results := static_analysis()
+	#only the tab being looked at is flown: the other one keeps what it shows and catches up when it is opened, which is
+	#what keeps a change to the aircraft from paying for a sweep nobody is reading
+	var sweep_static : bool = %Tabs.current_tab == STATIC_TAB and static_stale
+	var sweep_turn : bool = %Tabs.current_tab == PERFORMANCE_TAB and turn_performance_stale
+	if not sweep_static and not sweep_turn: return
 	
-	draw_static_analysis(results)
+	#a sweep already in flight is left to finish rather than interrupted, and flown again as soon as it lands
+	if worker_task != -1:
+		worker_dirty = true
+		return
 	
-	if turn_performance_stale:
-		turn_performance_stale = false
-		draw_turn_performance(turn_performance())
+	start_sweeps(sweep_static, sweep_turn)
+
+#deep-copies the aircraft for the worker to fly, so the sweeps never touch the nodes being edited. the copy goes into a
+#viewport of its own, so it enters a tree and initializes like any aircraft, and is then taken out of the frame's way: it does
+#not process, show or collide with anything
+func start_sweeps(sweep_static : bool, sweep_turn : bool) -> void:
+	#the copy has to keep its script instances: a deep duplicate would instantiate them and the copied nodes would come out
+	#without their behavior. the resources they share are only read by the sweeps, so sharing them is safe
+	worker_copy = aerobody.duplicate()
+	worker_copy.process_mode = Node.PROCESS_MODE_DISABLED
+	worker_copy.visible = false
+	worker_copy.collision_layer = 0
+	worker_copy.collision_mask = 0
+	simulation_view.add_child(worker_copy)
+	
+	#the nodes the sweeps reach into are gathered here, on the main thread: a thread may not search the scene itself
+	var influencers : Array[AeroInfluencer3D] = []
+	for node : Node in worker_copy.find_children("*", "AeroInfluencer3D", true, false):
+		influencers.append(node as AeroInfluencer3D)
+	var thrusters : Array[AeroThruster3D] = []
+	for node : Node in worker_copy.find_children("*", "AeroThruster3D", true, false):
+		thrusters.append(node as AeroThruster3D)
+	
+	worker_sweeps = AircraftSweeps.new()
+	worker_sweeps.body = worker_copy
+	worker_sweeps.influencers = influencers
+	worker_sweeps.thrusters = thrusters
+	for child : Node in worker_copy.get_children():
+		if child is AeroControlComponent: worker_sweeps.control = child
+	worker_sweeps.test_speed = test_speed
+	worker_sweeps.sweep_datapoints = sweep_datapoints
+	worker_sweeps.reference_area = reference_area
+	worker_sweeps.reference_span = reference_span
+	worker_sweeps.reference_chord = reference_chord
+	worker_sweeps.altitude = altitude
+	worker_sweeps.density = air_density()
+	worker_sweeps.pressure = air_pressure()
+	worker_sweeps.sound_speed = speed_of_sound()
+	worker_sweeps.load_limit = load_limit
+	worker_sweeps.turn_datapoints = turn_datapoints
+	
+	#the sweeps are marked fresh as they are handed over, so an edit arriving mid-flight marks them stale again
+	if sweep_static: static_stale = false
+	if sweep_turn: turn_performance_stale = false
+	worker_runs_static = sweep_static
+	worker_runs_turn = sweep_turn
+	worker_results = {}
+	worker_task = WorkerThreadPool.add_task(run_sweeps, false, "wind tunnel sweeps")
+	busy_since_msec = Time.get_ticks_msec()
+
+#the worker thread: flies the sweeps against the copy and leaves the results where the dock picks them up
+func run_sweeps() -> void:
+	var results := {}
+	if worker_runs_static: results["static"] = worker_sweeps.static_analysis()
+	if worker_runs_turn: results["turn"] = worker_sweeps.turn_performance()
+	worker_results = results
+
+#takes the results of a finished sweep and puts the copy away, on the main thread
+func finish_sweeps() -> void:
+	var results := worker_results
+	worker_results = {}
+	
+	#the copy measured the dimensions if they were not set by hand, and the panel reports the ones it came to
+	reference_area = worker_sweeps.reference_area
+	reference_span = worker_sweeps.reference_span
+	reference_chord = worker_sweeps.reference_chord
+	
+	simulation_view.remove_child(worker_copy)
+	worker_copy.queue_free()
+	worker_copy = null
+	worker_sweeps = null
+	
+	if results.has("static"): draw_static_analysis(results["static"])
+	if results.has("turn"): draw_turn_performance(results["turn"])
+	
+	if worker_dirty:
+		worker_dirty = false
+		queue_recalculate()
+
+#the air the sweeps are flown in: the declared altitude, and nothing about where the aircraft sits in the scene
+func air_density() -> float:
+	var density : float = AeroUnits.get_density_at_altitude(altitude)
+	return density if density > 0.0 else SEA_LEVEL_DENSITY
+
+func air_pressure() -> float:
+	var pressure : float = AeroUnits.get_pressure_at_altitude(altitude)
+	return pressure if pressure > 0.0 else SEA_LEVEL_PRESSURE
+
+func speed_of_sound() -> float:
+	return AeroUnits.get_speed_of_sound_at_pressure_and_density(air_pressure(), air_density())
+
+#the worker is holding the copy while the dock is going away, so it is waited for rather than left reading freed nodes
+func _exit_tree() -> void:
+	if worker_task == -1: return
+	WorkerThreadPool.wait_for_task_completion(worker_task)
+	worker_task = -1
+	if worker_copy:
+		simulation_view.remove_child(worker_copy)
+		worker_copy.queue_free()
+		worker_copy = null
+	worker_sweeps = null
 
 
 #drawing
@@ -400,768 +587,3 @@ func _on_load_limit_value_changed(value : float) -> void:
 
 func _on_turn_datapoints_value_changed(value : float) -> void:
 	turn_datapoints = int(value)
-
-
-
-
-
-
-
-
-
-
-
-
-#the sweeps: flown from the settings above, and knowing nothing of graphs, labels or the editor. everything above this
-#line is the dock, and everything below it is what the dock asks the aircraft for
-
-#how the static sweeps are flown
-const ALPHA_SWEEP_LIMIT := 180.0
-const BETA_SWEEP_LIMIT := 45.0
-const ROLL_SWEEP_LIMIT := 180.0
-const GRAVITY := 9.81
-#the air the sweeps fall back to while the atmosphere tables have nothing to say, and the direction they measure it in
-const SEA_LEVEL_DENSITY := 1.225
-const SEA_LEVEL_PRESSURE := 101325.0
-const AIR_DIRECTION := Vector3(0, 0, 1)
-
-#how the turn performance is flown: the angle of attack is swept up to this to find the lift limit, and Mach is stepped from
-#the first of these to the last
-const TURN_ALPHA_LIMIT := 30.0
-const TURN_ALPHA_SAMPLES := 25
-const TURN_MACH_START := 0.2
-const TURN_MACH_LIMIT := 1.6
-#the load factor a turn pulling 1 g sideways comes to, which is the flattest turn the chart reads a radius off and the line every
-#turn radius line starts on
-const ONE_G_TURN_LOAD := sqrt(2.0)
-#the control axis the thrusters read their throttle from, which the turn sweep holds wide open
-const THROTTLE_AXIS := "throttle"
-#the turn radii a chart draws lines for, graduated every step of this many metres from the tightest circle worth drawing out
-#to the widest, rather than whatever the sweep works out to, so the family reads the same however finely it is flown
-const TURN_RADIUS_STEP := 300.0
-const TURN_RADIUS_TIGHTEST := 300.0
-const TURN_RADIUS_WIDEST := 10000.0
-#how close together two of those lines may come, in degrees a second where they are nearest the widest end of the chart, before
-#the one after is left out. a graduation of 200 metres is worth drawing while the lines still read apart, and past that the
-#family thins out instead of piling up in the corner
-const TURN_RADIUS_MINIMUM_GAP := 0.8
-#how far a column flown between two others may come from where those two would have put it before the sweep is split again along
-#it, in degrees a second of turn rate and in metres a second of excess power. past these the column is one the chart would have
-#drawn a kink without, so it is kept
-const TURN_BEND_RATE := 0.06
-const TURN_BEND_POWER := 0.6
-#how many times the sweep is split again: enough for the parts of the chart that bend hardest to fill in without every part of
-#the chart paying for it
-const TURN_SPLITS := 2
-
-
-#the static analysis, as every curve its graphs draw and the numbers the metrics are read from
-func static_analysis() -> Dictionary:
-	measure_reference_dimensions()
-	
-	var alpha := alpha_sweep()
-	return {
-		"alpha": alpha,
-		"beta": beta_sweep(),
-		"roll": roll_sweep(trim_alpha(alpha)),
-		"metrics": measure_metrics(alpha),
-	}
-
-#the lift, drag and moments across the angle of attack sweep, with the samples the metrics are read from
-func alpha_sweep() -> Dictionary:
-	var lift := PackedVector2Array()
-	var drag := PackedVector2Array()
-	var polar := PackedVector2Array()
-	var polar_alphas := PackedFloat32Array()
-	var pitch := PackedVector2Array()
-	var yaw := PackedVector2Array()
-	var roll := PackedVector2Array()
-	
-	var alpha_samples := PackedFloat64Array()
-	var lift_samples := PackedFloat64Array()
-	var drag_samples := PackedFloat64Array()
-	var pitch_samples := PackedFloat64Array()
-	
-	for sample : int in sweep_datapoints:
-		var alpha : float = remap(sample, 0, sweep_datapoints - 1, -ALPHA_SWEEP_LIMIT, ALPHA_SWEEP_LIMIT)
-		var coefficients := calculate_coefficients(Transform3D(Basis.from_euler(Vector3(deg_to_rad(alpha), 0, 0)), Vector3.ZERO))
-		if coefficients.is_empty(): break
-		
-		alpha_samples.append(alpha)
-		lift_samples.append(coefficients.lift)
-		drag_samples.append(coefficients.drag)
-		pitch_samples.append(coefficients.pitch)
-		
-		lift.append(Vector2(alpha, coefficients.lift))
-		drag.append(Vector2(alpha, coefficients.drag))
-		polar.append(Vector2(coefficients.drag, coefficients.lift))
-		polar_alphas.append(alpha)
-		pitch.append(Vector2(alpha, coefficients.moment_x))
-		yaw.append(Vector2(alpha, coefficients.moment_y))
-		roll.append(Vector2(alpha, coefficients.moment_z))
-	
-	return {
-		"lift": lift,
-		"drag": drag,
-		"pitch": pitch,
-		"yaw": yaw,
-		"roll": roll,
-		"ratio": ratio_curve(alpha_samples, lift_samples, drag_samples),
-		"polar": polar,
-		"polar_alphas": polar_alphas,
-		"alpha_samples": alpha_samples,
-		"lift_samples": lift_samples,
-		"drag_samples": drag_samples,
-		"pitch_samples": pitch_samples,
-	}
-
-#the moments across the sideslip sweep
-func beta_sweep() -> Dictionary:
-	var pitch := PackedVector2Array()
-	var yaw := PackedVector2Array()
-	var roll := PackedVector2Array()
-	
-	for sample : int in sweep_datapoints:
-		var beta : float = remap(sample, 0, sweep_datapoints - 1, -BETA_SWEEP_LIMIT, BETA_SWEEP_LIMIT)
-		var coefficients := calculate_coefficients(Transform3D(Basis.from_euler(Vector3(0, deg_to_rad(beta), 0)), Vector3.ZERO))
-		if coefficients.is_empty(): break
-		
-		pitch.append(Vector2(beta, coefficients.moment_x))
-		yaw.append(Vector2(beta, coefficients.moment_y))
-		roll.append(Vector2(beta, coefficients.moment_z))
-	
-	return {"pitch": pitch, "yaw": yaw, "roll": roll}
-
-#rolling an aircraft that holds a fixed flight path turns the airflow towards its wing tips, so the wings stop seeing the
-#same angle of attack and a rolling moment appears. none of that shows up if the air runs straight down the fuselage,
-#which is why this sweep is flown at the angle of attack that carries the aircraft's weight. only the roll moment comes
-#back: the pitch and yaw moments run several times larger through the same sweep and are what the other sweeps are for
-func roll_sweep(trim_alpha : float) -> Dictionary:
-	var moment := PackedVector2Array()
-	
-	for sample : int in sweep_datapoints:
-		var roll : float = remap(sample, 0, sweep_datapoints - 1, -ROLL_SWEEP_LIMIT, ROLL_SWEEP_LIMIT)
-		var placement := Basis(Vector3.RIGHT, deg_to_rad(trim_alpha)) * Basis(Vector3.BACK, deg_to_rad(roll))
-		var coefficients := calculate_coefficients(Transform3D(placement, Vector3.ZERO))
-		if coefficients.is_empty(): break
-		
-		moment.append(Vector2(roll, coefficients.moment_z))
-	
-	return {"moment": moment}
-
-#the angle of attack that holds the aircraft up at the test speed, read back off the lift curve the alpha sweep built
-func trim_alpha(alpha : Dictionary) -> float:
-	if not aerobody: return 0.0
-	
-	var dynamic_pressure : float = 0.5 * air_density() * test_speed * test_speed
-	if dynamic_pressure <= 0.0 or reference_area <= 0.0: return 0.0
-	
-	var required_lift : float = aerobody.mass * GRAVITY / (dynamic_pressure * reference_area)
-	var alphas : PackedFloat64Array = alpha.alpha_samples
-	var lifts : PackedFloat64Array = alpha.lift_samples
-	
-	var highest_lift := -INF
-	var alpha_at_highest_lift := 0.0
-	for sample : int in alphas.size() - 1:
-		#the reverse flow half of the sweep is not a trim condition
-		if alphas[sample] < -15.0 or alphas[sample] > 30.0: continue
-		
-		if lifts[sample] > highest_lift:
-			highest_lift = lifts[sample]
-			alpha_at_highest_lift = alphas[sample]
-		
-		#the lift curve climbs through the weight it has to carry somewhere before the stall
-		if lifts[sample + 1] <= lifts[sample]: continue
-		if lifts[sample] <= required_lift and lifts[sample + 1] > required_lift:
-			var along : float = (required_lift - lifts[sample]) / (lifts[sample + 1] - lifts[sample])
-			return lerpf(alphas[sample], alphas[sample + 1], along)
-	
-	#nothing holds the aircraft up at this speed, so the sweep gets the angle that holds the most it can
-	return alpha_at_highest_lift
-
-#the lift/drag ratio across the sweep, remapped to 0..1 so it can use the whole height of a coefficient graph instead of the
-#coefficient scale
-func ratio_curve(alpha_samples : PackedFloat64Array, lift_samples : PackedFloat64Array, drag_samples : PackedFloat64Array) -> PackedVector2Array:
-	var ratios := PackedFloat64Array()
-	var highest_ratio := -INF
-	var lowest_ratio := INF
-	for sample : int in lift_samples.size():
-		var ratio : float = 0.0
-		if not is_zero_approx(drag_samples[sample]):
-			ratio = lift_samples[sample] / drag_samples[sample]
-		
-		ratios.append(ratio)
-		highest_ratio = maxf(highest_ratio, ratio)
-		lowest_ratio = minf(lowest_ratio, ratio)
-	
-	var ratio_span : float = highest_ratio - lowest_ratio
-	if is_zero_approx(ratio_span): return PackedVector2Array()
-	
-	var curve := PackedVector2Array()
-	for sample : int in ratios.size():
-		curve.append(Vector2(alpha_samples[sample], (ratios[sample] - lowest_ratio) / ratio_span))
-	return curve
-
-
-#the metrics
-
-#the numbers the metrics panel is read off, with NAN wherever the sweep did not reach far enough to give one
-func measure_metrics(alpha : Dictionary) -> Dictionary:
-	var metrics := {
-		"dynamic_pressure": 0.5 * air_density() * test_speed * test_speed,
-		"lift_max": NAN,
-		"lift_max_alpha": NAN,
-		"ratio": NAN,
-		"ratio_alpha": NAN,
-		"glide_speed": NAN,
-		"sink_rate": NAN,
-		"stiffness": NAN,
-		"margin": NAN,
-	}
-	
-	var alpha_samples : PackedFloat64Array = alpha.alpha_samples
-	if alpha_samples.is_empty(): return metrics
-	var lift_samples : PackedFloat64Array = alpha.lift_samples
-	var drag_samples : PackedFloat64Array = alpha.drag_samples
-	var pitch_samples : PackedFloat64Array = alpha.pitch_samples
-	
-	var highest_lift := -INF
-	var alpha_at_highest_lift := 0.0
-	var highest_ratio := -INF
-	var alpha_at_highest_ratio := 0.0
-	var lift_at_highest_ratio := 0.0
-	for sample : int in alpha_samples.size():
-		#stall only makes sense in forward flight, the reverse flow part of the sweep would win otherwise
-		if alpha_samples[sample] > -30.0 and alpha_samples[sample] < 45.0 and lift_samples[sample] > highest_lift:
-			highest_lift = lift_samples[sample]
-			alpha_at_highest_lift = alpha_samples[sample]
-		
-		if drag_samples[sample] > 0.0:
-			var ratio : float = lift_samples[sample] / drag_samples[sample]
-			if ratio > highest_ratio:
-				highest_ratio = ratio
-				alpha_at_highest_ratio = alpha_samples[sample]
-				lift_at_highest_ratio = lift_samples[sample]
-	
-	#a coarse sweep can miss both windows entirely, which leaves the fields they would have filled without a number
-	if not is_inf(highest_lift):
-		metrics.lift_max = highest_lift
-		metrics.lift_max_alpha = alpha_at_highest_lift
-	if not is_inf(highest_ratio):
-		metrics.ratio = highest_ratio
-		metrics.ratio_alpha = alpha_at_highest_ratio
-	
-	if highest_ratio > 0.0 and lift_at_highest_ratio > 0.0:
-		var aircraft_weight : float = aerobody.mass * GRAVITY
-		metrics.glide_speed = sqrt(2.0 * aircraft_weight / (air_density() * reference_area * lift_at_highest_ratio))
-		metrics.sink_rate = metrics.glide_speed / highest_ratio
-	
-	#static margin from the slope of Cm against CL over the linear part of the lift curve
-	var sum_lift := 0.0
-	var sum_pitch := 0.0
-	var sum_lift_pitch := 0.0
-	var sum_lift_squared := 0.0
-	var sample_count := 0
-	for sample : int in alpha_samples.size():
-		if alpha_samples[sample] < -4.0 or alpha_samples[sample] > 12.0: continue
-		if lift_samples[sample] < 0.0 or lift_samples[sample] > 0.8: continue
-		
-		sum_lift += lift_samples[sample]
-		sum_pitch += pitch_samples[sample]
-		sum_lift_pitch += lift_samples[sample] * pitch_samples[sample]
-		sum_lift_squared += lift_samples[sample] * lift_samples[sample]
-		sample_count += 1
-	
-	if sample_count > 2:
-		var denominator : float = sample_count * sum_lift_squared - sum_lift * sum_lift
-		if not is_zero_approx(denominator):
-			metrics.stiffness = (sample_count * sum_lift_pitch - sum_lift * sum_pitch) / denominator
-			metrics.margin = -metrics.stiffness * 100.0
-	
-	return metrics
-
-
-#turn performance
-
-#what the aircraft can turn at across the Mach range: the limit the wing and the declared load limit put on the turn, the 1 g
-#line the turns are read from, the constant load factor lines, the constant excess power contours and the constant turn radius
-#lines
-func turn_performance() -> Dictionary:
-	var chart := {"limit": PackedVector2Array(), "one_g": PackedVector2Array(), "loads": [], "powers": [], "radii": []}
-	if not aerobody: return chart
-	
-	var weight : float = aerobody.mass * GRAVITY
-	var density := air_density()
-	var pressure := air_pressure()
-	var sound_speed := speed_of_sound()
-	if weight <= 0.0 or sound_speed <= 0.0: return chart
-	
-	#the chart is about the thrust the aircraft has to hold a turn with, so the throttle is wound open for the columns and let
-	#back down after them. the airframe is silenced for that, because a throttle going up and down inside a sweep is the
-	#sweep's own doing and taking it for a change to the flight model would have it fly itself again
-	var controls := control_component()
-	var silenced : Array[AeroInfluencer3D] = []
-	var held_throttles : Dictionary = {}
-	var held_throttle := 0.0
-	if controls:
-		for node : Node in aerobody.find_children("*", "AeroInfluencer3D", true, false):
-			var influencer := node as AeroInfluencer3D
-			if influencer == null or influencer.suppress_flight_model_changed: continue
-			influencer.suppress_flight_model_changed = true
-			silenced.append(influencer)
-		
-		#the thrusters are wound open on both of the wires thrust arrives by. a running game reads the control command below,
-		#while the editor never updates an influencer's control transform at all, so a sweep flown there has to set the throttle
-		#on the thruster itself. each thruster's own throttle is kept, to be put back once the sweep is done
-		for node : Node in aerobody.find_children("*", "AeroThruster3D", true, false):
-			var thruster := node as AeroThruster3D
-			if thruster == null: continue
-			
-			held_throttles[thruster] = thruster.throttle
-			var throttle_config : AeroInfluencerControlConfig = thruster.throttle_control_config
-			thruster.throttle = throttle_config.min_value if throttle_config else Vector3(0, 0, -1)
-		
-		held_throttle = controls.get_control_command(THROTTLE_AXIS)
-		controls.set_control_command(THROTTLE_AXIS, 1.0)
-	
-	var columns := turn_columns(density, pressure, sound_speed, weight)
-	
-	if controls:
-		controls.set_control_command(THROTTLE_AXIS, held_throttle)
-		for thruster : AeroThruster3D in held_throttles: thruster.throttle = held_throttles[thruster]
-	for influencer : AeroInfluencer3D in silenced: influencer.suppress_flight_model_changed = false
-	
-	chart.limit = lift_limit_curve(columns)
-	chart.one_g = load_curve(columns, ONE_G_TURN_LOAD)
-	
-	#the load factor lines, every whole g up to the declared limit, and the limit itself where it falls between two of them. the
-	#last of them is what closes the top of the chart
-	var loads := PackedFloat64Array()
-	for load : int in range(2, int(load_limit) + 1): loads.append(float(load))
-	if loads.is_empty() or not is_equal_approx(loads[loads.size() - 1], load_limit): loads.append(load_limit)
-	
-	for load : float in loads:
-		var curve := load_curve(columns, load)
-		if curve.size() > 1: chart.loads.append({"load": load, "points": curve})
-	
-	for level : float in power_contours(columns):
-		var runs := power_curves(columns, level)
-		if not runs.is_empty(): chart.powers.append({"level": level, "runs": runs})
-	
-	for radius : float in turn_radii(columns):
-		chart.radii.append({"radius": radius, "points": radius_curve(columns, radius)})
-	
-	return chart
-
-#the Mach steps the chart is flown at: the number asked for, then split again wherever the column in the middle of two steps
-#comes out somewhere those two would not have put it. the sweep ends up dense where the chart bends and coarse where it runs
-#straight, rather than paying for the same spacing everywhere
-func turn_columns(density : float, pressure : float, sound_speed : float, weight : float) -> Array[Dictionary]:
-	var step : float = (TURN_MACH_LIMIT - TURN_MACH_START) / float(turn_datapoints - 1)
-	var columns : Array[Dictionary] = []
-	for index : int in turn_datapoints:
-		columns.append(turn_performance_column(TURN_MACH_START + step * index, density, pressure, sound_speed, weight))
-	
-	for split : int in TURN_SPLITS:
-		var denser : Array[Dictionary] = []
-		for index : int in columns.size() - 1:
-			var middle := turn_performance_column((columns[index].mach + columns[index + 1].mach) * 0.5, density, pressure, sound_speed, weight)
-			denser.append(columns[index])
-			if column_bends(columns[index], middle, columns[index + 1]): denser.append(middle)
-		denser.append(columns[columns.size() - 1])
-		columns = denser
-	
-	return columns
-
-#whether a column flown between two others holds anything those two would have missed, which is read off the turn rate and the
-#excess power at each of its angles of attack against the average of theirs
-func column_bends(previous : Dictionary, middle : Dictionary, next : Dictionary) -> bool:
-	if column_departure(previous.turn_rates, middle.turn_rates, next.turn_rates) > TURN_BEND_RATE: return true
-	
-	return column_departure(previous.powers, middle.powers, next.powers) > TURN_BEND_POWER
-
-#how far one column's samples come from the average of the columns either side of it, at the worst of them
-func column_departure(previous : PackedFloat64Array, middle : PackedFloat64Array, next : PackedFloat64Array) -> float:
-	var departure := 0.0
-	for index : int in mini(middle.size(), mini(previous.size(), next.size())):
-		departure = maxf(departure, absf(middle[index] - (previous[index] + next[index]) * 0.5))
-	
-	return departure
-
-#one Mach of the turn performance sweep: the load factor and turn rate at every angle of attack it can hold, the excess power
-#at each of them, and the load factor the wing and the declared limit together allow there
-func turn_performance_column(mach : float, density : float, pressure : float, sound_speed : float, weight : float) -> Dictionary:
-	var speed := mach * sound_speed
-	var loads := PackedFloat64Array()
-	var turn_rates := PackedFloat64Array()
-	var powers := PackedFloat64Array()
-	
-	for sample : int in TURN_ALPHA_SAMPLES:
-		var alpha : float = remap(sample, 0, TURN_ALPHA_SAMPLES - 1, 0.0, TURN_ALPHA_LIMIT)
-		var attitude := Transform3D(Basis.from_euler(Vector3(deg_to_rad(alpha), 0, 0)), Vector3.ZERO)
-		var force : Vector3 = force_and_torque_at(attitude, speed, density, pressure)[0]
-		var load : float = force.dot(calculate_lift_direction(attitude.basis)) / weight
-		
-		#a turn needs the wing to carry more than the aircraft weighs, so a sample under that is no turn at all, and a sample the
-		#model could not work out is left out rather than carried into the chart
-		if load < 1.0 or not is_finite(load): continue
-		
-		loads.append(load)
-		turn_rates.append(turn_rate(load, speed))
-		powers.append(speed * -force.dot(AIR_DIRECTION) / weight)
-	
-	#the column is stopped at the angle of attack that holds the most load factor. past the stall the wing holds less and less,
-	#so a contour read off that falling side sits at a lower load factor than one read off the rising side, which is how the
-	#contours for two different excess powers came to cross each other
-	var peak := 0
-	for index : int in loads.size():
-		if loads[index] > loads[peak]: peak = index
-	if not loads.is_empty():
-		loads.resize(peak + 1)
-		turn_rates.resize(peak + 1)
-		powers.resize(peak + 1)
-	
-	var held_load : float = loads[loads.size() - 1] if not loads.is_empty() else 0.0
-	
-	return {
-		"mach": mach,
-		"speed": speed,
-		"loads": loads,
-		"turn_rates": turn_rates,
-		"powers": powers,
-		#the most the wing can hold, and the most the airframe is cleared for, which is what every line is clipped to
-		"held_load": held_load,
-		"limit_load": minf(held_load, load_limit),
-	}
-
-#the component the aircraft is flown through, which is where the thrusters read their throttle from
-func control_component() -> AeroControlComponent:
-	for child : Node in aerobody.get_children():
-		if child is AeroControlComponent: return child
-	
-	return null
-
-#the turn rate a level turn at this load factor comes to at this speed, in degrees per second
-func turn_rate(load : float, speed : float) -> float:
-	if load <= 1.0 or speed <= 0.0: return 0.0
-	return rad_to_deg(GRAVITY * sqrt(load * load - 1.0) / speed)
-
-#the value at a target on one of the sweep's columns, interpolated between the two samples either side of it, or NAN when the
-#column never reaches the target
-func interpolate_column(samples : PackedFloat64Array, values : PackedFloat64Array, target : float) -> float:
-	for index : int in samples.size() - 1:
-		var low := samples[index]
-		var high := samples[index + 1]
-		if target < minf(low, high) or target > maxf(low, high): continue
-		if is_equal_approx(low, high): continue
-		return lerpf(values[index], values[index + 1], (target - low) / (high - low))
-	
-	return NAN
-
-#the radii of the ladder the envelope leaves room for, which is the ones whose line is more than a sliver across the chart
-func turn_radii(columns : Array[Dictionary]) -> PackedFloat64Array:
-	var radii := PackedFloat64Array()
-	if columns.is_empty(): return radii
-	
-	var narrowest : float = (columns[columns.size() - 1].mach - columns[0].mach) * 0.1
-	var widest_speed : float = columns[columns.size() - 1].speed
-	var previous_rate := INF
-	var radius := TURN_RADIUS_TIGHTEST
-	while radius <= TURN_RADIUS_WIDEST:
-		var curve := radius_curve(columns, radius)
-		var rate := rad_to_deg(widest_speed / radius)
-		if curve.size() > 1 and curve[curve.size() - 1].x - curve[0].x >= narrowest and previous_rate - rate >= TURN_RADIUS_MINIMUM_GAP:
-			radii.append(radius)
-			previous_rate = rate
-		radius += TURN_RADIUS_STEP
-	
-	return radii
-
-#the lift limit: the turn rate the wing can hold at every Mach without stalling, run up to where the declared load factor takes
-#the limit over. the point where the two meet is worked out between the columns either side of it, so the lift limit always
-#ends exactly on the last load factor line rather than a column away from it
-func lift_limit_curve(columns : Array[Dictionary]) -> PackedVector2Array:
-	var curve := PackedVector2Array()
-	var previous : Dictionary = {}
-	for column : Dictionary in columns:
-		if column.held_load >= 1.0 and curve.is_empty() and not previous.is_empty():
-			#the bottom corner of the envelope, where the wing can only just carry the aircraft in level flight
-			curve.append(meets_lift_limit(previous, column, 1.0))
-		if column.held_load < 1.0:
-			previous = column
-			continue
-		
-		if column.held_load >= load_limit:
-			if not previous.is_empty(): curve.append(meets_lift_limit(previous, column, load_limit))
-			break
-		
-		curve.append(Vector2(column.mach, turn_rate(column.held_load, column.speed)))
-		previous = column
-	
-	return curve
-
-#the turn rate against Mach where the aircraft holds this load factor, running from where the limit curve reaches it to where
-#the limit leaves it again
-func load_curve(columns : Array[Dictionary], load : float) -> PackedVector2Array:
-	var curve := PackedVector2Array()
-	var previous : Dictionary = {}
-	var was_held := false
-	for column : Dictionary in columns:
-		var held : bool = column.held_load >= load
-		
-		if held:
-			if not was_held and not previous.is_empty(): curve.append(meets_lift_limit(previous, column, load))
-			curve.append(Vector2(column.mach, turn_rate(load, column.speed)))
-		elif was_held:
-			curve.append(meets_lift_limit(previous, column, load))
-			break
-		
-		previous = column
-		was_held = held
-	
-	return curve
-
-#where a load factor line meets the lift limit between two columns, which is the point it starts or stops at. every load factor
-#line ends on the lift limit, including the last of them, which ends on the corner where the lift limit reaches the g limit
-func meets_lift_limit(previous : Dictionary, column : Dictionary, load : float) -> Vector2:
-	var span : float = column.held_load - previous.held_load
-	var along : float = 0.0 if is_zero_approx(span) else clampf((load - previous.held_load) / span, 0.0, 1.0)
-	var speed : float = lerpf(previous.speed, column.speed, along)
-	
-	return Vector2(lerpf(previous.mach, column.mach, along), turn_rate(load, speed))
-
-#where a line holding this load factor meets the envelope between two columns, as the point that line passes through there.
-#the load factor is what the line itself is at either side of the crossing
-func meets_limit(previous : Dictionary, column : Dictionary, previous_load : float, load : float) -> Vector2:
-	var along := limit_crossing_along(previous, column, previous_load, load)
-	var speed : float = lerpf(previous.speed, column.speed, along)
-	
-	return Vector2(lerpf(previous.mach, column.mach, along), turn_rate(lerpf(previous_load, load, along), speed))
-
-#the turn rate against Mach along one excess power contour, as the stretches of it that lie inside the envelope. a contour
-#leaves the envelope where holding it would take more load factor than the aircraft has at that Mach, and often comes back in
-#further along where the wing has caught up with it, so the contour is not finished at the first crossing
-func power_curves(columns : Array[Dictionary], power : float) -> Array[PackedVector2Array]:
-	var runs : Array[PackedVector2Array] = []
-	var run := PackedVector2Array()
-	var previous : Dictionary = {}
-	var previous_load := NAN
-	var was_held := false
-	for column : Dictionary in columns:
-		var load : float = interpolate_column(column.powers, column.loads, power)
-		var held : bool = not is_nan(load) and load >= 1.0 and load <= column.limit_load
-		
-		if held:
-			#a stretch that starts after a gap opens on the crossing rather than at the column itself
-			if not was_held and not previous.is_empty() and not is_nan(previous_load):
-				run.append(meets_limit(previous, column, previous_load, load))
-			run.append(Vector2(column.mach, turn_rate(load, column.speed)))
-		elif was_held:
-			if not is_nan(load): run.append(meets_limit(previous, column, previous_load, load))
-			if run.size() > 1: runs.append(run)
-			run = PackedVector2Array()
-		
-		previous = column
-		previous_load = load
-		was_held = held
-	
-	if run.size() > 1: runs.append(run)
-	return runs
-
-#the turn rate against Mach along a circle of this radius, from where the circle is a 1 g turn or the airframe can first hold it,
-#to where it cannot
-func radius_curve(columns : Array[Dictionary], radius : float) -> PackedVector2Array:
-	var curve := PackedVector2Array()
-	var previous : Dictionary = {}
-	var previous_load := NAN
-	var was_held := false
-	#the speed the circle is a 1 g turn at, which is where its line starts whenever the airframe can hold it more easily than that
-	var one_g_speed := sqrt(radius * GRAVITY)
-	
-	for column : Dictionary in columns:
-		#the load factor a circle of this radius takes at this speed, and the part of it pulled sideways, which is the turn itself
-		var sideways : float = column.speed * column.speed / (radius * GRAVITY)
-		var load : float = sqrt(1.0 + sideways * sideways)
-		var held : bool = column.limit_load >= load and sideways >= 1.0
-		
-		#a line that has just started sits on the later of the two boundaries the circle crossed on its way up: the 1 g one, and the
-		#one the airframe can just hold it on. the crossing sits on the circle itself, so the line starts on the ray rather than a
-		#shade off it
-		if held and not was_held and not previous.is_empty():
-			var along := clampf((one_g_speed - previous.speed) / (column.speed - previous.speed), 0.0, 1.0)
-			if previous.limit_load < previous_load:
-				along = maxf(along, limit_crossing_along(previous, column, previous_load, load))
-			curve.append(circle_point(previous, column, along, radius))
-		
-		if held:
-			curve.append(Vector2(column.mach, rad_to_deg(column.speed / radius)))
-		elif was_held:
-			curve.append(circle_point(previous, column, limit_crossing_along(previous, column, previous_load, load), radius))
-			break
-		
-		previous = column
-		previous_load = load
-		was_held = held
-	
-	return curve
-
-#the point on a circle of this radius this share of the way between two columns
-func circle_point(previous : Dictionary, column : Dictionary, along : float, radius : float) -> Vector2:
-	var speed : float = lerpf(previous.speed, column.speed, along)
-	
-	return Vector2(lerpf(previous.mach, column.mach, along), rad_to_deg(speed / radius))
-
-#where a family line and the limit curve cross between two columns, as the fraction of the way from the first to the second
-func limit_crossing_along(previous : Dictionary, column : Dictionary, previous_load : float, load : float) -> float:
-	var before : float = previous_load - previous.limit_load
-	var after : float = load - column.limit_load
-	
-	return 0.0 if is_zero_approx(before - after) else clampf(before / (before - after), 0.0, 1.0)
-
-#the excess power contours to draw. an aircraft with power to spare is drawn from nothing up to the most it has, in equal
-#steps. an aircraft with none is drawn by the energy it loses instead, which runs from a few metres a second in a gentle turn to
-#thousands at the stall, so those levels step through 1, 2 and 5 of each decade and a handful of them cover the spread
-func power_contours(columns : Array[Dictionary]) -> PackedFloat64Array:
-	var highest := -INF
-	var lowest := INF
-	for column : Dictionary in columns:
-		for power : float in column.powers:
-			highest = maxf(highest, power)
-			lowest = minf(lowest, power)
-	
-	var levels := PackedFloat64Array()
-	if is_inf(highest): return levels
-	
-	if highest >= 0.0:
-		var step := nice_step(highest / 4.0)
-		if not is_finite(step) or step <= 0.0: return levels
-		
-		var level := 0.0
-		while level <= highest and level >= lowest:
-			levels.append(level)
-			level += step
-		return levels
-	
-	var decade := pow(10.0, floorf(log(-highest) / log(10.0)))
-	if not is_finite(decade) or decade <= 0.0: return levels
-	
-	while levels.size() < 6 and -decade >= lowest:
-		for tidiness : float in [1.0, 2.0, 5.0]:
-			var level := -decade * tidiness
-			if levels.size() < 6 and level <= highest and level >= lowest: levels.append(level)
-		decade *= 10.0
-	
-	return levels
-
-#a step rounded up to 1, 2 or 5 times a power of ten, so the contours land on numbers worth reading
-func nice_step(raw_step : float) -> float:
-	if raw_step <= 0.0: return 1.0
-	
-	var magnitude := pow(10.0, floorf(log(raw_step) / log(10.0)))
-	for tidiness : float in [1.0, 2.0, 5.0, 10.0]:
-		if raw_step / magnitude <= tidiness: return magnitude * tidiness
-	
-	return magnitude * 10.0
-
-
-#the air
-
-#the air every sweep is worked out in: the declared altitude, and nothing about where the aircraft sits in the scene
-func air_density() -> float:
-	var density : float = AeroUnits.get_density_at_altitude(altitude)
-	return density if density > 0.0 else SEA_LEVEL_DENSITY
-
-func air_pressure() -> float:
-	var pressure : float = AeroUnits.get_pressure_at_altitude(altitude)
-	return pressure if pressure > 0.0 else SEA_LEVEL_PRESSURE
-
-func speed_of_sound() -> float:
-	return AeroUnits.get_speed_of_sound_at_pressure_and_density(air_pressure(), air_density())
-
-#the force and torque on the aircraft flying an attitude at a speed through that air. the arguments are the whole simulation
-#state: not one thing is read from the body's own transform or position
-func force_and_torque_at(attitude : Transform3D, speed : float, density : float, pressure : float) -> PackedVector3Array:
-	return aerobody.calculate_forces_manual(attitude, Vector3(0, 0, -speed), Vector3.ZERO, altitude, density, pressure)
-
-#the direction lift is measured along for an attitude: the body's up axis less the part of it running with the airflow, kept
-#on the side the chord says once the projection alone would flip over past 90 degrees
-func calculate_lift_direction(basis : Basis) -> Vector3:
-	var planar_lift_direction := (basis.y * AIR_DIRECTION.dot(basis.z) - basis.z * basis.y.dot(AIR_DIRECTION)).normalized()
-	var projected_lift_direction := basis.y - AIR_DIRECTION * basis.y.dot(AIR_DIRECTION)
-	if projected_lift_direction.length_squared() <= 0.0001: return planar_lift_direction
-	
-	projected_lift_direction = projected_lift_direction.normalized()
-	return -projected_lift_direction if projected_lift_direction.dot(planar_lift_direction) < 0.0 else projected_lift_direction
-
-#the coefficients of one attitude, which is what every graph in the static analysis is drawn from
-func calculate_coefficients(transform : Transform3D) -> Dictionary:
-	if not aerobody: return {}
-	if test_speed <= 0.0: return {}
-	if reference_area <= 0.0 or reference_span <= 0.0 or reference_chord <= 0.0: return {}
-	
-	var density := air_density()
-	var force_and_torque := force_and_torque_at(transform, test_speed, density, air_pressure())
-	
-	var dynamic_pressure : float = 0.5 * density * test_speed * test_speed
-	if dynamic_pressure <= 0.0: return {}
-	
-	var basis := transform.basis.orthonormalized()
-	var force : Vector3 = force_and_torque[0]
-	var torque : Vector3 = force_and_torque[1]
-	var reference_force : float = dynamic_pressure * reference_area
-	
-	return {
-		"lift": force.dot(calculate_lift_direction(basis)) / reference_force,
-		"drag": force.dot(AIR_DIRECTION) / reference_force,
-		"pitch": torque.dot(basis.x) / (reference_force * reference_chord),
-		#raw moments about the body axes, which is how a pilot reads pitch/yaw/roll
-		"moment_x": torque.dot(basis.x),
-		"moment_y": torque.dot(basis.y),
-		"moment_z": torque.dot(basis.z),
-	}
-
-
-#reference dimensions
-
-#the dimensions the coefficients are taken against, kept on the sweep so the panel can show them
-func measure_reference_dimensions() -> void:
-	if reference_area > 0.0 and reference_span > 0.0 and reference_chord > 0.0: return
-	
-	#a surface can hang off another influencer, like a wing on a swing pivot, so where its tips actually land has to
-	#be measured in the body's own space rather than from the position it holds under its parent
-	var to_body : Transform3D = aerobody.global_transform.affine_inverse()
-	var total_area := 0.0
-	var chord_area := 0.0
-	var lowest_tip := INF
-	var highest_tip := -INF
-	
-	for node : Node in aerobody.find_children("*", "AeroInfluencer3D", true, false):
-		var surface := node as AeroSurface3D
-		if not surface: continue
-		
-		var wing_config : AeroSurfaceConfig = surface.get_wing_config()
-		if not wing_config: continue
-		
-		total_area += wing_config.get_area()
-		chord_area += wing_config.get_area() * wing_config.get_chord()
-		
-		#the span runs along the surface's own x axis, which points up on a vertical fin and so adds no width
-		var placement : Transform3D = to_body * surface.global_transform
-		for side : float in [-0.5, 0.5]:
-			var tip : Vector3 = placement * Vector3(wing_config.get_span() * side, 0, 0)
-			lowest_tip = minf(lowest_tip, tip.x)
-			highest_tip = maxf(highest_tip, tip.x)
-	
-	if total_area <= 0.0 or is_inf(lowest_tip): return
-	
-	#the span is what the tips measure out to, except on a body with nothing sticking out sideways, like one made of fins
-	#only. there the mean chord of the surfaces is all there is to go on, and the span comes back from it
-	var span : float = highest_tip - lowest_tip
-	var mean_chord : float = chord_area / total_area
-	if is_zero_approx(span) and mean_chord > 0.0: span = total_area / mean_chord
-	
-	#a dimension set by hand is kept, and the ones left at 0 take what the aircraft measures out to. a body with no width
-	#to it at all is left without one rather than given an endless chord, which the sweeps then report as no data
-	if reference_area <= 0.0: reference_area = total_area
-	if reference_span <= 0.0: reference_span = span
-	if reference_chord <= 0.0 and not is_zero_approx(reference_span): reference_chord = reference_area / reference_span

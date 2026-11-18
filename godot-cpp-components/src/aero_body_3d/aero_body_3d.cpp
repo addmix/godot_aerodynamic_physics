@@ -83,6 +83,8 @@ void AeroBody3D::_bind_methods() {
 	
 	ClassDB::bind_method(D_METHOD("get_amount_of_active_influencers"), &AeroBody3D::get_amount_of_active_influencers);
 	ClassDB::bind_method(D_METHOD("get_control_command", "axis_name"), &AeroBody3D::get_control_command);
+	ClassDB::bind_method(D_METHOD("get_cached_global_transform"), &AeroBody3D::get_cached_global_transform);
+	ClassDB::bind_method(D_METHOD("get_cached_global_basis"), &AeroBody3D::get_cached_global_basis);
 	ClassDB::bind_method(D_METHOD("get_relative_position"), &AeroBody3D::get_relative_position);
 	ClassDB::bind_method(D_METHOD("get_drag_direction"), &AeroBody3D::get_drag_direction);
 	ClassDB::bind_method(D_METHOD("interrupt_sleep"), &AeroBody3D::interrupt_sleep);
@@ -225,7 +227,12 @@ void AeroBody3D::_enter_tree() {
 		update_configuration_warnings();
 	}
 }
+
 void AeroBody3D::_ready() {
+	control_component = AeroUtils::get_first_child_of_type(this, "AeroControlComponent");
+	connect("child_entered_tree", callable_mp(this, &AeroBody3D::_on_child_entered_tree));
+	connect("child_exiting_tree", callable_mp(this, &AeroBody3D::_on_child_exiting_tree));
+	
 	const size_t influencer_count = aero_influencers.size();
 	for (size_t i = 0; i < influencer_count; i++) {
 		AeroInfluencer3D* influencer = aero_influencers[i];
@@ -568,11 +575,17 @@ Vector3 AeroBody3D::calculate_drag_direction() const { return air_velocity.norma
 
 
 
+void AeroBody3D::_on_child_entered_tree(Node *p_child) {
+	if (control_component) return;
+	if (AeroUtils::is_of_type(p_child, "AeroControlComponent")) control_component = p_child;
+}
+
+void AeroBody3D::_on_child_exiting_tree(Node *p_child) {
+	if (p_child == control_component) control_component = nullptr;
+}
+
 double AeroBody3D::get_control_command(StringName axis_name) {
-	Node* control_component = AeroUtils::get_first_child_of_type(this, "AeroControlComponent");
-	if (control_component) {
-		return (double) control_component->call("get_control_command", axis_name);
-	}
+	if (control_component) return (double) control_component->call("get_control_command", axis_name);
 	return 0.0;
 }
 bool AeroBody3D::is_overriding_body_sleep() const {

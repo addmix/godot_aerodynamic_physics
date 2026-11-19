@@ -11,6 +11,7 @@ void AeroBody3D::_bind_methods() {
 	//function bindings
 	ClassDB::bind_method(D_METHOD("add_aero_atmosphere", "p_aero_atmosphere"), &AeroBody3D::add_aero_atmosphere);
 	ClassDB::bind_method(D_METHOD("remove_aero_atmosphere", "p_aero_atmosphere"), &AeroBody3D::remove_aero_atmosphere);
+	ClassDB::bind_method(D_METHOD("get_moment_of_inertia"), &AeroBody3D::get_moment_of_inertia);
 	
 	
 	//experimental_energy_tracking;
@@ -83,6 +84,8 @@ void AeroBody3D::_bind_methods() {
 	
 	ClassDB::bind_method(D_METHOD("get_amount_of_active_influencers"), &AeroBody3D::get_amount_of_active_influencers);
 	ClassDB::bind_method(D_METHOD("get_control_command", "axis_name"), &AeroBody3D::get_control_command);
+	ClassDB::bind_method(D_METHOD("get_cached_global_transform"), &AeroBody3D::get_cached_global_transform);
+	ClassDB::bind_method(D_METHOD("get_cached_global_basis"), &AeroBody3D::get_cached_global_basis);
 	ClassDB::bind_method(D_METHOD("get_relative_position"), &AeroBody3D::get_relative_position);
 	ClassDB::bind_method(D_METHOD("get_drag_direction"), &AeroBody3D::get_drag_direction);
 	ClassDB::bind_method(D_METHOD("interrupt_sleep"), &AeroBody3D::interrupt_sleep);
@@ -225,7 +228,12 @@ void AeroBody3D::_enter_tree() {
 		update_configuration_warnings();
 	}
 }
+
 void AeroBody3D::_ready() {
+	control_component = AeroUtils::get_first_child_of_type(this, "AeroControlComponent");
+	connect("child_entered_tree", callable_mp(this, &AeroBody3D::_on_child_entered_tree));
+	connect("child_exiting_tree", callable_mp(this, &AeroBody3D::_on_child_exiting_tree));
+	
 	const size_t influencer_count = aero_influencers.size();
 	for (size_t i = 0; i < influencer_count; i++) {
 		AeroInfluencer3D* influencer = aero_influencers[i];
@@ -544,14 +552,12 @@ PackedVector3Array AeroBody3D::calculate_forces_manual(const Transform3D &p_tran
 	return PackedVector3Array({ force_and_torque.force, force_and_torque.torque });
 }
 void AeroBody3D::_update_transform_substep(double substep_delta) {
-	if (not Engine::get_singleton()->is_editor_hint()) {
-		for (int i = 0; i < aero_influencers.size(); i++) {
-			AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
-			if (not influencer) continue;
-			if (influencer->is_disabled()) continue;
-			
-			influencer->_update_transform_substep_with_override(substep_delta);
-		}
+	for (int i = 0; i < aero_influencers.size(); i++) {
+		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+		if (not influencer) continue;
+		if (influencer->is_disabled()) continue;
+		
+		influencer->_update_transform_substep_with_override(substep_delta);
 	}
 }
 
@@ -568,11 +574,17 @@ Vector3 AeroBody3D::calculate_drag_direction() const { return air_velocity.norma
 
 
 
+void AeroBody3D::_on_child_entered_tree(Node *p_child) {
+	if (control_component) return;
+	if (AeroUtils::is_of_type(p_child, "AeroControlComponent")) control_component = p_child;
+}
+
+void AeroBody3D::_on_child_exiting_tree(Node *p_child) {
+	if (p_child == control_component) control_component = nullptr;
+}
+
 double AeroBody3D::get_control_command(StringName axis_name) {
-	Node* control_component = AeroUtils::get_first_child_of_type(this, "AeroControlComponent");
-	if (control_component) {
-		return (double) control_component->call("get_control_command", axis_name);
-	}
+	if (control_component) return (double) control_component->call("get_control_command", axis_name);
 	return 0.0;
 }
 bool AeroBody3D::is_overriding_body_sleep() const {
@@ -609,6 +621,10 @@ TypedArray<Area3D> AeroBody3D::get_atmosphere_areas() const {
 	return result;
 }
 const std::vector<Area3D*> &AeroBody3D::get_atmosphere_areas_internal() const { return atmosphere_areas; }
+
+//the inertia the body turns with, which is the same sum Godot makes while it steps physics. the work is in the utils, so
+//anything else that wants a body's mass properties can reach it too
+Vector3 AeroBody3D::get_moment_of_inertia() { return AeroUtils::body_moment_of_inertia(this); }
 
 void AeroBody3D::add_aero_influencer(AeroInfluencer3D* influencer) {
 	aero_influencers.push_back(influencer);

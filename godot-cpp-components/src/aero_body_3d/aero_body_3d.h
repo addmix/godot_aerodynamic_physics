@@ -172,12 +172,17 @@ public:
 	Vector3 calculate_angular_velocity_substep(Vector3 torque) const;
 	
 	double get_control_command(StringName axis_name);
+	//found once when the body is ready and kept current as children come and go, so reading a control never searches the scene
+	void _on_child_entered_tree(Node *p_child);
+	void _on_child_exiting_tree(Node *p_child);
+	Node *control_component = nullptr;
 	bool is_overriding_body_sleep() const;
 	void interrupt_sleep();
 	
 	TypedArray<AeroInfluencer3D> get_aero_influencers() const;
 	TypedArray<Area3D> get_atmosphere_areas() const;
 	const std::vector<Area3D*> &get_atmosphere_areas_internal() const;
+	Vector3 get_moment_of_inertia();
 	
 	void add_aero_influencer(AeroInfluencer3D* influencer);
 	void remove_aero_influencer(AeroInfluencer3D* influencer);

@@ -12,7 +12,7 @@ The demo scene has both water and wind configured, which is a good place to star
 
 ## Workflow for creating an AeroBody3D scene with 1 or more AeroBuoyancyMesh3Ds
 
-### 1. Modelling considerations:
+### 1. Modeling considerations:
 
 Mesh forces are computed per-vertex. This means that performance will scale directly with vertex count (overlapping vertices are merged automatically). However, vertex forces are adjusted and normalized for a variety of factors, including the area of adjoined triangles, normals of connected faces, and barycenter of adjoined triangles.
 

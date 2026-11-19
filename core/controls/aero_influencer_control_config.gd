@@ -41,7 +41,7 @@ func update(aero_influencer : AeroInfluencer3D, delta : float) -> Vector3:
 	if not enable_control:
 		return current_value
 	
-	var local_relative_position : Vector3 = aero_influencer.relative_position * aero_influencer.aero_body.global_basis
+	var local_relative_position : Vector3 = aero_influencer.relative_position * aero_influencer.aero_body.get_cached_global_basis()
 	
 	var axis_sign : Vector3 = Vector3(sign(local_relative_position.x), sign(local_relative_position.y), sign(local_relative_position.z))
 	

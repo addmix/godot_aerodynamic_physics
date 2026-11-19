@@ -2,6 +2,8 @@
 extends AeroMover3D
 class_name AeroPropeller3D
 
+const AeroNodeUtils = preload("../../../utils/node_utils.gd")
+
 ##Amount of propeller blades to generate.
 @export_range(1, 8, 1, "or_greater") var propeller_amount : int = 2:
 	set(x):

@@ -6,7 +6,7 @@ This is the aircraft creation workflow that I have adopted for this plugin. This
 
 Inherited scenes are one of the best workflow tools in Godot. Combined with [.blend file imports](https://docs.godotengine.org/en/4.1/tutorials/assets_pipeline/importing_scenes.html#importing-blend-files-directly-within-godot) it makes for a very quick asset iteration workflow.
 
-### 1. Model configuration in Blender (or another modelling software):
+### 1. Model configuration in Blender (or another modeling software):
 
 My example will be done in blender, but the concepts are the same for .gltf exports from other software.
 

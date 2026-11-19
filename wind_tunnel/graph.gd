@@ -90,6 +90,10 @@ enum ReadoutMode { CROSSHAIR, NEAREST_POINT }
 @export var auto_bounds_y : bool = true:
 	set(x):
 		auto_bounds_y = x; queue_redraw()
+##Keep zero on the y axis when it is fitted to the data, for a chart whose values never run below it.
+@export var auto_bounds_keep_zero_y : bool = false:
+	set(x):
+		auto_bounds_keep_zero_y = x; queue_redraw()
 ##Pull the x axis symmetric around zero, so zero sits in the middle of the plot whatever the data reaches.
 @export var center_x_on_zero : bool = false:
 	set(x):
@@ -278,11 +282,37 @@ func clear_curves() -> void:
 #words written in the plot that name a family of curves rather than one of them. each holds its point and the run it
 #follows in the values the curves are drawn in, so a word follows the line it names however the axes are scaled
 var labels : Array[Dictionary] = []
+#rules drawn down the plot at a value on the x axis, which mark where something changes without taking part in the axis bounds
+var x_rules : Array[Dictionary] = []
+
+#a dot of the caller's own, given in the same values the curves are drawn at, listed under a kind and read out with the
+#words it is given
+func add_marker(value : Vector2, kind : String, text : String, color : Color) -> void:
+	marked_points.append({"value": value, "kind": kind, "text": text, "color": color})
+	cached_marker_key = []
+	queue_redraw()
+
+#takes the caller's dots off the chart, which is what a drawing of fresh data starts with
+func clear_markers() -> void:
+	marked_points.clear()
+	cached_marker_key = []
+	queue_redraw()
 
 #writes a word in the plot at a point, turned to follow the run the direction gives, both in the values the curves are drawn
 #in. `align` puts the word beside the point instead of across it, and `clear` stands it that many pixels further off its run
 func add_label(text : String, position : Vector2, direction : Vector2, align : HorizontalAlignment = HORIZONTAL_ALIGNMENT_CENTER, clear : float = 0.0) -> void:
 	labels.append({"text": text, "position": position, "direction": direction, "align": align, "clear": clear})
+	queue_redraw()
+
+func add_x_rule(value : float, color : Color, width := 1.0) -> void:
+	x_rules.append({"value": value, "color": color, "width": width})
+	queue_redraw()
+
+#takes the rules off the chart
+func clear_rules() -> void:
+	if x_rules.is_empty(): return
+	
+	x_rules.clear()
 	queue_redraw()
 
 #writes a word along a curve at a value on its own x axis, following the curve there and keeping clear of it
@@ -330,6 +360,7 @@ func _draw() -> void:
 	if plot.size.x <= smallest_plot_side or plot.size.y <= smallest_plot_side: return
 	
 	draw_grid(plot, axis_cross, x_axis_fit, y_axis_fit)
+	draw_rules(plot, x_axis_fit)
 	draw_curves(plot, x_axis_fit, y_axis_fit)
 	draw_markers(plot, x_axis_fit, y_axis_fit)
 	draw_labels(plot, x_axis_fit, y_axis_fit)
@@ -440,22 +471,14 @@ func draw_x_tick_row(x_axis_fit : AxisFit, plot : Rect2) -> void:
 	var baseline := plot.end.y + font.get_ascent(font_size) - spacing(tick_label_nudge.x)
 	if x_tick_label_placement == Placement.AFTER: baseline = plot.position.y - spacing(tick_label_nudge.x)
 	
-	var x_last_index : int = x_axis_fit.divisions_count
-	for index : int in x_last_index + 1:
-		var x := plot.position.x + plot.size.x * (index / float(x_last_index))
+	for index : int in x_axis_fit.tick_values.size():
 		var tick_label : String = x_axis_fit.labels[index]
 		var label_width := measure_text_width(tick_label)
+		var x := plot.position.x + plot.size.x * axis_fraction(x_axis_fit, x_axis_fit.tick_values[index])
 		
-		var label_left := x - label_width * 0.5
-		var alignment := HORIZONTAL_ALIGNMENT_CENTER
-		if index == 0:
-			label_left = plot.position.x
-			alignment = HORIZONTAL_ALIGNMENT_LEFT
-		elif index == x_last_index:
-			label_left = plot.end.x - label_width
-			alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		
-		draw_string(font, Vector2(label_left, baseline), tick_label, alignment, label_width, font_size, text_color)
+		#a label is centered on its own tick, and pulled inside the plot at either edge so the first and last still read
+		var label_left := clampf(x - label_width * 0.5, plot.position.x, plot.end.x - label_width)
+		draw_string(font, Vector2(label_left, baseline), tick_label, HORIZONTAL_ALIGNMENT_LEFT, label_width, font_size, text_color)
 
 #the x axis name, drawn beyond its tick row on whichever side of the plot it was asked for
 func draw_x_name(plot : Rect2, tick_row_height : float, name_gap : float) -> void:
@@ -484,14 +507,15 @@ func draw_y_tick_column(y_axis_fit : AxisFit, plot : Rect2) -> void:
 	
 	var ascent := font.get_ascent(font_size)
 	var descent := font.get_descent(font_size)
-	var y_last_index : int = y_axis_fit.divisions_count
-	for index : int in y_last_index + 1:
-		var y := plot.position.y + plot.size.y * (index / float(y_last_index))
+	var tick_count := y_axis_fit.tick_values.size()
+	for index : int in tick_count:
 		#the labels run top down, so the highest value comes first
-		var tick_label : String = y_axis_fit.labels[y_last_index - index]
+		var tick_index := tick_count - 1 - index
+		var y := plot.position.y + plot.size.y * (1.0 - axis_fraction(y_axis_fit, y_axis_fit.tick_values[tick_index]))
+		var tick_label : String = y_axis_fit.labels[tick_index]
 		var baseline := y + (ascent - descent) * 0.5
 		if index == 0: baseline = y + ascent
-		elif index == y_last_index: baseline = y - descent
+		elif index == tick_count - 1: baseline = y - descent
 		
 		draw_string(font, Vector2(x, baseline), tick_label, align, y_axis_fit.tick_width, font_size, text_color)
 
@@ -583,6 +607,10 @@ func calculate_bounds() -> Dictionary:
 				y_reach.x = minf(y_reach.x, span.position.y)
 				y_reach.y = maxf(y_reach.y, span.end.y)
 	
+	#an axis whose numbers never run below nothing keeps zero at its foot, however little of it the data reaches
+	if auto_bounds_y and auto_bounds_keep_zero_y and is_finite(y_reach.x):
+		y_reach.x = minf(y_reach.x, 0.0)
+	
 	#each axis fits to what its curves reach, or shows the bounds set on the node
 	var x_range := fit_axis_range(x_reach.x, x_reach.y, center_x_on_zero) if auto_bounds_x else Vector2(lower_bound.x, upper_bound.x)
 	var y_range := fit_axis_range(y_reach.x, y_reach.y, center_y_on_zero) if auto_bounds_y else Vector2(lower_bound.y, upper_bound.y)
@@ -613,89 +641,116 @@ func fit_axis_range(axis_lower : float, axis_upper : float, centered : bool) -> 
 
 
 #axis fitting
-#tick steps are accepted as tidy within this relative tolerance, loose enough to take 989997.92 for 990000
-var tidy_step_tolerance := 1e-6
+#how far a tick may sit from being a whole number of steps from zero before it is treated as off the step, so float error
+#from a bound like 0.30000000000000004 does not cost the axis a tick
+var axis_index_tolerance := 1e-9
 var thousand_scale := 1000.0
 var million_scale := 1000000.0
 #the clear space a tick label needs before its neighbor may sit that close, and the narrowest the label column gets
 var minimum_tick_label_gap := 18.0
 var minimum_tick_width := 8.0
 
-#an axis as it is drawn: its limits, the gap between its ticks, how many ticks it has, the unit its labels are written
-#in, the labels themselves, and the widths of the widest of them and of the column they need
+#an axis as it is drawn: its limits, the round gap between its ticks, the values and labels of the ticks themselves, the unit
+#its labels are written in, and the widths of the widest of them and of the column they need
 class AxisFit:
 	var lower_bound : float
 	var upper_bound : float
 	var step : float
-	var divisions_count : int
+	var tick_values : PackedFloat64Array = PackedFloat64Array()
 	var label_scale := 1.0
 	var labels : Array[String] = []
 	var widest_label_width := 0.0
 	var tick_width := 0.0
 
-func calculate_axis_fit(lower_bound : float, upper_bound : float, divisions_count : int, stretch_to_tidy_steps : bool, plot_width : float = 0.0) -> AxisFit:
-	#the axis is built for the divisions asked for, and built again for fewer of them when the labels do not fit the plot.
-	#it is only rebuilt once: the tidy search below tries the counts on either side of the one it is given, so a loop
-	#that kept reducing could ask for fewer divisions and be handed more of them, back and forth without end
-	var fit := build_axis_fit(lower_bound, upper_bound, divisions_count, stretch_to_tidy_steps)
-	if plot_width > 0.0 and fit.divisions_count > 1:
-		var fitting_divisions := maxi(1, int(plot_width / (fit.widest_label_width + spacing(minimum_tick_label_gap))) - 1)
-		if fitting_divisions < fit.divisions_count:
-			fit = build_axis_fit(lower_bound, upper_bound, fitting_divisions, stretch_to_tidy_steps)
+#the ticks of one step that fall inside an axis, counted in whole steps from zero, so none of them is ever a step or two off
+#the round figure it stands for
+func ticks_within(lower_bound : float, upper_bound : float, step : float) -> PackedFloat64Array:
+	var ticks := PackedFloat64Array()
+	var first_tick := int(ceilf(lower_bound / step - axis_index_tolerance))
+	var last_tick := int(floorf(upper_bound / step + axis_index_tolerance))
+	for index : int in range(first_tick, last_tick + 1):
+		ticks.append(index * step)
 	
-	return fit
+	return ticks
 
-#the axis for one count of divisions: its limits and step, the unit its labels are written in, the labels themselves,
-#the width of the widest of them, and the width of the column they need
-func build_axis_fit(lower_bound : float, upper_bound : float, divisions_count : int, stretch_to_tidy_steps : bool) -> AxisFit:
-	var tidy := tidy_axis_bounds(lower_bound, upper_bound, divisions_count) if stretch_to_tidy_steps else {"lower_bound": lower_bound, "upper_bound": upper_bound, "divisions": divisions_count}
-	var step : float = (tidy.upper_bound - tidy.lower_bound) / float(tidy.divisions)
+#where a value sits along an axis, from 0 at its lower bound to 1 at its upper
+func axis_fraction(axis_fit : AxisFit, value : float) -> float:
+	var span : float = axis_fit.upper_bound - axis_fit.lower_bound
+	if is_zero_approx(span): return 0.0
+	
+	return (value - axis_fit.lower_bound) / span
+
+#the axis for one count of divisions: its ticks are laid at round figures, 1, 2 or 5 times a power of ten apart, so every
+#label on it is a round number whatever its limits are. an axis fitted to what its curves reach is widened to the figures that
+#bracket it, so its first and last tick sit on its own ends; one given its limits shows the ticks that fall inside them
+func build_axis_fit(lower_bound : float, upper_bound : float, divisions_count : int, stretch_to_tidy_steps : bool, step_hint : float = 0.0) -> AxisFit:
+	var span : float = upper_bound - lower_bound
+	#an axis with nothing on it to span is opened out around its value, so it is drawn like any other rather than as one tick
+	if is_zero_approx(span):
+		lower_bound -= fallback_axis_span
+		upper_bound += fallback_axis_span
+		span = upper_bound - lower_bound
+	var step : float = step_hint
+	if step <= 0.0: step = nearest_nice_step(span / float(maxi(divisions_count, 1))) if span > 0.0 else 1.0
+	
+	if stretch_to_tidy_steps and span > 0.0:
+		lower_bound = floorf(lower_bound / step) * step
+		upper_bound = ceilf(upper_bound / step) * step
+	
+	var tick_values := ticks_within(lower_bound, upper_bound, step)
+	if tick_values.is_empty(): tick_values.append(lower_bound)
+	
+	#if the limits cannot be moved, the step is taken down until the axis shows more than one tick: a step as wide as the whole
+	#range leaves a single figure at one end of it
+	if not stretch_to_tidy_steps and span > 0.0:
+		var guard := 0
+		while tick_values.size() < 2 and guard < 24:
+			var smaller_step := previous_nice_step(step)
+			if smaller_step <= 0.0 or is_equal_approx(smaller_step, step): break
+			step = smaller_step
+			tick_values = ticks_within(lower_bound, upper_bound, step)
+			guard += 1
 	
 	#the unit the whole axis is labeled in, chosen once so a small tick is never in thousands on a million scale
-	var axis_limit := maxf(absf(tidy.lower_bound), absf(tidy.upper_bound))
+	var axis_limit := maxf(absf(lower_bound), absf(upper_bound))
 	var label_scale := 1.0
 	if axis_limit >= million_scale - 1.0: label_scale = million_scale
 	elif axis_limit >= thousand_scale * 10.0 - 1.0: label_scale = thousand_scale
 	
 	var labels : Array[String] = []
 	var widest_label_width := 0.0
-	for division : int in tidy.divisions + 1:
-		var label := format_tick_label(tidy.lower_bound + step * division, step, label_scale)
+	for value : float in tick_values:
+		var label := format_tick_label(value, step, label_scale)
 		labels.append(label)
 		widest_label_width = maxf(widest_label_width, measure_text_width(label))
 	
 	var fit := AxisFit.new()
-	fit.lower_bound = tidy.lower_bound
-	fit.upper_bound = tidy.upper_bound
+	fit.lower_bound = lower_bound
+	fit.upper_bound = upper_bound
 	fit.step = step
-	fit.divisions_count = tidy.divisions
+	fit.tick_values = tick_values
 	fit.label_scale = label_scale
 	fit.labels = labels
 	fit.widest_label_width = widest_label_width
 	fit.tick_width = maxf(spacing(minimum_tick_width), widest_label_width + spacing(tick_label_padding))
 	return fit
 
-#a tidy axis is one whose ticks land on round numbers: a step that is a whole number of round figures, with the limits
-#sitting on multiples of it. the divisions asked for are kept when they make one, and the counts on either side of them
-#are tried when they do not
-func tidy_axis_bounds(lower_bound : float, upper_bound : float, divisions_count : int) -> Dictionary:
-	var span := upper_bound - lower_bound
-	for offset : int in [0, -1, 1, -2, 2]:
-		var divisions := divisions_count + offset
-		if divisions < 1: continue
-		
-		var step := span / float(divisions)
-		var step_leading_digits := step / pow(10.0, floorf(log_with_base(step, 10.0)) - 1.0)
-		if absf(step_leading_digits - roundf(step_leading_digits)) > tidy_step_tolerance * absf(step_leading_digits): continue
-		if not number_is_divisible_with_tolerance(lower_bound, step, step * tidy_step_tolerance): continue
-		
-		return {"lower_bound": lower_bound, "upper_bound": upper_bound, "divisions": divisions}
+#the axis as it is drawn: fitted to the divisions asked for, and opened out to a wider step when the labels would not sit
+#apart in the plot. the step only ever grows, so the loop always ends, and the ticks stay round figures as it does
+func calculate_axis_fit(lower_bound : float, upper_bound : float, divisions_count : int, stretch_to_tidy_steps : bool, plot_width : float = 0.0) -> AxisFit:
+	var fit := build_axis_fit(lower_bound, upper_bound, divisions_count, stretch_to_tidy_steps)
+	if plot_width <= 0.0: return fit
 	
-	#no count nearby divides the range into round steps, so the limits are rounded out to the next tidy one instead
-	var rounded_step := round_to_nice_step(span / float(divisions_count))
-	var rounded_lower := floorf(lower_bound / rounded_step) * rounded_step
-	var rounded_upper := ceilf(upper_bound / rounded_step) * rounded_step
-	return {"lower_bound": rounded_lower, "upper_bound": rounded_upper, "divisions": maxi(1, int(roundf((rounded_upper - rounded_lower) / rounded_step)))}
+	while fit.tick_values.size() > 1:
+		var widest_row : float = float(fit.tick_values.size() - 1) * (fit.widest_label_width + spacing(minimum_tick_label_gap))
+		if widest_row <= plot_width: break
+		
+		var wider_step := next_nice_step(fit.step)
+		if wider_step <= fit.step: break
+		
+		fit = build_axis_fit(lower_bound, upper_bound, divisions_count, stretch_to_tidy_steps, wider_step)
+	
+	return fit
 
 
 #grid
@@ -707,10 +762,9 @@ var tick_label_inside_color := Color(1.0, 1.0, 1.0, 0.35)
 #the grid lines one axis steps across the plot: a line for every division of it, each running the other way to the one
 #they are stepped along. `along` is the unit vector of the axis the lines are stepped along
 func draw_grid_lines(axis_fit : AxisFit, plot : Rect2, along : Vector2) -> void:
-	var divisions : int = axis_fit.divisions_count
 	var across := Vector2.ONE - along
-	for index : int in divisions + 1:
-		var line_position : Vector2 = plot.position + plot.size * along * (index / float(divisions))
+	for value : float in axis_fit.tick_values:
+		var line_position : Vector2 = plot.position + plot.size * along * axis_fraction(axis_fit, value)
 		draw_line(line_position, line_position + plot.size * across, background_line_color)
 
 func draw_grid(plot : Rect2, axis_cross : Vector2, x_axis_fit : AxisFit, y_axis_fit : AxisFit) -> void:
@@ -721,24 +775,24 @@ func draw_grid(plot : Rect2, axis_cross : Vector2, x_axis_fit : AxisFit, y_axis_
 	
 	#the tick labels written inside the plot, along the zero lines, in the gray the grid reads by
 	if x_tick_label_placement == Placement.ON_AXIS:
-		var x_last_index : int = x_axis_fit.divisions_count
-		for index : int in x_last_index + 1:
+		for index : int in x_axis_fit.tick_values.size():
 			var tick_label : String = x_axis_fit.labels[index]
 			var label_width := measure_text_width(tick_label)
 			#a label sits right of its own gridline and above the zero line, so no line crosses the text
-			var inside_left := clampf(plot.position.x + plot.size.x * (index / float(x_last_index)) + spacing(tick_label_padding), plot.position.x, plot.end.x - label_width)
+			var inside_left := clampf(plot.position.x + plot.size.x * axis_fraction(x_axis_fit, x_axis_fit.tick_values[index]) + spacing(tick_label_padding), plot.position.x, plot.end.x - label_width)
 			draw_string(font, Vector2(inside_left, axis_cross.y - spacing(tick_label_padding)), tick_label, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, tick_label_inside_color)
 	
 	if y_tick_label_placement == Placement.ON_AXIS:
-		var y_last_index : int = y_axis_fit.divisions_count
-		for index : int in y_last_index + 1:
+		var tick_count := y_axis_fit.tick_values.size()
+		for index : int in tick_count:
 			#the labels run top down, so the highest value comes first
-			var tick_label : String = y_axis_fit.labels[y_last_index - index]
+			var tick_index := tick_count - 1 - index
+			var tick_label : String = y_axis_fit.labels[tick_index]
 			#the x axis already writes the zero they share when it sits on its axis too
 			if tick_label == "0" and x_tick_label_placement == Placement.ON_AXIS: continue
 			#a label sits just above its own gridline, so the line doesn't cross the text. the top one drops below its
 			#line instead, which is the only way it stays inside the plot
-			var inside_baseline := plot.position.y + plot.size.y * (index / float(y_last_index)) - spacing(tick_label_padding)
+			var inside_baseline := plot.position.y + plot.size.y * (1.0 - axis_fraction(y_axis_fit, y_axis_fit.tick_values[tick_index])) - spacing(tick_label_padding)
 			if index == 0: inside_baseline = plot.position.y + ascent
 			draw_string(font, Vector2(axis_cross.x + spacing(tick_label_padding), inside_baseline), tick_label, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, tick_label_inside_color)
 	
@@ -748,6 +802,18 @@ func draw_grid(plot : Rect2, axis_cross : Vector2, x_axis_fit : AxisFit, y_axis_
 			draw_line(Vector2(axis_cross.x, plot.position.y), Vector2(axis_cross.x, plot.end.y), zero_line_color, zero_line_width)
 		if axis_cross.y > plot.position.y and axis_cross.y < plot.end.y:
 			draw_line(Vector2(plot.position.x, axis_cross.y), Vector2(plot.end.x, axis_cross.y), zero_line_color, zero_line_width)
+
+
+#the rules down the plot, drawn under the curves so the data stays on top of them
+func draw_rules(plot : Rect2, x_axis_fit : AxisFit) -> void:
+	var span : float = x_axis_fit.upper_bound - x_axis_fit.lower_bound
+	if is_zero_approx(span): return
+	
+	for rule : Dictionary in x_rules:
+		var x : float = lerpf(plot.position.x, plot.end.x, (rule.value - x_axis_fit.lower_bound) / span)
+		if x < plot.position.x or x > plot.end.x: continue
+		
+		draw_line(Vector2(x, plot.position.y), Vector2(x, plot.end.y), rule.color, rule.width)
 
 
 #curves
@@ -1241,12 +1307,14 @@ func collect_curve_markers(plot : Rect2, x_axis_fit : AxisFit, y_axis_fit : Axis
 		var y_axis_value : float = 0.5 if curve.normalize_y else 0.0
 		var x_axis_value : float = 0.5 if curve.normalize_x else 0.0
 		
-		#the curve crossing the horizontal axis gives x values, and the curve crossing the vertical one gives y values
+		#the curve crossing the horizontal axis gives x values, and the curve crossing the vertical one gives y values. a crossing of
+		#the horizontal axis is found by sweeping along y, and one of the vertical axis by sweeping along x, which is the other way
+		#round from what the two readings look like
 		if show_axis_crossings:
-			for crossing : Vector2 in find_curve_crossings(curve.points, curve.parameters, y_axis_value, false, true):
+			for crossing : Vector2 in find_curve_crossings(curve.points, curve.parameters, y_axis_value, true, true):
 				markers.append(curve_marker(curve, Vector2(crossing.x, y_axis_value), "Axis crossing", plot, x_axis_fit, y_axis_fit))
 			
-			for crossing : Vector2 in find_curve_crossings(curve.points, curve.parameters, x_axis_value, true, true):
+			for crossing : Vector2 in find_curve_crossings(curve.points, curve.parameters, x_axis_value, false, true):
 				#a curve already sitting on the horizontal axis where it crosses the vertical one would put its dot on the
 				#origin, where the two axes meet anyway, and on top of every other curve doing the same
 				if is_equal_approx(crossing.x, y_axis_value): continue
@@ -1280,6 +1348,15 @@ func collect_curve_markers(plot : Rect2, x_axis_fit : AxisFit, y_axis_fit : Axis
 			marker.text = describe_values(read_pixel_value(meeting, plot, x_axis_fit, y_axis_fit), x_axis_fit, y_axis_fit)
 			marker.kind = pair[2]
 			markers.append(marker)
+	
+	#the dots the caller asked for, which are given in the same values the curves are drawn at
+	for marked : Dictionary in marked_points:
+		var marker := Marker.new()
+		marker.position = map_value_to_plot(marked.value, plot, x_axis_fit, y_axis_fit, false, false)
+		marker.color = marked.color
+		marker.text = marked.text
+		marker.kind = marked.kind
+		markers.append(marker)
 	
 	#a dot that lands on another dot carrying the same value is the same dot found twice, so only the first is kept. a dot
 	#that lands on one carrying another value is marked as crowded, so a stack of values reads as more than one dot
@@ -1317,7 +1394,7 @@ func curve_marker(curve : CurveData, value : Vector2, kind : String, plot : Rect
 #the values of an axis fit, which is what a marker cache key compares: each draw builds new fits whether they changed or
 #whether they did not, so the fits have to go into the key by their values and not by which fit they are
 func axis_fit_key(fit : AxisFit) -> Array:
-	return [fit.lower_bound, fit.upper_bound, fit.step, fit.divisions_count, fit.label_scale, fit.labels, fit.tick_width]
+	return [fit.lower_bound, fit.upper_bound, fit.step, fit.tick_values, fit.label_scale, fit.labels, fit.tick_width]
 
 #everything a dot's place and its value are worked out from, so a change to any of it is noticed. the samples are hashed,
 #so an edit made straight into a curve's points does not go unseen
@@ -1333,7 +1410,7 @@ func marker_cache_key(plot : Rect2, x_axis_fit : AxisFit, y_axis_fit : AxisFit) 
 		plot, axis_fit_key(x_axis_fit), axis_fit_key(y_axis_fit),
 		show_axis_crossings, show_curve_extrema, show_curve_intersections, show_curve_self_intersections,
 		spacing(dot_radius), spacing(marker_merge_distance), hover_step_fraction,
-		curve_key,
+		curve_key, hash(marked_points),
 	]
 
 
@@ -1345,7 +1422,7 @@ var marker_label_gap := 6.0
 #the dots, and the plate of values beside the cursor for the ones within reach of it
 func draw_markers(plot : Rect2, x_axis_fit : AxisFit, y_axis_fit : AxisFit) -> void:
 	marker_plate_rect = Rect2()
-	if not show_axis_crossings and not show_curve_extrema and not show_curve_intersections and not show_curve_self_intersections: return
+	if not show_axis_crossings and not show_curve_extrema and not show_curve_intersections and not show_curve_self_intersections and marked_points.is_empty(): return
 	
 	var marker_key := marker_cache_key(plot, x_axis_fit, y_axis_fit)
 	if marker_key != cached_marker_key:
@@ -1395,6 +1472,9 @@ func build_readout_rows(reachable : Array[Marker]) -> Dictionary:
 	
 	return {"colors": row_colors, "second_colors": second_colors, "texts": row_texts}
 
+
+#the dots the caller asked for, in the same values the curves are drawn at
+var marked_points : Array[Dictionary] = []
 
 #how many segments the second half of a two colored dot is cut into
 var marker_half_segments := 10
@@ -1794,13 +1874,6 @@ func widest_parameter_width() -> float:
 static func log_with_base(value : float, base : float) -> float:
 	return log(value) / log(base)
 
-#whether a value sits on a whole multiple, measured from the nearest multiple. fmod reports the remainder just under a
-#multiple as almost a whole step and reads as off-step
-static func number_is_divisible_with_tolerance(number : float, multiple : float, tolerance : float) -> bool:
-	var multiples := number / multiple
-	var absolute_difference : float = absf(multiples - roundf(multiples)) * multiple
-	return absolute_difference <= tolerance or is_equal_approx(absolute_difference, tolerance)
-
 
 
 
@@ -1840,10 +1913,11 @@ var max_tick_decimals := 6
 #the text under a tick, or, with the decimals kept, the widest a value on that axis can be measured as
 func format_tick_label(value : float, tick_step : float, label_scale : float, pad_decimals : bool = false) -> String:
 	var scaled_value : float = value / label_scale
-	if is_zero_approx(scaled_value): return "0" #no "-0", and no unit on zero
+	var scaled_step : float = tick_step / label_scale
+	#a tick that is nothing is written as such, without a sign or a unit, but one that is only small is still its own number
+	if absf(scaled_value) <= absf(scaled_step) * 1e-6: return "0"
 	
 	#as many decimals as it takes to write the step exactly, so neighboring labels never round into the same text
-	var scaled_step : float = tick_step / label_scale
 	var decimals := maxi(0, int(ceilf(-log_with_base(scaled_step, 10.0))))
 	scaled_step *= pow(10.0, decimals)
 	while decimals < max_tick_decimals and not is_zero_approx(scaled_step - roundf(scaled_step)):
@@ -1874,15 +1948,38 @@ func read_pixel_value(pixel : Vector2, plot : Rect2, x_axis_fit : AxisFit, y_axi
 		remap(pixel.y, plot.end.y, plot.position.y, y_axis_fit.lower_bound, y_axis_fit.upper_bound),
 	)
 
-#rounds a step up to 1, 2, 5 or 10 times a power of ten, so tick labels stay readable
-static func round_to_nice_step(raw_step : float) -> float:
-	if raw_step <= 0.0:
-		return 1.0
+#the power of ten a step is measured in, with a step that is exactly one of them read as the power itself rather than the one
+#below it: log10 of a power of ten can come back a hair under it, which would leave 1000000 read as ten hundred thousand
+static func step_magnitude(step : float) -> float:
+	return pow(10.0, floorf(log_with_base(step, 10.0) + 1e-9))
+
+#the round step nearest the one asked for, 1, 2 or 5 times a power of ten, which is what makes every tick label on an axis
+#a round number
+static func nearest_nice_step(raw_step : float) -> float:
+	if raw_step <= 0.0: return 1.0
 	
-	var magnitude := pow(10.0, floorf(log_with_base(raw_step, 10.0)))
-	var normalized_step := raw_step / magnitude
-	for tidiness : float in [1.0, 2.0, 5.0, 10.0]:
-		if normalized_step <= tidiness:
-			return magnitude * tidiness
+	var magnitude := step_magnitude(raw_step)
+	var best := magnitude
+	for candidate : float in [magnitude, magnitude * 2.0, magnitude * 5.0, magnitude * 10.0]:
+		if absf(candidate - raw_step) < absf(best - raw_step): best = candidate
+	
+	return best
+
+#the round step after this one, 1 to 2 to 5 to 10, which is how an axis is given fewer ticks
+static func next_nice_step(step : float) -> float:
+	var magnitude := step_magnitude(step)
+	var normalized_step := step / magnitude
+	if normalized_step < 1.5: return magnitude * 2.0
+	if normalized_step < 3.5: return magnitude * 5.0
 	
 	return magnitude * 10.0
+
+#the round step before this one, 10 to 5 to 2 to 1, which is how an axis is given more ticks
+static func previous_nice_step(step : float) -> float:
+	var magnitude := step_magnitude(step)
+	var normalized_step := step / magnitude
+	if normalized_step > 5.5: return magnitude * 5.0
+	if normalized_step > 2.5: return magnitude * 2.0
+	if normalized_step > 1.5: return magnitude
+	
+	return magnitude * 0.5

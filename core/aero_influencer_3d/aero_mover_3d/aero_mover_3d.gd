@@ -55,13 +55,13 @@ func _update_transform_substep(substep_delta : float) -> void:
 		_angular_velocity = axis_angle / substep_delta * cached_transform.basis * 2.0 #i'm not entirely sure why the 2.0 is needed, but testing showed that it's needed.
 		_angular_velocity -= angular_motor #cancel out any rotation caused by motor
 	
-	#motors
-	default_transform.origin += linear_motor * basis * substep_delta
-	#rotate by angular velocity
-	if not is_equal_approx(angular_motor.length_squared(), 0.0):
-		var new_transform := default_transform
-		new_transform.basis = default_transform.basis * Basis((angular_motor).normalized(), angular_motor.length() * substep_delta)
-		default_transform = new_transform
+	if not Engine.is_editor_hint():
+		default_transform.origin += linear_motor * default_transform.basis * substep_delta
+		#rotate by angular velocity
+		if not is_equal_approx(angular_motor.length_squared(), 0.0):
+			var new_transform := default_transform
+			new_transform.basis = default_transform.basis * Basis((angular_motor).normalized(), angular_motor.length() * substep_delta)
+			default_transform = new_transform
 	
 	_linear_velocity += linear_motor
 	_angular_velocity += angular_motor

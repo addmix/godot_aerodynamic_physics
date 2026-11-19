@@ -552,14 +552,12 @@ PackedVector3Array AeroBody3D::calculate_forces_manual(const Transform3D &p_tran
 	return PackedVector3Array({ force_and_torque.force, force_and_torque.torque });
 }
 void AeroBody3D::_update_transform_substep(double substep_delta) {
-	if (not Engine::get_singleton()->is_editor_hint()) {
-		for (int i = 0; i < aero_influencers.size(); i++) {
-			AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
-			if (not influencer) continue;
-			if (influencer->is_disabled()) continue;
-			
-			influencer->_update_transform_substep_with_override(substep_delta);
-		}
+	for (int i = 0; i < aero_influencers.size(); i++) {
+		AeroInfluencer3D* influencer = Object::cast_to<AeroInfluencer3D>(aero_influencers[i]);
+		if (not influencer) continue;
+		if (influencer->is_disabled()) continue;
+		
+		influencer->_update_transform_substep_with_override(substep_delta);
 	}
 }
 

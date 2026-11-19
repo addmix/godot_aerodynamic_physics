@@ -6,7 +6,94 @@
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_tabs"]
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_static"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+
+[sub_resource type="DPITexture" id="DPITexture_1ggli"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><g fill=\"#e0e0e0\"><path d=\"M9 1v3.055a4 4 0 0 1 1.027.426l2.159-2.159A7 7 0 0 0 9 1z\"/><path fill-opacity=\".2\" d=\"M7 1.08A7 7 0 0 0 3.814 2.4l2.159 2.159A4 4 0 0 1 7 4.13V1.08zM2.4 3.814A7 7 0 0 0 1.078 7h3.055a4 4 0 0 1 .426-1.027L2.4 3.815zm11.2 0-2.159 2.159A4 4 0 0 1 11.869 7h3.05a7 7 0 0 0-1.32-3.186zM1.08 9a7 7 0 0 0 1.32 3.186l2.158-2.159A4 4 0 0 1 4.13 9H1.08zm10.786 0a4 4 0 0 1-.425 1.027l2.158 2.159A7 7 0 0 0 14.921 9h-3.055zm-5.894 2.441L3.814 13.6a7 7 0 0 0 3.185 1.322v-3.055a4 4 0 0 1-1.027-.426zm4.055 0a4 4 0 0 1-1.028.428v3.05a7 7 0 0 0 3.186-1.32l-2.158-2.158z\"/></g></svg>
+"
+saturation = 2.0
+color_map = {
+Color(1, 0.37254903, 0.37254903, 1): Color(1, 0.47, 0.42, 1),
+Color(0.37254903, 1, 0.5921569, 1): Color(0.45, 0.95, 0.5, 1),
+Color(1, 0.8666667, 0.39607844, 1): Color(0.83, 0.78, 0.62, 1)
+}
+
+[sub_resource type="DPITexture" id="DPITexture_sx3xb"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><g fill=\"#e0e0e0\"><path fill-opacity=\".2\" d=\"M9 1.078v3.055a4 4 0 0 1 1.027.426L12.186 2.4A7 7 0 0 0 9 1.078zM7 1.08A7 7 0 0 0 3.814 2.4l2.159 2.159A4 4 0 0 1 7 4.13V1.079zM2.4 3.814A7 7 0 0 0 1.078 7h3.055a4 4 0 0 1 .426-1.027L2.4 3.814zM1.08 9a7 7 0 0 0 1.32 3.185l2.159-2.158A4 4 0 0 1 4.131 9H1.08zm10.787 0a4 4 0 0 1-.426 1.027l2.159 2.158A7 7 0 0 0 14.922 9h-3.055zm-5.894 2.441L3.814 13.6A7 7 0 0 0 7 14.922v-3.055a4 4 0 0 1-1.027-.426zm4.054 0A4 4 0 0 1 9 11.869v3.05a7 7 0 0 0 3.186-1.32l-2.159-2.158z\"/><path d=\"m13.6 3.8-2.158 2.158a4 4 0 0 1 .428 1.028h3.05A7 7 0 0 0 13.6 3.8z\"/></g></svg>
+"
+saturation = 2.0
+color_map = {
+Color(1, 0.37254903, 0.37254903, 1): Color(1, 0.47, 0.42, 1),
+Color(0.37254903, 1, 0.5921569, 1): Color(0.45, 0.95, 0.5, 1),
+Color(1, 0.8666667, 0.39607844, 1): Color(0.83, 0.78, 0.62, 1)
+}
+
+[sub_resource type="DPITexture" id="DPITexture_xrday"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><g fill=\"#e0e0e0\"><path fill-opacity=\".2\" d=\"M9 1.078v3.055a4 4 0 0 1 1.027.426L12.186 2.4A7 7 0 0 0 9 1.078zM7 1.08A7 7 0 0 0 3.814 2.4l2.159 2.159A4 4 0 0 1 7 4.13V1.079zM2.4 3.814A7 7 0 0 0 1.078 7h3.055a4 4 0 0 1 .426-1.027L2.4 3.814zm11.2 0-2.159 2.159A4 4 0 0 1 11.869 7h3.05a7 7 0 0 0-1.32-3.186zM1.08 9a7 7 0 0 0 1.32 3.185l2.158-2.158A4 4 0 0 1 4.13 9H1.08zm4.892 2.441L3.814 13.6a7 7 0 0 0 3.185 1.322v-3.055a4 4 0 0 1-1.027-.426zm4.055 0a4 4 0 0 1-1.028.428v3.05a7 7 0 0 0 3.186-1.32l-2.158-2.158z\"/><path d=\"M11.867 9a4 4 0 0 1-.426 1.027l2.158 2.159A7 7 0 0 0 14.922 9h-3.055z\"/></g></svg>
+"
+saturation = 2.0
+color_map = {
+Color(1, 0.37254903, 0.37254903, 1): Color(1, 0.47, 0.42, 1),
+Color(0.37254903, 1, 0.5921569, 1): Color(0.45, 0.95, 0.5, 1),
+Color(1, 0.8666667, 0.39607844, 1): Color(0.83, 0.78, 0.62, 1)
+}
+
+[sub_resource type="DPITexture" id="DPITexture_rjitv"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><g fill=\"#e0e0e0\"><path fill-opacity=\".2\" d=\"M9 1.078v3.055a4 4 0 0 1 1.027.426L12.186 2.4A7 7 0 0 0 9 1.078zM7 1.08A7 7 0 0 0 3.814 2.4l2.159 2.159A4 4 0 0 1 7 4.13V1.079zM2.4 3.814A7 7 0 0 0 1.078 7h3.055a4 4 0 0 1 .426-1.027L2.4 3.814zm11.2 0-2.159 2.159A4 4 0 0 1 11.869 7h3.05a7 7 0 0 0-1.32-3.186zM1.08 9a7 7 0 0 0 1.32 3.185l2.158-2.158A4 4 0 0 1 4.13 9H1.08zm10.786 0a4 4 0 0 1-.425 1.027l2.158 2.158A7 7 0 0 0 14.921 9h-3.055zm-5.894 2.441L3.814 13.6a7 7 0 0 0 3.185 1.322v-3.055a4 4 0 0 1-1.027-.426z\"/><path d=\"M10.027 11.4A4 4 0 0 1 9 11.828v3.05a7 7 0 0 0 3.185-1.32z\"/></g></svg>
+"
+saturation = 2.0
+color_map = {
+Color(1, 0.37254903, 0.37254903, 1): Color(1, 0.47, 0.42, 1),
+Color(0.37254903, 1, 0.5921569, 1): Color(0.45, 0.95, 0.5, 1),
+Color(1, 0.8666667, 0.39607844, 1): Color(0.83, 0.78, 0.62, 1)
+}
+
+[sub_resource type="DPITexture" id="DPITexture_44iki"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><g fill=\"#e0e0e0\"><path fill-opacity=\".2\" d=\"M9 1.078v3.055a4 4 0 0 1 1.027.426L12.186 2.4A7 7 0 0 0 9 1.078zM7 1.08A7 7 0 0 0 3.814 2.4l2.159 2.159A4 4 0 0 1 7 4.13V1.079zM2.4 3.814A7 7 0 0 0 1.078 7h3.055a4 4 0 0 1 .426-1.027L2.4 3.814zm11.2 0-2.159 2.159A4 4 0 0 1 11.869 7h3.05a7 7 0 0 0-1.32-3.186zM1.08 9a7 7 0 0 0 1.32 3.185l2.158-2.158A4 4 0 0 1 4.13 9H1.08zm10.786 0a4 4 0 0 1-.425 1.027l2.158 2.158A7 7 0 0 0 14.921 9h-3.055zm-1.84 2.441a4 4 0 0 1-1.027.428v3.05a7 7 0 0 0 3.186-1.32l-2.158-2.158z\"/><path d=\"m5.973 11.4-2.159 2.158A7 7 0 0 0 7 14.88v-3.054a4 4 0 0 1-1.027-.426z\"/></g></svg>
+"
+saturation = 2.0
+color_map = {
+Color(1, 0.37254903, 0.37254903, 1): Color(1, 0.47, 0.42, 1),
+Color(0.37254903, 1, 0.5921569, 1): Color(0.45, 0.95, 0.5, 1),
+Color(1, 0.8666667, 0.39607844, 1): Color(0.83, 0.78, 0.62, 1)
+}
+
+[sub_resource type="DPITexture" id="DPITexture_wck18"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><g fill=\"#e0e0e0\"><path fill-opacity=\".2\" d=\"M9 1.078v3.055a4 4 0 0 1 1.027.426L12.186 2.4A7 7 0 0 0 9 1.078zM7 1.08A7 7 0 0 0 3.814 2.4l2.159 2.159A4 4 0 0 1 7 4.13V1.079zM2.4 3.814A7 7 0 0 0 1.078 7h3.055a4 4 0 0 1 .426-1.027L2.4 3.814zm11.2 0-2.159 2.159A4 4 0 0 1 11.869 7h3.05a7 7 0 0 0-1.32-3.186zM11.867 9a4 4 0 0 1-.426 1.027l2.158 2.158A7 7 0 0 0 14.922 9h-3.055zm-5.895 2.441L3.814 13.6A7 7 0 0 0 7 14.922v-3.055a4 4 0 0 1-1.028-.426zm4.055 0A4 4 0 0 1 9 11.869v3.05a7 7 0 0 0 3.185-1.32l-2.158-2.158z\"/><path d=\"M1.08 9a7 7 0 0 0 1.32 3.186l2.159-2.159A4 4 0 0 1 4.131 9H1.08z\"/></g></svg>
+"
+saturation = 2.0
+color_map = {
+Color(1, 0.37254903, 0.37254903, 1): Color(1, 0.47, 0.42, 1),
+Color(0.37254903, 1, 0.5921569, 1): Color(0.45, 0.95, 0.5, 1),
+Color(1, 0.8666667, 0.39607844, 1): Color(0.83, 0.78, 0.62, 1)
+}
+
+[sub_resource type="DPITexture" id="DPITexture_2qehk"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><g fill=\"#e0e0e0\"><path fill-opacity=\".2\" d=\"M9 1.078v3.055a4 4 0 0 1 1.027.426L12.186 2.4A7 7 0 0 0 9 1.078zM7 1.08A7 7 0 0 0 3.814 2.4l2.159 2.159A4 4 0 0 1 7 4.13V1.079zm6.6 2.734-2.159 2.159A4 4 0 0 1 11.869 7h3.05a7 7 0 0 0-1.32-3.186zM1.08 9a7 7 0 0 0 1.32 3.185l2.158-2.158A4 4 0 0 1 4.13 9H1.08zm10.787 0a4 4 0 0 1-.426 1.027l2.158 2.158A7 7 0 0 0 14.921 9h-3.054zm-5.895 2.441L3.814 13.6a7 7 0 0 0 3.185 1.322v-3.055a4 4 0 0 1-1.027-.426zm4.055 0A4 4 0 0 1 9 11.869v3.05a7 7 0 0 0 3.185-1.32l-2.158-2.158z\"/><path d=\"M2.4 3.8a7 7 0 0 0-1.322 3.186h3.055a4 4 0 0 1 .426-1.028L2.4 3.8z\"/></g></svg>
+"
+saturation = 2.0
+color_map = {
+Color(1, 0.37254903, 0.37254903, 1): Color(1, 0.47, 0.42, 1),
+Color(0.37254903, 1, 0.5921569, 1): Color(0.45, 0.95, 0.5, 1),
+Color(1, 0.8666667, 0.39607844, 1): Color(0.83, 0.78, 0.62, 1)
+}
+
+[sub_resource type="DPITexture" id="DPITexture_og53d"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><g fill=\"#e0e0e0\"><path fill-opacity=\".2\" d=\"M9 1.078v3.055a4 4 0 0 1 1.027.426L12.186 2.4A7 7 0 0 0 9 1.078zM2.4 3.814A7 7 0 0 0 1.078 7h3.055a4 4 0 0 1 .426-1.027L2.4 3.814zm11.2 0-2.159 2.159A4 4 0 0 1 11.869 7h3.05a7 7 0 0 0-1.32-3.186zM1.08 9a7 7 0 0 0 1.32 3.185l2.158-2.158A4 4 0 0 1 4.13 9H1.08zm10.786 0a4 4 0 0 1-.425 1.027l2.158 2.158A7 7 0 0 0 14.921 9h-3.055zm-5.894 2.441L3.814 13.6a7 7 0 0 0 3.185 1.322v-3.055a4 4 0 0 1-1.027-.426zm4.055 0a4 4 0 0 1-1.028.428v3.05a7 7 0 0 0 3.186-1.32l-2.158-2.158z\"/><path d=\"M7 1a7 7 0 0 0-3.186 1.32l2.159 2.159A4 4 0 0 1 7 4.05z\"/></g></svg>
+"
+saturation = 2.0
+color_map = {
+Color(1, 0.37254903, 0.37254903, 1): Color(1, 0.47, 0.42, 1),
+Color(0.37254903, 1, 0.5921569, 1): Color(0.45, 0.95, 0.5, 1),
+Color(1, 0.8666667, 0.39607844, 1): Color(0.83, 0.78, 0.62, 1)
+}
+
 [node name="WindTunnel" type="MarginContainer" unique_id=662806165]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_0j80l")
@@ -14,6 +101,7 @@ sweep_datapoints = 256
 turn_datapoints = 24
 
 [node name="Panel" type="VBoxContainer" parent="." unique_id=1883152691]
+unique_name_in_owner = true
 layout_mode = 2
 
 [node name="Toolbar" type="HBoxContainer" parent="Panel" unique_id=2018735754]
@@ -26,37 +114,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "no aircraft selected"
 
-[node name="TestingSpeed" type="SpinBox" parent="Panel/Toolbar" unique_id=388565565]
-layout_mode = 2
-max_value = 700.0
-step = 25.0
-value = 250.0
-allow_greater = true
-suffix = "m/s"
-
-[node name="Altitude" type="SpinBox" parent="Panel/Toolbar" unique_id=1678902341]
-layout_mode = 2
-tooltip_text = "Altitude the dock flies at, in meters above sea level."
-max_value = 20000.0
-step = 500.0
-value = 5000.0
-allow_greater = true
-suffix = "m"
-
-[node name="SweepDatapoints" type="SpinBox" parent="Panel/Toolbar" unique_id=1526349087]
-custom_minimum_size = Vector2(110, 0)
-layout_mode = 2
-tooltip_text = "Points simulated in each sweep."
-min_value = 2.0
-max_value = 512.0
-value = 256.0
-rounded = true
-allow_greater = true
-
-[node name="RecalculateButton" type="Button" parent="Panel/Toolbar" unique_id=1039227820]
-layout_mode = 2
-text = "Recalculate"
-
 [node name="Tabs" type="TabContainer" parent="Panel" unique_id=848760424]
 unique_name_in_owner = true
 layout_mode = 2
@@ -66,6 +123,7 @@ current_tab = 0
 
 [node name="Static Analysis" type="ScrollContainer" parent="Panel/Tabs" unique_id=552413774]
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_static")
 horizontal_scroll_mode = 0
 metadata/_tab_index = 0
 
@@ -73,6 +131,70 @@ metadata/_tab_index = 0
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+
+[node name="Conditions" type="HFlowContainer" parent="Panel/Tabs/Static Analysis/ScrollContent" unique_id=1163874299]
+layout_mode = 2
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6
+
+[node name="SpeedField" type="HBoxContainer" parent="Panel/Tabs/Static Analysis/ScrollContent/Conditions"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SpeedName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Conditions/SpeedField" unique_id=244772303]
+layout_mode = 2
+tooltip_text = "Airspeed every point of the analysis is flown at."
+text = "Test speed"
+
+[node name="TestingSpeed" type="SpinBox" parent="Panel/Tabs/Static Analysis/ScrollContent/Conditions/SpeedField" unique_id=1406229017]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 700.0
+step = 25.0
+value = 250.0
+allow_greater = true
+suffix = "m/s"
+
+[node name="AltitudeField" type="HBoxContainer" parent="Panel/Tabs/Static Analysis/ScrollContent/Conditions"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="AltitudeName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Conditions/AltitudeField" unique_id=1191234605]
+layout_mode = 2
+tooltip_text = "Altitude the analysis is flown at, which is the air the coefficients are read in."
+text = "Altitude"
+
+[node name="StaticAltitude" type="SpinBox" parent="Panel/Tabs/Static Analysis/ScrollContent/Conditions/AltitudeField" unique_id=969950581]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 20000.0
+step = 500.0
+value = 5000.0
+allow_greater = true
+suffix = "m"
+
+[node name="PointsField" type="HBoxContainer" parent="Panel/Tabs/Static Analysis/ScrollContent/Conditions"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="PointsName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Conditions/PointsField" unique_id=1323843456]
+layout_mode = 2
+tooltip_text = "Points simulated in each sweep. Drop it for a quick look at the shape of a curve, raise it to smooth them out."
+text = "Points"
+
+[node name="SweepDatapoints" type="SpinBox" parent="Panel/Tabs/Static Analysis/ScrollContent/Conditions/PointsField" unique_id=902889804]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+min_value = 2.0
+max_value = 512.0
+value = 256.0
+rounded = true
+allow_greater = true
+
+[node name="Recalculate" type="Button" parent="Panel/Tabs/Static Analysis/ScrollContent/Conditions" unique_id=1317084570]
+layout_mode = 2
+text = "Recalculate"
 
 [node name="GraphGrid" type="GridContainer" parent="Panel/Tabs/Static Analysis/ScrollContent" unique_id=190174316]
 unique_name_in_owner = true
@@ -155,131 +277,142 @@ parameter_label = "Alpha [deg]"
 dot_radius = 2.5
 metadata/_custom_type_script = "uid://fpja68jul0t3"
 
-[node name="Metrics" type="GridContainer" parent="Panel/Tabs/Static Analysis/ScrollContent" unique_id=1065640067]
-unique_name_in_owner = true
+[node name="StatsPanel" type="PanelContainer" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="StatsMargin" type="MarginContainer" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="Metrics" type="GridContainer" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin" unique_id=923297206]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 12
 theme_override_constants/v_separation = 2
 columns = 2
 
-[node name="SpeedName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Metrics" unique_id=995961906]
+[node name="SpeedName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin/Metrics" unique_id=995961906]
 layout_mode = 2
 tooltip_text = "Airspeed used for every point in the sweep."
 theme_override_colors/font_color = Color(0.72, 0.72, 0.72, 1)
 text = "Test speed"
 
-[node name="SpeedValue" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Metrics" unique_id=1521512363]
+[node name="SpeedValue" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin/Metrics" unique_id=1521512363]
 unique_name_in_owner = true
 layout_mode = 2
 text = "n/a"
 
-[node name="PressureName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Metrics" unique_id=14866730]
+[node name="PressureName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin/Metrics" unique_id=14866730]
 layout_mode = 2
 tooltip_text = "Half the air density times the speed squared."
 theme_override_colors/font_color = Color(0.72, 0.72, 0.72, 1)
 text = "Dynamic pressure"
 
-[node name="PressureValue" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Metrics" unique_id=1984422347]
+[node name="PressureValue" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin/Metrics" unique_id=1984422347]
 unique_name_in_owner = true
 layout_mode = 2
 text = "n/a"
 
-[node name="AreaName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Metrics" unique_id=701870322]
+[node name="AreaName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin/Metrics" unique_id=701870322]
 layout_mode = 2
 tooltip_text = "Planform area of every lifting surface added up."
 theme_override_colors/font_color = Color(0.72, 0.72, 0.72, 1)
 text = "Wing area"
 
-[node name="AreaValue" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Metrics" unique_id=1730129325]
+[node name="AreaValue" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin/Metrics" unique_id=1730129325]
 unique_name_in_owner = true
 layout_mode = 2
 text = "n/a"
 
-[node name="SpanName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Metrics" unique_id=901808210]
+[node name="SpanName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin/Metrics" unique_id=901808210]
 layout_mode = 2
 tooltip_text = "Tip to tip span of the outermost lifting surface."
 theme_override_colors/font_color = Color(0.72, 0.72, 0.72, 1)
 text = "Wingspan"
 
-[node name="SpanValue" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Metrics" unique_id=570024718]
+[node name="SpanValue" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin/Metrics" unique_id=570024718]
 unique_name_in_owner = true
 layout_mode = 2
 text = "n/a"
 
-[node name="ChordName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Metrics" unique_id=53382876]
+[node name="ChordName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin/Metrics" unique_id=53382876]
 layout_mode = 2
 tooltip_text = "Wing area divided by wingspan."
 theme_override_colors/font_color = Color(0.72, 0.72, 0.72, 1)
 text = "Mean chord"
 
-[node name="ChordValue" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Metrics" unique_id=2033650463]
+[node name="ChordValue" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin/Metrics" unique_id=2033650463]
 unique_name_in_owner = true
 layout_mode = 2
 text = "n/a"
 
-[node name="LiftMaxName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Metrics" unique_id=753162057]
+[node name="LiftMaxName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin/Metrics" unique_id=753162057]
 layout_mode = 2
 tooltip_text = "Peak lift coefficient of the sweep, and the angle of attack it happens at."
 theme_override_colors/font_color = Color(0.72, 0.72, 0.72, 1)
 text = "Max lift coefficient"
 
-[node name="LiftMaxValue" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Metrics" unique_id=734737101]
+[node name="LiftMaxValue" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin/Metrics" unique_id=734737101]
 unique_name_in_owner = true
 layout_mode = 2
 text = "n/a"
 
-[node name="RatioName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Metrics" unique_id=1939227773]
+[node name="RatioName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin/Metrics" unique_id=1939227773]
 layout_mode = 2
 tooltip_text = "Highest lift to drag ratio of the sweep, and the angle of attack it happens at."
 theme_override_colors/font_color = Color(0.72, 0.72, 0.72, 1)
 text = "Best lift/drag ratio"
 
-[node name="RatioValue" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Metrics" unique_id=1324059522]
+[node name="RatioValue" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin/Metrics" unique_id=1324059522]
 unique_name_in_owner = true
 layout_mode = 2
 text = "n/a"
 
-[node name="GlideName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Metrics" unique_id=1983899012]
+[node name="GlideName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin/Metrics" unique_id=1983899012]
 layout_mode = 2
 tooltip_text = "Speed that gives the longest unpowered glide at this weight and altitude."
 theme_override_colors/font_color = Color(0.72, 0.72, 0.72, 1)
 text = "Best glide speed"
 
-[node name="GlideValue" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Metrics" unique_id=2006842647]
+[node name="GlideValue" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin/Metrics" unique_id=2006842647]
 unique_name_in_owner = true
 layout_mode = 2
 text = "n/a"
 
-[node name="SinkName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Metrics" unique_id=51213863]
+[node name="SinkName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin/Metrics" unique_id=51213863]
 layout_mode = 2
 tooltip_text = "Descent rate while gliding at the best lift to drag ratio."
 theme_override_colors/font_color = Color(0.72, 0.72, 0.72, 1)
 text = "Sink rate"
 
-[node name="SinkValue" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Metrics" unique_id=588105323]
+[node name="SinkValue" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin/Metrics" unique_id=588105323]
 unique_name_in_owner = true
 layout_mode = 2
 text = "n/a"
 
-[node name="StiffnessName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Metrics" unique_id=497855]
+[node name="StiffnessName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin/Metrics" unique_id=497855]
 layout_mode = 2
 tooltip_text = "Change in pitching moment coefficient per unit change in lift coefficient (dCm/dCL)."
 theme_override_colors/font_color = Color(0.72, 0.72, 0.72, 1)
 text = "Pitch stiffness"
 
-[node name="StiffnessValue" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Metrics" unique_id=1629597050]
+[node name="StiffnessValue" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin/Metrics" unique_id=1629597050]
 unique_name_in_owner = true
 layout_mode = 2
 text = "n/a"
 
-[node name="MarginName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Metrics" unique_id=1693047350]
+[node name="MarginName" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin/Metrics" unique_id=1693047350]
 layout_mode = 2
 tooltip_text = "Distance from the center of gravity to the neutral point, as a percentage of the mean chord."
 theme_override_colors/font_color = Color(0.72, 0.72, 0.72, 1)
 text = "Static margin"
 
-[node name="MarginValue" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/Metrics" unique_id=660681032]
+[node name="MarginValue" type="Label" parent="Panel/Tabs/Static Analysis/ScrollContent/GraphGrid/StatsPanel/StatsMargin/Metrics" unique_id=660681032]
 unique_name_in_owner = true
 layout_mode = 2
 text = "n/a"
@@ -305,16 +438,39 @@ metadata/_tab_index = 2
 [node name="Content" type="VBoxContainer" parent="Panel/Tabs/Performance" unique_id=1738492056]
 layout_mode = 2
 
-[node name="Conditions" type="HBoxContainer" parent="Panel/Tabs/Performance/Content" unique_id=1873462015]
+[node name="Conditions" type="HFlowContainer" parent="Panel/Tabs/Performance/Content" unique_id=1873462015]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6
 
-[node name="LoadLimitName" type="Label" parent="Panel/Tabs/Performance/Content/Conditions" unique_id=1067330182]
+[node name="AltitudeField" type="HBoxContainer" parent="Panel/Tabs/Performance/Content/Conditions"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="AltitudeName" type="Label" parent="Panel/Tabs/Performance/Content/Conditions/AltitudeField" unique_id=1238329372]
+layout_mode = 2
+tooltip_text = "Altitude the turn chart is flown at."
+text = "Altitude"
+
+[node name="TurnAltitude" type="SpinBox" parent="Panel/Tabs/Performance/Content/Conditions/AltitudeField" unique_id=1646812151]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 20000.0
+step = 500.0
+value = 5000.0
+allow_greater = true
+suffix = "m"
+
+[node name="LoadLimitField" type="HBoxContainer" parent="Panel/Tabs/Performance/Content/Conditions"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="LoadLimitName" type="Label" parent="Panel/Tabs/Performance/Content/Conditions/LoadLimitField" unique_id=1067330182]
 layout_mode = 2
 tooltip_text = "Load factor the airframe is cleared for."
 text = "Load limit [g]"
 
-[node name="LoadLimit" type="SpinBox" parent="Panel/Tabs/Performance/Content/Conditions" unique_id=1733286690]
+[node name="LoadLimit" type="SpinBox" parent="Panel/Tabs/Performance/Content/Conditions/LoadLimitField" unique_id=1733286690]
 unique_name_in_owner = true
 layout_mode = 2
 min_value = 1.0
@@ -323,12 +479,17 @@ step = 0.5
 value = 9.0
 allow_greater = true
 
-[node name="TurnPointsName" type="Label" parent="Panel/Tabs/Performance/Content/Conditions" unique_id=1145370881]
+[node name="TurnPointsField" type="HBoxContainer" parent="Panel/Tabs/Performance/Content/Conditions"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TurnPointsName" type="Label" parent="Panel/Tabs/Performance/Content/Conditions/TurnPointsField" unique_id=1145370881]
 layout_mode = 2
 tooltip_text = "Mach steps the turn performance is sampled at, before splitting again where the chart bends."
 text = "Simulation points"
 
-[node name="TurnPoints" type="SpinBox" parent="Panel/Tabs/Performance/Content/Conditions" unique_id=1726061721]
+[node name="TurnPoints" type="SpinBox" parent="Panel/Tabs/Performance/Content/Conditions/TurnPointsField" unique_id=1726061721]
+unique_name_in_owner = true
 layout_mode = 2
 min_value = 2.0
 max_value = 64.0
@@ -336,12 +497,109 @@ value = 24.0
 rounded = true
 allow_greater = true
 
-[node name="TurnPerformanceGraph" type="PanelContainer" parent="Panel/Tabs/Performance/Content" unique_id=1255881927]
+[node name="Recalculate" type="Button" parent="Panel/Tabs/Performance/Content/Conditions" unique_id=1485800658]
+layout_mode = 2
+text = "Recalculate"
+
+[node name="TurnMetrics" type="GridContainer" parent="Panel/Tabs/Performance/Content" unique_id=874301608]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 2
+columns = 4
+
+[node name="CornerName" type="Label" parent="Panel/Tabs/Performance/Content/TurnMetrics" unique_id=55583607]
+layout_mode = 2
+tooltip_text = "Speed where the lift limit and the load limit meet: the fastest turn the aircraft can pull once."
+theme_override_colors/font_color = Color(0.72, 0.72, 0.72, 1)
+text = "Corner speed"
+
+[node name="CornerValue" type="Label" parent="Panel/Tabs/Performance/Content/TurnMetrics" unique_id=1103277924]
+unique_name_in_owner = true
+layout_mode = 2
+text = "n/a"
+
+[node name="CornerRateName" type="Label" parent="Panel/Tabs/Performance/Content/TurnMetrics" unique_id=790579416]
+layout_mode = 2
+tooltip_text = "Turn rate at the corner speed."
+theme_override_colors/font_color = Color(0.72, 0.72, 0.72, 1)
+text = "Corner turn rate"
+
+[node name="CornerRateValue" type="Label" parent="Panel/Tabs/Performance/Content/TurnMetrics" unique_id=481794293]
+unique_name_in_owner = true
+layout_mode = 2
+text = "n/a"
+
+[node name="SustainedName" type="Label" parent="Panel/Tabs/Performance/Content/TurnMetrics" unique_id=70690021]
+layout_mode = 2
+tooltip_text = "Fastest turn the aircraft can hold without losing energy: the highest point of the zero excess power line."
+theme_override_colors/font_color = Color(0.72, 0.72, 0.72, 1)
+text = "Sustained turn"
+
+[node name="SustainedValue" type="Label" parent="Panel/Tabs/Performance/Content/TurnMetrics" unique_id=962489379]
+unique_name_in_owner = true
+layout_mode = 2
+text = "n/a"
+
+[node name="SustainedRateName" type="Label" parent="Panel/Tabs/Performance/Content/TurnMetrics" unique_id=1252408090]
+layout_mode = 2
+tooltip_text = "Turn rate at the sustained turn."
+theme_override_colors/font_color = Color(0.72, 0.72, 0.72, 1)
+text = "Sustained turn rate"
+
+[node name="SustainedRateValue" type="Label" parent="Panel/Tabs/Performance/Content/TurnMetrics" unique_id=1999419638]
+unique_name_in_owner = true
+layout_mode = 2
+text = "n/a"
+
+[node name="RadiusName" type="Label" parent="Panel/Tabs/Performance/Content/TurnMetrics" unique_id=2073675473]
+layout_mode = 2
+tooltip_text = "Tightest circle the aircraft can fly, and the speed it can fly it at."
+theme_override_colors/font_color = Color(0.72, 0.72, 0.72, 1)
+text = "Minimum radius"
+
+[node name="RadiusValue" type="Label" parent="Panel/Tabs/Performance/Content/TurnMetrics" unique_id=656724188]
+unique_name_in_owner = true
+layout_mode = 2
+text = "n/a"
+
+[node name="TopSpeedName" type="Label" parent="Panel/Tabs/Performance/Content/TurnMetrics" unique_id=1027237542]
+layout_mode = 2
+tooltip_text = "Fastest level flight at the altitude the tab is flown at."
+theme_override_colors/font_color = Color(0.72, 0.72, 0.72, 1)
+text = "Top speed"
+
+[node name="TopSpeedValue" type="Label" parent="Panel/Tabs/Performance/Content/TurnMetrics" unique_id=1546151185]
+unique_name_in_owner = true
+layout_mode = 2
+text = "n/a"
+
+[node name="ThrustWeightName" type="Label" parent="Panel/Tabs/Performance/Content/TurnMetrics"]
+layout_mode = 2
+tooltip_text = "Thrust the aircraft has at a standstill against its own weight, at the altitude the tab is flown at."
+theme_override_colors/font_color = Color(0.72, 0.72, 0.72, 1)
+text = "Thrust to weight"
+
+[node name="ThrustWeightValue" type="Label" parent="Panel/Tabs/Performance/Content/TurnMetrics"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "n/a"
+
+[node name="Scroll" type="ScrollContainer" parent="Panel/Tabs/Performance/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Charts" type="VBoxContainer" parent="Panel/Tabs/Performance/Content/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TurnPerformanceGraph" type="PanelContainer" parent="Panel/Tabs/Performance/Content/Scroll/Charts" unique_id=1255881927]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 390)
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 3
 script = ExtResource("2_1ggli")
 show_legend = false
 show_axis_crossings = false
@@ -356,11 +614,227 @@ y_label = "Turn rate [deg/s]"
 dot_radius = 2.5
 metadata/_custom_type_script = "uid://fpja68jul0t3"
 
+[node name="PerformanceGrid" type="GridContainer" parent="Panel/Tabs/Performance/Content/Scroll/Charts"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 2
+theme_override_constants/v_separation = 2
+columns = 2
+
+[node name="AccelerationGraph" type="PanelContainer" parent="Panel/Tabs/Performance/Content/Scroll/Charts/PerformanceGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 390)
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("2_1ggli")
+show_legend = false
+show_axis_crossings = false
+show_curve_extrema = false
+show_curve_intersections = false
+show_curve_self_intersections = false
+axis_divisions = Vector2i(6, 8)
+title = "Acceleration"
+x_label = "Speed [m/s]"
+y_label = "Acceleration [m/s²]"
+metadata/_custom_type_script = "uid://fpja68jul0t3"
+
+[node name="Altitude" type="MarginContainer" parent="Panel/Tabs" unique_id=917068466]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+metadata/_tab_index = 3
+
+[node name="Content" type="VBoxContainer" parent="Panel/Tabs/Altitude" unique_id=1913427646]
+layout_mode = 2
+
+[node name="Conditions" type="HFlowContainer" parent="Panel/Tabs/Altitude/Content" unique_id=2005719506]
+layout_mode = 2
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6
+
+[node name="StepsField" type="HBoxContainer" parent="Panel/Tabs/Altitude/Content/Conditions"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="StepsName" type="Label" parent="Panel/Tabs/Altitude/Content/Conditions/StepsField" unique_id=721193853]
+layout_mode = 2
+tooltip_text = "Altitudes the numbers are worked out at, from sea level to 15 km."
+text = "Altitude steps"
+
+[node name="AltitudeSteps" type="SpinBox" parent="Panel/Tabs/Altitude/Content/Conditions/StepsField" unique_id=1694110399]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 4.0
+max_value = 32.0
+value = 13.0
+rounded = true
+allow_greater = true
+
+[node name="SamplesField" type="HBoxContainer" parent="Panel/Tabs/Altitude/Content/Conditions"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SamplesName" type="Label" parent="Panel/Tabs/Altitude/Content/Conditions/SamplesField" unique_id=345326978]
+layout_mode = 2
+tooltip_text = "Speeds each altitude is swept through. Raise it to smooth the curves, it costs the sweep time."
+text = "Samples each"
+
+[node name="AltitudeSamples" type="SpinBox" parent="Panel/Tabs/Altitude/Content/Conditions/SamplesField" unique_id=313868739]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 6.0
+max_value = 32.0
+value = 12.0
+rounded = true
+allow_greater = true
+
+[node name="Recalculate" type="Button" parent="Panel/Tabs/Altitude/Content/Conditions" unique_id=667171879]
+layout_mode = 2
+text = "Recalculate"
+
+[node name="Scroll" type="ScrollContainer" parent="Panel/Tabs/Altitude/Content" unique_id=1539245122]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="AltitudeGrid" type="GridContainer" parent="Panel/Tabs/Altitude/Content/Scroll" unique_id=441219701]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 2
+theme_override_constants/v_separation = 2
+columns = 2
+
+[node name="SpeedAltitudeGraph" type="PanelContainer" parent="Panel/Tabs/Altitude/Content/Scroll/AltitudeGrid" unique_id=1557893604]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 390)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("2_1ggli")
+show_legend = false
+show_axis_crossings = false
+show_curve_extrema = false
+show_curve_intersections = false
+show_curve_self_intersections = false
+readout_axis = 1
+axis_divisions = Vector2i(6, 10)
+title = "Max level speed"
+x_label = "Mach"
+y_label = "Altitude [m]"
+dot_radius = 2.5
+metadata/_custom_type_script = "uid://fpja68jul0t3"
+
+[node name="ClimbAltitudeGraph" type="PanelContainer" parent="Panel/Tabs/Altitude/Content/Scroll/AltitudeGrid" unique_id=51765452]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 390)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("2_1ggli")
+show_legend = false
+show_axis_crossings = false
+show_curve_extrema = false
+show_curve_intersections = false
+show_curve_self_intersections = false
+readout_axis = 1
+axis_divisions = Vector2i(6, 8)
+title = "Best climb rate"
+x_label = "Climb rate [m/s]"
+y_label = "Altitude [m]"
+dot_radius = 2.5
+metadata/_custom_type_script = "uid://fpja68jul0t3"
+
+[node name="TurnRateAltitudeGraph" type="PanelContainer" parent="Panel/Tabs/Altitude/Content/Scroll/AltitudeGrid" unique_id=354598764]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 390)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("2_1ggli")
+show_legend = false
+show_axis_crossings = false
+show_curve_extrema = false
+show_curve_intersections = false
+show_curve_self_intersections = false
+readout_axis = 1
+axis_divisions = Vector2i(6, 8)
+title = "Max turn rate"
+x_label = "Turn rate [deg/s]"
+y_label = "Altitude [m]"
+dot_radius = 2.5
+metadata/_custom_type_script = "uid://fpja68jul0t3"
+
+[node name="SustainedAltitudeGraph" type="PanelContainer" parent="Panel/Tabs/Altitude/Content/Scroll/AltitudeGrid" unique_id=44704533]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 390)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("2_1ggli")
+show_legend = false
+show_axis_crossings = false
+show_curve_extrema = false
+show_curve_intersections = false
+show_curve_self_intersections = false
+readout_axis = 1
+axis_divisions = Vector2i(6, 8)
+title = "Sustained turn rate"
+x_label = "Turn rate [deg/s]"
+y_label = "Altitude [m]"
+dot_radius = 2.5
+metadata/_custom_type_script = "uid://fpja68jul0t3"
+
+[node name="LoadAltitudeGraph" type="PanelContainer" parent="Panel/Tabs/Altitude/Content/Scroll/AltitudeGrid" unique_id=1134611276]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 390)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("2_1ggli")
+show_legend = false
+show_axis_crossings = false
+show_curve_extrema = false
+show_curve_intersections = false
+show_curve_self_intersections = false
+readout_axis = 1
+axis_divisions = Vector2i(6, 8)
+title = "Max load factor"
+x_label = "Load factor [g]"
+y_label = "Altitude [m]"
+dot_radius = 2.5
+metadata/_custom_type_script = "uid://fpja68jul0t3"
+
+[node name="RadiusAltitudeGraph" type="PanelContainer" parent="Panel/Tabs/Altitude/Content/Scroll/AltitudeGrid" unique_id=2065336470]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 390)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("2_1ggli")
+show_legend = false
+show_axis_crossings = false
+show_curve_extrema = false
+show_curve_intersections = false
+show_curve_self_intersections = false
+readout_axis = 1
+axis_divisions = Vector2i(6, 8)
+title = "Min turn radius"
+x_label = "Turn radius [m]"
+y_label = "Altitude [m]"
+dot_radius = 2.5
+metadata/_custom_type_script = "uid://fpja68jul0t3"
+
 [node name="BusySheet" type="ColorRect" parent="." unique_id=1310091692]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-color = Color(0, 0, 0, 0.4)
+color = Color(0, 0, 0, 0)
 
 [node name="BusySpinner" type="TextureRect" parent="BusySheet" unique_id=2105692668]
 unique_name_in_owner = true
@@ -377,13 +851,20 @@ offset_bottom = 16.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+texture = SubResource("DPITexture_1ggli")
 expand_mode = 1
 stretch_mode = 5
 script = ExtResource("3_40qr5")
+frames = Array[Texture2D]([SubResource("DPITexture_1ggli"), SubResource("DPITexture_sx3xb"), SubResource("DPITexture_xrday"), SubResource("DPITexture_rjitv"), SubResource("DPITexture_44iki"), SubResource("DPITexture_wck18"), SubResource("DPITexture_2qehk"), SubResource("DPITexture_og53d")])
 
-[connection signal="value_changed" from="Panel/Toolbar/TestingSpeed" to="." method="_on_testing_speed_value_changed"]
-[connection signal="value_changed" from="Panel/Toolbar/Altitude" to="." method="_on_altitude_value_changed"]
-[connection signal="value_changed" from="Panel/Toolbar/SweepDatapoints" to="." method="_on_sweep_datapoints_value_changed"]
-[connection signal="pressed" from="Panel/Toolbar/RecalculateButton" to="." method="_on_recalculate_button_pressed"]
-[connection signal="value_changed" from="Panel/Tabs/Performance/Content/Conditions/LoadLimit" to="." method="_on_load_limit_value_changed"]
-[connection signal="value_changed" from="Panel/Tabs/Performance/Content/Conditions/TurnPoints" to="." method="_on_turn_datapoints_value_changed"]
+[connection signal="value_changed" from="Panel/Tabs/Static Analysis/ScrollContent/Conditions/SpeedField/TestingSpeed" to="." method="_on_testing_speed_value_changed"]
+[connection signal="value_changed" from="Panel/Tabs/Static Analysis/ScrollContent/Conditions/AltitudeField/StaticAltitude" to="." method="_on_altitude_value_changed"]
+[connection signal="value_changed" from="Panel/Tabs/Static Analysis/ScrollContent/Conditions/PointsField/SweepDatapoints" to="." method="_on_sweep_datapoints_value_changed"]
+[connection signal="pressed" from="Panel/Tabs/Static Analysis/ScrollContent/Conditions/Recalculate" to="." method="_on_recalculate_button_pressed"]
+[connection signal="value_changed" from="Panel/Tabs/Performance/Content/Conditions/AltitudeField/TurnAltitude" to="." method="_on_altitude_value_changed"]
+[connection signal="value_changed" from="Panel/Tabs/Performance/Content/Conditions/LoadLimitField/LoadLimit" to="." method="_on_load_limit_value_changed"]
+[connection signal="value_changed" from="Panel/Tabs/Performance/Content/Conditions/TurnPointsField/TurnPoints" to="." method="_on_turn_datapoints_value_changed"]
+[connection signal="pressed" from="Panel/Tabs/Performance/Content/Conditions/Recalculate" to="." method="_on_recalculate_button_pressed"]
+[connection signal="value_changed" from="Panel/Tabs/Altitude/Content/Conditions/StepsField/AltitudeSteps" to="." method="_on_altitude_steps_value_changed"]
+[connection signal="value_changed" from="Panel/Tabs/Altitude/Content/Conditions/SamplesField/AltitudeSamples" to="." method="_on_altitude_samples_value_changed"]
+[connection signal="pressed" from="Panel/Tabs/Altitude/Content/Conditions/Recalculate" to="." method="_on_recalculate_button_pressed"]

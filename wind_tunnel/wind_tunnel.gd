@@ -45,6 +45,9 @@ const SEA_LEVEL_PRESSURE := 101325.0
 @export var altitude : float = 5000.0:
 	set(value):
 		altitude = value
+		if is_node_ready():
+			%StaticAltitude.value = value
+			%TurnAltitude.value = value
 		static_stale = true
 		turn_performance_stale = true
 		queue_recalculate()
@@ -63,6 +66,21 @@ const SEA_LEVEL_PRESSURE := 101325.0
 	set(value):
 		turn_datapoints = maxi(value, 2)
 		turn_performance_stale = true
+		queue_recalculate()
+
+@export_group("Altitude sweep")
+##Altitudes the numbers that change with height are worked out at, between sea level and 15 km.
+@export var altitude_steps : int = 13:
+	set(value):
+		altitude_steps = maxi(value, 2)
+		altitude_stale = true
+		queue_recalculate()
+
+##Speeds each of those altitudes is swept through, which is what smooths the curves against height.
+@export var altitude_datapoints : int = 12:
+	set(value):
+		altitude_datapoints = maxi(value, 6)
+		altitude_stale = true
 		queue_recalculate()
 
 var aerobody : AeroBody3D = null:
@@ -101,8 +119,15 @@ func _ready() -> void:
 	resized.connect(fit_graph_columns)
 	fit_graph_columns()
 	
-	#an aircraft named before the dock was built has already set the load limit, which goes on display now the field is there
+	#the settings the dock was handed before it was built go on display now the fields are there
+	%TestingSpeed.value = test_speed
+	%StaticAltitude.value = altitude
+	%SweepDatapoints.value = sweep_datapoints
+	%TurnAltitude.value = altitude
 	%LoadLimit.value = load_limit
+	%TurnPoints.value = turn_datapoints
+	%AltitudeSteps.value = altitude_steps
+	%AltitudeSamples.value = altitude_datapoints
 	
 	#the sweeps' copy of the aircraft lives in a viewport of its own: it is in a tree, so it initializes exactly as it does in a
 	#scene, but it never draws and its world is its own
@@ -119,6 +144,8 @@ func _ready() -> void:
 	#crossing it, and says what the value it reports is measured in
 	%TurnPerformanceGraph.readout_mode = AeroGraph.ReadoutMode.NEAREST_POINT
 	%TurnPerformanceGraph.readout_value_suffix = " deg/s"
+	#a turn rate never runs below nothing, so the chart keeps zero at its foot however little of it the curves reach
+	%TurnPerformanceGraph.auto_bounds_keep_zero_y = true
 	
 	if not Engine.is_editor_hint(): return
 	
@@ -133,6 +160,40 @@ func _ready() -> void:
 		frames_left -= 1
 	
 	_on_editor_scene_changed(EditorInterface.get_edited_scene_root())
+
+func _process(_delta : float) -> void:
+	#a finished sweep is taken the moment it lands
+	if worker_task != -1:
+		if WorkerThreadPool.is_task_completed(worker_task):
+			WorkerThreadPool.wait_for_task_completion(worker_task)
+			worker_task = -1
+			finish_sweeps()
+			set_busy(false)
+		else:
+			#a sweep that is still flying after a moment is worth showing: the sheet comes up late so a quick one never flashes it
+			if not busy_sheet.visible:
+				if Time.get_ticks_msec() - busy_since_msec < BUSY_SHEET_DELAY: return
+				set_busy(true)
+
+#whether a part is carried by something that turns, which places it itself, so the copy leaves it where it was put
+func is_turned_part(influencer : AeroInfluencer3D) -> bool:
+	var node : Node = influencer.get_parent()
+	while node and node != worker_copy:
+		if node is AeroMover3D: return true
+		node = node.get_parent()
+	
+	return false
+
+#the worker is holding the copy while the dock is going away, so it is waited for rather than left reading freed nodes
+func _exit_tree() -> void:
+	if worker_task == -1: return
+	WorkerThreadPool.wait_for_task_completion(worker_task)
+	worker_task = -1
+	if worker_copy:
+		simulation_view.remove_child(worker_copy)
+		worker_copy.queue_free()
+		worker_copy = null
+	worker_sweeps = null
 
 #editor
 
@@ -168,20 +229,57 @@ func find_aerobody(node : Node) -> AeroBody3D:
 
 #two graph columns need roughly this much width to stay readable, so a narrow dock stacks them instead
 var two_column_width := 860.0
+#the numbers under the turn chart stand four to a row where there is this much width, and pair up below it. the switch has
+#to sit clear of the width four of them need, or the dock could never be dragged narrow enough to ask for two
+var turn_metrics_row_width := 640.0
+#the share of the dock's height the turn chart keeps for itself, with the grid under it taking the rest
+var turn_chart_height_share := 0.6
+#the height the graphs in the grids take, as a share of the dock's own and within bounds, so they fit the screen the editor is on
+#rather than being one size everywhere, and stay readable on a short one
+var graph_height_share := 0.30
+var graph_height_floor := 240.0
+var graph_height_ceiling := 520.0
+#how wide a graph has to be before the numbers along its axes stop reading, in line heights of the dock's own text, so it
+#follows the editor's font size instead of growing with the height of the screen the dock happens to be on
+var graph_minimum_width_lines := 13
+#the rule drawn where the take-off run gives way to the flight, in the color the grid is drawn in so it reads as a boundary
+var liftoff_rule_color := Color(0.72, 0.72, 0.72, 0.5)
 
 func fit_graph_columns() -> void:
-	%GraphGrid.columns = 2 if size.x >= two_column_width else 1
+	var columns : int = 2 if size.x >= two_column_width else 1
+	%GraphGrid.columns = columns
+	%AltitudeGrid.columns = columns
+	%PerformanceGrid.columns = columns
+	%TurnMetrics.columns = 4 if size.x >= turn_metrics_row_width else 2
+	
+	#the turn chart takes its share of the dock's height, so the grid under it is what scrolls rather than the chart shrinking with it
+	%TurnPerformanceGraph.custom_minimum_size.y = size.y * turn_chart_height_share
+	
+	#every chart in the grids is the same height as every other, that height following the dock, and the same width as every
+	#other, which is what the dock is never dragged below
+	var graph_height : float = clampf(size.y * graph_height_share, graph_height_floor, graph_height_ceiling)
+	var graph_width : float = minimum_graph_width()
+	for grid : GridContainer in [%GraphGrid, %AltitudeGrid, %PerformanceGrid]:
+		for child : Node in grid.get_children():
+			if child is AeroGraph: child.custom_minimum_size = Vector2(graph_width, graph_height)
+
+#the width a graph is squeezed to before there is nothing left to read on it
+func minimum_graph_width() -> float:
+	return get_theme_default_font_size() * graph_minimum_width_lines
 
 
 #recalculating
 
-#the tabs a sweep is flown for: the static analysis, and the turn performance
+#the tabs a sweep is flown for: the static analysis, the turn performance, and the numbers that change with altitude
 const STATIC_TAB := 0
 const PERFORMANCE_TAB := 2
+const ALTITUDE_TAB := 3
 #set while a recalculation is waiting for the end of the frame, which is what folds a burst of changes into one sweep
 var recalculation_queued := false
 #a sweep that lands sooner than this never puts the sheet up, so quick recalculations do not flash it
 const BUSY_SHEET_DELAY := 300
+#how much of the dock shows through while a sweep flies: what is there fades toward the panel behind it rather than being covered
+var busy_fade := 0.2
 #when the sweep in flight started, in milliseconds
 var busy_since_msec := 0
 
@@ -193,6 +291,10 @@ var static_stale := true
 #count does not fly the turn sweep again
 var turn_performance_stale := true
 
+#set when something the altitude sweep is flown from changed: the aircraft and its configuration, but not the air the turn
+#chart is declared to fly in, which the altitude sweep works out for itself
+var altitude_stale := true
+
 #asks for a recalculation at the end of the frame, so a burst of changes within one frame starts one sweep. the sweeps fly
 #on a worker, so the dock keeps up with the aircraft while it is being edited instead of waiting for the edits to settle
 func queue_recalculate() -> void:
@@ -203,24 +305,11 @@ func queue_recalculate() -> void:
 	recalculation_queued = true
 	recalculate.call_deferred()
 
-func _process(_delta : float) -> void:
-	#a finished sweep is taken the moment it lands
-	if worker_task != -1:
-		if WorkerThreadPool.is_task_completed(worker_task):
-			WorkerThreadPool.wait_for_task_completion(worker_task)
-			worker_task = -1
-			finish_sweeps()
-			set_busy(false)
-		else:
-			#a sweep that is still flying after a moment is worth showing: the sheet comes up late so a quick one never flashes it
-			if not busy_sheet.visible:
-				if Time.get_ticks_msec() - busy_since_msec < BUSY_SHEET_DELAY: return
-				set_busy(true)
-
 #the aircraft changing shape or moving an influencer changes what it can turn at, so the performance sweep is queued too
 func queue_flight_model_changed() -> void:
 	static_stale = true
 	turn_performance_stale = true
+	altitude_stale = true
 	queue_recalculate()
 
 #the sweep in flight, and the copy of the aircraft the worker flies it against. the dock touches none of these until the
@@ -231,6 +320,7 @@ var worker_sweeps : AircraftSweeps
 var worker_results := {}
 var worker_runs_static := false
 var worker_runs_turn := false
+var worker_runs_altitude := false
 var worker_dirty := false
 
 #the sheet drawn over the dock while the sweeps are flying, so it is clear the numbers are being worked out and that the
@@ -240,12 +330,11 @@ var worker_dirty := false
 #where the copy of the aircraft the worker flies is put
 var simulation_view : SubViewport
 
-#raises or drops the sheet, which also swallows the clicks that would change the settings under it
+#raises or drops the sheet, which also swallows the clicks that would change the settings under it, and fades what is under it
+#toward the panel behind it: nothing is laid over the page, so its grey is untouched and the charts are what recede into it
 func set_busy(busy : bool) -> void:
 	busy_sheet.visible = busy
-
-func is_busy() -> bool:
-	return busy_sheet.visible
+	%Panel.modulate.a = busy_fade if busy else 1.0
 
 #one pass over the aircraft: every graph refilled from the sweeps, then the metrics
 func recalculate() -> void:
@@ -261,35 +350,66 @@ func recalculate() -> void:
 	#what keeps a change to the aircraft from paying for a sweep nobody is reading
 	var sweep_static : bool = %Tabs.current_tab == STATIC_TAB and static_stale
 	var sweep_turn : bool = %Tabs.current_tab == PERFORMANCE_TAB and turn_performance_stale
-	if not sweep_static and not sweep_turn: return
+	var sweep_altitude : bool = %Tabs.current_tab == ALTITUDE_TAB and altitude_stale
+	if not sweep_static and not sweep_turn and not sweep_altitude: return
 	
 	#a sweep already in flight is left to finish rather than interrupted, and flown again as soon as it lands
 	if worker_task != -1:
 		worker_dirty = true
 		return
 	
-	start_sweeps(sweep_static, sweep_turn)
+	start_sweeps(sweep_static, sweep_turn, sweep_altitude)
 
 #deep-copies the aircraft for the worker to fly, so the sweeps never touch the nodes being edited. the copy goes into a
 #viewport of its own, so it enters a tree and initializes like any aircraft, and is then taken out of the frame's way: it does
 #not process, show or collide with anything
-func start_sweeps(sweep_static : bool, sweep_turn : bool) -> void:
+func start_sweeps(sweep_static : bool, sweep_turn : bool, sweep_altitude : bool) -> void:
 	#the copy has to keep its script instances: a deep duplicate would instantiate them and the copied nodes would come out
-	#without their behavior. the resources they share are only read by the sweeps, so sharing them is safe
+	#without their behavior
 	worker_copy = aerobody.duplicate()
+	#the sweeps fly the copy at the attitude they are given, so it is put at the origin facing forward before it enters the tree,
+	#and every part of it is put back to the pose it was authored with: a control surface's node is written to as it deflects and
+	#a turning part's as it turns, so a copy of an aircraft that has been flying would take those poses for neutral ones and the
+	#same aircraft would chart slightly differently every time it was swept
+	worker_copy.transform = Transform3D()
+	for node : Node in worker_copy.find_children("*", "AeroInfluencer3D", true, false):
+		var influencer := node as AeroInfluencer3D
+		if influencer.actuation_config == null or is_turned_part(influencer): continue
+		influencer.transform = influencer.default_transform
+	worker_copy.linear_velocity = Vector3.ZERO
+	worker_copy.angular_velocity = Vector3.ZERO
 	worker_copy.process_mode = Node.PROCESS_MODE_DISABLED
 	worker_copy.visible = false
 	worker_copy.collision_layer = 0
 	worker_copy.collision_mask = 0
 	simulation_view.add_child(worker_copy)
 	
-	#the nodes the sweeps reach into are gathered here, on the main thread: a thread may not search the scene itself
+	#the nodes the sweeps reach into are gathered here, on the main thread: a thread may not search the scene itself. the
+	#thrusters are the influencers that also carry a throttle, so the one search covers both
 	var influencers : Array[AeroInfluencer3D] = []
-	for node : Node in worker_copy.find_children("*", "AeroInfluencer3D", true, false):
-		influencers.append(node as AeroInfluencer3D)
 	var thrusters : Array[AeroThruster3D] = []
-	for node : Node in worker_copy.find_children("*", "AeroThruster3D", true, false):
-		thrusters.append(node as AeroThruster3D)
+	for node : Node in worker_copy.find_children("*", "AeroInfluencer3D", true, false):
+		var influencer := node as AeroInfluencer3D
+		influencers.append(influencer)
+		if influencer is AeroThruster3D: thrusters.append(influencer)
+	
+	#the copy takes its own copy of everything a sweep drives. the editor leaves these resources shared with the aircraft in the
+	#scene, so a sweep opening the throttle would be flying the aircraft being edited as well, and its preview would hand the change
+	#back as an edit of the model, which starts the sweep over again
+	for node : Node in worker_copy.find_children("*", "AeroControlComponent", true, false):
+		var component := node as AeroControlComponent
+		if component.control_config: component.control_config = component.control_config.duplicate(true)
+		if component.flight_assist: component.flight_assist = component.flight_assist.duplicate(true)
+	
+	for influencer : AeroInfluencer3D in influencers:
+		if influencer.actuation_config:
+			influencer.actuation_config = influencer.actuation_config.duplicate(true)
+		if influencer is AeroThruster3D and influencer.throttle_control_config:
+			influencer.throttle_control_config = influencer.throttle_control_config.duplicate(true)
+		if influencer is AeroPropeller3D and influencer.propeller_speed_control_config:
+			influencer.propeller_speed_control_config = influencer.propeller_speed_control_config.duplicate(true)
+		if influencer is AeroCyclicPropeller3D and influencer.cyclic_control_config:
+			influencer.cyclic_control_config = influencer.cyclic_control_config.duplicate(true)
 	
 	worker_sweeps = AircraftSweeps.new()
 	worker_sweeps.body = worker_copy
@@ -303,17 +423,28 @@ func start_sweeps(sweep_static : bool, sweep_turn : bool) -> void:
 	worker_sweeps.reference_span = reference_span
 	worker_sweeps.reference_chord = reference_chord
 	worker_sweeps.altitude = altitude
-	worker_sweeps.density = air_density()
-	worker_sweeps.pressure = air_pressure()
-	worker_sweeps.sound_speed = speed_of_sound()
+	worker_sweeps.density = density_at(altitude)
+	worker_sweeps.pressure = pressure_at(altitude)
+	worker_sweeps.sound_speed = sound_speed_at(altitude)
 	worker_sweeps.load_limit = load_limit
 	worker_sweeps.turn_datapoints = turn_datapoints
+	worker_sweeps.altitude_datapoints = altitude_datapoints
+	
+	#the speed envelope is flown over a ladder of altitudes, so the air at each of them goes with the sweep
+	for index : int in altitude_steps:
+		var height : float = remap(index, 0, altitude_steps - 1, AircraftSweeps.ENVELOPE_ALTITUDE_FLOOR, AircraftSweeps.ENVELOPE_ALTITUDE_CEILING)
+		worker_sweeps.altitudes.append(height)
+		worker_sweeps.altitude_densities.append(density_at(height))
+		worker_sweeps.altitude_pressures.append(pressure_at(height))
+		worker_sweeps.altitude_sound_speeds.append(sound_speed_at(height))
 	
 	#the sweeps are marked fresh as they are handed over, so an edit arriving mid-flight marks them stale again
 	if sweep_static: static_stale = false
 	if sweep_turn: turn_performance_stale = false
+	if sweep_altitude: altitude_stale = false
 	worker_runs_static = sweep_static
 	worker_runs_turn = sweep_turn
+	worker_runs_altitude = sweep_altitude
 	worker_results = {}
 	worker_task = WorkerThreadPool.add_task(run_sweeps, false, "wind tunnel sweeps")
 	busy_since_msec = Time.get_ticks_msec()
@@ -323,6 +454,7 @@ func run_sweeps() -> void:
 	var results := {}
 	if worker_runs_static: results["static"] = worker_sweeps.static_analysis()
 	if worker_runs_turn: results["turn"] = worker_sweeps.turn_performance()
+	if worker_runs_altitude: results["altitude"] = worker_sweeps.altitude_sweep()
 	worker_results = results
 
 #takes the results of a finished sweep and puts the copy away, on the main thread
@@ -342,36 +474,46 @@ func finish_sweeps() -> void:
 	
 	if results.has("static"): draw_static_analysis(results["static"])
 	if results.has("turn"): draw_turn_performance(results["turn"])
+	if results.has("altitude"): draw_altitude_sweep(results["altitude"])
 	
 	if worker_dirty:
 		worker_dirty = false
 		queue_recalculate()
 
-#the air the sweeps are flown in: the declared altitude, and nothing about where the aircraft sits in the scene
-func air_density() -> float:
-	var density : float = AeroUnits.get_density_at_altitude(altitude)
+#the air the sweeps are flown in, asked for at the declared altitude or at any height the speed envelope is flown through. it
+#comes from the atmosphere tables, and nothing about where the aircraft sits in the scene goes into it
+func density_at(height : float) -> float:
+	var density : float = AeroUnits.get_density_at_altitude(height)
 	return density if density > 0.0 else SEA_LEVEL_DENSITY
 
-func air_pressure() -> float:
-	var pressure : float = AeroUnits.get_pressure_at_altitude(altitude)
+func pressure_at(height : float) -> float:
+	var pressure : float = AeroUnits.get_pressure_at_altitude(height)
 	return pressure if pressure > 0.0 else SEA_LEVEL_PRESSURE
 
-func speed_of_sound() -> float:
-	return AeroUnits.get_speed_of_sound_at_pressure_and_density(air_pressure(), air_density())
+func sound_speed_at(height : float) -> float:
+	return AeroUnits.get_speed_of_sound_at_pressure_and_density(pressure_at(height), density_at(height))
 
-#the worker is holding the copy while the dock is going away, so it is waited for rather than left reading freed nodes
-func _exit_tree() -> void:
-	if worker_task == -1: return
-	WorkerThreadPool.wait_for_task_completion(worker_task)
-	worker_task = -1
-	if worker_copy:
-		simulation_view.remove_child(worker_copy)
-		worker_copy.queue_free()
-		worker_copy = null
-	worker_sweeps = null
 
 
 #drawing
+
+#where a turn radius line carries its name: at its end, where the lines stand furthest apart
+var radius_label_fraction := 1.0
+#where an excess power contour carries its name: up along it where the contours stand apart, rather than at its foot, where
+#the whole family converges with the radius lines and their names
+var power_label_fraction := 0.3
+#the run a load factor number is written along: a short one, which only says that the number reads straight across the chart
+#rather than turned along the line it belongs to
+var load_label_span := 0.03
+#how far the held turn's name is lifted off the fastest turn's, for the times the two sit on the same point
+var turn_label_lift := 18.0
+#how far left of the lift limit the load factor name stands, which is clear of the numbers written against that limit
+var load_name_clearance := 46.0
+#the contour through nothing is the edge of a turn the aircraft can hold rather than fall out of, so it is drawn this much heavier
+#than the others, while a contour of energy lost is a turn it cannot hold at all and is drawn this much fainter and thinner
+var zero_power_width := 2.0
+var negative_power_width := 0.8
+var negative_power_fade := 0.35
 
 #the static analysis: the coefficient curves, the moment curves, the drag polar and the numbers under them
 func draw_static_analysis(results : Dictionary) -> void:
@@ -422,8 +564,7 @@ func angular_acceleration(moments : PackedVector2Array, inertia : float) -> Pack
 
 #every field is blank until the number it is read off says otherwise
 func update_metrics(metrics : Dictionary) -> void:
-	for value_label : Label in [%SpeedValue, %PressureValue, %AreaValue, %SpanValue, %ChordValue, %LiftMaxValue, %RatioValue, %GlideValue, %SinkValue, %StiffnessValue, %MarginValue]:
-		value_label.text = NO_DATA
+	blank_labels([%SpeedValue, %PressureValue, %AreaValue, %SpanValue, %ChordValue, %LiftMaxValue, %RatioValue, %GlideValue, %SinkValue, %StiffnessValue, %MarginValue])
 	
 	%SpeedValue.text = "%.0f m/s" % test_speed
 	%PressureValue.text = "%.1f kPa" % (metrics.dynamic_pressure / 1000.0)
@@ -493,14 +634,26 @@ func draw_turn_performance(chart : Dictionary) -> void:
 	#envelope and comes back is drawn as more than one line, and only the longest of its stretches carries the name
 	for family : Dictionary in chart.powers:
 		var longest : int = longest_run(family.runs)
+		var level : float = family.level
 		for index : int in family.runs.size():
 			var run : PackedVector2Array = family.runs[index]
 			if run.size() < 2: continue
 			
-			var labeled : bool = index == longest
-			var definition := {"color": CURVE_COLORS[1], "name": "excess power %d m/s" % roundi(family.level), "points": run}
+			var color : Color = CURVE_COLORS[1]
+			var width := 0.0
+			if is_zero_approx(level):
+				width = zero_power_width
+			elif level < 0.0:
+				color = Color(CURVE_COLORS[1], negative_power_fade)
+				width = negative_power_width
+			
+			#a contour of energy lost carries no name of its own: the family name says what the faint lines are, and the numbers
+			#are kept for the turns the aircraft can actually hold
+			var labeled : bool = index == longest and level >= 0.0
+			var definition := {"color": color, "name": "excess power %d m/s" % roundi(level), "points": run}
+			if width > 0.0: definition["width"] = width
 			if labeled:
-				definition["label"] = "%d m/s" % roundi(family.level)
+				definition["label"] = "%d m/s" % roundi(level)
 				definition["label_position"] = label_position(run, power_label_fraction)
 			definitions.append(definition)
 	
@@ -511,7 +664,96 @@ func draw_turn_performance(chart : Dictionary) -> void:
 	
 	assign_curves(%TurnPerformanceGraph, definitions)
 	add_family_labels(families)
+	
+	#the numbers the strip reports are marked where they sit, so a reading is never far from its place on the chart. the held
+	#turn can sit on the fastest one, so its name is lifted clear of the first
+	var metrics : Dictionary = chart.get("metrics", {})
+	%TurnPerformanceGraph.clear_markers()
+	mark_turn_point(metrics.get("corner", {}), "Max turn rate", CURVE_COLORS[0], 0.0)
+	mark_turn_point(metrics.get("sustained", {}), "Sustained turn", CURVE_COLORS[1], turn_label_lift)
+	mark_turn_point(metrics.get("tightest", {}), "Min turn radius", CURVE_COLORS[2], 0.0)
+	
+	update_turn_metrics(metrics)
 	%TurnPerformanceGraph.title = "Turn performance at %d m, %d g limit" % [roundi(altitude), roundi(load_limit)]
+	
+	#the speed the aircraft gains in level flight at each speed, charted below the turn chart: the line reaches nothing where the
+	#aircraft has no acceleration left to give, which is its top speed
+	%AccelerationGraph.title = "Acceleration at %d m" % roundi(altitude)
+	
+	#the speed axis runs from a standstill to a round step past the top speed, so the numbers along it read as round ones: the line
+	#itself only starts where the aircraft can hold level flight, which is where it first carries its weight
+	var acceleration : PackedVector2Array = chart.get("acceleration", PackedVector2Array())
+	var fastest : float = 0.0
+	if not acceleration.is_empty(): fastest = acceleration[acceleration.size() - 1].x
+	
+	var reach : float = maxf(fastest * 1.05, 10.0)
+	var step : float = nearest_round_step(reach / float(maxi(%AccelerationGraph.axis_divisions.x, 1)))
+	var top : float = step * ceilf(reach / step)
+	
+	%AccelerationGraph.auto_bounds_x = false
+	%AccelerationGraph.axis_divisions.x = maxi(roundi(top / step), 1)
+	%AccelerationGraph.lower_bound = Vector2(0.0, %AccelerationGraph.lower_bound.y)
+	%AccelerationGraph.upper_bound = Vector2(top, %AccelerationGraph.upper_bound.y)
+	
+	var takeoff : PackedVector2Array = chart.get("takeoff", PackedVector2Array())
+	assign_curves(%AccelerationGraph, [
+		{"color": CURVE_COLORS[1], "name": "In flight", "points": acceleration},
+		{"color": CURVE_COLORS[3], "name": "Take-off run", "points": takeoff},
+	])
+	
+	#the speed the aircraft leaves the ground at is where the run gives way to the flight, so it is ruled off between them
+	%AccelerationGraph.clear_rules()
+	%AccelerationGraph.clear_labels()
+	if takeoff.size() > 1:
+		%AccelerationGraph.add_x_rule(takeoff[takeoff.size() - 1].x, liftoff_rule_color)
+		%AccelerationGraph.add_label("Take-off run", takeoff[0], takeoff[takeoff.size() - 1] - takeoff[0], HORIZONTAL_ALIGNMENT_LEFT, 4.0)
+
+#one of the numbers under the chart, marked where it sits and named beside it, `lift` pixels clear of the line it sits on
+func mark_turn_point(point : Dictionary, name : String, color : Color, lift : float) -> void:
+	var rate : float = point.get("rate", NAN)
+	var mach : float = point.get("mach", NAN)
+	if is_nan(rate) or is_nan(mach): return
+	
+	var value := Vector2(mach, rate)
+	%TurnPerformanceGraph.add_marker(value, name, "%s: M %.2f, %.1f deg/s" % [name, mach, rate], color)
+	%TurnPerformanceGraph.add_label(name, value, Vector2(1, 0), HORIZONTAL_ALIGNMENT_LEFT, lift)
+
+#the altitude tab: how the numbers that change with height come out, one chart per number
+func draw_altitude_sweep(sweep : Dictionary) -> void:
+	draw_altitude_curve(%SpeedAltitudeGraph, sweep.get("speed", PackedVector2Array()))
+	draw_altitude_curve(%ClimbAltitudeGraph, sweep.get("climb", PackedVector2Array()))
+	draw_altitude_curve(%TurnRateAltitudeGraph, sweep.get("turn_rate", PackedVector2Array()))
+	draw_altitude_curve(%SustainedAltitudeGraph, sweep.get("sustained", PackedVector2Array()))
+	draw_altitude_curve(%LoadAltitudeGraph, sweep.get("load", PackedVector2Array()))
+	draw_altitude_curve(%RadiusAltitudeGraph, sweep.get("radius", PackedVector2Array()))
+
+#one number drawn against altitude
+func draw_altitude_curve(graph : AeroGraph, points : PackedVector2Array) -> void:
+	assign_curves(graph, [{"color": CURVE_COLORS[1], "name": graph.title, "points": points}])
+
+#the numbers under the chart, blank until the sweep says otherwise
+func update_turn_metrics(metrics : Dictionary) -> void:
+	blank_labels([%CornerValue, %CornerRateValue, %SustainedValue, %SustainedRateValue, %RadiusValue, %TopSpeedValue, %ThrustWeightValue])
+	
+	var corner : Dictionary = metrics.get("corner", {})
+	if not corner.is_empty() and not is_nan(corner.speed):
+		%CornerValue.text = "M %.2f, %.0f m/s, %.1f g" % [corner.mach, corner.speed, corner.load]
+		%CornerRateValue.text = "%.1f deg/s" % corner.rate
+	
+	var sustained : Dictionary = metrics.get("sustained", {})
+	if not sustained.is_empty() and not is_nan(sustained.speed):
+		%SustainedValue.text = "M %.2f, %.0f m/s, %.1f g" % [sustained.mach, sustained.speed, sustained.load]
+		%SustainedRateValue.text = "%.1f deg/s" % sustained.rate
+	var tightest : Dictionary = metrics.get("tightest", {})
+	if not tightest.is_empty() and not is_nan(tightest.meters):
+		%RadiusValue.text = "%.0f m, M %.2f" % [tightest.meters, tightest.mach]
+	var top : Dictionary = metrics.get("top", {})
+	if not top.is_empty() and not is_nan(top.speed):
+		%TopSpeedValue.text = "M %.2f, %.0f m/s" % [top.mach, top.speed]
+	
+	var thrust_to_weight : float = metrics.get("thrust_to_weight", NAN)
+	if not is_nan(thrust_to_weight):
+		%ThrustWeightValue.text = "%.2f" % thrust_to_weight
 
 #the name of each family of lines, written along a run of it and turned to follow that run, so the numbers on the lines
 #read as one family without a legend. each family is named where its lines stand furthest apart: the radius lines fan out to
@@ -524,50 +766,6 @@ func add_family_labels(families : Array[Dictionary]) -> void:
 		var from := point_across(curve, family.start)
 		var to := point_across(curve, family.end)
 		%TurnPerformanceGraph.add_label(family.text, from, to - from, HORIZONTAL_ALIGNMENT_CENTER, family.get("clear", 0.0))
-
-#a load factor written the way it is set: whole g's without a decimal, the rest with one
-func format_load(load : float) -> String:
-	if is_equal_approx(load, roundf(load)): return "%d g" % roundi(load)
-	return "%.1f g" % load
-
-#which of a contour's stretches is the longest, which is the one that carries the family's name
-func longest_run(runs : Array) -> int:
-	var longest := 0
-	for index : int in runs.size():
-		if runs[index].size() > runs[longest].size(): longest = index
-	
-	return longest
-
-#the point this share of the way across a curve's run on the x axis, which is where a family is named. it is found by value
-#rather than by sample, so the name stays where it is however finely the curve is sampled
-func point_across(curve : PackedVector2Array, fraction : float) -> Vector2:
-	var x : float = lerpf(curve[0].x, curve[curve.size() - 1].x, fraction)
-	for index : int in curve.size() - 1:
-		var span := curve[index + 1].x - curve[index].x
-		if is_zero_approx(span): continue
-		
-		var along := (x - curve[index].x) / span
-		if along < 0.0 or along > 1.0: continue
-		
-		return curve[index].lerp(curve[index + 1], along)
-	
-	return curve[curve.size() - 1]
-
-#where a turn radius line carries its name: at its end, where the lines stand furthest apart
-var radius_label_fraction := 1.0
-#where an excess power contour carries its name: up along it where the contours stand apart, rather than at its foot, where
-#the whole family converges with the radius lines and their names
-var power_label_fraction := 0.3
-#the run a load factor number is written along: a short one, which only says that the number reads straight across the chart
-#rather than turned along the line it belongs to
-var load_label_span := 0.03
-#how far left of the lift limit the load factor name stands, which is clear of the numbers written against that limit
-var load_name_clearance := 46.0
-
-#the x a curve is asked to carry its name at, taken at this share of its run
-func label_position(curve : PackedVector2Array, fraction : float) -> float:
-	if curve.size() < 2: return 0.0
-	return lerpf(curve[0].x, curve[curve.size() - 1].x, fraction)
 
 #each curve is a color, a legend name and its points, and optionally the parameter its samples were taken at, a normalized y
 #flag, the width it is drawn at, or the word written along it and the x value it is written at
@@ -585,6 +783,12 @@ func assign_curves(graph : AeroGraph, definitions : Array) -> void:
 #signal handlers
 
 func _on_recalculate_button_pressed() -> void:
+	#the button is the way to fly a sweep again once the dock can no longer tell its results are out of date, which is
+	#what happens when a script is reloaded under it: the tab being looked at is marked stale and flown as it is
+	match %Tabs.current_tab:
+		STATIC_TAB: static_stale = true
+		PERFORMANCE_TAB: turn_performance_stale = true
+		ALTITUDE_TAB: altitude_stale = true
 	queue_recalculate()
 
 func _on_testing_speed_value_changed(value : float) -> void:
@@ -596,8 +800,68 @@ func _on_sweep_datapoints_value_changed(value : float) -> void:
 func _on_altitude_value_changed(value : float) -> void:
 	altitude = value
 
+func _on_altitude_steps_value_changed(value : float) -> void:
+	altitude_steps = int(value)
+
+func _on_altitude_samples_value_changed(value : float) -> void:
+	altitude_datapoints = int(value)
+
 func _on_load_limit_value_changed(value : float) -> void:
 	load_limit = value
 
 func _on_turn_datapoints_value_changed(value : float) -> void:
 	turn_datapoints = int(value)
+
+
+
+
+#utils: the arithmetic the drawing is read with. none of it knows anything of this dock or of a graph node, and it is here
+#rather than beside the drawing that reaches for it because more than one of those drawings does
+
+#every field of a readout blank, until the numbers it is read off say otherwise
+func blank_labels(labels : Array[Label]) -> void:
+	for label : Label in labels: label.text = NO_DATA
+
+#a load factor written the way it is set: whole g's without a decimal, the rest with one
+func format_load(load : float) -> String:
+	if is_equal_approx(load, roundf(load)): return "%d g" % roundi(load)
+	return "%.1f g" % load
+
+#which of a contour's stretches is the longest, which is the one that carries the family's name
+func longest_run(runs : Array) -> int:
+	var longest := 0
+	for index : int in runs.size():
+		if runs[index].size() > runs[longest].size(): longest = index
+	
+	return longest
+
+#the point this share of the way across a curve's run on the x axis, which is where a family is named. it is found by value
+#rather than by sample, so the name stays where it is however finely the curve is sampled
+func point_across(curve : PackedVector2Array, fraction : float) -> Vector2:
+	var x := label_position(curve, fraction)
+	for index : int in curve.size() - 1:
+		var span := curve[index + 1].x - curve[index].x
+		if is_zero_approx(span): continue
+		
+		var along := (x - curve[index].x) / span
+		if along < 0.0 or along > 1.0: continue
+		
+		return curve[index].lerp(curve[index + 1], along)
+	
+	return curve[curve.size() - 1]
+
+#the x a curve is asked to carry its name at, taken at this share of its run
+func label_position(curve : PackedVector2Array, fraction : float) -> float:
+	if curve.size() < 2: return 0.0
+	return lerpf(curve[0].x, curve[curve.size() - 1].x, fraction)
+
+#a step rounded to the nearest 1, 2 or 5 times a power of ten, so an axis built from it is numbered with round figures
+func nearest_round_step(raw_step : float) -> float:
+	if raw_step <= 0.0: return 1.0
+	
+	var magnitude := pow(10.0, floorf(log(raw_step) / log(10.0)))
+	var best := magnitude
+	for candidate : float in [magnitude, magnitude * 2.0, magnitude * 5.0, magnitude * 10.0]:
+		if absf(candidate - raw_step) < absf(best - raw_step): best = candidate
+	
+	return best

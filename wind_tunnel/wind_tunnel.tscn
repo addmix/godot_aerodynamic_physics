@@ -36,7 +36,7 @@ suffix = "m/s"
 
 [node name="Altitude" type="SpinBox" parent="Panel/Toolbar" unique_id=1678902341]
 layout_mode = 2
-tooltip_text = "Altitude the dock flies at, in metres above sea level."
+tooltip_text = "Altitude the dock flies at, in meters above sea level."
 max_value = 20000.0
 step = 500.0
 value = 5000.0
@@ -105,9 +105,9 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("2_1ggli")
-title = "Pitch Torque Moments"
+title = "Pitch Moments"
 x_label = "Alpha [deg]"
-y_label = "Torque [N m]"
+y_label = "Angular acceleration [rad/s²]"
 dot_radius = 2.5
 metadata/_custom_type_script = "uid://fpja68jul0t3"
 
@@ -118,9 +118,9 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("2_1ggli")
-title = "Roll Torque Moments"
+title = "Roll Moments"
 x_label = "Roll [deg]"
-y_label = "Torque [N m]"
+y_label = "Angular acceleration [rad/s²]"
 dot_radius = 2.5
 metadata/_custom_type_script = "uid://fpja68jul0t3"
 
@@ -131,9 +131,9 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("2_1ggli")
-title = "Sideslip Torque Moments"
+title = "Sideslip Moments"
 x_label = "Sideslip [deg]"
-y_label = "Torque [N m]"
+y_label = "Angular acceleration [rad/s²]"
 dot_radius = 2.5
 metadata/_custom_type_script = "uid://fpja68jul0t3"
 

@@ -13,6 +13,14 @@ enum ReadoutAxis { X, Y }
 #what the readout reports: every curve crossing the cursor's line, or the curve passing closest to the cursor itself
 enum ReadoutMode { CROSSHAIR, NEAREST_POINT }
 
+
+#TODO:
+#display curves as points
+#dashed/dotted curve display
+#curve downsampling
+#default curve colors
+
+
 @export_group("Features")
 ##Draws the legend plate, which names the curves that have an entry in names.
 @export var show_legend : bool = true:
@@ -643,7 +651,7 @@ func build_axis_fit(lower_bound : float, upper_bound : float, divisions_count : 
 	var tidy := tidy_axis_bounds(lower_bound, upper_bound, divisions_count) if stretch_to_tidy_steps else {"lower_bound": lower_bound, "upper_bound": upper_bound, "divisions": divisions_count}
 	var step : float = (tidy.upper_bound - tidy.lower_bound) / float(tidy.divisions)
 	
-	#the unit the whole axis is labelled in, chosen once so a small tick is never in thousands on a million scale
+	#the unit the whole axis is labeled in, chosen once so a small tick is never in thousands on a million scale
 	var axis_limit := maxf(absf(tidy.lower_bound), absf(tidy.upper_bound))
 	var label_scale := 1.0
 	if axis_limit >= million_scale - 1.0: label_scale = million_scale

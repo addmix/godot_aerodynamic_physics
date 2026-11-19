@@ -11,6 +11,7 @@ void AeroBody3D::_bind_methods() {
 	//function bindings
 	ClassDB::bind_method(D_METHOD("add_aero_atmosphere", "p_aero_atmosphere"), &AeroBody3D::add_aero_atmosphere);
 	ClassDB::bind_method(D_METHOD("remove_aero_atmosphere", "p_aero_atmosphere"), &AeroBody3D::remove_aero_atmosphere);
+	ClassDB::bind_method(D_METHOD("get_moment_of_inertia"), &AeroBody3D::get_moment_of_inertia);
 	
 	
 	//experimental_energy_tracking;
@@ -622,6 +623,10 @@ TypedArray<Area3D> AeroBody3D::get_atmosphere_areas() const {
 	return result;
 }
 const std::vector<Area3D*> &AeroBody3D::get_atmosphere_areas_internal() const { return atmosphere_areas; }
+
+//the inertia the body turns with, which is the same sum Godot makes while it steps physics. the work is in the utils, so
+//anything else that wants a body's mass properties can reach it too
+Vector3 AeroBody3D::get_moment_of_inertia() { return AeroUtils::body_moment_of_inertia(this); }
 
 void AeroBody3D::add_aero_influencer(AeroInfluencer3D* influencer) {
 	aero_influencers.push_back(influencer);

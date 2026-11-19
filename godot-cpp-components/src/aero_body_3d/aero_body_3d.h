@@ -182,6 +182,7 @@ public:
 	TypedArray<AeroInfluencer3D> get_aero_influencers() const;
 	TypedArray<Area3D> get_atmosphere_areas() const;
 	const std::vector<Area3D*> &get_atmosphere_areas_internal() const;
+	Vector3 get_moment_of_inertia();
 	
 	void add_aero_influencer(AeroInfluencer3D* influencer);
 	void remove_aero_influencer(AeroInfluencer3D* influencer);

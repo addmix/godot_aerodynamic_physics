@@ -45,17 +45,17 @@ const TURN_MACH_LIMIT := 1.6
 const ONE_G_TURN_LOAD := sqrt(2.0)
 #the control axis the thrusters read their throttle from, which the turn sweep holds wide open
 const THROTTLE_AXIS := "throttle"
-#the turn radii a chart draws lines for, graduated every step of this many metres from the tightest circle worth drawing out
+#the turn radii a chart draws lines for, graduated every step of this many meters from the tightest circle worth drawing out
 #to the widest, rather than whatever the sweep works out to, so the family reads the same however finely it is flown
 const TURN_RADIUS_STEP := 300.0
 const TURN_RADIUS_TIGHTEST := 300.0
 const TURN_RADIUS_WIDEST := 10000.0
 #how close together two of those lines may come, in degrees a second where they are nearest the widest end of the chart, before
-#the one after is left out. a graduation of 200 metres is worth drawing while the lines still read apart, and past that the
+#the one after is left out. a graduation of 200 meters is worth drawing while the lines still read apart, and past that the
 #family thins out instead of piling up in the corner
 const TURN_RADIUS_MINIMUM_GAP := 0.8
 #how far a column flown between two others may come from where those two would have put it before the sweep is split again along
-#it, in degrees a second of turn rate and in metres a second of excess power. past these the column is one the chart would have
+#it, in degrees a second of turn rate and in meters a second of excess power. past these the column is one the chart would have
 #drawn a kink without, so it is kept
 const TURN_BEND_RATE := 0.06
 const TURN_BEND_POWER := 0.6
@@ -616,7 +616,7 @@ func limit_crossing_along(previous : Dictionary, column : Dictionary, previous_l
 	return 0.0 if is_zero_approx(before - after) else clampf(before / (before - after), 0.0, 1.0)
 
 #the excess power contours to draw. an aircraft with power to spare is drawn from nothing up to the most it has, in equal
-#steps. an aircraft with none is drawn by the energy it loses instead, which runs from a few metres a second in a gentle turn to
+#steps. an aircraft with none is drawn by the energy it loses instead, which runs from a few meters a second in a gentle turn to
 #thousands at the stall, so those levels step through 1, 2 and 5 of each decade and a handful of them cover the spread
 func power_contours(columns : Array[Dictionary]) -> PackedFloat64Array:
 	var highest := -INF

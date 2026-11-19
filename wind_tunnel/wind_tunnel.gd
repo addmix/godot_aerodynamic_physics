@@ -40,7 +40,7 @@ const SEA_LEVEL_PRESSURE := 101325.0
 @export var reference_chord : float = 0.0
 
 @export_group("Turn performance")
-##Altitude the dock flies at, in metres above sea level. Every graph uses the air this declares, so nothing depends on where
+##Altitude the dock flies at, in meters above sea level. Every graph uses the air this declares, so nothing depends on where
 ##the aircraft sits in the scene.
 @export var altitude : float = 5000.0:
 	set(value):
@@ -377,6 +377,7 @@ func _exit_tree() -> void:
 func draw_static_analysis(results : Dictionary) -> void:
 	var alpha : Dictionary = results.alpha
 	var beta : Dictionary = results.beta
+	var inertia := get_body_inertia()
 	
 	assign_curves(%LiftDragGraph, [
 		{"color": CURVE_COLORS[0], "name": "CL", "points": alpha.lift},
@@ -385,19 +386,19 @@ func draw_static_analysis(results : Dictionary) -> void:
 	])
 	
 	assign_curves(%PitchMomentsGraph, [
-		{"color": CURVE_COLORS[0], "name": "Mx (pitch)", "points": alpha.pitch},
-		{"color": CURVE_COLORS[1], "name": "My (yaw)", "points": alpha.yaw},
-		{"color": CURVE_COLORS[2], "name": "Mz (roll)", "points": alpha.roll},
+		{"color": CURVE_COLORS[0], "name": "Mx (pitch)", "points": angular_acceleration(alpha.pitch, inertia.x)},
+		{"color": CURVE_COLORS[1], "name": "My (yaw)", "points": angular_acceleration(alpha.yaw, inertia.y)},
+		{"color": CURVE_COLORS[2], "name": "Mz (roll)", "points": angular_acceleration(alpha.roll, inertia.z)},
 	])
 	
 	assign_curves(%SideslipMomentsGraph, [
-		{"color": CURVE_COLORS[0], "name": "Mx (pitch)", "points": beta.pitch},
-		{"color": CURVE_COLORS[1], "name": "My (yaw)", "points": beta.yaw},
-		{"color": CURVE_COLORS[2], "name": "Mz (roll)", "points": beta.roll},
+		{"color": CURVE_COLORS[0], "name": "Mx (pitch)", "points": angular_acceleration(beta.pitch, inertia.x)},
+		{"color": CURVE_COLORS[1], "name": "My (yaw)", "points": angular_acceleration(beta.yaw, inertia.y)},
+		{"color": CURVE_COLORS[2], "name": "Mz (roll)", "points": angular_acceleration(beta.roll, inertia.z)},
 	])
 	
 	assign_curves(%RollMomentsGraph, [
-		{"color": CURVE_COLORS[2], "name": "Mz (roll)", "points": results.roll.moment},
+		{"color": CURVE_COLORS[2], "name": "Mz (roll)", "points": angular_acceleration(results.roll.moment, inertia.z)},
 	])
 	
 	assign_curves(%PolarGraph, [
@@ -405,6 +406,19 @@ func draw_static_analysis(results : Dictionary) -> void:
 	])
 	
 	update_metrics(results.metrics)
+
+#the inertia each axis turns against, which the body works out for itself: the engine's own numbers once it has stepped
+#physics, and the same sum over its collision shapes when it has not, which is the case in the editor
+func get_body_inertia() -> Vector3:
+	return aerobody.get_moment_of_inertia() if is_instance_valid(aerobody) else Vector3.ONE
+
+#the moments the sweeps report turned into the angular acceleration each one would produce, so the same reading means the
+#same thing on every aircraft instead of running to millions of newton meters on the heavy ones
+func angular_acceleration(moments : PackedVector2Array, inertia : float) -> PackedVector2Array:
+	var accelerated := PackedVector2Array()
+	for moment : Vector2 in moments:
+		accelerated.append(Vector2(moment.x, moment.y / inertia))
+	return accelerated
 
 #every field is blank until the number it is read off says otherwise
 func update_metrics(metrics : Dictionary) -> void:
@@ -455,7 +469,7 @@ func draw_turn_performance(chart : Dictionary) -> void:
 		definitions.append({"color": CURVE_COLORS[0], "name": "lift limit", "points": chart.limit, "width": 2.0})
 	
 	#the 1 g line, which is where every turn radius line starts at its lower end: the turn rate of a turn pulling 1 g sideways. it
-	#carries the load factor colour because that is what it is, and its number is the bottom of the same staircase of numbers
+	#carries the load factor color because that is what it is, and its number is the bottom of the same staircase of numbers
 	if chart.one_g.size() > 1:
 		definitions.append({"color": CURVE_COLORS[2], "name": "1 g pull", "points": chart.one_g})
 		%TurnPerformanceGraph.add_label("1 g", chart.one_g[0], Vector2(load_label_span, 0.0), HORIZONTAL_ALIGNMENT_RIGHT)
@@ -483,9 +497,9 @@ func draw_turn_performance(chart : Dictionary) -> void:
 			var run : PackedVector2Array = family.runs[index]
 			if run.size() < 2: continue
 			
-			var labelled : bool = index == longest
+			var labeled : bool = index == longest
 			var definition := {"color": CURVE_COLORS[1], "name": "excess power %d m/s" % roundi(family.level), "points": run}
-			if labelled:
+			if labeled:
 				definition["label"] = "%d m/s" % roundi(family.level)
 				definition["label_position"] = label_position(run, power_label_fraction)
 			definitions.append(definition)

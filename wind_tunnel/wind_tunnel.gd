@@ -521,30 +521,38 @@ func draw_static_analysis(results : Dictionary) -> void:
 	var beta : Dictionary = results.beta
 	var inertia := get_body_inertia()
 	
-	assign_curves(%LiftDragGraph, [
-		{"color": CURVE_COLORS[0], "name": "CL", "points": alpha.lift},
-		{"color": CURVE_COLORS[1], "name": "CD", "points": alpha.drag},
-		{"color": CURVE_COLORS[2], "name": "L/D", "points": alpha.ratio, "normalized_y": true},
+	%LiftDragGraph.clear_curves()
+	%LiftDragGraph.add_curves([
+		AeroGraph.create_curve(alpha.lift, CURVE_COLORS[0], "CL"),
+		AeroGraph.create_curve(alpha.drag, CURVE_COLORS[1], "CD"),
+	])
+	#the lift to drag ratio is drawn against the full height of the graph rather than the coefficient scale, so it is added
+	#on its own and says so
+	var ratio_curve : AeroGraph.CurveData = %LiftDragGraph.add_curve(alpha.ratio, CURVE_COLORS[2], "L/D")
+	ratio_curve.normalize_y = true
+	
+	%PitchMomentsGraph.clear_curves()
+	%PitchMomentsGraph.add_curves([
+		AeroGraph.create_curve(angular_acceleration(alpha.pitch, inertia.x), CURVE_COLORS[0], "Mx (pitch)"),
+		AeroGraph.create_curve(angular_acceleration(alpha.yaw, inertia.y), CURVE_COLORS[1], "My (yaw)"),
+		AeroGraph.create_curve(angular_acceleration(alpha.roll, inertia.z), CURVE_COLORS[2], "Mz (roll)"),
 	])
 	
-	assign_curves(%PitchMomentsGraph, [
-		{"color": CURVE_COLORS[0], "name": "Mx (pitch)", "points": angular_acceleration(alpha.pitch, inertia.x)},
-		{"color": CURVE_COLORS[1], "name": "My (yaw)", "points": angular_acceleration(alpha.yaw, inertia.y)},
-		{"color": CURVE_COLORS[2], "name": "Mz (roll)", "points": angular_acceleration(alpha.roll, inertia.z)},
+	%SideslipMomentsGraph.clear_curves()
+	%SideslipMomentsGraph.add_curves([
+		AeroGraph.create_curve(angular_acceleration(beta.pitch, inertia.x), CURVE_COLORS[0], "Mx (pitch)"),
+		AeroGraph.create_curve(angular_acceleration(beta.yaw, inertia.y), CURVE_COLORS[1], "My (yaw)"),
+		AeroGraph.create_curve(angular_acceleration(beta.roll, inertia.z), CURVE_COLORS[2], "Mz (roll)"),
 	])
 	
-	assign_curves(%SideslipMomentsGraph, [
-		{"color": CURVE_COLORS[0], "name": "Mx (pitch)", "points": angular_acceleration(beta.pitch, inertia.x)},
-		{"color": CURVE_COLORS[1], "name": "My (yaw)", "points": angular_acceleration(beta.yaw, inertia.y)},
-		{"color": CURVE_COLORS[2], "name": "Mz (roll)", "points": angular_acceleration(beta.roll, inertia.z)},
+	%RollMomentsGraph.clear_curves()
+	%RollMomentsGraph.add_curves([
+		AeroGraph.create_curve(angular_acceleration(results.roll.moment, inertia.z), CURVE_COLORS[2], "Mz (roll)"),
 	])
 	
-	assign_curves(%RollMomentsGraph, [
-		{"color": CURVE_COLORS[2], "name": "Mz (roll)", "points": angular_acceleration(results.roll.moment, inertia.z)},
-	])
-	
-	assign_curves(%PolarGraph, [
-		{"color": CURVE_COLORS[2], "name": "CL vs CD", "points": alpha.polar, "parameters": alpha.polar_alphas},
+	%PolarGraph.clear_curves()
+	%PolarGraph.add_curves([
+		AeroGraph.create_curve(alpha.polar, CURVE_COLORS[2], "CL vs CD", alpha.polar_alphas),
 	])
 	
 	update_metrics(results.metrics)
@@ -590,29 +598,26 @@ func draw_turn_performance(chart : Dictionary) -> void:
 	%TurnPerformanceGraph.clear_curves()
 	%TurnPerformanceGraph.clear_labels()
 	
-	var definitions : Array = []
 	var families : Array[Dictionary] = []
 	
 	#the turn radius lines go down first, so the families the chart is read for sit over them
 	for family : Dictionary in chart.radii:
 		var points : PackedVector2Array = family.points
-		definitions.append({
-			"color": Color(CURVE_COLORS[3], 0.7), "name": "radius %d m" % roundi(family.radius),
-			"label": "%d m" % roundi(family.radius), "label_position": label_position(points, radius_label_fraction),
-			"points": points,
-		})
+		var radius_line : AeroGraph.CurveData = %TurnPerformanceGraph.add_curve(points, Color(CURVE_COLORS[3], 0.7), "radius %d m" % roundi(family.radius))
+		%TurnPerformanceGraph.add_curve_label(radius_line, "%d m" % roundi(family.radius), label_position(points, radius_label_fraction))
 	if not chart.radii.is_empty():
 		families.append({"text": "TURN RADIUS (M)", "points": chart.radii[chart.radii.size() / 2].points, "start": 0.55, "end": 0.85})
 	
 	#the lift limit, which is where the wing stalls. it runs up to the last load factor line, which is what closes the top of the
 	#chart and stands for the g limit
 	if chart.limit.size() > 1:
-		definitions.append({"color": CURVE_COLORS[0], "name": "lift limit", "points": chart.limit, "width": 2.0})
+		var limit_line : AeroGraph.CurveData = %TurnPerformanceGraph.add_curve(chart.limit, CURVE_COLORS[0], "lift limit")
+		limit_line.width = 2.0
 	
 	#the 1 g line, which is where every turn radius line starts at its lower end: the turn rate of a turn pulling 1 g sideways. it
 	#carries the load factor color because that is what it is, and its number is the bottom of the same staircase of numbers
 	if chart.one_g.size() > 1:
-		definitions.append({"color": CURVE_COLORS[2], "name": "1 g pull", "points": chart.one_g})
+		%TurnPerformanceGraph.add_curve(chart.one_g, CURVE_COLORS[2], "1 g pull")
 		%TurnPerformanceGraph.add_label("1 g", chart.one_g[0], Vector2(load_label_span, 0.0), HORIZONTAL_ALIGNMENT_RIGHT)
 	
 	#the constant load factor lines, which are turns the aircraft can pull while it still has the lift for them. each one is
@@ -621,9 +626,7 @@ func draw_turn_performance(chart : Dictionary) -> void:
 	for family : Dictionary in chart.loads:
 		if family.points.is_empty(): continue
 		
-		definitions.append({
-			"color": CURVE_COLORS[2], "name": "load factor %s" % format_load(family.load), "points": family.points,
-		})
+		%TurnPerformanceGraph.add_curve(family.points, CURVE_COLORS[2], "load factor %s" % format_load(family.load))
 		var start : Vector2 = family.points[0]
 		%TurnPerformanceGraph.add_label(format_load(family.load), start, Vector2(load_label_span, 0.0), HORIZONTAL_ALIGNMENT_RIGHT)
 	#the load factor name runs up the chart beside the numbers, above where the numbers start and clear of them
@@ -650,19 +653,16 @@ func draw_turn_performance(chart : Dictionary) -> void:
 			#a contour of energy lost carries no name of its own: the family name says what the faint lines are, and the numbers
 			#are kept for the turns the aircraft can actually hold
 			var labeled : bool = index == longest and level >= 0.0
-			var definition := {"color": color, "name": "excess power %d m/s" % roundi(level), "points": run}
-			if width > 0.0: definition["width"] = width
+			var contour : AeroGraph.CurveData = %TurnPerformanceGraph.add_curve(run, color, "excess power %d m/s" % roundi(level))
+			if width > 0.0: contour.width = width
 			if labeled:
-				definition["label"] = "%d m/s" % roundi(level)
-				definition["label_position"] = label_position(run, power_label_fraction)
-			definitions.append(definition)
+				%TurnPerformanceGraph.add_curve_label(contour, "%d m/s" % roundi(level), label_position(run, power_label_fraction))
 	
 	#the name of that family goes along the longest stretch of the contour through the middle of the chart
 	if not chart.powers.is_empty():
 		var middle : Array = chart.powers[chart.powers.size() / 2].runs
 		families.append({"text": "EXCESS POWER (M/S)", "points": middle[longest_run(middle)], "start": 0.45, "end": 0.7})
 	
-	assign_curves(%TurnPerformanceGraph, definitions)
 	add_family_labels(families)
 	
 	#the numbers the strip reports are marked where they sit, so a reading is never far from its place on the chart. the held
@@ -696,9 +696,10 @@ func draw_turn_performance(chart : Dictionary) -> void:
 	%AccelerationGraph.upper_bound = Vector2(top, %AccelerationGraph.upper_bound.y)
 	
 	var takeoff : PackedVector2Array = chart.get("takeoff", PackedVector2Array())
-	assign_curves(%AccelerationGraph, [
-		{"color": CURVE_COLORS[1], "name": "In flight", "points": acceleration},
-		{"color": CURVE_COLORS[3], "name": "Take-off run", "points": takeoff},
+	%AccelerationGraph.clear_curves()
+	%AccelerationGraph.add_curves([
+		AeroGraph.create_curve(acceleration, CURVE_COLORS[1], "In flight"),
+		AeroGraph.create_curve(takeoff, CURVE_COLORS[3], "Take-off run"),
 	])
 	
 	#the speed the aircraft leaves the ground at is where the run gives way to the flight, so it is ruled off between them
@@ -729,7 +730,8 @@ func draw_altitude_sweep(sweep : Dictionary) -> void:
 
 #one number drawn against altitude
 func draw_altitude_curve(graph : AeroGraph, points : PackedVector2Array) -> void:
-	assign_curves(graph, [{"color": CURVE_COLORS[1], "name": graph.title, "points": points}])
+	graph.clear_curves()
+	graph.add_curves([AeroGraph.create_curve(points, CURVE_COLORS[1], graph.title)])
 
 #the numbers under the chart, blank until the sweep says otherwise
 func update_turn_metrics(metrics : Dictionary) -> void:
@@ -766,19 +768,6 @@ func add_family_labels(families : Array[Dictionary]) -> void:
 		var from := point_across(curve, family.start)
 		var to := point_across(curve, family.end)
 		%TurnPerformanceGraph.add_label(family.text, from, to - from, HORIZONTAL_ALIGNMENT_CENTER, family.get("clear", 0.0))
-
-#each curve is a color, a legend name and its points, and optionally the parameter its samples were taken at, a normalized y
-#flag, the width it is drawn at, or the word written along it and the x value it is written at
-func assign_curves(graph : AeroGraph, definitions : Array) -> void:
-	graph.clear_curves()
-	for definition : Dictionary in definitions:
-		var parameters : PackedFloat32Array = definition.get("parameters", PackedFloat32Array())
-		var curve := graph.add_curve(definition.points, definition.color, definition.name, parameters)
-		curve.normalize_y = definition.get("normalized_y", false)
-		curve.width = definition.get("width", 0.0)
-		if definition.has("label"):
-			graph.add_curve_label(curve, definition.label, definition.label_position)
-
 
 #signal handlers
 

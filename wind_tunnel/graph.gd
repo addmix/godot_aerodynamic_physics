@@ -253,6 +253,17 @@ func add_curve(points : Variant, color : Color, legend_name : String = "", param
 	if redraw: queue_redraw()
 	return curve
 
+#the record one curve is drawn from: the arguments add_curve() takes, gathered up so a list of curves can be passed around
+static func create_curve(points : Variant, color : Color, name : String, parameters : PackedFloat32Array = PackedFloat32Array()) -> Dictionary:
+	return {"points": points, "color": color, "name": name, "parameters": parameters}
+
+#adds every curve of the array, each as add_curve() takes it, and redraws once for the lot
+func add_curves(definitions : Array, redraw : bool = true) -> void:
+	for definition : Dictionary in definitions:
+		add_curve(definition.points, definition.color, definition.name, definition.parameters, false)
+	
+	if redraw: queue_redraw()
+
 #adds a sample to the end of a curve and redraws, for data that arrives a point at a time
 func append_sample(curve : CurveData, point : Vector2) -> void:
 	curve.points.append(point)
@@ -315,6 +326,59 @@ func clear_rules() -> void:
 	x_rules.clear()
 	queue_redraw()
 
+#a marked range on one axis, and a marked rectangle, kept as the values they were given
+enum Axis { X, Y }
+
+class Span:
+	var axis := 0
+	var from := 0.0
+	var to := 0.0
+	var color := Color.WHITE
+	var fill_color := Color(0.0, 0.0, 0.0, 0.0)
+	var fill := true
+
+class Area:
+	var rect := Rect2()
+	var color := Color.WHITE
+	var fill_color := Color(0.0, 0.0, 0.0, 0.0)
+	var fill := true
+
+var spans : Array[Span] = []
+var areas : Array[Area] = []
+#how much of the line color a region's wash is made of when no fill color of its own is given
+var region_fill_alpha := 0.12
+#the weight the two lines of a span are drawn at
+var span_line_width := 1.0
+
+#a range on one axis: the two lines at its ends and a wash between them. the wash is the line color faded unless a fill color
+#is given, and it is left out when `draw_fill` is false
+func add_span(axis : Axis, from : float, to : float, color : Color, fill_color := Color(0, 0, 0, 0), draw_fill := true) -> void:
+	var span := Span.new()
+	span.axis = axis
+	span.from = minf(from, to)
+	span.to = maxf(from, to)
+	span.color = color
+	span.fill_color = fill_color if fill_color.a > 0.0 else Color(color, region_fill_alpha)
+	span.fill = draw_fill
+	spans.append(span)
+	queue_redraw()
+
+#a rectangle in the values the curves are drawn in, filled and outlined the same way a span is
+func add_area(rect : Rect2, color : Color, fill_color := Color(0, 0, 0, 0), draw_fill := true) -> void:
+	var area := Area.new()
+	area.rect = rect.abs()
+	area.color = color
+	area.fill_color = fill_color if fill_color.a > 0.0 else Color(color, region_fill_alpha)
+	area.fill = draw_fill
+	areas.append(area)
+	queue_redraw()
+
+#takes the marked ranges and areas off the chart
+func clear_regions() -> void:
+	spans.clear()
+	areas.clear()
+	queue_redraw()
+
 #writes a word along a curve at a value on its own x axis, following the curve there and keeping clear of it
 func add_curve_label(curve : CurveData, text : String, position : float, align : HorizontalAlignment = HORIZONTAL_ALIGNMENT_CENTER, clear : float = 0.0) -> void:
 	var anchor := curve_label_anchor(curve, position)
@@ -360,6 +424,7 @@ func _draw() -> void:
 	if plot.size.x <= smallest_plot_side or plot.size.y <= smallest_plot_side: return
 	
 	draw_grid(plot, axis_cross, x_axis_fit, y_axis_fit)
+	draw_regions(plot, x_axis_fit, y_axis_fit)
 	draw_rules(plot, x_axis_fit)
 	draw_curves(plot, x_axis_fit, y_axis_fit)
 	draw_markers(plot, x_axis_fit, y_axis_fit)
@@ -803,6 +868,35 @@ func draw_grid(plot : Rect2, axis_cross : Vector2, x_axis_fit : AxisFit, y_axis_
 		if axis_cross.y > plot.position.y and axis_cross.y < plot.end.y:
 			draw_line(Vector2(plot.position.x, axis_cross.y), Vector2(plot.end.x, axis_cross.y), zero_line_color, zero_line_width)
 
+
+#the marked ranges and areas, drawn over the grid and under the curves so the data stays on top of them
+func draw_regions(plot : Rect2, x_axis_fit : AxisFit, y_axis_fit : AxisFit) -> void:
+	for area : Area in areas:
+		var corner : Vector2 = map_value_to_plot(area.rect.position, plot, x_axis_fit, y_axis_fit, false, false)
+		var opposite : Vector2 = map_value_to_plot(area.rect.end, plot, x_axis_fit, y_axis_fit, false, false)
+		var pixel : Rect2 = Rect2(corner, opposite - corner).abs().intersection(plot)
+		if is_zero_approx(pixel.size.x) or is_zero_approx(pixel.size.y): continue
+		
+		if area.fill: draw_rect(pixel, area.fill_color, true)
+		draw_rect(pixel, area.color, false, span_line_width)
+	
+	for span : Span in spans:
+		if span.axis == Axis.X:
+			var left : float = clampf(map_value_to_plot(Vector2(span.from, 0.0), plot, x_axis_fit, y_axis_fit, false, false).x, plot.position.x, plot.end.x)
+			var right : float = clampf(map_value_to_plot(Vector2(span.to, 0.0), plot, x_axis_fit, y_axis_fit, false, false).x, plot.position.x, plot.end.x)
+			if is_zero_approx(right - left): continue
+			
+			if span.fill: draw_rect(Rect2(left, plot.position.y, right - left, plot.size.y), span.fill_color)
+			draw_line(Vector2(left, plot.position.y), Vector2(left, plot.end.y), span.color, span_line_width)
+			draw_line(Vector2(right, plot.position.y), Vector2(right, plot.end.y), span.color, span_line_width)
+		else:
+			var top : float = clampf(map_value_to_plot(Vector2(0.0, span.to), plot, x_axis_fit, y_axis_fit, false, false).y, plot.position.y, plot.end.y)
+			var bottom : float = clampf(map_value_to_plot(Vector2(0.0, span.from), plot, x_axis_fit, y_axis_fit, false, false).y, plot.position.y, plot.end.y)
+			if is_zero_approx(bottom - top): continue
+			
+			if span.fill: draw_rect(Rect2(plot.position.x, top, plot.size.x, bottom - top), span.fill_color)
+			draw_line(Vector2(plot.position.x, top), Vector2(plot.end.x, top), span.color, span_line_width)
+			draw_line(Vector2(plot.position.x, bottom), Vector2(plot.end.x, bottom), span.color, span_line_width)
 
 #the rules down the plot, drawn under the curves so the data stays on top of them
 func draw_rules(plot : Rect2, x_axis_fit : AxisFit) -> void:

@@ -50,6 +50,12 @@ const AIR_DIRECTION := Vector3(0, 0, 1)
 #how the turn performance is flown: the angle of attack is swept up to this to find the lift limit, and Mach is stepped from
 #the first of these to the last
 const TURN_ALPHA_LIMIT := 30.0
+#the angle the sweeps start at: the wing carries the aircraft's weight at a negative angle at speed, so a grid that starts at
+#zero cannot bracket that crossing and reports the power at a load above one in its place
+const TURN_ALPHA_FLOOR := -10.0
+#how many times the angle that carries the weight is walked in, and how close to one g it has to land before it is taken
+const TRIM_STEPS := 4
+const TRIM_LOAD_TOLERANCE := 0.002
 const TURN_ALPHA_SAMPLES := 25
 const TURN_MACH_START := 0.2
 const TURN_MACH_LIMIT := 1.6
@@ -73,14 +79,25 @@ const ENVELOPE_ALTITUDE_STEPS := 13
 const ENVELOPE_SPEED_FLOOR := 20.0
 const ENVELOPE_SPEED_STEPS := 24
 #how close the slowest flying speed has to be walked in before it is good enough, in meters a second: the speed a chart starts
-#at is read off it, so it is walked in far enough that the answer moves smoothly with the altitude rather than stepping
-const CARRYING_SPEED_TOLERANCE := 0.02
+#at is read off it, and half a meter a second is far below what a column a hundred meters apart can show, so walking it in
+#further only spends flights
+const CARRYING_SPEED_TOLERANCE := 0.5
+#how many times the speed a level flight runs out of power at is walked in, and how close to nothing its power has to come
+const POWER_STEPS := 4
+const POWER_TOLERANCE := 0.02
+#how many speeds are flown to find the best sustained turn around the best sampled one: the top of that curve is flat, so the
+#samples either side of it decide the answer more than the aircraft does
+const SUSTAINED_SEARCH_STEPS := 4
+#how far either side of the best sustained turn the top of its curve is read, in Mach: a fixed width, so the fit does not slide with
+#the sampled grid
+const SUSTAINED_PEAK_REACH := 0.02
+#how many times the top of the lift curve is walked in between the samples either side of it
+const LIFT_PEAK_STEPS := 2
 #how far above that speed the first column of a sweep is laid. the walk answers with a speed the wing carries the aircraft at
 #on the boundary itself, where a rounding either way decides whether the column flies, and a column that comes out unflyable
 #hands the chart its second one instead, a whole step up the mach range
 const CARRYING_SPEED_MARGIN := 1.002
 const ENVELOPE_MACH_LIMIT := 3.0
-const ENVELOPE_ALPHA_SAMPLES := 20
 #the load factor a turn pulling 1 g sideways comes to, which is the flattest turn the chart reads a radius off and the line every
 #turn radius line starts on
 const ONE_G_TURN_LOAD := sqrt(2.0)
@@ -392,7 +409,7 @@ func turn_performance() -> Dictionary:
 	for radius : float in turn_radii(columns):
 		chart.radii.append({"radius": radius, "points": radius_curve(columns, radius)})
 	
-	chart.metrics = turn_metrics(columns)
+	chart.metrics = turn_metrics(columns, density, pressure, sound_speed, weight)
 	chart.metrics["thrust_to_weight"] = static_thrust / weight
 	
 	#the fastest level flight at this altitude, worked out the way the speed envelope works it out so the two never disagree
@@ -489,11 +506,16 @@ func altitude_sweep() -> Dictionary:
 		var fastest : float = level_speed(height_density, height_pressure, height_sound, weight)
 		var columns := altitude_columns(height_density, height_pressure, height_sound, weight, fastest)
 		
-		#the best climb there, which is the most power level flight has left over at any speed
-		var climb := -INF
-		for column : Dictionary in columns:
-			if is_nan(column.level_power): continue
-			climb = maxf(climb, column.level_power)
+		#the best climb there, which is the most power level flight has left over at any speed, read off a curve through the three
+		#columns around the best of them rather than off whichever column happened to fall nearest it
+		var powers := PackedFloat64Array()
+		var best := -1
+		for column_index : int in columns.size():
+			powers.append(columns[column_index].level_power)
+			if is_nan(powers[column_index]): continue
+			if best < 0 or powers[column_index] > powers[best]: best = column_index
+		var climb := NAN
+		if best >= 0: climb = refined_extreme(columns, powers, best, false).y
 		
 		#a height with no climb left is the last one the sweep flies: the aircraft cannot hold level flight above it, so the
 		#numbers up there would describe a flight it cannot make. the ceiling is the crossing this height makes with the one below
@@ -504,7 +526,7 @@ func altitude_sweep() -> Dictionary:
 		#what the aircraft does there, now that it is known it can fly there at all
 		if not is_nan(fastest): sweep.speed.append(Vector2(fastest / height_sound, height))
 		
-		var metrics := turn_metrics(columns)
+		var metrics := turn_metrics(columns, height_density, height_pressure, height_sound, weight)
 		var corner : Dictionary = metrics.corner
 		if not is_nan(corner.rate): sweep.turn_rate.append(Vector2(corner.rate, height))
 		
@@ -579,7 +601,9 @@ func level_speed(density : float, pressure : float, sound_speed : float, weight 
 	if level_power(ENVELOPE_MACH_LIMIT * sound_speed, density, pressure, weight) >= 0.0: return NAN
 	
 	var holding := NAN
+	var holding_power := NAN
 	var spent := NAN
+	var spent_power := NAN
 	var fastest : float = ENVELOPE_MACH_LIMIT * sound_speed
 	
 	for index : int in ENVELOPE_SPEED_STEPS:
@@ -589,11 +613,13 @@ func level_speed(density : float, pressure : float, sound_speed : float, weight 
 		
 		if power >= 0.0:
 			holding = speed
+			holding_power = power
 			continue
 		
 		#too slow to hold level flight yet, so this is not the crossing the envelope is read at: the one higher up is
 		if is_nan(holding): continue
 		spent = speed
+		spent_power = power
 		break
 	
 	if is_nan(holding): return NAN
@@ -601,37 +627,48 @@ func level_speed(density : float, pressure : float, sound_speed : float, weight 
 	#rather than one the sweep chose
 	if is_nan(spent): return NAN
 	
-	for step : int in 8:
-		var middle : float = (holding + spent) * 0.5
-		if level_power(middle, density, pressure, weight) >= 0.0: holding = middle
-		else: spent = middle
+	return power_crossing_speed(holding, holding_power, spent, spent_power, density, pressure, weight)
+
+#where the power left over runs out, between a speed that still has some and one that has none. the guess is interpolated from
+#the two powers and the next one from the result, so the crossing is walked in rather than halved: a few flights instead of
+#eight, and the answer is the crossing rather than somewhere inside the last bracket
+func power_crossing_speed(holding : float, holding_power : float, spent : float, spent_power : float, density : float, pressure : float, weight : float) -> float:
+	for step : int in POWER_STEPS:
+		if is_equal_approx(holding_power, spent_power): break
+		
+		var speed : float = lerpf(holding, spent, clampf(holding_power / (holding_power - spent_power), 0.0, 1.0))
+		var power : float = level_power(speed, density, pressure, weight)
+		if is_nan(power): return speed
+		if absf(power) <= POWER_TOLERANCE: return speed
+		
+		if power > 0.0:
+			holding = speed
+			holding_power = power
+		else:
+			spent = speed
+			spent_power = power
 	
 	return (holding + spent) * 0.5
 
 #the power a level flight at one speed has left over: the angle of attack is the one carrying the weight, and what the engine
 #gives above the drag of flying there is what is left
 func level_power(speed : float, density : float, pressure : float, weight : float) -> float:
-	var previous_load := NAN
-	var previous_power := NAN
+	var lowest := level_reading(TURN_ALPHA_FLOOR, speed, density, pressure, weight)
+	var highest := level_reading(TURN_ALPHA_LIMIT, speed, density, pressure, weight)
+	if is_nan(lowest.x) or is_nan(highest.x): return NAN
 	
-	for sample : int in ENVELOPE_ALPHA_SAMPLES:
-		var alpha : float = remap(sample, 0, ENVELOPE_ALPHA_SAMPLES - 1, 0.0, TURN_ALPHA_LIMIT)
-		var force := force_on_level_attitude(alpha, speed, density, pressure)
-		var load : float = force.x / weight
-		var power : float = speed * force.y / weight
-		
-		if load >= 1.0: return power_at_one_g(previous_load, previous_power, load, power)
-		
-		previous_load = load
-		previous_power = power
+	#an aircraft that cannot carry its weight at the limit cannot fly here at all, and one that carries it even at the floor is
+	#already past the crossing, so neither has one to walk in
+	if highest.x < 1.0: return NAN
+	if lowest.x >= 1.0: return lowest.y
 	
-	return NAN
+	return level_power_between(speed, density, pressure, weight, TURN_ALPHA_FLOOR, lowest.x, TURN_ALPHA_LIMIT, highest.x)
 
 #the numbers the chart is read for, worked out from the same columns it is drawn from
-func turn_metrics(columns : Array[Dictionary]) -> Dictionary:
+func turn_metrics(columns : Array[Dictionary], density : float, pressure : float, sound_speed : float, weight : float) -> Dictionary:
 	return {
 		"corner": corner_point(columns),
-		"sustained": sustained_point(columns),
+		"sustained": sustained_point(columns, density, pressure, sound_speed, weight),
 		"tightest": tightest_point(columns),
 	}
 
@@ -677,7 +714,7 @@ func stall_corner(columns : Array[Dictionary]) -> Dictionary:
 
 #the sustained turn is the best of what the aircraft can hold without losing energy, which is the highest point of the zero excess
 #power line, read off a curve through the three columns around the best of them
-func sustained_point(columns : Array[Dictionary]) -> Dictionary:
+func sustained_point(columns : Array[Dictionary], density : float, pressure : float, sound_speed : float, weight : float) -> Dictionary:
 	if columns.is_empty(): return no_turn()
 	
 	var rates := PackedFloat64Array()
@@ -690,15 +727,56 @@ func sustained_point(columns : Array[Dictionary]) -> Dictionary:
 	
 	if best < 0: return no_turn()
 	
-	var column : Dictionary = columns[best]
-	#an aircraft that can hold the load limit without spending energy has its corner as its sustained turn, and the corner is the
-	#one number here solved rather than sampled, so it is the one to report
-	var held : float = sustained_load(column)
-	if is_equal_approx(column.limit_load, load_limit) and held >= column.limit_load - 0.0001: return corner_point(columns)
+	#the corner is the tightest turn the wing can hold the limit at, and it is solved rather than sampled, so it is the sustained
+	#turn whenever the aircraft can power the limit there. that is answered by flying the corner itself: the columns either side of
+	#it cannot say, because a column that holds the limit reports the limit however thin its power margin is, so interpolating them
+	#made the answer hop between the corner and the sampled peak as the ladder moved
+	var corner := corner_point(columns)
+	if not is_nan(corner.mach):
+		var at_corner := turn_performance_column(corner.mach, density, pressure, sound_speed, weight)
+		if sustained_load(at_corner) >= load_limit - 0.0001: return corner
 	
-	var peak := refined_extreme(columns, rates, best, false)
+	#nothing holds the limit without spending energy here, so the best of what the aircraft can hold is walked in around the best
+	#column rather than read off a curve through three samples: the top of this curve is flat enough that which sample the fit lands
+	#on decides the answer, and with altitude that reads as a wave
+	var low : float = columns[maxi(best - 1, 0)].mach
+	var high : float = columns[mini(best + 1, columns.size() - 1)].mach
+	var left : float = lerpf(low, high, 0.382)
+	var right : float = lerpf(low, high, 0.618)
+	var left_reading := sustained_reading_at(left, density, pressure, sound_speed, weight)
+	var right_reading := sustained_reading_at(right, density, pressure, sound_speed, weight)
 	
-	return {"mach": peak.x, "speed": speed_at_mach(column, peak.x), "load": sustained_load(column), "rate": peak.y}
+	for step : int in SUSTAINED_SEARCH_STEPS:
+		if left_reading.x >= right_reading.x:
+			high = right
+			right = left
+			right_reading = left_reading
+			left = lerpf(low, high, 0.382)
+			left_reading = sustained_reading_at(left, density, pressure, sound_speed, weight)
+		else:
+			low = left
+			left = right
+			left_reading = right_reading
+			right = lerpf(low, high, 0.618)
+			right_reading = sustained_reading_at(right, density, pressure, sound_speed, weight)
+	
+	var mach : float = (low + high) * 0.5
+	var reading := sustained_reading_at(mach, density, pressure, sound_speed, weight)
+	
+	#the top of the curve is read off a parabola through three speeds a fixed distance apart rather than through the samples: a
+	#stencil anchored to the samples changes shape as the sampled grid slides with the altitude, and that is what showed as a wave
+	var nearer := sustained_reading_at(mach - SUSTAINED_PEAK_REACH, density, pressure, sound_speed, weight)
+	var further := sustained_reading_at(mach + SUSTAINED_PEAK_REACH, density, pressure, sound_speed, weight)
+	var rate : float = refined_peak_load(nearer.x, reading.x, further.x)
+	
+	return {"mach": mach, "speed": mach * sound_speed, "load": reading.y, "rate": rate}
+
+#the sustained turn rate and the load factor it holds at one Mach, flown where it is asked rather than read off the nearest column
+func sustained_reading_at(mach : float, density : float, pressure : float, sound_speed : float, weight : float) -> Vector2:
+	var column := turn_performance_column(mach, density, pressure, sound_speed, weight)
+	var load := sustained_load(column)
+	
+	return Vector2(turn_rate(load, column.speed), load)
 
 #the tightest circle the aircraft can fly, and the speed it can fly it at, read off a curve through the three columns around the
 #tightest of them
@@ -719,7 +797,22 @@ func tightest_point(columns : Array[Dictionary]) -> Dictionary:
 	var valley := refined_extreme(columns, radii, best, true)
 	var speed : float = speed_at_mach(column, valley.x)
 	
-	return {"meters": valley.y, "mach": valley.x, "speed": speed, "rate": turn_rate(column.limit_load, speed)}
+	return {"meters": valley.y, "mach": valley.x, "speed": speed, "rate": limit_rate_at(columns, valley.x)}
+
+#the turn rate the aircraft can hold its most at, at a Mach between two columns, interpolated along the segment the chart draws
+#between them. a mark placed at a solved speed then sits on the line it belongs to: reading it off the nearest sampled column put
+#it a shade below the lift limit it was meant to sit on, more so the faster the wing's limit changes with speed
+func limit_rate_at(columns : Array[Dictionary], mach : float) -> float:
+	var previous : Dictionary = {}
+	for column : Dictionary in columns:
+		if column.mach >= mach:
+			if previous.is_empty(): return turn_rate(column.limit_load, column.speed)
+			
+			var along : float = straddle_fraction(previous.mach - mach, column.mach - mach)
+			return lerpf(turn_rate(previous.limit_load, previous.speed), turn_rate(column.limit_load, column.speed), along)
+		previous = column
+	
+	return turn_rate(previous.limit_load, previous.speed) if not previous.is_empty() else NAN
 
 #what a turn reads as when nothing in the sweep reaches one
 func no_turn() -> Dictionary:
@@ -728,48 +821,31 @@ func no_turn() -> Dictionary:
 #the load factor a column can hold without losing energy: the angle of attack where the excess power crosses zero, which is
 #the last of the turn it can keep up. a column that never runs out of power holds whatever the load limit allows
 func sustained_load(column : Dictionary) -> float:
-	var loads : PackedFloat64Array = column.loads
-	var powers : PackedFloat64Array = column.powers
-	var samples : int = mini(loads.size(), powers.size())
-	
-	for index : int in samples:
-		if powers[index] >= 0.0: continue
-		if index == 0: return NAN
-		
-		#the hold ends between the last sample that still gains energy and the first that spends it, and never past what the
-		#wing and the load limit allow. the crossing is read off a curve through the samples around it rather than off a straight
-		#line between two of them, because the power curve is curved there and a straight line there steps with the sample spacing
-		var crossing := curved_crossing(loads, powers, samples, index)
-		return minf(crossing, column.limit_load)
-	
-	return column.limit_load if samples > 0 else NAN
+	return column.get("sustained", NAN)
 
-#where the excess power runs out between two samples of a column, read off the curve through the samples around them and walked in
-#on between the two that straddle it: the power curve bends there, and a straight line between two samples steps with their spacing
-func curved_crossing(loads : PackedFloat64Array, powers : PackedFloat64Array, samples : int, crossing_index : int) -> float:
-	var low : int = crossing_index - 1
-	var high : int = crossing_index
-	var low_load : float = loads[low]
-	var high_load : float = loads[high]
-	var straight : float = lerpf(low_load, high_load, straddle_fraction(powers[low], powers[high]))
+#the load factor the excess power runs out at, walked in between two angles whose powers bracket nothing: the guess is interpolated
+#from the two powers and the next one from the result, so the hold ends at the crossing rather than at the sample nearest to it
+func power_crossing_load(speed : float, density : float, pressure : float, weight : float, low_alpha : float, low_power : float, high_alpha : float, high_power : float) -> float:
+	var load := NAN
 	
-	#the third point of the curve is the one beyond the pair, on whichever side of it one is there to be had
-	var extra : int = high + 1 if high + 1 < samples else low - 1
-	if extra < 0: return straight
+	for step : int in TRIM_STEPS:
+		if is_equal_approx(low_power, high_power): break
+		
+		var alpha : float = lerpf(low_alpha, high_alpha, clampf(low_power / (low_power - high_power), 0.0, 1.0))
+		var reading := level_reading(alpha, speed, density, pressure, weight)
+		if is_nan(reading.x): break
+		if absf(reading.y) <= POWER_TOLERANCE:
+			return reading.x
+		
+		load = reading.x
+		if reading.y > 0.0:
+			low_alpha = alpha
+			low_power = reading.y
+		else:
+			high_alpha = alpha
+			high_power = reading.y
 	
-	var first := Vector2(loads[low], powers[low])
-	var second := Vector2(loads[high], powers[high])
-	var third := Vector2(loads[extra], powers[extra])
-	if is_zero_approx(first.x - second.x) or is_zero_approx(first.x - third.x) or is_zero_approx(second.x - third.x):
-		return straight
-	
-	var low_side : float = signf(curve_through(first, second, third, low_load))
-	for step : int in 6:
-		var middle : float = (low_load + high_load) * 0.5
-		if signf(curve_through(first, second, third, middle)) == low_side: low_load = middle
-		else: high_load = middle
-	
-	return (low_load + high_load) * 0.5
+	return load
 
 #the mach range the aircraft itself lives in at this altitude: from under the speed its wing first carries it, to just over
 #the fastest level flight it has. an airframe whose top speed and excess power are limited is not handed the room a fast one
@@ -787,10 +863,12 @@ func turn_mach_range(density : float, pressure : float, sound_speed : float, wei
 	var bottom : float = TURN_MACH_START
 	if not is_nan(slowest): bottom = slowest * CARRYING_SPEED_MARGIN / maxf(sound_speed, 0.000001)
 	
-	#an aircraft that cannot hold level flight here, because it has no thrust to, is still given a chart its size rather than
-	#the full width of one
-	if is_nan(fastest) and not is_nan(slowest):
-		top = clampf(slowest * 3.0 / sound_speed, TURN_MACH_START, TURN_MACH_LIMIT)
+	#an aircraft with no level flight left anywhere, because it has no thrust to hold one, is still given a chart its size rather
+	#than the full width of one. one that can fly but is faster than the sweep goes keeps the full width: the two used to share
+	#this fallback, which shrank the whole envelope by a third at the height where the top speed stopped being found, and that
+	#step is what a climb curve read off the top of the envelope showed as a cliff
+	if is_nan(fastest) and is_nan(slowest):
+		top = clampf(TURN_MACH_START * 3.0, TURN_MACH_START, TURN_MACH_LIMIT)
 	
 	return Vector2(clampf(bottom, 0.02, top), top)
 
@@ -853,12 +931,15 @@ func turn_performance_column(mach : float, density : float, pressure : float, so
 	var loads := PackedFloat64Array()
 	var turn_rates := PackedFloat64Array()
 	var powers := PackedFloat64Array()
+	var alphas := PackedFloat64Array()
 	var level := NAN
+	var crossing_load := NAN
+	var previous_alpha := NAN
 	var previous_load := NAN
 	var previous_power := NAN
 	
 	for sample : int in alpha_samples:
-		var alpha : float = remap(sample, 0, alpha_samples - 1, 0.0, TURN_ALPHA_LIMIT)
+		var alpha : float = remap(sample, 0, alpha_samples - 1, TURN_ALPHA_FLOOR, TURN_ALPHA_LIMIT)
 		var force := force_on_level_attitude(alpha, speed, density, pressure)
 		var load : float = force.x / weight
 		var power : float = speed * force.y / weight
@@ -867,12 +948,26 @@ func turn_performance_column(mach : float, density : float, pressure : float, so
 		#excess power left over there is what lets an excess power contour run down to the axis and read the top speed off it. it is
 		#read off this column's own samples rather than flown again, which is most of what a column used to cost
 		if is_nan(level) and is_finite(load) and load >= 1.0:
-			level = power_at_one_g(previous_load, previous_power, load, power)
+			#the samples either side of the crossing bracket it, and the angle that carries the weight is walked in from them. a
+			#crossing below the first sample, which is where a fast column's is, is walked in from the floor instead
+			if is_nan(previous_alpha) or is_nan(previous_load):
+				var floor_load : float = level_reading(TURN_ALPHA_FLOOR, speed, density, pressure, weight).x
+				level = level_power_between(speed, density, pressure, weight, TURN_ALPHA_FLOOR, floor_load, alpha, load)
+			else:
+				level = level_power_between(speed, density, pressure, weight, previous_alpha, previous_load, alpha, load)
 			
 			loads.append(1.0)
 			turn_rates.append(0.0)
 			powers.append(level)
+			alphas.append(alpha)
 		
+		#the angle the excess power runs out at is walked in from the samples either side of it, once for the column. reading it off
+		#the samples alone stepped with their spacing, and that showed as a wave along the altitude charts because every column
+		#stepped at a different point of it
+		if is_nan(crossing_load) and is_finite(power) and power < 0.0 and is_finite(previous_power) and previous_power >= 0.0:
+			crossing_load = power_crossing_load(speed, density, pressure, weight, previous_alpha, previous_power, alpha, power)
+		
+		previous_alpha = alpha
 		previous_load = load
 		previous_power = power
 		
@@ -883,6 +978,7 @@ func turn_performance_column(mach : float, density : float, pressure : float, so
 		loads.append(load)
 		turn_rates.append(turn_rate(load, speed))
 		powers.append(power)
+		alphas.append(alpha)
 	
 	#the column is stopped at the angle of attack that holds the most load factor. past the stall the wing holds less and less,
 	#so a contour read off that falling side sits at a lower load factor than one read off the rising side, which is how the
@@ -894,12 +990,17 @@ func turn_performance_column(mach : float, density : float, pressure : float, so
 			if loads[index] > loads[peak]: peak = index
 		
 		held_load = loads[peak]
-		if peak > 0 and peak + 1 < loads.size():
-			held_load = refined_peak_load(loads[peak - 1], loads[peak], loads[peak + 1])
+		
+		#the top of the load curve is walked in between the angles either side of the highest sample rather than read off a curve
+		#through the three samples: that fit sits below the true peak by an amount that depends on where the angle grid happened to
+		#fall, and every number built on the lift limit inherited the difference
+		if peak > 0 and peak + 1 < alphas.size():
+			held_load = maxf(held_load, load_peak_between(speed, density, pressure, weight, alphas[peak - 1], alphas[peak + 1]))
 		
 		loads.resize(peak + 1)
 		turn_rates.resize(peak + 1)
 		powers.resize(peak + 1)
+		alphas.resize(peak + 1)
 	
 	return {
 		"mach": mach,
@@ -911,7 +1012,37 @@ func turn_performance_column(mach : float, density : float, pressure : float, so
 		"held_load": held_load,
 		"limit_load": minf(held_load, load_limit),
 		"level_power": level,
+		"sustained": minf(crossing_load, minf(held_load, load_limit)) if not is_nan(crossing_load) else minf(held_load, load_limit),
 	}
+
+#the top of the load curve, walked in between two angles either side of the highest sampled one: the load rises to the stall and
+#falls away past it, so the walk finds the top of that hump rather than the highest sample on it
+func load_peak_between(speed : float, density : float, pressure : float, weight : float, low_alpha : float, high_alpha : float) -> float:
+	var low := low_alpha
+	var high := high_alpha
+	var left := lerpf(low, high, 0.382)
+	var right := lerpf(low, high, 0.618)
+	var left_load := level_reading(left, speed, density, pressure, weight).x
+	var right_load := level_reading(right, speed, density, pressure, weight).x
+	var peak := maxf(left_load, right_load)
+	
+	for step : int in LIFT_PEAK_STEPS:
+		if left_load >= right_load:
+			high = right
+			right = left
+			right_load = left_load
+			left = lerpf(low, high, 0.382)
+			left_load = level_reading(left, speed, density, pressure, weight).x
+			peak = maxf(peak, left_load)
+		else:
+			low = left
+			left = right
+			left_load = right_load
+			right = lerpf(low, high, 0.618)
+			right_load = level_reading(right, speed, density, pressure, weight).x
+			peak = maxf(peak, right_load)
+	
+	return peak
 
 #the radii of the ladder the envelope leaves room for, which is the ones whose line is more than a sliver across the chart
 func turn_radii(columns : Array[Dictionary]) -> PackedFloat64Array:
@@ -1261,12 +1392,31 @@ func force_on_level_attitude(alpha : float, speed : float, density : float, pres
 	
 	return Vector2(force.dot(calculate_lift_direction(attitude.basis)), -force.dot(AIR_DIRECTION))
 
-#the power left over where the lift crosses the weight between two samples, worked out where the angle that carries the weight
-#sits between them
-func power_at_one_g(previous_load : float, previous_power : float, load : float, power : float) -> float:
-	if is_nan(previous_load) or is_zero_approx(load - previous_load): return power
+#the load factor and the power left over at one angle, in level flight at this speed
+func level_reading(alpha : float, speed : float, density : float, pressure : float, weight : float) -> Vector2:
+	var force := force_on_level_attitude(alpha, speed, density, pressure)
+	return Vector2(force.x / weight, speed * force.y / weight)
+
+#the power left over at the angle that carries the aircraft's weight, walked in between two angles whose loads bracket one g. the
+#guess is interpolated from the two loads, and the next one from the result of that, so the answer is the crossing itself rather
+#than the sample or the chord nearest to it, and it does not move when the grid of samples does
+func level_power_between(speed : float, density : float, pressure : float, weight : float, low : float, low_load : float, high : float, high_load : float) -> float:
+	for step : int in TRIM_STEPS:
+		if is_zero_approx(high_load - low_load): break
+		
+		var alpha : float = lerpf(low, high, clampf((1.0 - low_load) / (high_load - low_load), 0.0, 1.0))
+		var reading := level_reading(alpha, speed, density, pressure, weight)
+		if is_nan(reading.x): return NAN
+		if absf(reading.x - 1.0) <= TRIM_LOAD_TOLERANCE: return reading.y
+		
+		if reading.x < 1.0:
+			low = alpha
+			low_load = reading.x
+		else:
+			high = alpha
+			high_load = reading.x
 	
-	return lerpf(previous_power, power, (1.0 - previous_load) / (load - previous_load))
+	return level_reading((low + high) * 0.5, speed, density, pressure, weight).y
 
 #the parts of the aircraft that turn, and where each of them sat before the sweep turned anything: gathered once, the first time
 #an attitude is flown. a mover that reads its velocity off its own movement is left out, because putting it back would take that

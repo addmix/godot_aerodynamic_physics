@@ -607,6 +607,8 @@ show_curve_extrema = false
 show_curve_intersections = false
 show_curve_self_intersections = false
 readout_mode = 1
+readout_value_suffix = " deg/s"
+auto_bounds_keep_zero_y = true
 axis_divisions = Vector2i(8, 14)
 title = "Turn performance"
 x_label = "Mach"
@@ -662,7 +664,7 @@ theme_override_constants/separation = 4
 
 [node name="StepsName" type="Label" parent="Panel/Tabs/Altitude/Content/Conditions/StepsField" unique_id=721193853]
 layout_mode = 2
-tooltip_text = "Altitudes the numbers are worked out at, from sea level to 15 km."
+tooltip_text = "Altitudes the numbers are worked out at, from sea level up to the height the aircraft can no longer climb to, at most 15 km."
 text = "Altitude steps"
 
 [node name="AltitudeSteps" type="SpinBox" parent="Panel/Tabs/Altitude/Content/Conditions/StepsField" unique_id=1694110399]

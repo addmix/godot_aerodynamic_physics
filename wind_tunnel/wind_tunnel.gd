@@ -140,18 +140,13 @@ func _ready() -> void:
 	%Tabs.tab_changed.connect(queue_recalculate.unbind(1))
 	visibility_changed.connect(queue_recalculate)
 	
-	#the performance chart carries a family of lines, so its readout reports the one under the cursor rather than every line
-	#crossing it, and says what the value it reports is measured in
-	%TurnPerformanceGraph.readout_mode = AeroGraph.ReadoutMode.NEAREST_POINT
-	%TurnPerformanceGraph.readout_value_suffix = " deg/s"
-	#a turn rate never runs below nothing, so the chart keeps zero at its foot however little of it the curves reach
-	%TurnPerformanceGraph.auto_bounds_keep_zero_y = true
-	
 	if not Engine.is_editor_hint(): return
 	
 	#the dock can be built, or reopened, after a scene is already open, so scene_changed never fires for it
 	visibility_changed.connect(func() -> void: _on_editor_scene_changed(EditorInterface.get_edited_scene_root()))
 	EditorInterface.get_selection().selection_changed.connect(_on_editor_selection_changed)
+	#an undo or a redo can put a value back without running the setter that reports it, so the aircraft is read back after one
+	EditorInterface.get_editor_undo_redo().version_changed.connect(_on_undo_redo)
 	
 	#the editor restores the scene it had open a few frames after the dock is built, so wait for it instead of missing it
 	var frames_left := 120
@@ -242,8 +237,9 @@ var graph_height_ceiling := 520.0
 #how wide a graph has to be before the numbers along its axes stop reading, in line heights of the dock's own text, so it
 #follows the editor's font size instead of growing with the height of the screen the dock happens to be on
 var graph_minimum_width_lines := 13
-#the rule drawn where the take-off run gives way to the flight, in the color the grid is drawn in so it reads as a boundary
-var liftoff_rule_color := Color(0.72, 0.72, 0.72, 0.5)
+#the color a boundary is drawn in, where one part of a chart gives way to another: the end of the take-off run, the height a
+#climb runs out at. it is the color the grid is drawn in, so it reads as a boundary rather than as data
+var boundary_rule_color := Color(0.72, 0.72, 0.72, 0.5)
 
 func fit_graph_columns() -> void:
 	var columns : int = 2 if size.x >= two_column_width else 1
@@ -312,6 +308,53 @@ func queue_flight_model_changed() -> void:
 	altitude_stale = true
 	queue_recalculate()
 
+#the aircraft as the sweeps read it, gathered into one number: its mass properties, and every value stored on the parts it is
+#made of. it is taken when a sweep starts and again after an undo or a redo
+var swept_model := 0
+
+#the stored properties each kind of part reports, worked out once rather than for every read of the model
+var stored_property_names := {}
+
+func part_property_names(influencer : AeroInfluencer3D) -> PackedStringArray:
+	#parts of one native class can carry different scripts, and with them different values to read
+	var part_script : Script = influencer.get_script()
+	var key : Variant = part_script if part_script else influencer.get_class()
+	if stored_property_names.has(key): return stored_property_names[key]
+	
+	var names := PackedStringArray()
+	for property : Dictionary in influencer.get_property_list():
+		if (property.usage & PROPERTY_USAGE_STORAGE) != 0: names.append(property.name)
+	
+	stored_property_names[key] = names
+	return names
+
+func flight_model_fingerprint() -> int:
+	if not aerobody: return 0
+	
+	var values : Array = [aerobody.mass, aerobody.center_of_mass]
+	for node : Node in aerobody.find_children("*", "AeroInfluencer3D", true, false):
+		var influencer := node as AeroInfluencer3D
+		values.append(influencer.get_class())
+		values.append(influencer.transform)
+		for name : StringName in part_property_names(influencer):
+			var value : Variant = influencer.get(name)
+			#the configs are resources, which report their own changes rather than being read here
+			if value is Resource: continue
+			values.append(value)
+	
+	return hash(values)
+
+#an undo or a redo is read back rather than trusted to have reported itself, and the sweeps are flown again only when what the
+#aircraft is made of has actually moved, so undoing something else costs nothing
+func _on_undo_redo() -> void:
+	if not aerobody or not is_visible_in_tree(): return
+	
+	var model := flight_model_fingerprint()
+	if model == swept_model: return
+	
+	swept_model = model
+	queue_flight_model_changed()
+
 #the sweep in flight, and the copy of the aircraft the worker flies it against. the dock touches none of these until the
 #task is done, and the thread touches nothing else
 var worker_task := -1
@@ -331,7 +374,7 @@ var worker_dirty := false
 var simulation_view : SubViewport
 
 #raises or drops the sheet, which also swallows the clicks that would change the settings under it, and fades what is under it
-#toward the panel behind it: nothing is laid over the page, so its grey is untouched and the charts are what recede into it
+#toward the panel behind it: nothing is laid over the page, so its gray is untouched and the charts are what recede into it
 func set_busy(busy : bool) -> void:
 	busy_sheet.visible = busy
 	%Panel.modulate.a = busy_fade if busy else 1.0
@@ -364,6 +407,9 @@ func recalculate() -> void:
 #viewport of its own, so it enters a tree and initializes like any aircraft, and is then taken out of the frame's way: it does
 #not process, show or collide with anything
 func start_sweeps(sweep_static : bool, sweep_turn : bool, sweep_altitude : bool) -> void:
+	#what the sweeps are about to fly is kept, so an undo or a redo can be told apart from one that changed nothing
+	swept_model = flight_model_fingerprint()
+	
 	#the copy has to keep its script instances: a deep duplicate would instantiate them and the copied nodes would come out
 	#without their behavior
 	worker_copy = aerobody.duplicate()
@@ -522,38 +568,28 @@ func draw_static_analysis(results : Dictionary) -> void:
 	var inertia := get_body_inertia()
 	
 	%LiftDragGraph.clear_curves()
-	%LiftDragGraph.add_curves([
-		AeroGraph.create_curve(alpha.lift, CURVE_COLORS[0], "CL"),
-		AeroGraph.create_curve(alpha.drag, CURVE_COLORS[1], "CD"),
-	])
+	%LiftDragGraph.add_curve(alpha.lift, CURVE_COLORS[0], "CL")
+	%LiftDragGraph.add_curve(alpha.drag, CURVE_COLORS[1], "CD")
 	#the lift to drag ratio is drawn against the full height of the graph rather than the coefficient scale, so it is added
 	#on its own and says so
 	var ratio_curve : AeroGraph.CurveData = %LiftDragGraph.add_curve(alpha.ratio, CURVE_COLORS[2], "L/D")
 	ratio_curve.normalize_y = true
 	
 	%PitchMomentsGraph.clear_curves()
-	%PitchMomentsGraph.add_curves([
-		AeroGraph.create_curve(angular_acceleration(alpha.pitch, inertia.x), CURVE_COLORS[0], "Mx (pitch)"),
-		AeroGraph.create_curve(angular_acceleration(alpha.yaw, inertia.y), CURVE_COLORS[1], "My (yaw)"),
-		AeroGraph.create_curve(angular_acceleration(alpha.roll, inertia.z), CURVE_COLORS[2], "Mz (roll)"),
-	])
+	%PitchMomentsGraph.add_curve(angular_acceleration(alpha.pitch, inertia.x), CURVE_COLORS[0], "Mx (pitch)")
+	%PitchMomentsGraph.add_curve(angular_acceleration(alpha.yaw, inertia.y), CURVE_COLORS[1], "My (yaw)")
+	%PitchMomentsGraph.add_curve(angular_acceleration(alpha.roll, inertia.z), CURVE_COLORS[2], "Mz (roll)")
 	
 	%SideslipMomentsGraph.clear_curves()
-	%SideslipMomentsGraph.add_curves([
-		AeroGraph.create_curve(angular_acceleration(beta.pitch, inertia.x), CURVE_COLORS[0], "Mx (pitch)"),
-		AeroGraph.create_curve(angular_acceleration(beta.yaw, inertia.y), CURVE_COLORS[1], "My (yaw)"),
-		AeroGraph.create_curve(angular_acceleration(beta.roll, inertia.z), CURVE_COLORS[2], "Mz (roll)"),
-	])
+	%SideslipMomentsGraph.add_curve(angular_acceleration(beta.pitch, inertia.x), CURVE_COLORS[0], "Mx (pitch)")
+	%SideslipMomentsGraph.add_curve(angular_acceleration(beta.yaw, inertia.y), CURVE_COLORS[1], "My (yaw)")
+	%SideslipMomentsGraph.add_curve(angular_acceleration(beta.roll, inertia.z), CURVE_COLORS[2], "Mz (roll)")
 	
 	%RollMomentsGraph.clear_curves()
-	%RollMomentsGraph.add_curves([
-		AeroGraph.create_curve(angular_acceleration(results.roll.moment, inertia.z), CURVE_COLORS[2], "Mz (roll)"),
-	])
+	%RollMomentsGraph.add_curve(angular_acceleration(results.roll.moment, inertia.z), CURVE_COLORS[2], "Mz (roll)")
 	
 	%PolarGraph.clear_curves()
-	%PolarGraph.add_curves([
-		AeroGraph.create_curve(alpha.polar, CURVE_COLORS[2], "CL vs CD", alpha.polar_alphas),
-	])
+	%PolarGraph.add_curve(alpha.polar, CURVE_COLORS[2], "CL vs CD", alpha.polar_alphas)
 	
 	update_metrics(results.metrics)
 
@@ -674,14 +710,10 @@ func draw_turn_performance(chart : Dictionary) -> void:
 	mark_turn_point(metrics.get("tightest", {}), "Min turn radius", CURVE_COLORS[2], 0.0)
 	
 	update_turn_metrics(metrics)
-	%TurnPerformanceGraph.title = "Turn performance at %d m, %d g limit" % [roundi(altitude), roundi(load_limit)]
 	
 	#the speed the aircraft gains in level flight at each speed, charted below the turn chart: the line reaches nothing where the
-	#aircraft has no acceleration left to give, which is its top speed
-	%AccelerationGraph.title = "Acceleration at %d m" % roundi(altitude)
-	
-	#the speed axis runs from a standstill to a round step past the top speed, so the numbers along it read as round ones: the line
-	#itself only starts where the aircraft can hold level flight, which is where it first carries its weight
+	#aircraft has no acceleration left to give, which is its top speed. the speed axis runs from a standstill to a round step past
+	#that speed, so the numbers along it read as round ones, and the line only starts where the aircraft first carries its weight
 	var acceleration : PackedVector2Array = chart.get("acceleration", PackedVector2Array())
 	var fastest : float = 0.0
 	if not acceleration.is_empty(): fastest = acceleration[acceleration.size() - 1].x
@@ -697,17 +729,24 @@ func draw_turn_performance(chart : Dictionary) -> void:
 	
 	var takeoff : PackedVector2Array = chart.get("takeoff", PackedVector2Array())
 	%AccelerationGraph.clear_curves()
-	%AccelerationGraph.add_curves([
-		AeroGraph.create_curve(acceleration, CURVE_COLORS[1], "In flight"),
-		AeroGraph.create_curve(takeoff, CURVE_COLORS[3], "Take-off run"),
-	])
+	%AccelerationGraph.add_curve(acceleration, CURVE_COLORS[1], "In flight")
+	%AccelerationGraph.add_curve(takeoff, CURVE_COLORS[3], "Take-off run")
 	
-	#the speed the aircraft leaves the ground at is where the run gives way to the flight, so it is ruled off between them
-	%AccelerationGraph.clear_rules()
+	#the speed the aircraft leaves the ground at is a line across the chart, washed back to a standstill so the run reads as the
+	#stretch of chart it is, and named with the ground it covers
 	%AccelerationGraph.clear_labels()
 	if takeoff.size() > 1:
-		%AccelerationGraph.add_x_rule(takeoff[takeoff.size() - 1].x, liftoff_rule_color)
-		%AccelerationGraph.add_label("Take-off run", takeoff[0], takeoff[takeoff.size() - 1] - takeoff[0], HORIZONTAL_ALIGNMENT_LEFT, 4.0)
+		var liftoff : float = takeoff[takeoff.size() - 1].x
+		var shown : Rect2 = %AccelerationGraph.visible_bounds()
+		var liftoff_line : AeroGraph.CurveData = %AccelerationGraph.add_curve(
+			PackedVector2Array([Vector2(liftoff, shown.position.y), Vector2(liftoff, shown.end.y)]),
+			boundary_rule_color, "", PackedFloat32Array(), true)
+		liftoff_line.fill_axis = AeroGraph.Axis.X
+		liftoff_line.fill_color = Color(CURVE_COLORS[3], 0.18)
+		
+		var distance : float = chart.get("takeoff_distance", NAN)
+		var run_name := "Take-off run" if is_nan(distance) else "Take-off run %.0f m" % distance
+		%AccelerationGraph.add_label(run_name, takeoff[takeoff.size() / 2], Vector2(1.0, 0.0))
 
 #one of the numbers under the chart, marked where it sits and named beside it, `lift` pixels clear of the line it sits on
 func mark_turn_point(point : Dictionary, name : String, color : Color, lift : float) -> void:
@@ -727,11 +766,28 @@ func draw_altitude_sweep(sweep : Dictionary) -> void:
 	draw_altitude_curve(%SustainedAltitudeGraph, sweep.get("sustained", PackedVector2Array()))
 	draw_altitude_curve(%LoadAltitudeGraph, sweep.get("load", PackedVector2Array()))
 	draw_altitude_curve(%RadiusAltitudeGraph, sweep.get("radius", PackedVector2Array()))
+	
+	#the height the aircraft stops climbing at is ruled across the climb chart, where the curve runs out of rate to climb with
+	var climb : PackedVector2Array = sweep.get("climb", PackedVector2Array())
+	%ClimbAltitudeGraph.clear_rules()
+	%ClimbAltitudeGraph.clear_labels()
+	if climb.is_empty(): return
+	
+	var ceiling : float = sweep.get("ceiling", NAN)
+	var shown : Rect2 = %ClimbAltitudeGraph.visible_bounds()
+	
+	#if it is still climbing at the top of the sweep it reaches higher than the tab goes, which is said rather than left out
+	if is_nan(ceiling):
+		%ClimbAltitudeGraph.add_label("Ceiling above %d m" % roundi(climb[climb.size() - 1].y), Vector2(shown.end.x, shown.end.y), Vector2(1.0, 0.0), HORIZONTAL_ALIGNMENT_RIGHT)
+		return
+	
+	%ClimbAltitudeGraph.add_y_rule(ceiling, boundary_rule_color)
+	%ClimbAltitudeGraph.add_label("Ceiling %d m" % roundi(ceiling), Vector2(shown.end.x, ceiling), Vector2(1.0, 0.0), HORIZONTAL_ALIGNMENT_RIGHT)
 
 #one number drawn against altitude
 func draw_altitude_curve(graph : AeroGraph, points : PackedVector2Array) -> void:
 	graph.clear_curves()
-	graph.add_curves([AeroGraph.create_curve(points, CURVE_COLORS[1], graph.title)])
+	graph.add_curve(points, CURVE_COLORS[1], graph.title)
 
 #the numbers under the chart, blank until the sweep says otherwise
 func update_turn_metrics(metrics : Dictionary) -> void:

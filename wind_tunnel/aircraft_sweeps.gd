@@ -189,7 +189,7 @@ func beta_sweep() -> Dictionary:
 	
 	return {"pitch": pitch, "yaw": yaw, "roll": roll}
 
-#rolling an aircraft that holds a fixed flight path turns the airflow towards its wing tips, so the wings stop seeing the
+#rolling an aircraft that holds a fixed flight path turns the airflow toward its wing tips, so the wings stop seeing the
 #same angle of attack and a rolling moment appears. none of that shows up if the air runs straight down the fuselage,
 #which is why this sweep is flown at the angle of attack that carries the aircraft's weight. only the roll moment comes
 #back: the pitch and yaw moments run several times larger through the same sweep and are what the other sweeps are for
@@ -346,7 +346,7 @@ func measure_metrics(alpha : Dictionary) -> Dictionary:
 func turn_performance() -> Dictionary:
 	var chart := {
 		"limit": PackedVector2Array(), "one_g": PackedVector2Array(), "loads": [], "powers": [], "radii": [],
-		"acceleration": PackedVector2Array(), "takeoff": PackedVector2Array(), "metrics": {},
+		"acceleration": PackedVector2Array(), "takeoff": PackedVector2Array(), "takeoff_distance": 0.0, "metrics": {},
 	}
 	if not body: return chart
 	
@@ -364,6 +364,7 @@ func turn_performance() -> Dictionary:
 	
 	chart.acceleration = acceleration_curve(columns, top)
 	chart.takeoff = takeoff_curve(chart.acceleration, weight)
+	chart.takeoff_distance = takeoff_distance(chart.takeoff)
 	
 	#the thrust the aircraft has against its own weight, taken at a standstill with the throttle still open, which is the way the
 	#figure is quoted: at that speed nothing is being dragged through the air, so the forward force is the thrust alone
@@ -445,6 +446,21 @@ func takeoff_curve(acceleration : PackedVector2Array, weight : float) -> PackedV
 	
 	return curve
 
+#the ground the run covers, in meters: a stretch of speed costs it v/a seconds per unit of speed, so the distance is the sum of
+#that along the curve. the curve starts just above a standstill rather than at it, so the stretch from nothing is added on by
+#the same measure, and a run the aircraft cannot start at all comes back as NAN rather than as a number
+func takeoff_distance(takeoff : PackedVector2Array) -> float:
+	if takeoff.is_empty(): return NAN
+	
+	var distance := 0.0
+	for index : int in takeoff.size() - 1:
+		var from : Vector2 = takeoff[index]
+		var to : Vector2 = takeoff[index + 1]
+		if from.y <= 0.0 or to.y <= 0.0: return NAN
+		distance += (to.x - from.x) * (from.x / from.y + to.x / to.y) * 0.5
+	
+	return distance + takeoff[0].x * takeoff[0].x / (2.0 * takeoff[0].y)
+
 
 #altitude
 
@@ -454,6 +470,7 @@ func altitude_sweep() -> Dictionary:
 	var sweep := {
 		"speed": PackedVector2Array(), "load": PackedVector2Array(), "turn_rate": PackedVector2Array(),
 		"radius": PackedVector2Array(), "sustained": PackedVector2Array(), "climb": PackedVector2Array(),
+		"ceiling": NAN,
 	}
 	if not body: return sweep
 	
@@ -470,11 +487,24 @@ func altitude_sweep() -> Dictionary:
 		
 		#the fastest level flight there, which is also the bound the turn numbers are read inside
 		var fastest : float = level_speed(height_density, height_pressure, height_sound, weight)
+		var columns := altitude_columns(height_density, height_pressure, height_sound, weight, fastest)
+		
+		#the best climb there, which is the most power level flight has left over at any speed
+		var climb := -INF
+		for column : Dictionary in columns:
+			if is_nan(column.level_power): continue
+			climb = maxf(climb, column.level_power)
+		
+		#a height with no climb left is the last one the sweep flies: the aircraft cannot hold level flight above it, so the
+		#numbers up there would describe a flight it cannot make. the ceiling is the crossing this height makes with the one below
+		if not is_finite(climb) or climb <= 0.0:
+			sweep.climb.append(Vector2(0.0 if not is_finite(climb) else climb, height))
+			break
+		
+		#what the aircraft does there, now that it is known it can fly there at all
 		if not is_nan(fastest): sweep.speed.append(Vector2(fastest / height_sound, height))
 		
-		var columns := altitude_columns(height_density, height_pressure, height_sound, weight, fastest)
 		var metrics := turn_metrics(columns)
-		
 		var corner : Dictionary = metrics.corner
 		if not is_nan(corner.rate): sweep.turn_rate.append(Vector2(corner.rate, height))
 		
@@ -487,15 +517,28 @@ func altitude_sweep() -> Dictionary:
 		var sustained : Dictionary = metrics.sustained
 		if not is_nan(sustained.rate): sweep.sustained.append(Vector2(sustained.rate, height))
 		
-		#the best climb there, which is the most power level flight has left over at any speed
-		var climb := -INF
-		for column : Dictionary in columns:
-			if is_nan(column.level_power): continue
-			climb = maxf(climb, column.level_power)
-		if is_finite(climb): sweep.climb.append(Vector2(climb, height))
+		sweep.climb.append(Vector2(climb, height))
 	
 	restore_throttle(held)
+	sweep.ceiling = climb_ceiling(sweep.climb)
 	return sweep
+
+#the height the aircraft can no longer climb at, read where the best climb rate crosses nothing between the two altitudes either
+#side of it. an aircraft still climbing at the top of the ladder reaches higher than the ladder goes, which is reported as NAN
+#rather than as the ladder's own top
+func climb_ceiling(climb : PackedVector2Array) -> float:
+	if climb.is_empty(): return NAN
+	
+	#nothing is left to climb with at the lowest altitude either, so the ceiling it is reported at is the ground it was read at
+	if climb[0].x <= 0.0: return climb[0].y
+	
+	for index : int in climb.size() - 1:
+		var here : Vector2 = climb[index]
+		var next : Vector2 = climb[index + 1]
+		if next.x > 0.0: continue
+		return lerpf(here.y, next.y, here.x / (here.x - next.x))
+	
+	return NAN
 
 #the coarse turn sweep one altitude is read at, which is what the numbers that change with height are taken from
 func altitude_columns(density : float, pressure : float, sound_speed : float, weight : float, fastest : float) -> Array[Dictionary]:

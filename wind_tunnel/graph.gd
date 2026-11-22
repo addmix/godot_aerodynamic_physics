@@ -237,16 +237,22 @@ class CurveData:
 	##Draw the samples against 0..1 on this axis instead of against the axis scale, so the curve spans the plot.
 	var normalize_x := false
 	var normalize_y := false
-	##Fill the area between this curve and a baseline, drawn under every curve.
-	var fill := false
+	##Whether the fill is drawn, and how far its fade runs. 1 fades over the whole fill; below that the fade ends that share of
+	##the way to the far edge and the rest is left clear; above it the fill keeps `length - 1` of its color where it ends, so 2 or
+	##more washes flat. 0 draws no fill at all.
+	var fill_fade_length := 0.0
 	##The color the fill is drawn in. Left transparent it is this curve's color at a quarter alpha.
 	var fill_color := Color(0, 0, 0, 0)
+	##The color the fill is drawn in where this curve is above the edge it fills to. Left transparent, the fill keeps fill_color on
+	##both sides of that edge.
+	var fill_above_color := Color(0, 0, 0, 0)
 	##Which axis the fill reaches along: down to its baseline on y, or across to it on x, which washes the side of a vertical line.
 	var fill_axis := Axis.Y
 	##The value the fill reaches, in the same values as the samples.
 	var fill_baseline := 0.0
-	##Fade the fill from the curve to the baseline, rather than washing flat across it.
-	var fill_fade := true
+	##Fill between this curve and another instead of to the baseline, which is what stacks one curve on top of another. The other
+	##curve is read at the same samples, so the fill follows its shape as well as its place.
+	var fill_to : CurveData = null
 	
 	#what the samples span, as a rect holding the lowest and the highest of each axis
 	func reach() -> Rect2:
@@ -258,15 +264,15 @@ class CurveData:
 var curves : Array[CurveData] = []
 
 #adds a curve of these points in this color, under this legend entry, and hands it back so anything else can be set on it.
-#the points can be an Array of Vector2 or Vector2i, typed or not, or a PackedVector2Array. `fill` asks for the area under it to
-#be washed in, which the rest of its fill settings on the curve tune
-func add_curve(points : Variant, color : Color, legend_name : String = "", parameters : PackedFloat32Array = PackedFloat32Array(), fill := false) -> CurveData:
+#the points can be an Array of Vector2 or Vector2i, typed or not, or a PackedVector2Array. `fill_fade_length` asks for the area
+#under it to be washed in and says how the wash fades, which the rest of its fill settings on the curve tune
+func add_curve(points : Variant, color : Color, legend_name : String = "", parameters : PackedFloat32Array = PackedFloat32Array(), fill_fade_length := 0.0) -> CurveData:
 	var curve := CurveData.new()
 	curve.points = to_packed_points(points)
 	curve.color = color
 	curve.legend_name = legend_name
 	curve.parameters = parameters
-	curve.fill = fill
+	curve.fill_fade_length = fill_fade_length
 	curves.append(curve)
 	queue_redraw()
 	return curve
@@ -346,48 +352,49 @@ class Span:
 	var to := 0.0
 	var color := Color.WHITE
 	var fill_color := Color(0.0, 0.0, 0.0, 0.0)
-	var fill := true
-	var fade := true
+	##How far the wash's fade runs across the band, the same way CurveData.fill_fade_length reads. 0 leaves the band unwashed.
+	var fill_fade_length := 1.0
 
 class Area:
 	var rect := Rect2()
 	var color := Color.WHITE
 	var fill_color := Color(0.0, 0.0, 0.0, 0.0)
-	var fill := true
-	var fade := true
+	##How far the wash's fade runs inward from the outline, the same way CurveData.fill_fade_length reads. the default keeps a
+	##third of the color in the middle, so a large area does not empty out where it covers the most. 0 leaves the area unwashed.
+	var fill_fade_length := 1.35
 
 var spans : Array[Span] = []
 var areas : Array[Area] = []
 #how much of the line color a region's wash is made of when no fill color of its own is given
 var region_fill_alpha := 0.12
-#how much of its wash an area keeps in the middle, so a large area does not empty out where it covers the most
-var area_fade_floor := 0.35
 #the weight the two lines of a span are drawn at
 var span_line_width := 1.0
+#a wash thinner than this, in pixels, or with less area than this, in square pixels, is not drawn: it cannot be seen, and a face
+#whose corners have no spread is one the triangulation refuses
+const MIN_WASH_HEIGHT := 0.5
+const MIN_WASH_AREA := 0.2
 
-#a range on one axis: the two lines at its ends and a wash between them. the wash is the line color faded unless a fill color
-#is given, it fades from the two lines toward the middle unless `fade` is false, and it is left out when `draw_fill` is false
-func add_span(axis : Axis, from : float, to : float, color : Color, fill_color := Color(0, 0, 0, 0), draw_fill := true, fade := true) -> void:
+#a range on one axis: the two lines at its ends and a wash between them. the wash is the line color faded toward the middle
+#unless a fill color is given, and `fill_fade_length` says whether it is washed and how its fade runs
+func add_span(axis : Axis, from : float, to : float, color : Color, fill_color := Color(0, 0, 0, 0), fill_fade_length := 1.0) -> void:
 	var span := Span.new()
 	span.axis = axis
 	span.from = minf(from, to)
 	span.to = maxf(from, to)
 	span.color = color
 	span.fill_color = fill_color if fill_color.a > 0.0 else Color(color, region_fill_alpha)
-	span.fill = draw_fill
-	span.fade = fade
+	span.fill_fade_length = fill_fade_length
 	spans.append(span)
 	queue_redraw()
 
-#a rectangle in the values the curves are drawn in, filled and outlined the same way a span is: its wash fades from the outline
-#inward unless `fade` is false
-func add_area(rect : Rect2, color : Color, fill_color := Color(0, 0, 0, 0), draw_fill := true, fade := true) -> void:
+#a rectangle in the values the curves are drawn in, filled and outlined the same way a span is: its wash fades inward from the
+#outline, and `fill_fade_length` says how far that fade runs and what it keeps in the middle
+func add_area(rect : Rect2, color : Color, fill_color := Color(0, 0, 0, 0), fill_fade_length := 1.35) -> void:
 	var area := Area.new()
 	area.rect = rect.abs()
 	area.color = color
 	area.fill_color = fill_color if fill_color.a > 0.0 else Color(color, region_fill_alpha)
-	area.fill = draw_fill
-	area.fade = fade
+	area.fill_fade_length = fill_fade_length
 	areas.append(area)
 	queue_redraw()
 
@@ -888,8 +895,8 @@ func draw_grid(plot : Rect2, axis_cross : Vector2, x_axis_fit : AxisFit, y_axis_
 			draw_line(Vector2(plot.position.x, axis_cross.y), Vector2(plot.end.x, axis_cross.y), zero_line_color, zero_line_width)
 
 
-#every wash is one color with a different alpha at each corner of a face, solid along the line or edge it belongs to and
-#clear at the corner furthest from it, which is what draw_wash() draws. the ends are blended across the face by the same
+#every wash is one color with a different alpha at each corner of a face, solid along the line or edge it belongs to and as
+#clear at the corner furthest from it as the fill's length asks, which is what draw_wash() draws. the ends are blended across the face by the same
 #interpolation that colors any polygon, so a fade costs no texture and no extra draw calls, only geometry whose corners disagree
 #about how solid it is. a wash that does not fade is that same face with every corner the same color
 #the marked ranges and areas, drawn over the grid and under the curves so the data stays on top of them
@@ -898,7 +905,7 @@ func draw_regions(plot : Rect2, x_axis_fit : AxisFit, y_axis_fit : AxisFit) -> v
 		var pixel := region_pixels(area.rect, plot, x_axis_fit, y_axis_fit)
 		if not pixel.has_area(): continue
 		
-		if area.fill: draw_area_wash(pixel, area.fill_color, area.fade)
+		if area.fill_fade_length > 0.0: draw_area_wash(pixel, area.fill_color, area.fill_fade_length)
 		draw_rect(pixel, area.color, false, span_line_width)
 	
 	for span : Span in spans:
@@ -909,7 +916,7 @@ func draw_regions(plot : Rect2, x_axis_fit : AxisFit, y_axis_fit : AxisFit) -> v
 		var across : Vector2 = Vector2(pixel.size.x, 0.0) if span.axis == Axis.Y else Vector2(0.0, pixel.size.y)
 		var first_line : Vector2 = pixel.position
 		var second_line : Vector2 = pixel.end - across
-		if span.fill: draw_band_wash(first_line, second_line, across, span.fill_color, span.fade)
+		if span.fill_fade_length > 0.0: draw_band_wash(first_line, second_line, across, span.fill_color, span.fill_fade_length)
 		draw_line(first_line, first_line + across, span.color, span_line_width)
 		draw_line(second_line, second_line + across, span.color, span_line_width)
 
@@ -930,6 +937,8 @@ func span_values(span : Span, x_axis_fit : AxisFit, y_axis_fit : AxisFit) -> Rec
 
 #a face that is `color` along its first two corners and `tail` at the rest, which is all any wash in the graph is made of
 func draw_wash(face : PackedVector2Array, color : Color, tail : Color) -> void:
+	if face.size() < 3 or face_area(face) < MIN_WASH_AREA: return
+	
 	var colors := PackedColorArray()
 	colors.resize(face.size())
 	colors.fill(tail)
@@ -937,61 +946,68 @@ func draw_wash(face : PackedVector2Array, color : Color, tail : Color) -> void:
 	colors[1] = color
 	draw_polygon(face, colors)
 
-#a wash between two parallel lines: solid along each of them and clear at the middle of the band, drawn as the two halves that
-#meet there
-func draw_band_wash(first_line : Vector2, second_line : Vector2, across : Vector2, color : Color, fade : bool) -> void:
+#a wash between two parallel lines: solid along each of them and fading toward the middle as far as the length asks, drawn as the
+#two halves that meet there
+func draw_band_wash(first_line : Vector2, second_line : Vector2, across : Vector2, color : Color, length : float) -> void:
 	var middle : Vector2 = (first_line + second_line) * 0.5
-	var tail : Color = Color(color, 0.0) if fade else color
-	draw_wash(PackedVector2Array([first_line, first_line + across, middle + across, middle]), color, tail)
-	draw_wash(PackedVector2Array([second_line, second_line + across, middle + across, middle]), color, tail)
+	draw_wash_stretch(first_line, first_line + across, middle, middle + across, length, color, color, false)
+	draw_wash_stretch(second_line, second_line + across, middle, middle + across, length, color, color, false)
 
-#a wash inside a rect: solid along the outline and faintest at the middle, drawn as four triangles from the corners into the
-#center
-func draw_area_wash(rect : Rect2, color : Color, fade : bool) -> void:
+#a wash inside a rect: solid along the outline and fading inward as far as the length asks, drawn as four faces from the edges into
+#the middle. the reaches meet at the middle at a length of 1, which leaves triangles rather than faces with two corners in one place
+func draw_area_wash(rect : Rect2, color : Color, length : float) -> void:
 	var corners := PackedVector2Array([rect.position, Vector2(rect.end.x, rect.position.y), rect.end, Vector2(rect.position.x, rect.end.y)])
 	var middle : Vector2 = rect.get_center()
-	#an area keeps a share of its wash in the middle, so a large one does not empty out where it covers the most
-	var tail : Color = Color(color, color.a * area_fade_floor) if fade else color
+	var reach : float = clampf(length, 0.0, 1.0)
+	var tail := Color(color, color.a * clampf(length - 1.0, 0.0, 1.0))
 	for index : int in 4:
-		draw_wash(PackedVector2Array([corners[index], corners[(index + 1) % 4], middle]), color, tail)
+		var far_from := corners[index].lerp(middle, reach)
+		var far_to := corners[(index + 1) % 4].lerp(middle, reach)
+		if far_from.is_equal_approx(far_to):
+			draw_wash(PackedVector2Array([corners[index], corners[(index + 1) % 4], far_from]), color, tail)
+			continue
+		
+		draw_wash(PackedVector2Array([corners[index], corners[(index + 1) % 4], far_to, far_from]), color, tail)
 
 #the washes under the curves that asked for one, drawn a stretch at a time so the wash fades from the curve to its baseline.
 #the stretches together make one smooth fall, and a curve that crosses its baseline fills on both sides of it
 func draw_fills(plot : Rect2, x_axis_fit : AxisFit, y_axis_fit : AxisFit) -> void:
 	var drawing := plot_drawing_rect(plot)
 	for curve : CurveData in curves:
-		if not curve.fill or curve.points.size() < 2: continue
+		if curve.fill_fade_length <= 0.0 or curve.points.size() < 2: continue
 		
 		#a fill with no color of its own takes the curve's, faint enough that the grid still reads through it
 		var color : Color = curve.fill_color if curve.fill_color.a > 0.0 else Color(curve.color, 0.25)
-		var tail : Color = Color(color, 0.0) if curve.fill_fade else color
+		var above : Color = curve.fill_above_color if curve.fill_above_color.a > 0.0 else color
+		#the length says how far down the fill the fade runs, and how much of the color is left where it ends
+		var length := curve.fill_fade_length
 		#a fill that reaches across to a baseline on x is worked out with its axes exchanged, so a wash to one side of a vertical
 		#line is the same arithmetic as a wash under a horizontal one. the faces are exchanged back as they are drawn
 		var across := curve.fill_axis == Axis.X
-		var baseline := fill_baseline_pixels(curve, plot, x_axis_fit, y_axis_fit, drawing)
 		var points := map_curve_to_plot(curve.points, plot, x_axis_fit, y_axis_fit, curve.normalize_x, curve.normalize_y)
 		
+		#a fill that follows another curve is the band between the two, so each part of a stack is washed against the part under it
+		if curve.fill_to and curve.fill_to != curve and curve.fill_to.points.size() == curve.points.size():
+			draw_fill_between(curve, points, plot, x_axis_fit, y_axis_fit, drawing, color, above, length)
+			continue
+		
+		var baseline := fill_baseline_pixels(curve, plot, x_axis_fit, y_axis_fit, drawing)
 		for run : PackedVector2Array in clip_polyline_to_rect(points, drawing):
 			var stretches := transposed(run) if across else run
 			for index : int in stretches.size() - 1:
 				var from : Vector2 = stretches[index]
 				var to : Vector2 = stretches[index + 1]
 				if is_zero_approx(to.x - from.x): continue
-				#a stretch that runs along its baseline has no height to fill
-				if is_zero_approx(from.y - baseline) and is_zero_approx(to.y - baseline): continue
 				
 				#a stretch whose ends are on opposite sides of the baseline is cut where it crosses, because its four corners would
 				#otherwise cross each other and leave a shape with no inside to fill
 				if (from.y - baseline) * (to.y - baseline) < 0.0:
 					var crossing := Vector2(lerpf(from.x, to.x, (baseline - from.y) / (to.y - from.y)), baseline)
-					var before := PackedVector2Array([from, crossing, Vector2(from.x, baseline)])
-					var after := PackedVector2Array([to, crossing, Vector2(to.x, baseline)])
-					draw_wash(transposed(before) if across else before, color, tail)
-					draw_wash(transposed(after) if across else after, color, tail)
+					draw_wash_stretch(from, crossing, Vector2(from.x, baseline), Vector2(crossing.x, baseline), length, color, above, across)
+					draw_wash_stretch(crossing, to, Vector2(crossing.x, baseline), Vector2(to.x, baseline), length, color, above, across)
 					continue
 				
-				var face := PackedVector2Array([from, to, Vector2(to.x, baseline), Vector2(from.x, baseline)])
-				draw_wash(transposed(face) if across else face, color, tail)
+				draw_wash_stretch(from, to, Vector2(from.x, baseline), Vector2(to.x, baseline), length, color, above, across)
 
 #where a fill's baseline sits in pixels, on the axis the fill reaches along, held inside the plot: a baseline off the plot would
 #otherwise leave a wash that covers all of it or none of it
@@ -1002,6 +1018,85 @@ func fill_baseline_pixels(curve : CurveData, plot : Rect2, x_axis_fit : AxisFit,
 	
 	var across_y : float = map_value_to_plot(Vector2(0.0, curve.fill_baseline), plot, x_axis_fit, y_axis_fit, false, curve.normalize_y).y
 	return clampf(across_y, drawing.position.y, drawing.end.y)
+
+#the area of a face, in square pixels, which is nothing at all when its corners have no spread
+static func face_area(face : PackedVector2Array) -> float:
+	var twice : float = 0.0
+	for index : int in face.size():
+		var from := face[index]
+		var to := face[(index + 1) % face.size()]
+		twice += from.x * to.y - to.x * from.y
+	
+	return absf(twice) * 0.5
+
+#the wash between this curve and the one it is stacked on, a stretch at a time: the color sits on this curve and fades to the one
+#below it. each stretch is cut to the width of the plot, and every corner is held inside it, so a wash never runs into the margins
+func draw_fill_between(curve : CurveData, points : PackedVector2Array, plot : Rect2, x_axis_fit : AxisFit, y_axis_fit : AxisFit,
+		drawing : Rect2, color : Color, above : Color, length : float) -> void:
+	var below := map_curve_to_plot(curve.fill_to.points, plot, x_axis_fit, y_axis_fit, curve.fill_to.normalize_x, curve.fill_to.normalize_y)
+	
+	for index : int in points.size() - 1:
+		var from_x : float = points[index].x
+		var to_x : float = points[index + 1].x
+		if is_equal_approx(from_x, to_x): continue
+		
+		#the stretch is the part of the run between the plot's own edges
+		var start : float = clampf((drawing.position.x - from_x) / (to_x - from_x), 0.0, 1.0)
+		var end : float = clampf((drawing.end.x - from_x) / (to_x - from_x), 0.0, 1.0)
+		if end <= start: continue
+		
+		var top_from := held_inside(points[index].lerp(points[index + 1], start), drawing)
+		var top_to := held_inside(points[index].lerp(points[index + 1], end), drawing)
+		var bottom_from := held_inside(below[index].lerp(below[index + 1], start), drawing)
+		var bottom_to := held_inside(below[index].lerp(below[index + 1], end), drawing)
+		
+		var from_gap : float = top_from.y - bottom_from.y
+		var to_gap : float = top_to.y - bottom_to.y
+		#a stretch the two curves lie on top of each other has no band to wash
+		if absf(from_gap) < MIN_WASH_HEIGHT and absf(to_gap) < MIN_WASH_HEIGHT: continue
+		
+		#a stretch the curves cross in is cut at the crossing, because its four corners would cross each other
+		if from_gap * to_gap < 0.0:
+			var crossing := top_from.lerp(top_to, from_gap / (from_gap - to_gap))
+			draw_wash_stretch(top_from, crossing, bottom_from, crossing, length, color, above, false)
+			draw_wash_stretch(crossing, top_to, crossing, bottom_to, length, color, above, false)
+			continue
+		
+		draw_wash_stretch(top_from, top_to, bottom_from, bottom_to, length, color, above, false)
+
+#one stretch of a wash, from a line of samples to the edge it runs to: the color sits on the line and fades toward where the wash
+#ends, which is short of the far edge at a length below 1 and keeps some of the color above it. a corner with no height of its own
+#is left out, because a face with two corners in the same place is not a shape
+func draw_wash_stretch(from : Vector2, to : Vector2, far_from : Vector2, far_to : Vector2, length : float, color : Color,
+		above : Color, across : bool) -> void:
+	var end_from := wash_end(from, far_from, length)
+	var end_to := wash_end(to, far_to, length)
+	#a corner that has not moved has no height to fill, which is the whole stretch when the length is nothing
+	if from.is_equal_approx(end_from) and to.is_equal_approx(end_to): return
+	
+	#a curve above the edge it fills to takes the other color, which is what colors a band by which of its two curves is higher. the
+	#side is read at whichever end has height, because a stretch cut at a crossing starts on the edge itself
+	var raised : bool = to.y < end_to.y if from.is_equal_approx(end_from) else from.y < end_from.y
+	var wash := above if raised else color
+	
+	var face : PackedVector2Array
+	if from.is_equal_approx(end_from):
+		face = PackedVector2Array([to, from, end_to])
+	elif to.is_equal_approx(end_to):
+		face = PackedVector2Array([from, to, end_from])
+	else:
+		face = PackedVector2Array([from, to, end_to, end_from])
+	
+	#the wash keeps this much of its color where it ends: none at a length of 1, all of it at 2
+	draw_wash(transposed(face) if across else face, wash, Color(wash, wash.a * clampf(length - 1.0, 0.0, 1.0)))
+
+#where a wash ends, that share of the way from the line to the far edge
+static func wash_end(from : Vector2, far : Vector2, length : float) -> Vector2:
+	return from.lerp(far, clampf(length, 0.0, 1.0))
+
+#a point held inside a rect, which is what keeps a wash that runs off the plot from spilling into the margins
+static func held_inside(point : Vector2, rect : Rect2) -> Vector2:
+	return Vector2(clampf(point.x, rect.position.x, rect.end.x), clampf(point.y, rect.position.y, rect.end.y))
 
 #the same run with its two axes exchanged, which is how a wash that reaches across is worked out, and how its faces come back
 static func transposed(run : PackedVector2Array) -> PackedVector2Array:

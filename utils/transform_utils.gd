@@ -1,4 +1,5 @@
 # From https://github.com/addmix/godot_utils
+@tool
 
 ## Performs an addition matrix operation for two bases.
 static func add_basis(a : Basis, b : Basis) -> Basis:

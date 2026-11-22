@@ -1,4 +1,5 @@
 # From https://github.com/addmix/godot_utils
+@tool
 extends Resource
 class_name aero_PID
 

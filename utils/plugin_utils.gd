@@ -1,4 +1,5 @@
 # From https://github.com/addmix/godot_utils
+@tool
 
 # TODO: implement some dependency checker
 func check_dependencies() -> void:

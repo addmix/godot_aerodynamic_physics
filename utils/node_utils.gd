@@ -1,4 +1,5 @@
 # From https://github.com/addmix/godot_utils
+@tool
 
 ## Connects a signal in a safe way. Warnings and errors can be silenced, but the signal connection error is returned (The same as [code]Object.connect()[/code])
 static func connect_signal_safe(node : Node, _signal : StringName, callable : Callable, flags : int = 0, silence_warning : bool = false) -> int:

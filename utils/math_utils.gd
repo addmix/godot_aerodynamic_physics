@@ -1,4 +1,5 @@
 # From https://github.com/addmix/godot_utils
+@tool
 
 ## Euler's number (not to be confused with Euler's constant)
 const E := 2.718281828459045235360287471352

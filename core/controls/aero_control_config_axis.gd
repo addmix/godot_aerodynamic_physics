@@ -19,24 +19,42 @@ var cumulative_command : float = 0.0
 
 @export_category("Limits")
 ## Minimum control limit
-@export var min_limit : float = -1.0
+@export var min_limit : float = -1.0:
+	set(value):
+		min_limit = value
+		emit_changed()
 ## Maximum control limit
-@export var max_limit : float = 1.0
+@export var max_limit : float = 1.0:
+	set(value):
+		max_limit = value
+		emit_changed()
 
 ## InputMap action for positive control.
 @export var positive_event : StringName = ""
 ## InputMap action for negative control.
 @export var negative_event : StringName = ""
 ## If enabled, input will change smoothly at `smoothing_rate` per second.
-@export var enable_smoothing : bool = false
-@export var smoothing_rate : float = 1.0
+@export var enable_smoothing : bool = false:
+	set(value):
+		enable_smoothing = value
+		emit_changed()
+@export var smoothing_rate : float = 1.0:
+	set(value):
+		smoothing_rate = value
+		emit_changed()
 ## Cumulative inputs don't reset to 0 automatically. This would be similar to trim, or throttle that stays in place when not interacted with.
 @export var cumulative_positive_event : StringName = ""
 ## Cumulative inputs don't reset to 0 automatically. This would be similar to trim, or throttle that stays in place when not interacted with.
 @export var cumulative_negative_event : StringName = ""
 ## Rate at which cumulative inputs change control value.
-@export var cumulative_rate : float = 1.0
-@export_exp_easing("inout") var easing := 1.0
+@export var cumulative_rate : float = 1.0:
+	set(value):
+		cumulative_rate = value
+		emit_changed()
+@export_exp_easing("inout") var easing := 1.0:
+	set(value):
+		easing = value
+		emit_changed()
 
 @export_subgroup("")
 @export_group("")

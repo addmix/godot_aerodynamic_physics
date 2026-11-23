@@ -11,6 +11,11 @@ const AeroMathUtils = preload("../../utils/math_utils.gd")
 		if x.size() > 0 and x[-1] == null:
 			x[-1] = AeroControlConfigAxis.new()
 		axis_configs = x
+		
+		#an axis is a resource of its own, and an edit inside one has to reach whoever is listening to the config
+		for axis : AeroControlConfigAxis in axis_configs:
+			if axis and not axis.changed.is_connected(emit_changed): axis.changed.connect(emit_changed)
+		emit_changed()
 
 func _init() -> void:
 	axis_configs = [

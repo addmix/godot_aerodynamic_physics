@@ -11,9 +11,17 @@ const AeroNodeUtils = preload("../../utils/node_utils.gd")
 ## Reference to the parent [AeroBody3D].
 @onready var aero_body : AeroBody3D = get_parent() if get_parent() is AeroBody3D else null
 ## FlightAssist resource used to configure flight assist features.
-@export var flight_assist : FlightAssist
+@export var flight_assist : FlightAssist:
+	set(value):
+		flight_assist = value
+		connect_configs()
+		notify_model_changed()
 ## Control configuration resource used to define control axes and key bindings.
-@export var control_config : AeroControlConfig = AeroControlConfig.new()
+@export var control_config : AeroControlConfig = AeroControlConfig.new():
+	set(value):
+		control_config = value
+		connect_configs()
+		notify_model_changed()
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
@@ -25,6 +33,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 func _ready() -> void:
+	connect_configs()
+	
 	#resource_local_to_scene impacts editability in some cases, so we manually duplicate the flight_assist resource.
 	if not Engine.is_editor_hint():
 		#if proportional_navigation: proportional_navigation = proportional_navigation.duplicate(true)
@@ -40,6 +50,18 @@ func _physics_process(delta : float) -> void:
 	
 	control_config.update(delta)
 	update_flight_assist(delta)
+
+#the configs are resources, and each of them says when it changes, down through the PIDs and curves it holds
+func connect_configs() -> void:
+	if flight_assist and not flight_assist.changed.is_connected(notify_model_changed):
+		flight_assist.changed.connect(notify_model_changed)
+	if control_config and not control_config.changed.is_connected(notify_model_changed):
+		control_config.changed.connect(notify_model_changed)
+
+## Tells the body that something the simulation reads has changed, which the wind tunnel listens for.
+func notify_model_changed() -> void:
+	var body : AeroBody3D = aero_body if aero_body else get_parent() as AeroBody3D
+	if body: body.notify_flight_model_changed()
 
 ## Used internally to update the FlightAssist resource, and receive the resulting control command.
 func update_flight_assist(delta : float) -> void:

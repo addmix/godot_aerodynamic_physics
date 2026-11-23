@@ -19,53 +19,123 @@ var global_transform : Transform3D = Transform3D()
 var control_input := Vector3.ZERO
 var control_command := Vector3.ZERO
 var throttle_command : float = 0.0
-@export var enable_flight_assist : bool = true
+@export var enable_flight_assist : bool = true:
+	set(value):
+		enable_flight_assist = value
+		emit_changed()
 ##Maximum turn rate (in radians per second) the flight assist will command.
-@export var max_angular_rates := Vector3(2, 1, 5.0)
+@export var max_angular_rates := Vector3(2, 1, 5.0):
+	set(value):
+		max_angular_rates = value
+		emit_changed()
 var angular_rate_error := Vector3.ZERO
 
 @export_group("Flight Assist")
 @export_subgroup("Angular rate tracking")
-@export var feed_forward : Vector3 = Vector3(1.0, 1.0, 1.0)
+@export var feed_forward : Vector3 = Vector3(1.0, 1.0, 1.0):
+	set(value):
+		feed_forward = value
+		emit_changed()
 ##If enabled, flight assist is enabled on the pitch (X) axis.
-@export var enable_flight_assist_x : bool = true
+@export var enable_flight_assist_x : bool = true:
+	set(value):
+		enable_flight_assist_x = value
+		emit_changed()
 ##PID controller used to evaluate appropriate control response.
-@export var pitch_assist_pid : aero_PID
+@export var pitch_assist_pid : aero_PID:
+	set(value):
+		watch_resource(pitch_assist_pid, value)
+		pitch_assist_pid = value
+		emit_changed()
 ##If enabled, flight assist is enabled on the yaw (Y) axis.
-@export var enable_flight_assist_y : bool = true
+@export var enable_flight_assist_y : bool = true:
+	set(value):
+		enable_flight_assist_y = value
+		emit_changed()
 ##PID controller used to evaluate appropriate control response.
-@export var yaw_assist_pid : aero_PID
+@export var yaw_assist_pid : aero_PID:
+	set(value):
+		watch_resource(yaw_assist_pid, value)
+		yaw_assist_pid = value
+		emit_changed()
 ##If enabled, flight assist is enabled on the roll (Z) axis.
-@export var enable_flight_assist_z : bool = true
+@export var enable_flight_assist_z : bool = true:
+	set(value):
+		enable_flight_assist_z = value
+		emit_changed()
 ##PID controller used to evaluate appropriate control response.
-@export var roll_assist_pid : aero_PID
+@export var roll_assist_pid : aero_PID:
+	set(value):
+		watch_resource(roll_assist_pid, value)
+		roll_assist_pid = value
+		emit_changed()
 @export_subgroup("G Limiter")
 ##If enabled, the flight assist resource will attempt to keep felt G-forces below the g_limit.
-@export var enable_g_limiter : bool = true
+@export var enable_g_limiter : bool = true:
+	set(value):
+		enable_g_limiter = value
+		emit_changed()
 ##Maximum allowable G-force.
-@export var g_limit : float = 9.0
+@export var g_limit : float = 9.0:
+	set(value):
+		g_limit = value
+		emit_changed()
 ##Maximum allowable negative G-force.
-@export var negative_g_limit : float = 3.0
+@export var negative_g_limit : float = 3.0:
+	set(value):
+		negative_g_limit = value
+		emit_changed()
 @export_subgroup("AOA Limiter")
 ##If enabled, the flight assist resource will attempt to prevent angle of attack from exceeding this limit.
-@export var enable_aoa_limiter : bool = true
+@export var enable_aoa_limiter : bool = true:
+	set(value):
+		enable_aoa_limiter = value
+		emit_changed()
 ##Angle of attack (degrees) that control authority begins to decrease.
-@export var aoa_limit_start : float = 22.0
+@export var aoa_limit_start : float = 22.0:
+	set(value):
+		aoa_limit_start = value
+		emit_changed()
 ##Angle of attack (degrees) that control authority is reduced to 0.
-@export var aoa_limit_end : float = 25.0
+@export var aoa_limit_end : float = 25.0:
+	set(value):
+		aoa_limit_end = value
+		emit_changed()
 @export_subgroup("Control Adjustments")
 ##If enabled, the flight assist will scale its command as the dynamic pressure of the air changes, in an attempt to maintain a consistent control response despite changing airspeed or air density.
-@export var enable_control_adjustment : bool = true
+@export var enable_control_adjustment : bool = true:
+	set(value):
+		enable_control_adjustment = value
+		emit_changed()
 ##Airspeed that control adjustments are tuned at.
-@export var tuned_airspeed : float = 100.0
+@export var tuned_airspeed : float = 100.0:
+	set(value):
+		tuned_airspeed = value
+		emit_changed()
 ##Minimum limit for airspeed adjustment. This prevents controls from losing authority at low speeds due to control surface stalls.
-@export var min_accounted_airspeed : float = 75.0
+@export var min_accounted_airspeed : float = 75.0:
+	set(value):
+		min_accounted_airspeed = value
+		emit_changed()
 ##Air density that control adjustments are tuned at.
-@export var tuned_density : float = 1.225
+@export var tuned_density : float = 1.225:
+	set(value):
+		tuned_density = value
+		emit_changed()
 ##Minimum limit for air density adjustment. This prevents controls from losing authority at low air density due to control surface stalls.
-@export var min_accounted_air_density : float = 0.1
+@export var min_accounted_air_density : float = 0.1:
+	set(value):
+		min_accounted_air_density = value
+		emit_changed()
+@export var control_rotation : float = 0.0:
+	set(value):
+		control_rotation = value
+		emit_changed()
 
-@export var control_rotation : float = 0.0
+#a PID or a curve is a resource of its own, and an edit inside one has to reach whoever is listening to the assist
+func watch_resource(previous : Resource, next : Resource) -> void:
+	if previous and previous.changed.is_connected(emit_changed): previous.changed.disconnect(emit_changed)
+	if next and not next.changed.is_connected(emit_changed): next.changed.connect(emit_changed)
 
 @export_group("Autopilot")
 @export_subgroup("Bank Angle Target")
@@ -290,12 +360,8 @@ func flight_assist(delta : float) -> void:
 	
 	#adjust for changing airspeed and density
 	if enable_control_adjustment:
-		control_command *= FlightAssist.get_control_adjustment_factor(air_speed, air_density, tuned_airspeed, tuned_density, min_accounted_airspeed, min_accounted_air_density)
-	
-	#add this up near the control adjustment/tuning category
-	#@export var control_speed_adjustment_curve : Curve
-	#if control_speed_adjustment_curve:
-		#control_command *= control_speed_adjustment_curve.sample(air_speed)
+		control_command *= FlightAssist.get_control_adjustment_factor(air_speed, air_density, tuned_airspeed, tuned_density,
+			min_accounted_airspeed, min_accounted_air_density)
 	
 	control_command = control_command.clamp(Vector3(-1, -1, -1), Vector3(1, 1, 1))
 	

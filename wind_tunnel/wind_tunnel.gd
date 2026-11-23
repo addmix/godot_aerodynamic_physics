@@ -140,7 +140,14 @@ func _ready() -> void:
 	
 	#a tab that was not being looked at is flown when it is opened, and a dock that was closed catches up when it reopens
 	%Tabs.tab_changed.connect(queue_recalculate.unbind(1))
+	%Tabs.tab_changed.connect(_on_tab_changed)
 	visibility_changed.connect(queue_recalculate)
+	
+	#anything the tests are flown from asks for them again when it changes, once the change has settled
+	%ResponseAxis.item_selected.connect(queue_response_tests.unbind(1))
+	%ResponseSpeed.value_changed.connect(queue_response_tests.unbind(1))
+	%ResponsePressures.value_changed.connect(queue_response_tests.unbind(1))
+	%ResponseSkipLowest.value_changed.connect(queue_response_tests.unbind(1))
 	
 	if not Engine.is_editor_hint(): return
 	
@@ -171,6 +178,11 @@ func _process(_delta : float) -> void:
 			if not busy_sheet.visible:
 				if Time.get_ticks_msec() - busy_since_msec < BUSY_SHEET_DELAY: return
 				set_busy(true)
+	
+	#the response tab keeps itself current: a recalculation asked for by an edit is dropped while that edit's tests are still
+	#settling, so one is asked for again once they have
+	if response_stale and worker_task == -1 and aerobody and is_visible_in_tree() and %Tabs.current_tab == RESPONSE_TAB:
+		if Time.get_ticks_msec() - response_asked_msec >= RESPONSE_SETTLE_MSEC: queue_recalculate()
 
 #whether a part is carried by something that turns, which places it itself, so the copy leaves it where it was put
 func is_turned_part(influencer : AeroInfluencer3D, copy : AeroBody3D) -> bool:
@@ -236,10 +248,14 @@ var turn_chart_height_share := 0.6
 var graph_height_share := 0.30
 var graph_height_floor := 240.0
 var graph_height_ceiling := 520.0
-#the command breakdown is the densest chart in the tab, so it takes a share of the dock of its own rather than a grid cell's
+#the error chart and the breakdowns in the row are the densest charts in the tab, so they take a share of the dock of their own
+#rather than a grid cell's
 var response_chart_height_share := 0.45
 var response_chart_height_floor := 340.0
 var response_chart_height_ceiling := 760.0
+#how wide a graph of the pressure row is drawn, in line heights of the dock's own text: a fixed width rather than a share of the
+#dock, so a wider dock shows more of them side by side instead of the same number at a higher resolution
+var response_chart_width_lines := 15
 #how wide a graph has to be before the numbers along its axes stop reading, in line heights of the dock's own text, so it
 #follows the editor's font size instead of growing with the height of the screen the dock happens to be on
 var graph_minimum_width_lines := 13
@@ -266,14 +282,26 @@ func fit_graph_columns() -> void:
 		for child : Node in grid.get_children():
 			if child is AeroGraph: child.custom_minimum_size = Vector2(graph_width, graph_height)
 	
-	#the command breakdown runs the width of the tab and stands taller than a grid chart, because it carries six curves and the
-	#space between them is what it is read for
-	%ResponseCommandGraph.custom_minimum_size = Vector2(graph_width,
-		clampf(size.y * response_chart_height_share, response_chart_height_floor, response_chart_height_ceiling))
+	#the error chart stands taller than a grid chart, because the space between its curves is what it is read for
+	%ResponseErrorGraph.custom_minimum_size = Vector2(graph_width, response_chart_height())
+	%ResponseLoadTimeGraph.custom_minimum_size = Vector2(graph_width, response_chart_height())
+	
+	#the row of breakdowns at different pressures stands the same height, and each keeps its share of the dock's width
+	for cell : Node in %PressureCharts.get_children():
+		var graph := cell.get_node_or_null("PressureGraph") as AeroGraph
+		if graph: graph.custom_minimum_size = Vector2(response_chart_width(), response_chart_height())
 
 #the width a graph is squeezed to before there is nothing left to read on it
 func minimum_graph_width() -> float:
 	return get_theme_default_font_size() * graph_minimum_width_lines
+
+#the height the response charts are drawn at, as a share of the dock's own and within bounds
+func response_chart_height() -> float:
+	return clampf(size.y * response_chart_height_share, response_chart_height_floor, response_chart_height_ceiling)
+
+#the width a graph of the pressure row is drawn at, which is the same on every dock
+func response_chart_width() -> float:
+	return get_theme_default_font_size() * response_chart_width_lines
 
 
 #recalculating
@@ -318,6 +346,8 @@ func queue_flight_model_changed() -> void:
 	static_stale = true
 	turn_performance_stale = true
 	altitude_stale = true
+	response_stale = true
+	response_asked_msec = Time.get_ticks_msec()
 	queue_recalculate()
 
 #the aircraft as the sweeps read it, gathered into one number: its mass properties, and every value stored on the parts it is
@@ -376,6 +406,7 @@ var worker_results := {}
 var worker_runs_static := false
 var worker_runs_turn := false
 var worker_runs_altitude := false
+var worker_runs_response := false
 var worker_dirty := false
 
 #the sheet drawn over the dock while the sweeps are flying, so it is clear the numbers are being worked out and that the
@@ -399,9 +430,6 @@ func recalculate() -> void:
 	#aircraft's results there to be read while another scene is open
 	if not aerobody or not is_visible_in_tree(): return
 	
-	#a step being flown holds the physics server and the sheet, so the sweeps wait for it to land
-	if response_running: return
-	
 	%AircraftName.text = aerobody.name
 	
 	#only the tab being looked at is flown: the other one keeps what it shows and catches up when it is opened, which is
@@ -409,19 +437,22 @@ func recalculate() -> void:
 	var sweep_static : bool = %Tabs.current_tab == STATIC_TAB and static_stale
 	var sweep_turn : bool = %Tabs.current_tab == PERFORMANCE_TAB and turn_performance_stale
 	var sweep_altitude : bool = %Tabs.current_tab == ALTITUDE_TAB and altitude_stale
-	if not sweep_static and not sweep_turn and not sweep_altitude: return
+	#the response tests wait for the edits to settle, so dragging a part does not fly a step per frame
+	var sweep_response : bool = %Tabs.current_tab == RESPONSE_TAB and response_stale \
+		and Time.get_ticks_msec() - response_asked_msec >= RESPONSE_SETTLE_MSEC
+	if not sweep_static and not sweep_turn and not sweep_altitude and not sweep_response: return
 	
 	#a sweep already in flight is left to finish rather than interrupted, and flown again as soon as it lands
 	if worker_task != -1:
 		worker_dirty = true
 		return
 	
-	start_sweeps(sweep_static, sweep_turn, sweep_altitude)
+	start_sweeps(sweep_static, sweep_turn, sweep_altitude, sweep_response)
 
 #deep-copies the aircraft for the worker to fly, so the sweeps never touch the nodes being edited. the copy goes into a
 #viewport of its own, so it enters a tree and initializes like any aircraft, and is then taken out of the frame's way: it does
 #not process, show or collide with anything
-func start_sweeps(sweep_static : bool, sweep_turn : bool, sweep_altitude : bool) -> void:
+func start_sweeps(sweep_static : bool, sweep_turn : bool, sweep_altitude : bool, sweep_response : bool) -> void:
 	#what the sweeps are about to fly is kept, so an undo or a redo can be told apart from one that changed nothing
 	swept_model = flight_model_fingerprint()
 	
@@ -439,11 +470,17 @@ func start_sweeps(sweep_static : bool, sweep_turn : bool, sweep_altitude : bool)
 		influencers.append(influencer)
 		if influencer is AeroThruster3D: thrusters.append(influencer)
 	
+	#the copy is only ever read by the worker, where a signal can neither be inspected nor emitted: its parts are silenced so the
+	#sweeps' surface moves and propeller phasing do not announce a flight model change to listeners that are not there
+	for influencer : AeroInfluencer3D in influencers: influencer.suppress_flight_model_changed = true
+	
 	worker_sweeps = AircraftSweeps.new()
 	worker_sweeps.body = worker_copy
 	worker_sweeps.influencers = influencers
 	worker_sweeps.thrusters = thrusters
 	worker_sweeps.control = control_component(worker_copy)
+	#the inertia is read here, where the physics server answers at once: a worker asking for it waits about a second a call
+	worker_sweeps.inertia = worker_copy.get_moment_of_inertia()
 	worker_sweeps.test_speed = test_speed
 	worker_sweeps.sweep_datapoints = sweep_datapoints
 	worker_sweeps.reference_area = reference_area
@@ -456,6 +493,11 @@ func start_sweeps(sweep_static : bool, sweep_turn : bool, sweep_altitude : bool)
 	worker_sweeps.load_limit = load_limit
 	worker_sweeps.turn_datapoints = turn_datapoints
 	worker_sweeps.altitude_datapoints = altitude_datapoints
+	worker_sweeps.response_axis = response_axis()
+	worker_sweeps.response_speed = %ResponseSpeed.value
+	worker_sweeps.response_pressures = roundi(%ResponsePressures.value)
+	worker_sweeps.response_skip_lowest = roundi(%ResponseSkipLowest.value)
+	worker_sweeps.response_seconds = RESPONSE_SECONDS
 	
 	#the speed envelope is flown over a ladder of altitudes, so the air at each of them goes with the sweep
 	for index : int in altitude_steps:
@@ -469,9 +511,11 @@ func start_sweeps(sweep_static : bool, sweep_turn : bool, sweep_altitude : bool)
 	if sweep_static: static_stale = false
 	if sweep_turn: turn_performance_stale = false
 	if sweep_altitude: altitude_stale = false
+	if sweep_response: response_stale = false
 	worker_runs_static = sweep_static
 	worker_runs_turn = sweep_turn
 	worker_runs_altitude = sweep_altitude
+	worker_runs_response = sweep_response
 	worker_results = {}
 	worker_task = WorkerThreadPool.add_task(run_sweeps, false, "wind tunnel sweeps")
 	busy_since_msec = Time.get_ticks_msec()
@@ -482,6 +526,7 @@ func run_sweeps() -> void:
 	if worker_runs_static: results["static"] = worker_sweeps.static_analysis()
 	if worker_runs_turn: results["turn"] = worker_sweeps.turn_performance()
 	if worker_runs_altitude: results["altitude"] = worker_sweeps.altitude_sweep()
+	if worker_runs_response: results["response"] = worker_sweeps.control_response()
 	worker_results = results
 
 #takes the results of a finished sweep and puts the copy away, on the main thread
@@ -502,6 +547,7 @@ func finish_sweeps() -> void:
 	if results.has("static"): draw_static_analysis(results["static"])
 	if results.has("turn"): draw_turn_performance(results["turn"])
 	if results.has("altitude"): draw_altitude_sweep(results["altitude"])
+	if results.has("response"): draw_control_response(results["response"])
 	
 	if worker_dirty:
 		worker_dirty = false
@@ -587,56 +633,30 @@ const RESPONSE_SECONDS := 5.0
 #is the less the first moments are stretched and the more room the rest of the run gets
 const RESPONSE_TIME_OFFSET := 0.2
 
-#set while the tests are running, which holds the sweeps off and keeps a second press from landing on the first
-var response_running := false
+#the tab the response tests belong to, and how long a change to the aircraft has to sit before they are flown again, so dragging
+#a part does not fly a step per frame
+const RESPONSE_TAB := 1
+const RESPONSE_SETTLE_MSEC := 400
 
-#measures the airframe's own answer, then steps a control step of the chosen axis and draws it. the step is stepped by hand, so
-#the whole set of tests costs its calculation time rather than a flight's worth of frames
+#set when the aircraft changed under the tests, and when that change was last seen
+var response_stale := true
+var response_asked_msec := 0
+
+#the button flies the tests without waiting for the edits to settle
 func _on_response_run_pressed() -> void:
-	if response_running or worker_task != -1 or not aerobody: return
-	
-	var aircraft_component := control_component(aerobody)
-	if aircraft_component == null:
-		%ResponseResult.text = "This aircraft has no control component to measure."
-		return
-	
-	response_running = true
-	%ResponseRun.disabled = true
-	
-	measure_controls()
-	if aircraft_component.flight_assist:
-		fly_response()
-	else:
-		#the airframe's answer needs no assist, so it is drawn either way
-		clear_step_graphs()
-		%ResponseResult.text = "No flight assist on this aircraft: only the airframe's answer is measured."
-	
-	%ResponseRun.disabled = false
-	response_running = false
-	
-	#an edit made while the tests ran asked for a sweep, which was held off until now
+	response_stale = true
+	response_asked_msec = 0
 	queue_recalculate()
 
-#the airframe's own answer, which needs no flight: the moment each control command produces, and how far the surfaces have come
-#toward one over time
-func measure_controls() -> void:
-	var copy := copy_aircraft()
-	var component := control_component(copy)
-	
-	var axis := response_axis()
-	var index := ControlResponse.axis_index(axis)
-	%ResponseEffectivenessGraph.clear_curves()
-	%ResponseEffectivenessGraph.add_curve(ControlResponse.effectiveness(copy, component, axis, %ResponseSpeed.value, altitude),
-		CURVE_COLORS[index], ["Mx (pitch)", "My (yaw)", "Mz (roll)"][index])
-	
-	%ResponseDeflectionGraph.clear_curves()
-	var responses := ControlResponse.deflection_step(copy, component, axis, RESPONSE_SECONDS)
-	for surface_index : int in responses.size():
-		var response : ControlResponse.Deflection = responses[surface_index]
-		%ResponseDeflectionGraph.add_curve(response.points, CURVE_COLORS[surface_index % CURVE_COLORS.size()], response.surface)
-	
-	simulation_view.remove_child(copy)
-	copy.queue_free()
+#opening the response tab flies its tests at once rather than waiting for the edits to settle
+func _on_tab_changed(index : int) -> void:
+	if index == RESPONSE_TAB: response_asked_msec = 0
+
+#a change to what the tests are flown from marks them stale, and they are flown once the change has settled
+func queue_response_tests() -> void:
+	response_stale = true
+	response_asked_msec = Time.get_ticks_msec()
+	queue_recalculate()
 
 #the axis the menu names
 func response_axis() -> String:
@@ -648,23 +668,243 @@ func clear_step_graphs() -> void:
 	%ResponseLoadGraph.clear_curves()
 	%ResponseLoadGraph.clear_rules()
 	%ResponseLoadGraph.clear_labels()
-	%ResponseCommandGraph.clear_curves()
 
-#steps the step against a copy of the aircraft, puts the copy away, and draws what came back
-func fly_response() -> void:
-	%ResponseResult.text = "Flying..."
+#the control response the worker flew: the airframe's own answer, the step at the chosen speed, the row across the regime, and
+#the error chart that compares it
+func draw_control_response(result : Dictionary) -> void:
+	#an aircraft with no control component has nothing to measure at all
+	if not result.has_control:
+		clear_step_graphs()
+		clear_pressure_charts()
+		%ResponseResult.text = "This aircraft has no control component to measure."
+		return
 	
-	var copy := copy_aircraft()
-	copy.global_transform = Transform3D(Basis.IDENTITY, Vector3(0, altitude, 0))
-	copy.linear_velocity = Vector3(0, 0, -%ResponseSpeed.value)
-	copy.angular_velocity = Vector3.ZERO
+	var index : int = result.index
+	var curves : Array = result.effectiveness
+	var names : Array[String] = ["Mx (pitch)", "My (yaw)", "Mz (roll)"]
 	
-	var trace := ControlResponse.fly(copy, control_component(copy), response_axis(), RESPONSE_SECONDS)
+	%ResponseEffectivenessGraph.clear_curves()
+	%ResponseEffectivenessGraph.add_curve(curves[index], CURVE_COLORS[index], names[index])
 	
-	simulation_view.remove_child(copy)
-	copy.queue_free()
+	#what the command drags along with it: the two axes it was not asked for, so a pitch input that rolls the aircraft is visible
+	%ResponseCouplingGraph.clear_curves()
+	for other : int in 3:
+		if other == index: continue
+		%ResponseCouplingGraph.add_curve(curves[other], CURVE_COLORS[other], names[other])
 	
-	draw_response(trace)
+	%ResponseDeflectionGraph.clear_curves()
+	var deflections : Array = result.deflections
+	for surface_index : int in deflections.size():
+		var deflection : ControlResponse.Deflection = deflections[surface_index]
+		%ResponseDeflectionGraph.add_curve(deflection.points, CURVE_COLORS[surface_index % CURVE_COLORS.size()], deflection.surface)
+	
+	#no assist means no step was flown: the airframe's answer is all there is, and the tab says why
+	if result.chosen == null:
+		clear_step_graphs()
+		clear_pressure_charts()
+		%ResponseResult.text = "No flight assist on this aircraft: only the airframe's answer is measured."
+		return
+	
+	draw_response(result.chosen)
+	clear_pressure_charts()
+	
+	#the row spans the regime in dynamic pressure rather than in speed, because the regime is a range of pressure: one pressure is
+	#the same trim and the same response whatever height it is flown at. where the sweeps cannot work the range out, the row shows
+	#the chosen speed alone
+	var conditions : PackedVector2Array = result.conditions
+	var traces : Array = result.traces
+	var below : int = result.corner_index
+	var above : int = conditions.size() - below - 1
+	var stats_all : Array[Dictionary] = []
+	for condition_index : int in traces.size():
+		var condition : Vector2 = conditions[condition_index]
+		var trace : ControlResponse.Trace = traces[condition_index]
+		var color : Color = condition_color(condition_index, below, above)
+		var stats := response_stats(trace)
+		#at and below the corner the airframe is what stops the pull, so the shape of the response is not the gains' doing
+		if condition_index <= below: stats.damping = "wing-limited"
+		stats_all.append(stats)
+		add_pressure_graph(condition, trace, color, stats)
+		draw_pressure_error(condition, trace, color)
+	
+	#the load each condition pulls against time. the rate curves overshoot while the angle of attack is being taken up, which is the
+	#right shape for getting to the limit quickly, so the quantity being aimed at is drawn here instead
+	draw_load_curves(conditions, traces, result.chosen.g_limit, below, above)
+	
+	#the ceiling the limit is asked to fit under, in the air these tests are flown in: the wing's own load against speed, so the
+	#speed below which no tune can reach the limit is a crossing on this chart rather than a guess
+	draw_capability(result.load_ceiling, result.chosen.g_limit)
+	
+	#the condition furthest from an ideal response is the one worth tuning against, and its sign says on which side of the limit
+	var worst := 0.0
+	var worst_pressure := NAN
+	for stats_index : int in stats_all.size():
+		if stats_all[stats_index].damping == "wing-limited": continue
+		if absf(stats_all[stats_index].off) <= absf(worst): continue
+		worst = stats_all[stats_index].off
+		worst_pressure = conditions[stats_index].x / 1000.0
+	if not is_nan(worst_pressure):
+		%ResponseResult.text += " · furthest off: %.1f kPa at %+.0f%%·s" % [worst_pressure, worst]
+	
+	if is_nan(result.regime.x):
+		%ResponseResult.text += " The flight regime could not be worked out, so the row shows the chosen speed only."
+
+#how a condition's load answers the limit: how long it took to get there, how far over it went, when it last left the band
+#around it, and how much of the run was spent on the wrong side. the last one is signed, so a negative score is a response that
+#never came up to the limit and a positive one is a response that sat over it
+func response_stats(trace : ControlResponse.Trace) -> Dictionary:
+	var stats := {"damping": "over-damped", "rise": NAN, "peak": 0.0, "settle": NAN, "off": 0.0}
+	var count : int = trace.load.size()
+	var limit : float = trace.g_limit
+	if count < 2 or limit <= 0.0: return stats
+	
+	var times := trace.times()
+	var step : float = times[count - 1] / float(count - 1)
+	var peak := -INF
+	var off := 0.0
+	for index : int in count:
+		peak = maxf(peak, trace.load[index])
+		off += (trace.load[index] - limit) / limit * step
+	stats.peak = peak - limit
+	stats.off = off * 100.0
+	
+	for sample : int in count:
+		if trace.load[sample] < 0.9 * limit: continue
+		stats.rise = times[sample]
+		break
+	
+	#the last moment it was outside two percent of the limit: everything after that is settled
+	var outside := -1.0
+	for moment : int in count:
+		if absf(trace.load[moment] - limit) > 0.02 * limit: outside = times[moment]
+	if outside < times[count - 1]: stats.settle = outside
+	
+	var overshoot : float = stats.peak / limit
+	if stats.settle >= 0.0:
+		stats.damping = "under-damped" if overshoot > 0.05 else ("lightly damped" if overshoot > 0.01 else "damped")
+	else:
+		stats.damping = "under-damped" if overshoot > 0.05 else "over-damped"
+	
+	return stats
+
+#the load each condition pulls, against time and against the limit, with the moment it first reached it marked: the number
+#this chart is read for is how long that took
+func draw_load_curves(conditions : PackedVector2Array, traces : Array, limit : float, below : int, above : int) -> void:
+	var graph : AeroGraph = %ResponseLoadTimeGraph
+	graph.clear_curves()
+	graph.clear_rules()
+	graph.clear_labels()
+	graph.clear_markers()
+	
+	for index : int in traces.size():
+		var trace : ControlResponse.Trace = traces[index]
+		var color : Color = condition_color(index, below, above)
+		var log_times := response_log_times(trace)
+		graph.add_curve(trace_points(log_times, trace.load), color, "%.2f kPa" % (conditions[index].x / 1000.0))
+		
+		if limit <= 0.0: continue
+		var times := trace.times()
+		for sample : int in trace.load.size():
+			if trace.load[sample] < limit - 0.02: continue
+			graph.add_marker(Vector2(log_times[sample], trace.load[sample]), "Reaches the limit", "%.2f kPa: %.2f s" % [conditions[index].x / 1000.0, times[sample]], color)
+			break
+	
+	if limit <= 0.0: return
+	graph.add_y_rule(limit, boundary_rule_color)
+	var shown : Rect2 = graph.visible_bounds()
+	graph.add_label("%.1f g limit" % limit, Vector2(shown.end.x, limit), Vector2(1.0, 0.0), HORIZONTAL_ALIGNMENT_RIGHT)
+
+#the most load the wing can hold at each speed in this air, against the limit it is asked to pull
+func draw_capability(curve : PackedVector2Array, limit : float) -> void:
+	var graph : AeroGraph = %ResponseCapabilityGraph
+	graph.clear_curves()
+	graph.clear_rules()
+	graph.clear_labels()
+	graph.clear_markers()
+	
+	#the ceiling a pilot actually gets: the wing below the corner, and the declared limit above it, which is what keeps the wing's
+	#own figures (eighty-odd g at the top of the speed range) from squashing the limit into the foot of the chart
+	var held := PackedVector2Array()
+	var corner := Vector2.ZERO
+	var reaches := false
+	for point : Vector2 in curve:
+		if limit > 0.0 and not reaches and point.y >= limit:
+			reaches = true
+			corner = Vector2(point.x, limit)
+		held.append(Vector2(point.x, minf(point.y, limit) if limit > 0.0 else point.y))
+	
+	graph.add_curve(held, Color(1, 1, 1, 0.8), "Max load")
+	if limit <= 0.0: return
+	
+	graph.add_y_rule(limit, boundary_rule_color)
+	var shown : Rect2 = graph.visible_bounds()
+	graph.add_label("%.1f g limit" % limit, Vector2(shown.end.x, limit), Vector2(1.0, 0.0), HORIZONTAL_ALIGNMENT_RIGHT)
+	
+	#the corner, in white because that is the color the row puts on it: below it the wing cannot reach the limit at all, whatever
+	#the gains are
+	if reaches: graph.add_marker(corner, "Holds the limit", "%.1f m/s" % corner.x, Color(1, 1, 1))
+
+#the color a condition is known by in both charts: red through yellow under the speed the wing first holds the limit at, that
+#speed in white, and green through blue above it, so the row reads as the two sides of the corner at a glance
+func condition_color(index : int, below : int, above : int) -> Color:
+	if index == below: return Color(1, 1, 1)
+	if index < below:
+		return Color.from_hsv(remap(index, 0.0, maxf(below - 1.0, 1.0), 0.0, 0.16), 0.65, 1.0)
+	return Color.from_hsv(remap(index - below - 1.0, 0.0, maxf(above - 1.0, 1.0), 0.33, 0.6), 0.65, 1.0)
+
+#one graph of the row: the breakdown at one dynamic pressure, named with the pressure and the speed it came to, so a run of them
+#can be read side by side and the response compared across the regime
+func add_pressure_graph(condition : Vector2, trace : ControlResponse.Trace, color : Color, stats : Dictionary) -> void:
+	var cell := %PressureCell.duplicate() as VBoxContainer
+	cell.unique_name_in_owner = false
+	cell.visible = true
+	%PressureCharts.add_child(cell)
+	
+	#the label carries the color of this pressure's curve in the error chart, so a curve and the graph under it are read as a pair
+	var name_label : Label = cell.get_node("PressureLabel")
+	name_label.text = "%.2f kPa · %.0f m/s" % [condition.x / 1000.0, condition.y]
+	name_label.add_theme_color_override("font_color", color)
+	
+	#the response itself, said in words: when it converges, how far over the limit it goes, and how far off an ideal one it is
+	var stats_label : Label = cell.get_node("PressureStats")
+	var settle := "never" if is_nan(stats.settle) else "%.1f s" % stats.settle
+	stats_label.text = "%s\nconverges %s, peak %+.1f g" % [stats.damping, settle, stats.peak]
+	stats_label.tooltip_text = "%s: reached 90%% of the limit at %s, settled at %s, peak %+.2f g, off target %+.0f%%·s (%.0f%% %s the limit)" % [
+		stats.damping,
+		"never" if is_nan(stats.rise) else "%.2f s" % stats.rise,
+		settle, stats.peak, stats.off, absf(stats.off), "over" if stats.off > 0.0 else "under"]
+	
+	var graph : AeroGraph = cell.get_node("PressureGraph")
+	graph.custom_minimum_size = Vector2(response_chart_width(), response_chart_height())
+	draw_breakdown(graph, trace)
+
+#one pressure's rate error through the step, on the same log time axis as the breakdowns, so every condition in the row can be read
+#against the others in one chart. the error is what the aircraft reached less what the assist asked for: under the zero line it is
+#short of the request, above it it overshot, and a curve that settles on zero is the response the tuning is after
+func draw_pressure_error(condition : Vector2, trace : ControlResponse.Trace, color : Color) -> void:
+	var log_times := response_log_times(trace)
+	var error := PackedVector2Array()
+	for index : int in mini(log_times.size(), trace.achieved_rate.size()):
+		error.append(Vector2(log_times[index], rad_to_deg(trace.achieved_rate[index] - trace.commanded_rate[index])))
+	
+	%ResponseErrorGraph.add_curve(error, color, "%.2f kPa" % (condition.x / 1000.0))
+
+#takes the row down to its own template and the error chart back to nothing, which is how the next run starts
+func clear_pressure_charts() -> void:
+	for cell : Node in %PressureCharts.get_children():
+		if cell == %PressureCell: continue
+		%PressureCharts.remove_child(cell)
+		cell.queue_free()
+	
+	%ResponseErrorGraph.clear_curves()
+	%ResponseLoadTimeGraph.clear_curves()
+	%ResponseLoadTimeGraph.clear_rules()
+	%ResponseLoadTimeGraph.clear_labels()
+	%ResponseLoadTimeGraph.clear_markers()
+	%ResponseCapabilityGraph.clear_curves()
+	%ResponseCapabilityGraph.clear_rules()
+	%ResponseCapabilityGraph.clear_labels()
+	%ResponseCapabilityGraph.clear_markers()
 
 
 #drawing
@@ -894,6 +1134,15 @@ func add_command_part(graph : AeroGraph, times : PackedFloat32Array, requested :
 	
 	graph.add_curve(trace_points(times, values, 1), color, name)
 
+#the times the breakdowns are read at: log10 of the seconds plus the offset, so the first moments keep a share of the chart
+#while the last seconds keep one of their own
+func response_log_times(trace : ControlResponse.Trace) -> PackedFloat32Array:
+	var times := PackedFloat32Array()
+	for stamp : float in trace.times():
+		times.append(log(stamp + RESPONSE_TIME_OFFSET) / log(10.0))
+	
+	return times
+
 #a run of angles in radians, in degrees
 func degrees(values : PackedFloat32Array) -> PackedFloat32Array:
 	var converted := PackedFloat32Array()
@@ -927,51 +1176,6 @@ func draw_response(trace : ControlResponse.Trace) -> void:
 	%ResponseRateGraph.add_curve(reached, CURVE_COLORS[1], "Achieved")
 	%ResponseLoadGraph.add_curve(trace_points(times, trace.load), CURVE_COLORS[3], "Load factor")
 	
-	#the breakdown runs on a log time axis: the early tenths keep more room than a linear axis gives them, while the last seconds keep
-	#a share of their own, so the step and the settle can be read on one chart. the offset keeps the first frame from taking half the
-	#chart, and the axis label says what the scale is
-	var log_times := PackedFloat32Array()
-	for stamp : float in times:
-		log_times.append(log(stamp + RESPONSE_TIME_OFFSET) / log(10.0))
-	
-	#the assist's answer to the request, drawn in the units the request is made in. the rate a command stands for is read through the
-	#assist's own calibration: the rate the request asks for divided by the feed-forward command meant to produce it, which takes the
-	#airspeed and the air density out of the numbers. feed-forward's line is therefore the requested rate, and each part is that rate
-	#plus what the part adds to it, so the parts are read side by side rather than piled on each other
-	var requested_rates := degrees(trace.commanded_rate)
-	var gains := PackedFloat32Array()
-	for index : int in requested_rates.size():
-		var feed_forward : float = trace.feed_forward[index]
-		gains.append(1.0 if absf(feed_forward) < 0.0001 else requested_rates[index] / feed_forward)
-	
-	var requested_line : AeroGraph.CurveData = %ResponseCommandGraph.add_curve(trace_points(log_times, requested_rates, 1),
-		Color(1, 1, 1, 0.35), "Requested")
-	add_command_part(%ResponseCommandGraph, log_times, requested_rates, gains, trace.proportional, CURVE_COLORS[0], "+P")
-	add_command_part(%ResponseCommandGraph, log_times, requested_rates, gains, trace.integral, CURVE_COLORS[2], "+I")
-	add_command_part(%ResponseCommandGraph, log_times, requested_rates, gains, trace.derivative, CURVE_COLORS[3], "+D")
-	
-	#the command every part adds up to and the command the surfaces were given, both read in the same rate: where the two come apart,
-	#the limiters are taking something
-	var commands := PackedFloat32Array()
-	var delivered := PackedFloat32Array()
-	for index : int in requested_rates.size():
-		commands.append(requested_rates[index] + (trace.proportional[index] + trace.integral[index] + trace.derivative[index]) * gains[index])
-		delivered.append(trace.command[index] * gains[index])
-	
-	var ask : AeroGraph.CurveData = %ResponseCommandGraph.add_curve(trace_points(log_times, commands, 1),
-		Color(CURVE_COLORS[4], 0.8), "Command")
-	var given : AeroGraph.CurveData = %ResponseCommandGraph.add_curve(trace_points(log_times, delivered, 1),
-		Color(1, 1, 1, 0.85), "Delivered")
-	given.width = 2.0
-	
-	#the error the chart is read for: the gap between the rate that was asked for and the rate the aircraft reached, red while
-	#the aircraft is short of the request and green once it is over it
-	var achieved : AeroGraph.CurveData = %ResponseCommandGraph.add_curve(trace_points(log_times, degrees(trace.achieved_rate), 1),
-		CURVE_COLORS[1], "Achieved", PackedFloat32Array(), 2.0)
-	achieved.fill_to = requested_line
-	achieved.fill_color = Color(CURVE_COLORS[0], 0.4)
-	achieved.fill_above_color = Color(CURVE_COLORS[1], 0.4)
-	
 	#the load the airframe is cleared for is ruled across the chart, where the pull is read against it
 	if trace.g_limit > 0.0:
 		%ResponseLoadGraph.add_y_rule(trace.g_limit, boundary_rule_color)
@@ -993,6 +1197,54 @@ func draw_response(trace : ControlResponse.Trace) -> void:
 	%ResponseResult.text = "%s step at %.0f m/s, %.0f m: demand %.1f deg/s, peak %.1f deg/s, load %.1f g, limiters took up to %d%%" % [
 		trace.axis.capitalize(), trace.speed, trace.altitude, rad_to_deg(trace.commanded_rate[trace.commanded_rate.size() - 1]),
 		rad_to_deg(peak), trace.load[trace.load.size() - 1], lost_share]
+
+#the parts the command was built from, on the log time axis the breakdown is read on: the request, what each part adds to it, the
+#command they add up to, the command the surfaces were given, and the rate the aircraft reached, with the gap between the request
+#and that rate filled. drawn into whichever graph is handed in, so the row at different pressures and the one chart at the chosen
+#speed are the same chart
+func draw_breakdown(graph : AeroGraph, trace : ControlResponse.Trace) -> void:
+	#the breakdown runs on a log time axis: the early tenths keep more room than a linear axis gives them, while the last seconds keep
+	#a share of their own, so the step and the settle can be read on one chart. the offset keeps the first frame from taking half the
+	#chart, and the axis label says what the scale is
+	var log_times := response_log_times(trace)
+	
+	#the assist's answer to the request, drawn in the units the request is made in. the rate a command stands for is read through the
+	#assist's own calibration: the rate the request asks for divided by the feed-forward command meant to produce it, which takes the
+	#airspeed and the air density out of the numbers. feed-forward's line is therefore the requested rate, and each part is that rate
+	#plus what the part adds to it, so the parts are read side by side rather than piled on each other
+	var requested_rates := degrees(trace.commanded_rate)
+	var gains := PackedFloat32Array()
+	for index : int in requested_rates.size():
+		var feed_forward : float = trace.feed_forward[index]
+		gains.append(1.0 if absf(feed_forward) < 0.0001 else requested_rates[index] / feed_forward)
+	
+	var requested_line : AeroGraph.CurveData = graph.add_curve(trace_points(log_times, requested_rates, 1),
+		Color(1, 1, 1, 0.35), "Requested")
+	add_command_part(graph, log_times, requested_rates, gains, trace.proportional, CURVE_COLORS[0], "+P")
+	add_command_part(graph, log_times, requested_rates, gains, trace.integral, CURVE_COLORS[2], "+I")
+	add_command_part(graph, log_times, requested_rates, gains, trace.derivative, CURVE_COLORS[3], "+D")
+	
+	#the command every part adds up to and the command the surfaces were given, both read in the same rate: where the two come apart,
+	#the limiters are taking something
+	var commands := PackedFloat32Array()
+	var delivered := PackedFloat32Array()
+	for index : int in requested_rates.size():
+		commands.append(requested_rates[index] + (trace.proportional[index] + trace.integral[index] + trace.derivative[index]) * gains[index])
+		delivered.append(trace.command[index] * gains[index])
+	
+	var ask : AeroGraph.CurveData = graph.add_curve(trace_points(log_times, commands, 1),
+		Color(CURVE_COLORS[4], 0.8), "Command")
+	var given : AeroGraph.CurveData = graph.add_curve(trace_points(log_times, delivered, 1),
+		Color(1, 1, 1, 0.85), "Delivered")
+	given.width = 2.0
+	
+	#the error the chart is read for: the gap between the rate that was asked for and the rate the aircraft reached, red while
+	#the aircraft is short of the request and green once it is over it
+	var achieved : AeroGraph.CurveData = graph.add_curve(trace_points(log_times, degrees(trace.achieved_rate), 1),
+		CURVE_COLORS[1], "Achieved", PackedFloat32Array(), 2.0)
+	achieved.fill_to = requested_line
+	achieved.fill_color = Color(CURVE_COLORS[0], 0.4)
+	achieved.fill_above_color = Color(CURVE_COLORS[1], 0.4)
 
 #the altitude tab: how the numbers that change with height come out, one chart per number
 func draw_altitude_sweep(sweep : Dictionary) -> void:

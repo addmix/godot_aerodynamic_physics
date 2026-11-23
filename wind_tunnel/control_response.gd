@@ -54,11 +54,11 @@ const MIN_MOVED_DEFLECTION := 0.5
 static func axis_index(axis : String) -> int:
 	return maxi(AXES.find(axis.to_lower()), 0)
 
-#the surfaces a control command moves, which are the parts carrying a control config that is enabled
-static func actuated_surfaces(body : AeroBody3D) -> Array[AeroInfluencer3D]:
+#the surfaces a control command moves, which are the parts carrying a control config that is enabled. taken from the parts the
+#caller gathered, because a worker thread may not search the scene for them
+static func actuated_surfaces(influencers : Array[AeroInfluencer3D]) -> Array[AeroInfluencer3D]:
 	var surfaces : Array[AeroInfluencer3D] = []
-	for node : Node in body.find_children("*", "AeroInfluencer3D", true, false):
-		var influencer := node as AeroInfluencer3D
+	for influencer : AeroInfluencer3D in influencers:
 		if influencer.actuation_config and influencer.actuation_config.enable_control: surfaces.append(influencer)
 	
 	return surfaces
@@ -68,18 +68,16 @@ static func neutral_commands(component : AeroControlComponent) -> void:
 	for config : AeroControlConfigAxis in component.control_config.axis_configs:
 		config.command = 0.0
 
-#the angular acceleration a command of this axis asks of the airframe, held level in this air. the command is set straight on
-#the surfaces, so the flight assist is not in the way of what the airframe itself answers with
-static func effectiveness(body : AeroBody3D, component : AeroControlComponent, axis : String, speed : float, altitude : float) -> PackedVector2Array:
-	var curve := PackedVector2Array()
-	if component == null: return curve
+#the angular acceleration a command of this axis asks of the airframe about every axis, held level in this air: the component of
+#the axis asked for is its effectiveness, and the other two are what the control drags along with it. the command is set straight
+#on the surfaces, so the flight assist is not in the way of what the airframe itself answers with
+static func effectiveness(body : AeroBody3D, component : AeroControlComponent, surfaces : Array[AeroInfluencer3D], axis : String, speed : float, altitude : float, inertia : Vector3) -> Array[PackedVector2Array]:
+	var curves : Array[PackedVector2Array] = [PackedVector2Array(), PackedVector2Array(), PackedVector2Array()]
+	if component == null: return curves
 	
 	axis = axis.to_lower()
-	var index := axis_index(axis)
 	var attitude := Transform3D(Basis.IDENTITY, Vector3(0, altitude, 0))
 	var velocity := Vector3(0, 0, -speed)
-	var inertia : float = body.get_moment_of_inertia()[index]
-	var surfaces := actuated_surfaces(body)
 	
 	#a surface reads where it sits on the aircraft, which is worked out as the forces are: without one evaluation first, the very
 	#first command would find every surface at the middle of the aircraft and move none of them
@@ -95,10 +93,11 @@ static func effectiveness(body : AeroBody3D, component : AeroControlComponent, a
 		for influencer : AeroInfluencer3D in surfaces: influencer.actuation_config.update(influencer, SETTLE_STEP)
 		
 		var reading := body.calculate_forces_manual(attitude, velocity, Vector3.ZERO, altitude)
-		curve.append(Vector2(command, reading[1][index] / inertia))
+		for component_index : int in 3:
+			curves[component_index].append(Vector2(command, reading[1][component_index] / inertia[component_index]))
 	
 	neutral_commands(component)
-	return curve
+	return curves
 
 #one tick of the control component, in its own order: the axes smooth their inputs, then the assist asks for the surfaces. the
 #frame's forces are worked out after this, so the command is the one the aircraft flies the step with
@@ -113,24 +112,24 @@ static func axis_pid(assist : FlightAssist, index : int) -> aero_PID:
 		2: return assist.roll_assist_pid
 	return assist.pitch_assist_pid
 
-#steps one axis from where the aircraft is and records the answer for `seconds`. the state is stepped by hand from the one the
-#body is handed in: no physics server and no frames, so the run costs its calculation time rather than its flight time. the body is
-#held at the transform it arrived with, and the rotation a step would take is turned into the airflow instead, so the wings meet the
-#air at the angle they would have while the g limiter sees one attitude
-static func fly(body : AeroBody3D, component : AeroControlComponent, axis : String, seconds : float) -> Trace:
+#steps one axis through `seconds` at a speed and an altitude and records the answer. the state is stepped by hand from the one
+#the body is handed in: no physics server and no frames, so the run costs its calculation time rather than its flight time. the body
+#is held at its trim attitude for that speed, and the rotation a step would take is turned into the airflow instead, so the wings
+#meet the air at the angle they would have while the g limiter sees one attitude. the inertia comes in with the call, because
+#asking the body for it off the main thread waits on the physics server for about a second a call
+static func fly(body : AeroBody3D, component : AeroControlComponent, axis : String, seconds : float, speed : float, altitude : float, inertia : Vector3, pitch : float = 0.0) -> Trace:
 	#the axes are named in lower case on every aircraft, while a menu is free to capitalize what it shows
 	axis = axis.to_lower()
 	
-	var transform := body.global_transform
-	var basis := transform.basis
+	#the aircraft is placed at the angle that carries its weight at this speed, which is where a real pull begins: from trim, not
+	#from a level attitude with no angle of attack and negative lift
+	var basis := Basis(Vector3.RIGHT, deg_to_rad(pitch))
+	var transform := Transform3D(basis, Vector3(0, altitude, 0))
 	var inverse_basis := basis.inverse()
 	var up := basis.y
-	var altitude := transform.origin.y
-	var velocity := body.linear_velocity
+	var velocity := Vector3(0, 0, -speed)
 	var rate := Vector3.ZERO
-	var speed := velocity.length()
 	var mass := body.mass
-	var inertia : Vector3 = body.get_moment_of_inertia()
 	
 	var gravity : Vector3 = ProjectSettings.get_setting("physics/3d/default_gravity_vector", Vector3(0, -1, 0))
 	gravity *= float(ProjectSettings.get_setting("physics/3d/default_gravity", 9.8)) * body.gravity_scale
@@ -202,15 +201,13 @@ class Deflection:
 
 #how far every surface that answers this axis is deflected through a step of it. a surface whose movement is speed limited takes
 #longer to reach the deflection the command asks for, which is what this shows. only the surfaces that move come back
-static func deflection_step(body : AeroBody3D, component : AeroControlComponent, axis : String, seconds : float) -> Array[Deflection]:
+static func deflection_step(body : AeroBody3D, component : AeroControlComponent, surfaces : Array[AeroInfluencer3D], axis : String, seconds : float, altitude : float) -> Array[Deflection]:
 	axis = axis.to_lower()
 	var responses : Array[Deflection] = []
 	if component == null: return responses
 	
 	#a surface reads where it sits on the aircraft, which is worked out as the forces are
-	body.calculate_forces_manual(body.global_transform, Vector3.ZERO, Vector3.ZERO, body.global_transform.origin.y)
-	
-	var surfaces := actuated_surfaces(body)
+	body.calculate_forces_manual(Transform3D(Basis.IDENTITY, Vector3(0, altitude, 0)), Vector3.ZERO, Vector3.ZERO, altitude)
 	var delta := 1.0 / float(Engine.physics_ticks_per_second)
 	
 	#every surface starts at neutral, wherever a run before this one left it

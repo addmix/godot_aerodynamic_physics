@@ -9,19 +9,37 @@ const aeroMathUtils = preload("../utils/math_utils.gd")
 ## Resources behave as shared instances. For most cases, be sure that PID resources have [code]local_to_scene[/code] set to true, or creating and assigning a duplicate (example: inside _init() or _ready() [code]pid = pid.duplicate()[/code])
 
 ## Proportional gain. (Applies a factor based on the error magnitude.)
-@export var p : float = 0.2
+@export var p : float = 1.0:
+	set(value):
+		p = value
+		emit_changed()
 ## Integral gain. (Applies a factor based on the sum of the error over time.)
-@export var i : float = 0.05
+@export var i : float = 0.0:
+	set(value):
+		i = value
+		emit_changed()
 ## Derivative gain. (Applies a factor based on the measured velocity of the error.)
-@export var d : float = 1.0
+@export var d : float = 0.0:
+	set(value):
+		d = value
+		emit_changed()
 
 @export_category("Clamp Integral")
 ## If true, [code]_integral_error[/code] is clamped between [code]min_integral[/code] and [code]max_integral[/code]
-@export var clamp_integral : bool = false
+@export var clamp_integral : bool = false:
+	set(value):
+		clamp_integral = value
+		emit_changed()
 ## The minimum value used when [code]clamp_integral[/code] is enabled.
-@export var min_integral : float = -1
+@export var min_integral : float = -1:
+	set(value):
+		min_integral = value
+		emit_changed()
 ## The maximum value used when [code]clamp_integral[/code] is enabled.
-@export var max_integral : float = 1
+@export var max_integral : float = 1:
+	set(value):
+		max_integral = value
+		emit_changed()
 @export_category("")
 
 ## The output value of the PID algorithm. This value is also returned by [code]update()[/code]. [br]

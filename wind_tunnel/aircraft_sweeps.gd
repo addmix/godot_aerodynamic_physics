@@ -1,5 +1,8 @@
 extends RefCounted
 
+#the measurement the control response tab is read from
+const ControlResponse = preload("res://addons/godot_aerodynamic_physics/wind_tunnel/control_response.gd")
+
 #the sweeps: the aircraft flown through every attitude and speed the dock graphs are drawn from. nothing here knows of graphs,
 #labels or the editor, and nothing here reads the scene it is handed: it is given a body and the conditions to fly it in, so
 #it can be flown beside the editor rather than on top of it.
@@ -23,6 +26,17 @@ var altitude_datapoints := 12
 var altitude_densities := PackedFloat64Array()
 var altitude_pressures := PackedFloat64Array()
 var altitude_sound_speeds := PackedFloat64Array()
+#the control response the dock asks for: the axis to step, the speed the single step is flown at, how many pressures the row is
+#spread over, and how long each step runs for
+var response_axis := "pitch"
+var response_speed := 250.0
+var response_pressures := 8
+var response_seconds := 5.0
+#how many of the lowest pressures are left out of the row, where the aircraft has too little authority to answer the command
+var response_skip_lowest := 0
+#the inertia the control response turns the airframe against, read on the main thread: asking the body for it from here waits on
+#the physics server for about a second a call
+var inertia := Vector3.ONE
 #the nodes of the body the sweeps reach into, gathered by the caller on the main thread: a thread may not search the scene
 var influencers : Array[AeroInfluencer3D] = []
 var thrusters : Array[AeroThruster3D] = []
@@ -58,6 +72,8 @@ const TRIM_STEPS := 4
 const TRIM_LOAD_TOLERANCE := 0.002
 const TURN_ALPHA_SAMPLES := 25
 const TURN_MACH_START := 0.2
+#how close the speed the wing first holds the load limit at has to be walked in before it is good enough, in meters a second
+const CORNER_TOLERANCE := 0.25
 const TURN_MACH_LIMIT := 1.6
 #the friction of a runway under the wheels while the aircraft is still on it, which a take-off run is spent fighting, and how many
 #speeds that run is read at between a crawl and the speed the aircraft lifts off at
@@ -1630,3 +1646,223 @@ func nice_step(raw_step : float) -> float:
 		if raw_step / magnitude <= tidiness: return magnitude * tidiness
 	
 	return magnitude * 10.0
+
+
+#control response
+
+#the tab the control response is measured for: the airframe's own answer to its controls, then a step of one axis at the speed the
+#dock names and once at each pressure across the aircraft's own regime. the copy is reused between conditions rather than copied
+#again for each one: the steps run one after another on this thread, so putting its axes, controls and integrators back where the
+#edit left them is all a fresh copy would have bought
+func control_response() -> Dictionary:
+	var result : Dictionary = {
+		"axis": response_axis,
+		"index": ControlResponse.axis_index(response_axis),
+		"has_control": control != null,
+		"effectiveness": [],
+		"deflections": [],
+		"regime": Vector2(NAN, NAN),
+		"load_ceiling": PackedVector2Array(),
+		"corner_index": 0,
+		"conditions": PackedVector2Array(),
+		"chosen": null,
+		"traces": [],
+	}
+	if not body or not control: return result
+	
+	var surfaces := ControlResponse.actuated_surfaces(influencers)
+	
+	#the airframe's own answer needs no flight: the moment a command produces, and how far the surfaces come toward one over time
+	reset_response()
+	result.effectiveness = ControlResponse.effectiveness(body, control, surfaces, response_axis, response_speed, altitude, inertia)
+	reset_response()
+	result.deflections = ControlResponse.deflection_step(body, control, surfaces, response_axis, response_seconds, altitude)
+	
+	#an aircraft with no assist has no step in it: the airframe's answer is all there is to draw
+	if not control.flight_assist: return result
+	
+	var regime := response_regime(body.mass * GRAVITY)
+	var limit : float = control.flight_assist.g_limit
+	var top_speed : float = response_speed * 1.5
+	if not is_nan(regime.y): top_speed = sqrt(2.0 * regime.y / density)
+	
+	#the speed the wing first holds the limit at in this air is the middle of the row, so it gets a graph of its own
+	var corner := load_corner(top_speed, limit, density, pressure)
+	var conditions := response_conditions(regime, corner)
+	
+	#the chosen speed first, then one step at each pressure across the regime
+	var traces : Array = []
+	var chosen := response_step(response_speed)
+	for index : int in conditions.size():
+		traces.append(response_step(conditions[index].y))
+	
+	result.regime = regime
+	result.conditions = conditions
+	result.corner_index = corner_condition(conditions, corner)
+	result.chosen = chosen
+	result.traces = traces
+	#the same ceiling, drawn in the air the tests are flown in, so its corner is the same speed the row puts in white. the copy is
+	#put back first, because a step leaves the surfaces deflected and the sweep would read the wing with them still down
+	reset_response()
+	result.load_ceiling = load_ceiling_curve(top_speed, limit, density, pressure)
+	return result
+
+#where the corner sits in the row: the condition flown exactly at it, or the side of the row it falls outside of, since the colors
+#run from red to yellow under it, white on it, and green to blue over it
+func corner_condition(conditions : PackedVector2Array, corner : float) -> int:
+	if conditions.is_empty(): return 0
+	if is_nan(corner): return conditions.size()
+	
+	var corner_pressure : float = 0.5 * density * corner * corner
+	if corner_pressure < conditions[0].x: return -1
+	if corner_pressure > conditions[conditions.size() - 1].x: return conditions.size()
+	
+	#the condition flown at it, or the first one above it when that one was left out by the skip
+	for index : int in conditions.size():
+		if absf(conditions[index].x - corner_pressure) <= corner_pressure * 0.001: return index
+		if conditions[index].x > corner_pressure: return index
+	
+	return conditions.size()
+
+#the copy put back to where the edit left it: its axes at nothing, every control driven there, and an assist whose integrators are
+#empty. one copy is reused between conditions, so this is what a fresh copy of the aircraft used to buy
+func reset_response() -> void:
+	reset_control_axes()
+	settle_controls()
+	if control and control.flight_assist: control.flight_assist = control.flight_assist.duplicate(true)
+
+#the dynamic pressure the aircraft's own regime spans here: from the slowest level flight, where the wing only just carries it, to
+#the fastest, where the throttle runs out
+func response_regime(weight : float) -> Vector2:
+	var held := hold_open_throttle()
+	var fastest := level_speed(density, pressure, sound_speed, weight)
+	var slowest := carrying_speed(density, pressure, weight, 300.0 if is_nan(fastest) else fastest)
+	restore_throttle(held)
+	
+	if is_nan(slowest) or is_nan(fastest) or fastest <= slowest: return Vector2(NAN, NAN)
+	return Vector2(0.5 * density * slowest * slowest, 0.5 * density * fastest * fastest)
+
+#one condition for every graph the row asks for, spread evenly in the logarithm of the pressure, with the speed each pressure
+#comes to in this air. a regime that could not be worked out leaves the chosen speed as the one condition there is
+func response_conditions(regime : Vector2, corner_speed : float) -> PackedVector2Array:
+	var conditions := PackedVector2Array()
+	if is_nan(regime.x) or is_nan(regime.y):
+		conditions.append(Vector2(0.5 * density * response_speed * response_speed, response_speed))
+		return conditions
+	
+	var count : int = maxi(response_pressures, 2)
+	var corner_pressure : float = 0.5 * density * corner_speed * corner_speed
+	
+	#the row is split either side of the corner, in the logarithm of the pressure because the regime spans two orders of magnitude,
+	#with the corner itself flown so the two sides are read apart by a graph that sits on the boundary
+	if not is_nan(corner_speed) and corner_pressure > regime.x and corner_pressure < regime.y:
+		var below : int = (count - 1) / 2
+		var above : int = count - 1 - below
+		for index : int in below:
+			var pressure : float = exp(lerpf(log(regime.x), log(corner_pressure), index / float(below)))
+			conditions.append(Vector2(pressure, sqrt(2.0 * pressure / density)))
+		conditions.append(Vector2(corner_pressure, corner_speed))
+		for index : int in above:
+			var pressure : float = exp(lerpf(log(corner_pressure), log(regime.y), (index + 1) / float(above)))
+			conditions.append(Vector2(pressure, sqrt(2.0 * pressure / density)))
+	else:
+		for index : int in count:
+			var share : float = index / float(count - 1)
+			var pressure : float = exp(lerpf(log(regime.x), log(regime.y), share))
+			conditions.append(Vector2(pressure, sqrt(2.0 * pressure / density)))
+	
+	#the low end is air where the angle of attack limit holds the aircraft back, and its curves set the scale of the charts for every
+	#other one. however many are asked for are left out, and one always stays so something is left to draw
+	if response_skip_lowest > 0 and conditions.size() > 1: conditions = conditions.slice(mini(response_skip_lowest, conditions.size() - 1))
+	
+	return conditions
+
+#the most load factor the wing can hold at one speed in this air: the peak normal force of an angle of attack sweep over the
+#aircraft's weight, walked in between samples so the answer does not step with their spacing
+func load_at(speed : float, density : float, pressure : float) -> float:
+	if not body or speed <= 0.0: return 0.0
+	
+	var weight : float = body.mass * GRAVITY
+	if weight <= 0.0: return 0.0
+	
+	var samples := 12
+	var gap : float = (TURN_ALPHA_LIMIT - TURN_ALPHA_FLOOR) / float(samples - 1)
+	var best := 0.0
+	var best_alpha : float = TURN_ALPHA_FLOOR
+	for sample : int in samples:
+		var alpha : float = lerpf(TURN_ALPHA_FLOOR, TURN_ALPHA_LIMIT, sample / float(samples - 1))
+		var load : float = force_on_level_attitude(alpha, speed, density, pressure).x / weight
+		if load > best:
+			best = load
+			best_alpha = alpha
+	
+	return maxf(best, load_peak_between(speed, density, pressure, weight,
+		maxf(best_alpha - gap, TURN_ALPHA_FLOOR), minf(best_alpha + gap, TURN_ALPHA_LIMIT)))
+
+#the speed the wing first holds the limit at in this air, walked in on: below it the airframe is what stops the pull, so nothing
+#above it needs another sample of the same flat line
+func load_corner(fastest : float, limit : float, density : float, pressure : float) -> float:
+	if not body or fastest <= 0.0 or limit <= 0.0: return NAN
+	
+	var slowest : float = fastest * 0.15
+	if load_at(slowest, density, pressure) >= limit: return slowest
+	if load_at(fastest, density, pressure) < limit: return NAN
+	
+	var low := slowest
+	var high := fastest
+	while high - low > CORNER_TOLERANCE:
+		var middle := (low + high) * 0.5
+		if load_at(middle, density, pressure) >= limit: high = middle
+		else: low = middle
+	
+	return high
+
+#the wing's load against speed in this air, from the bottom of the range up to the corner
+func load_ceiling_curve(fastest : float, limit : float, density : float, pressure : float, steps := 24) -> PackedVector2Array:
+	var curve := PackedVector2Array()
+	if not body or fastest <= 0.0: return curve
+	
+	var slowest : float = fastest * 0.15
+	var corner := load_corner(fastest, limit, density, pressure)
+	var top : float = corner if not is_nan(corner) else fastest
+	for index : int in steps:
+		var speed : float = lerpf(slowest, top, index / float(steps - 1))
+		curve.append(Vector2(speed, load_at(speed, density, pressure)))
+	
+	return curve
+
+#the angle of attack that carries the aircraft at this speed, in degrees: the attitude a pull starts from, since a real one
+#begins trimmed rather than at a level attitude with no angle at all
+func trim_angle(speed : float) -> float:
+	var weight : float = body.mass * GRAVITY
+	if weight <= 0.0 or speed <= 0.0: return 0.0
+	
+	var low := TURN_ALPHA_FLOOR
+	var high := TURN_ALPHA_LIMIT
+	var low_load : float = level_reading(low, speed, density, pressure, weight).x
+	var high_load : float = level_reading(high, speed, density, pressure, weight).x
+	if is_nan(low_load) or is_nan(high_load): return 0.0
+	if low_load >= 1.0: return low
+	if high_load < 1.0: return high
+	
+	for step : int in TRIM_STEPS:
+		if is_zero_approx(high_load - low_load): break
+		
+		var alpha : float = lerpf(low, high, clampf((1.0 - low_load) / (high_load - low_load), 0.0, 1.0))
+		var load : float = level_reading(alpha, speed, density, pressure, weight).x
+		if is_nan(load): return alpha
+		if absf(load - 1.0) <= TRIM_LOAD_TOLERANCE: return alpha
+		
+		if load < 1.0:
+			low = alpha
+			low_load = load
+		else:
+			high = alpha
+			high_load = load
+	
+	return (low + high) * 0.5
+
+#one step of the chosen axis, flown from the state the edit left behind, starting at the trim attitude for its speed
+func response_step(speed : float) -> ControlResponse.Trace:
+	reset_response()
+	return ControlResponse.fly(body, control, response_axis, response_seconds, speed, altitude, inertia, trim_angle(speed))

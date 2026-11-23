@@ -417,14 +417,186 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "n/a"
 
-[node name="Control Response" type="CenterContainer" parent="Panel/Tabs" unique_id=1570830153]
+[node name="Control Response" type="MarginContainer" parent="Panel/Tabs" unique_id=1570830153]
 visible = false
 layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
 metadata/_tab_index = 1
 
-[node name="Placeholder" type="Label" parent="Panel/Tabs/Control Response" unique_id=1612897652]
+[node name="Content" type="VBoxContainer" parent="Panel/Tabs/Control Response"]
 layout_mode = 2
-text = "Placeholder"
+
+[node name="Conditions" type="HFlowContainer" parent="Panel/Tabs/Control Response/Content"]
+layout_mode = 2
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6
+
+[node name="AxisField" type="HBoxContainer" parent="Panel/Tabs/Control Response/Content/Conditions"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="AxisName" type="Label" parent="Panel/Tabs/Control Response/Content/Conditions/AxisField"]
+layout_mode = 2
+tooltip_text = "Control axis the step is flown on."
+text = "Axis"
+
+[node name="ResponseAxis" type="OptionButton" parent="Panel/Tabs/Control Response/Content/Conditions/AxisField"]
+unique_name_in_owner = true
+layout_mode = 2
+item_count = 3
+selected = 0
+popup/item_0/text = "Pitch"
+popup/item_0/id = 0
+popup/item_1/text = "Yaw"
+popup/item_1/id = 1
+popup/item_2/text = "Roll"
+popup/item_2/id = 2
+
+[node name="SpeedField" type="HBoxContainer" parent="Panel/Tabs/Control Response/Content/Conditions"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SpeedName" type="Label" parent="Panel/Tabs/Control Response/Content/Conditions/SpeedField"]
+layout_mode = 2
+tooltip_text = "Speed the step is flown from, in level flight at the altitude on the other tabs."
+text = "Speed"
+
+[node name="ResponseSpeed" type="SpinBox" parent="Panel/Tabs/Control Response/Content/Conditions/SpeedField"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 50.0
+max_value = 600.0
+step = 10.0
+value = 250.0
+allow_greater = true
+suffix = "m/s"
+
+[node name="ResponseRun" type="Button" parent="Panel/Tabs/Control Response/Content/Conditions"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Measures the airframe's answer to its controls, then flies one step of the chosen axis. The step is real time, so it takes its own two seconds."
+text = "Run the tests"
+
+[node name="ResponseResult" type="Label" parent="Panel/Tabs/Control Response/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "No tests run yet."
+autowrap_mode = 2
+
+[node name="Scroll" type="ScrollContainer" parent="Panel/Tabs/Control Response/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Charts" type="VBoxContainer" parent="Panel/Tabs/Control Response/Content/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ResponseGrid" type="GridContainer" parent="Panel/Tabs/Control Response/Content/Scroll/Charts"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 2
+theme_override_constants/v_separation = 2
+columns = 2
+
+[node name="ResponseEffectivenessGraph" type="PanelContainer" parent="Panel/Tabs/Control Response/Content/Scroll/Charts/ResponseGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 390)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("2_1ggli")
+show_axis_crossings = false
+show_curve_extrema = false
+show_curve_intersections = false
+show_curve_self_intersections = false
+readout_value_suffix = " rad/s²"
+axis_divisions = Vector2i(8, 8)
+title = "Control effectiveness"
+x_label = "Control command"
+y_label = "Angular acceleration [rad/s²]"
+metadata/_custom_type_script = "uid://fpja68jul0t3"
+
+[node name="ResponseDeflectionGraph" type="PanelContainer" parent="Panel/Tabs/Control Response/Content/Scroll/Charts/ResponseGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 390)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("2_1ggli")
+show_axis_crossings = false
+show_curve_extrema = false
+show_curve_intersections = false
+show_curve_self_intersections = false
+readout_value_suffix = " deg"
+auto_bounds_keep_zero_y = true
+axis_divisions = Vector2i(8, 8)
+title = "Surface deflection"
+x_label = "Time [s]"
+y_label = "Deflection [deg]"
+metadata/_custom_type_script = "uid://fpja68jul0t3"
+
+[node name="ResponseRateGraph" type="PanelContainer" parent="Panel/Tabs/Control Response/Content/Scroll/Charts/ResponseGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 390)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("2_1ggli")
+show_axis_crossings = false
+show_curve_extrema = false
+show_curve_intersections = false
+show_curve_self_intersections = false
+readout_value_suffix = " deg/s"
+auto_bounds_keep_zero_y = true
+axis_divisions = Vector2i(8, 8)
+title = "Rate response"
+x_label = "Time [s]"
+y_label = "Rate [deg/s]"
+metadata/_custom_type_script = "uid://fpja68jul0t3"
+
+[node name="ResponseLoadGraph" type="PanelContainer" parent="Panel/Tabs/Control Response/Content/Scroll/Charts/ResponseGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 390)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("2_1ggli")
+show_legend = false
+show_axis_crossings = false
+show_curve_extrema = false
+show_curve_intersections = false
+show_curve_self_intersections = false
+readout_value_suffix = " g"
+auto_bounds_keep_zero_y = true
+axis_divisions = Vector2i(8, 8)
+title = "Load factor"
+x_label = "Time [s]"
+y_label = "Load factor [g]"
+metadata/_custom_type_script = "uid://fpja68jul0t3"
+
+[node name="ResponseCommandGraph" type="PanelContainer" parent="Panel/Tabs/Control Response/Content/Scroll/Charts"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 390)
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("2_1ggli")
+show_axis_crossings = false
+show_curve_extrema = false
+show_curve_intersections = false
+show_curve_self_intersections = false
+show_zero_lines = false
+readout_value_suffix = " deg/s"
+axis_divisions = Vector2i(8, 8)
+title = "Rate breakdown"
+x_label = "Time [log10 (s + 0.2)]"
+y_label = "Turn rate [deg/s]"
+metadata/_custom_type_script = "uid://fpja68jul0t3"
 
 [node name="Performance" type="MarginContainer" parent="Panel/Tabs" unique_id=921125469]
 visible = false
@@ -863,6 +1035,7 @@ frames = Array[Texture2D]([SubResource("DPITexture_1ggli"), SubResource("DPIText
 [connection signal="value_changed" from="Panel/Tabs/Static Analysis/ScrollContent/Conditions/AltitudeField/StaticAltitude" to="." method="_on_altitude_value_changed"]
 [connection signal="value_changed" from="Panel/Tabs/Static Analysis/ScrollContent/Conditions/PointsField/SweepDatapoints" to="." method="_on_sweep_datapoints_value_changed"]
 [connection signal="pressed" from="Panel/Tabs/Static Analysis/ScrollContent/Conditions/Recalculate" to="." method="_on_recalculate_button_pressed"]
+[connection signal="pressed" from="Panel/Tabs/Control Response/Content/Conditions/ResponseRun" to="." method="_on_response_run_pressed"]
 [connection signal="value_changed" from="Panel/Tabs/Performance/Content/Conditions/AltitudeField/TurnAltitude" to="." method="_on_altitude_value_changed"]
 [connection signal="value_changed" from="Panel/Tabs/Performance/Content/Conditions/LoadLimitField/LoadLimit" to="." method="_on_load_limit_value_changed"]
 [connection signal="value_changed" from="Panel/Tabs/Performance/Content/Conditions/TurnPointsField/TurnPoints" to="." method="_on_turn_datapoints_value_changed"]

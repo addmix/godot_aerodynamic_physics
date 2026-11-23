@@ -13,6 +13,8 @@ const CURVE_COLORS := [
 const NO_DATA := "n/a"
 #the sweeps themselves, which the dock runs on a worker thread
 const AircraftSweeps = preload("res://addons/godot_aerodynamic_physics/wind_tunnel/aircraft_sweeps.gd")
+#the measurement the control response tab flies, a step of one axis recorded frame by frame
+const ControlResponse = preload("res://addons/godot_aerodynamic_physics/wind_tunnel/control_response.gd")
 #the air the sweeps fall back to while the atmosphere tables have nothing to say
 const SEA_LEVEL_DENSITY := 1.225
 const SEA_LEVEL_PRESSURE := 101325.0
@@ -171,9 +173,9 @@ func _process(_delta : float) -> void:
 				set_busy(true)
 
 #whether a part is carried by something that turns, which places it itself, so the copy leaves it where it was put
-func is_turned_part(influencer : AeroInfluencer3D) -> bool:
+func is_turned_part(influencer : AeroInfluencer3D, copy : AeroBody3D) -> bool:
 	var node : Node = influencer.get_parent()
-	while node and node != worker_copy:
+	while node and node != copy:
 		if node is AeroMover3D: return true
 		node = node.get_parent()
 	
@@ -234,6 +236,10 @@ var turn_chart_height_share := 0.6
 var graph_height_share := 0.30
 var graph_height_floor := 240.0
 var graph_height_ceiling := 520.0
+#the command breakdown is the densest chart in the tab, so it takes a share of the dock of its own rather than a grid cell's
+var response_chart_height_share := 0.45
+var response_chart_height_floor := 340.0
+var response_chart_height_ceiling := 760.0
 #how wide a graph has to be before the numbers along its axes stop reading, in line heights of the dock's own text, so it
 #follows the editor's font size instead of growing with the height of the screen the dock happens to be on
 var graph_minimum_width_lines := 13
@@ -246,6 +252,7 @@ func fit_graph_columns() -> void:
 	%GraphGrid.columns = columns
 	%AltitudeGrid.columns = columns
 	%PerformanceGrid.columns = columns
+	%ResponseGrid.columns = columns
 	%TurnMetrics.columns = 4 if size.x >= turn_metrics_row_width else 2
 	
 	#the turn chart takes its share of the dock's height, so the grid under it is what scrolls rather than the chart shrinking with it
@@ -255,9 +262,14 @@ func fit_graph_columns() -> void:
 	#other, which is what the dock is never dragged below
 	var graph_height : float = clampf(size.y * graph_height_share, graph_height_floor, graph_height_ceiling)
 	var graph_width : float = minimum_graph_width()
-	for grid : GridContainer in [%GraphGrid, %AltitudeGrid, %PerformanceGrid]:
+	for grid : GridContainer in [%GraphGrid, %AltitudeGrid, %PerformanceGrid, %ResponseGrid]:
 		for child : Node in grid.get_children():
 			if child is AeroGraph: child.custom_minimum_size = Vector2(graph_width, graph_height)
+	
+	#the command breakdown runs the width of the tab and stands taller than a grid chart, because it carries six curves and the
+	#space between them is what it is read for
+	%ResponseCommandGraph.custom_minimum_size = Vector2(graph_width,
+		clampf(size.y * response_chart_height_share, response_chart_height_floor, response_chart_height_ceiling))
 
 #the width a graph is squeezed to before there is nothing left to read on it
 func minimum_graph_width() -> float:
@@ -387,6 +399,9 @@ func recalculate() -> void:
 	#aircraft's results there to be read while another scene is open
 	if not aerobody or not is_visible_in_tree(): return
 	
+	#a step being flown holds the physics server and the sheet, so the sweeps wait for it to land
+	if response_running: return
+	
 	%AircraftName.text = aerobody.name
 	
 	#only the tab being looked at is flown: the other one keeps what it shows and catches up when it is opened, which is
@@ -410,25 +425,10 @@ func start_sweeps(sweep_static : bool, sweep_turn : bool, sweep_altitude : bool)
 	#what the sweeps are about to fly is kept, so an undo or a redo can be told apart from one that changed nothing
 	swept_model = flight_model_fingerprint()
 	
-	#the copy has to keep its script instances: a deep duplicate would instantiate them and the copied nodes would come out
-	#without their behavior
-	worker_copy = aerobody.duplicate()
-	#the sweeps fly the copy at the attitude they are given, so it is put at the origin facing forward before it enters the tree,
-	#and every part of it is put back to the pose it was authored with: a control surface's node is written to as it deflects and
-	#a turning part's as it turns, so a copy of an aircraft that has been flying would take those poses for neutral ones and the
-	#same aircraft would chart slightly differently every time it was swept
-	worker_copy.transform = Transform3D()
-	for node : Node in worker_copy.find_children("*", "AeroInfluencer3D", true, false):
-		var influencer := node as AeroInfluencer3D
-		if influencer.actuation_config == null or is_turned_part(influencer): continue
-		influencer.transform = influencer.default_transform
-	worker_copy.linear_velocity = Vector3.ZERO
-	worker_copy.angular_velocity = Vector3.ZERO
+	worker_copy = copy_aircraft()
+	#a sweep works its forces out for itself rather than flying the copy frame by frame, so the copy is taken out of the frame's
+	#way: it does not process, show or collide with anything
 	worker_copy.process_mode = Node.PROCESS_MODE_DISABLED
-	worker_copy.visible = false
-	worker_copy.collision_layer = 0
-	worker_copy.collision_mask = 0
-	simulation_view.add_child(worker_copy)
 	
 	#the nodes the sweeps reach into are gathered here, on the main thread: a thread may not search the scene itself. the
 	#thrusters are the influencers that also carry a throttle, so the one search covers both
@@ -439,30 +439,11 @@ func start_sweeps(sweep_static : bool, sweep_turn : bool, sweep_altitude : bool)
 		influencers.append(influencer)
 		if influencer is AeroThruster3D: thrusters.append(influencer)
 	
-	#the copy takes its own copy of everything a sweep drives. the editor leaves these resources shared with the aircraft in the
-	#scene, so a sweep opening the throttle would be flying the aircraft being edited as well, and its preview would hand the change
-	#back as an edit of the model, which starts the sweep over again
-	for node : Node in worker_copy.find_children("*", "AeroControlComponent", true, false):
-		var component := node as AeroControlComponent
-		if component.control_config: component.control_config = component.control_config.duplicate(true)
-		if component.flight_assist: component.flight_assist = component.flight_assist.duplicate(true)
-	
-	for influencer : AeroInfluencer3D in influencers:
-		if influencer.actuation_config:
-			influencer.actuation_config = influencer.actuation_config.duplicate(true)
-		if influencer is AeroThruster3D and influencer.throttle_control_config:
-			influencer.throttle_control_config = influencer.throttle_control_config.duplicate(true)
-		if influencer is AeroPropeller3D and influencer.propeller_speed_control_config:
-			influencer.propeller_speed_control_config = influencer.propeller_speed_control_config.duplicate(true)
-		if influencer is AeroCyclicPropeller3D and influencer.cyclic_control_config:
-			influencer.cyclic_control_config = influencer.cyclic_control_config.duplicate(true)
-	
 	worker_sweeps = AircraftSweeps.new()
 	worker_sweeps.body = worker_copy
 	worker_sweeps.influencers = influencers
 	worker_sweeps.thrusters = thrusters
-	for child : Node in worker_copy.get_children():
-		if child is AeroControlComponent: worker_sweeps.control = child
+	worker_sweeps.control = control_component(worker_copy)
 	worker_sweeps.test_speed = test_speed
 	worker_sweeps.sweep_datapoints = sweep_datapoints
 	worker_sweeps.reference_area = reference_area
@@ -526,6 +507,63 @@ func finish_sweeps() -> void:
 		worker_dirty = false
 		queue_recalculate()
 
+#a copy of the aircraft for a run to fly against, so the nodes being edited are never touched. it goes into the dock's own
+#viewport, so it enters a tree and initializes like any aircraft, and it keeps its script instances: a deep duplicate would
+#instantiate them and the copied nodes would come out without their behavior
+func copy_aircraft() -> AeroBody3D:
+	var copy : AeroBody3D = aerobody.duplicate()
+	
+	#a run flies the copy at the attitude it is given, so it is put at the origin facing forward before it enters the tree
+	copy.transform = Transform3D()
+	copy.linear_velocity = Vector3.ZERO
+	copy.angular_velocity = Vector3.ZERO
+	copy.visible = false
+	copy.collision_layer = 0
+	copy.collision_mask = 0
+	
+	#the pose each part was authored with is the one the aircraft being copied remembers: a part's default pose is settled as it
+	#enters the tree, so a copied part would take the pose it was copied at for its own, which for an aircraft that has been flying
+	#is a deflected one. the poses are put back once the copy is in the tree, because a part settles its own state as it enters
+	var authored_poses := {}
+	for node : Node in aerobody.find_children("*", "AeroInfluencer3D", true, false):
+		var influencer := node as AeroInfluencer3D
+		if influencer.actuation_config == null or is_turned_part(influencer, aerobody): continue
+		authored_poses[aerobody.get_path_to(influencer)] = influencer.default_transform
+	
+	simulation_view.add_child(copy)
+	
+	for path : NodePath in authored_poses:
+		var part := copy.get_node_or_null(path) as AeroInfluencer3D
+		if part: part.transform = authored_poses[path]
+	
+	#the copy takes its own copy of everything a run drives. the editor leaves these resources shared with the aircraft in the
+	#scene, so a run opening the throttle would be flying the aircraft being edited as well, and its preview would hand the change
+	#back as an edit of the model, which starts a sweep over again
+	for node : Node in copy.find_children("*", "AeroControlComponent", true, false):
+		var component := node as AeroControlComponent
+		if component.control_config: component.control_config = component.control_config.duplicate(true)
+		if component.flight_assist: component.flight_assist = component.flight_assist.duplicate(true)
+	
+	for node : Node in copy.find_children("*", "AeroInfluencer3D", true, false):
+		var influencer := node as AeroInfluencer3D
+		if influencer.actuation_config:
+			influencer.actuation_config = influencer.actuation_config.duplicate(true)
+		if influencer is AeroThruster3D and influencer.throttle_control_config:
+			influencer.throttle_control_config = influencer.throttle_control_config.duplicate(true)
+		if influencer is AeroPropeller3D and influencer.propeller_speed_control_config:
+			influencer.propeller_speed_control_config = influencer.propeller_speed_control_config.duplicate(true)
+		if influencer is AeroCyclicPropeller3D and influencer.cyclic_control_config:
+			influencer.cyclic_control_config = influencer.cyclic_control_config.duplicate(true)
+	
+	return copy
+
+#the control component of an aircraft, which is the only one the flight assist and the controls are read from
+func control_component(body : AeroBody3D) -> AeroControlComponent:
+	for child : Node in body.get_children():
+		if child is AeroControlComponent: return child
+	
+	return null
+
 #the air the sweeps are flown in, asked for at the declared altitude or at any height the speed envelope is flown through. it
 #comes from the atmosphere tables, and nothing about where the aircraft sits in the scene goes into it
 func density_at(height : float) -> float:
@@ -539,6 +577,94 @@ func pressure_at(height : float) -> float:
 func sound_speed_at(height : float) -> float:
 	return AeroUnits.get_speed_of_sound_at_pressure_and_density(pressure_at(height), density_at(height))
 
+
+#control response
+
+#how long a step is flown for: long enough for a quick rate to peak and settle and for what is left over to show, short enough
+#to wait for
+const RESPONSE_SECONDS := 5.0
+#seconds added to the time before the breakdown logs it. a plain log stretches the first frame across half the chart; the larger this
+#is the less the first moments are stretched and the more room the rest of the run gets
+const RESPONSE_TIME_OFFSET := 0.2
+
+#set while the tests are running, which holds the sweeps off and keeps a second press from landing on the first
+var response_running := false
+
+#measures the airframe's own answer, then steps a control step of the chosen axis and draws it. the step is stepped by hand, so
+#the whole set of tests costs its calculation time rather than a flight's worth of frames
+func _on_response_run_pressed() -> void:
+	if response_running or worker_task != -1 or not aerobody: return
+	
+	var aircraft_component := control_component(aerobody)
+	if aircraft_component == null:
+		%ResponseResult.text = "This aircraft has no control component to measure."
+		return
+	
+	response_running = true
+	%ResponseRun.disabled = true
+	
+	measure_controls()
+	if aircraft_component.flight_assist:
+		fly_response()
+	else:
+		#the airframe's answer needs no assist, so it is drawn either way
+		clear_step_graphs()
+		%ResponseResult.text = "No flight assist on this aircraft: only the airframe's answer is measured."
+	
+	%ResponseRun.disabled = false
+	response_running = false
+	
+	#an edit made while the tests ran asked for a sweep, which was held off until now
+	queue_recalculate()
+
+#the airframe's own answer, which needs no flight: the moment each control command produces, and how far the surfaces have come
+#toward one over time
+func measure_controls() -> void:
+	var copy := copy_aircraft()
+	var component := control_component(copy)
+	
+	var axis := response_axis()
+	var index := ControlResponse.axis_index(axis)
+	%ResponseEffectivenessGraph.clear_curves()
+	%ResponseEffectivenessGraph.add_curve(ControlResponse.effectiveness(copy, component, axis, %ResponseSpeed.value, altitude),
+		CURVE_COLORS[index], ["Mx (pitch)", "My (yaw)", "Mz (roll)"][index])
+	
+	%ResponseDeflectionGraph.clear_curves()
+	var responses := ControlResponse.deflection_step(copy, component, axis, RESPONSE_SECONDS)
+	for surface_index : int in responses.size():
+		var response : ControlResponse.Deflection = responses[surface_index]
+		%ResponseDeflectionGraph.add_curve(response.points, CURVE_COLORS[surface_index % CURVE_COLORS.size()], response.surface)
+	
+	simulation_view.remove_child(copy)
+	copy.queue_free()
+
+#the axis the menu names
+func response_axis() -> String:
+	return %ResponseAxis.get_item_text(%ResponseAxis.selected)
+
+#takes the last step's curves off the step charts
+func clear_step_graphs() -> void:
+	%ResponseRateGraph.clear_curves()
+	%ResponseLoadGraph.clear_curves()
+	%ResponseLoadGraph.clear_rules()
+	%ResponseLoadGraph.clear_labels()
+	%ResponseCommandGraph.clear_curves()
+
+#steps the step against a copy of the aircraft, puts the copy away, and draws what came back
+func fly_response() -> void:
+	%ResponseResult.text = "Flying..."
+	
+	var copy := copy_aircraft()
+	copy.global_transform = Transform3D(Basis.IDENTITY, Vector3(0, altitude, 0))
+	copy.linear_velocity = Vector3(0, 0, -%ResponseSpeed.value)
+	copy.angular_velocity = Vector3.ZERO
+	
+	var trace := ControlResponse.fly(copy, control_component(copy), response_axis(), RESPONSE_SECONDS)
+	
+	simulation_view.remove_child(copy)
+	copy.queue_free()
+	
+	draw_response(trace)
 
 
 #drawing
@@ -740,7 +866,7 @@ func draw_turn_performance(chart : Dictionary) -> void:
 		var shown : Rect2 = %AccelerationGraph.visible_bounds()
 		var liftoff_line : AeroGraph.CurveData = %AccelerationGraph.add_curve(
 			PackedVector2Array([Vector2(liftoff, shown.position.y), Vector2(liftoff, shown.end.y)]),
-			boundary_rule_color, "", PackedFloat32Array(), true)
+			boundary_rule_color, "", PackedFloat32Array(), 1.0)
 		liftoff_line.fill_axis = AeroGraph.Axis.X
 		liftoff_line.fill_color = Color(CURVE_COLORS[3], 0.18)
 		
@@ -757,6 +883,116 @@ func mark_turn_point(point : Dictionary, name : String, color : Color, lift : fl
 	var value := Vector2(mach, rate)
 	%TurnPerformanceGraph.add_marker(value, name, "%s: M %.2f, %.1f deg/s" % [name, mach, rate], color)
 	%TurnPerformanceGraph.add_label(name, value, Vector2(1, 0), HORIZONTAL_ALIGNMENT_LEFT, lift)
+
+#one part of the assist's answer, in rate terms: the requested rate plus the rate this part adds to it. drawn from the frame after
+#the step, whose derivative kick is over within a tick and would otherwise set the scale of the whole chart
+func add_command_part(graph : AeroGraph, times : PackedFloat32Array, requested : PackedFloat32Array, gains : PackedFloat32Array,
+		part : PackedFloat32Array, color : Color, name : String) -> void:
+	var values := PackedFloat32Array()
+	for index : int in requested.size():
+		values.append(requested[index] + part[index] * gains[index])
+	
+	graph.add_curve(trace_points(times, values, 1), color, name)
+
+#a run of angles in radians, in degrees
+func degrees(values : PackedFloat32Array) -> PackedFloat32Array:
+	var converted := PackedFloat32Array()
+	for value : float in values:
+		converted.append(rad_to_deg(value))
+	
+	return converted
+
+#one array of samples against the run's times, from `first` on
+func trace_points(times : PackedFloat32Array, values : PackedFloat32Array, first := 0) -> PackedVector2Array:
+	var points := PackedVector2Array()
+	for index : int in range(first, mini(times.size(), values.size())):
+		points.append(Vector2(times[index], values[index]))
+	
+	return points
+
+#the answer to a control step: the rate the assist asked for beside the rate the aircraft reached, the load the pull put on it, and
+#the parts the command was built from
+func draw_response(trace : ControlResponse.Trace) -> void:
+	if trace.commanded_rate.is_empty(): return
+	
+	var times := trace.times()
+	var demanded := PackedVector2Array()
+	var reached := PackedVector2Array()
+	for index : int in times.size():
+		demanded.append(Vector2(times[index], rad_to_deg(trace.commanded_rate[index])))
+		reached.append(Vector2(times[index], rad_to_deg(trace.achieved_rate[index])))
+	
+	clear_step_graphs()
+	%ResponseRateGraph.add_curve(demanded, Color(1, 1, 1, 0.45), "Commanded")
+	%ResponseRateGraph.add_curve(reached, CURVE_COLORS[1], "Achieved")
+	%ResponseLoadGraph.add_curve(trace_points(times, trace.load), CURVE_COLORS[3], "Load factor")
+	
+	#the breakdown runs on a log time axis: the early tenths keep more room than a linear axis gives them, while the last seconds keep
+	#a share of their own, so the step and the settle can be read on one chart. the offset keeps the first frame from taking half the
+	#chart, and the axis label says what the scale is
+	var log_times := PackedFloat32Array()
+	for stamp : float in times:
+		log_times.append(log(stamp + RESPONSE_TIME_OFFSET) / log(10.0))
+	
+	#the assist's answer to the request, drawn in the units the request is made in. the rate a command stands for is read through the
+	#assist's own calibration: the rate the request asks for divided by the feed-forward command meant to produce it, which takes the
+	#airspeed and the air density out of the numbers. feed-forward's line is therefore the requested rate, and each part is that rate
+	#plus what the part adds to it, so the parts are read side by side rather than piled on each other
+	var requested_rates := degrees(trace.commanded_rate)
+	var gains := PackedFloat32Array()
+	for index : int in requested_rates.size():
+		var feed_forward : float = trace.feed_forward[index]
+		gains.append(1.0 if absf(feed_forward) < 0.0001 else requested_rates[index] / feed_forward)
+	
+	var requested_line : AeroGraph.CurveData = %ResponseCommandGraph.add_curve(trace_points(log_times, requested_rates, 1),
+		Color(1, 1, 1, 0.35), "Requested")
+	add_command_part(%ResponseCommandGraph, log_times, requested_rates, gains, trace.proportional, CURVE_COLORS[0], "+P")
+	add_command_part(%ResponseCommandGraph, log_times, requested_rates, gains, trace.integral, CURVE_COLORS[2], "+I")
+	add_command_part(%ResponseCommandGraph, log_times, requested_rates, gains, trace.derivative, CURVE_COLORS[3], "+D")
+	
+	#the command every part adds up to and the command the surfaces were given, both read in the same rate: where the two come apart,
+	#the limiters are taking something
+	var commands := PackedFloat32Array()
+	var delivered := PackedFloat32Array()
+	for index : int in requested_rates.size():
+		commands.append(requested_rates[index] + (trace.proportional[index] + trace.integral[index] + trace.derivative[index]) * gains[index])
+		delivered.append(trace.command[index] * gains[index])
+	
+	var ask : AeroGraph.CurveData = %ResponseCommandGraph.add_curve(trace_points(log_times, commands, 1),
+		Color(CURVE_COLORS[4], 0.8), "Command")
+	var given : AeroGraph.CurveData = %ResponseCommandGraph.add_curve(trace_points(log_times, delivered, 1),
+		Color(1, 1, 1, 0.85), "Delivered")
+	given.width = 2.0
+	
+	#the error the chart is read for: the gap between the rate that was asked for and the rate the aircraft reached, red while
+	#the aircraft is short of the request and green once it is over it
+	var achieved : AeroGraph.CurveData = %ResponseCommandGraph.add_curve(trace_points(log_times, degrees(trace.achieved_rate), 1),
+		CURVE_COLORS[1], "Achieved", PackedFloat32Array(), 2.0)
+	achieved.fill_to = requested_line
+	achieved.fill_color = Color(CURVE_COLORS[0], 0.4)
+	achieved.fill_above_color = Color(CURVE_COLORS[1], 0.4)
+	
+	#the load the airframe is cleared for is ruled across the chart, where the pull is read against it
+	if trace.g_limit > 0.0:
+		%ResponseLoadGraph.add_y_rule(trace.g_limit, boundary_rule_color)
+		var shown : Rect2 = %ResponseLoadGraph.visible_bounds()
+		%ResponseLoadGraph.add_label("%.1f g limit" % trace.g_limit, Vector2(shown.end.x, trace.g_limit), Vector2(1.0, 0.0), HORIZONTAL_ALIGNMENT_RIGHT)
+	
+	var peak := 0.0
+	for value : float in trace.achieved_rate: peak = maxf(peak, value)
+	
+	#the worst share of its own request the limiters took, said beside the numbers so a chart with no band on it is not a puzzle:
+	#when they take nothing the request and the command are the same line and there is nothing to fill
+	var asked_values := trace.requested()
+	var lost_share := 0
+	for index : int in asked_values.size():
+		var asked : float = absf(asked_values[index])
+		if asked < 0.001: continue
+		lost_share = maxi(lost_share, roundi((asked - absf(trace.command[index])) / asked * 100.0))
+	
+	%ResponseResult.text = "%s step at %.0f m/s, %.0f m: demand %.1f deg/s, peak %.1f deg/s, load %.1f g, limiters took up to %d%%" % [
+		trace.axis.capitalize(), trace.speed, trace.altitude, rad_to_deg(trace.commanded_rate[trace.commanded_rate.size() - 1]),
+		rad_to_deg(peak), trace.load[trace.load.size() - 1], lost_share]
 
 #the altitude tab: how the numbers that change with height come out, one chart per number
 func draw_altitude_sweep(sweep : Dictionary) -> void:

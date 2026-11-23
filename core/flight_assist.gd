@@ -54,7 +54,7 @@ var angular_rate_error := Vector3.ZERO
 ##Angle of attack (degrees) that control authority is reduced to 0.
 @export var aoa_limit_end : float = 25.0
 @export_subgroup("Control Adjustments")
-##If enabled, the flight assist resource will adjust the control authority in an attempt to maintain a consistent control respsonse, despite changing airspeed or air density.
+##If enabled, the flight assist will scale its command as the dynamic pressure of the air changes, in an attempt to maintain a consistent control response despite changing airspeed or air density.
 @export var enable_control_adjustment : bool = true
 ##Airspeed that control adjustments are tuned at.
 @export var tuned_airspeed : float = 100.0
@@ -305,14 +305,11 @@ func flight_assist(delta : float) -> void:
 	if enable_aoa_limiter:
 		control_command *= clamp(remap(abs(angle_of_attack), deg_to_rad(aoa_limit_end), deg_to_rad(aoa_limit_start), 0, 1), 0, 1)
 
-static func get_control_adjustment_factor(speed : float, density : float, tuned_speed : float = 100.0, _tuned_density : float = 1.222, min_accounted_speed : float = 0.75, min_accounted_density : float = 0.2) -> float:
-	var control_adjustment : float = 1.0
-	#adjust for airspeed
+static func get_control_adjustment_factor(speed : float, density : float, tuned_speed : float = 100.0, tuned_density : float = 1.222, min_accounted_speed : float = 0.75, min_accounted_density : float = 0.02) -> float:
+	#control authority follows dynamic pressure, ½ρV², so the factor takes the air back to the pressure the assist was
+	#tuned at. the floors stop slow or thin air from magnifying the controls without bound
 	var accounted_speed : float = max(min_accounted_speed, speed)
-	control_adjustment /= (accounted_speed * accounted_speed) / (tuned_speed * tuned_speed)
-	
-	#adjust for air density
 	var accounted_density : float = max(min_accounted_density, density)
-	control_adjustment /= accounted_density / _tuned_density
-	
-	return control_adjustment
+	var tuned_pressure : float = 0.5 * tuned_density * tuned_speed * tuned_speed
+	var dynamic_pressure : float = 0.5 * accounted_density * accounted_speed * accounted_speed
+	return tuned_pressure / dynamic_pressure

@@ -296,6 +296,9 @@ func target_direction(delta : float) -> void:
 		
 		error = angles_to_local_direction_target - angles_to_local_velocity_direction
 	
+	var horizontal_component : float = Vector2(local_direction_target.x, local_direction_target.z).length() / maxf(local_direction_target.length(), 0.0001)
+	error.y *= smoothstep(0.0, 0.3, horizontal_component)
+	
 	# When the desired direction is more than 90 degrees away from the current direction,
 	# yaw is usually undesirable. because the >90 degree target passes the polar origin of the yaw
 	# 

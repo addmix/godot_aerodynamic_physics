@@ -642,11 +642,67 @@ const RESPONSE_SETTLE_MSEC := 400
 var response_stale := true
 var response_asked_msec := 0
 
+#how far under the wing's own load line the limit curve is written. load_at is the peak of an angle of attack sweep, a momentary
+#figure, so a demand set exactly on it is still out of reach and the integral keeps winding on the difference
+const LIMIT_CURVE_MARGIN := 0.9
+
+#the last response result the worker handed over, which the limit curve is written from
+var response_result := {}
+
 #the button flies the tests without waiting for the edits to settle
 func _on_response_run_pressed() -> void:
 	response_stale = true
 	response_asked_msec = 0
 	queue_recalculate()
+
+#writes the ceiling the response tests measured into the aircraft's flight assist as its limit curve, a tenth under the wing's own
+#line, so the limiter never asks for a pull the airframe cannot hold and the integral has nothing to wind up on
+func _on_response_curve_pressed() -> void:
+	var fit : Dictionary = response_result.get("load_fit", {})
+	var component : AeroControlComponent = control_component(aerobody) if aerobody else null
+	if fit.is_empty() or not component or not component.flight_assist:
+		%ResponseResult.text = "The curve is written from the ceiling the response tests measure, so fly them first."
+		return
+	
+	#the wing's load against speed is a parabola through the origin, so the line is two points with its slope as the tangent
+	var k : float = fit.k
+	var slope : float = 2.0 * k * LIMIT_CURVE_MARGIN
+	var first : float = fit.slowest
+	var last : float = fit.fastest
+	#nothing past the limit is worth carrying: the curve ends where the wing's line reaches the next whole g above the declared
+	#limit, far enough over it that rounding cannot leave the last point under the limit, and above that speed the declared limit is
+	#the lower of the two anyway
+	var whole : float = floorf(component.flight_assist.g_limit) + 1.0
+	var cut : float = sqrt(whole / (LIMIT_CURVE_MARGIN * k))
+	if cut > first and cut < last: last = cut
+	var curve := Curve.new()
+	#the far ends first: a domain or value set while the other end is still the default is clamped against it
+	curve.max_domain = last
+	curve.min_domain = first
+	curve.max_value = k * last * last
+	curve.min_value = 0.0
+	#a tenth under the measured ceiling, and never below level flight, so the slow end still carries the aircraft
+	curve.add_point(Vector2(first, maxf(k * first * first * LIMIT_CURVE_MARGIN, 1.0)), 0.0, slope * first,
+		Curve.TANGENT_FREE, Curve.TANGENT_FREE)
+	curve.add_point(Vector2(last, maxf(k * last * last * LIMIT_CURVE_MARGIN, 1.0)), slope * last, 0.0,
+		Curve.TANGENT_FREE, Curve.TANGENT_FREE)
+	curve.bake()
+	
+	#one undoable edit, so a curve that is not wanted is one undo away from gone
+	var assist : FlightAssist = component.flight_assist
+	if Engine.is_editor_hint():
+		var undo := EditorInterface.get_editor_undo_redo()
+		undo.create_action("Write the load ceiling curve")
+		undo.add_do_property(assist, "g_limit_curve", curve)
+		undo.add_undo_property(assist, "g_limit_curve", assist.g_limit_curve)
+		undo.commit_action()
+	else:
+		assist.g_limit_curve = curve
+	
+	#the limit every chart is read against has moved, so everything measured against it is flown again
+	queue_flight_model_changed()
+	%ResponseResult.text = "Wrote the limit curve from %.0f to %.0f m/s, %.0f%% under the wing's own line, ending at %.1f g." % [
+		curve.min_domain, curve.max_domain, LIMIT_CURVE_MARGIN * 100.0, k * last * last * LIMIT_CURVE_MARGIN]
 
 #opening the response tab flies its tests at once rather than waiting for the edits to settle
 func _on_tab_changed(index : int) -> void:
@@ -672,6 +728,8 @@ func clear_step_graphs() -> void:
 #the control response the worker flew: the airframe's own answer, the step at the chosen speed, the row across the regime, and
 #the error chart that compares it
 func draw_control_response(result : Dictionary) -> void:
+	response_result = result
+	
 	#an aircraft with no control component has nothing to measure at all
 	if not result.has_control:
 		clear_step_graphs()
@@ -805,7 +863,8 @@ func draw_load_curves(conditions : PackedVector2Array, traces : Array, limit : f
 		if limit <= 0.0: continue
 		var times := trace.times()
 		for sample : int in trace.load.size():
-			if trace.load[sample] < limit - 0.02: continue
+			#the trace carries the limit it was flown against, which is its own whenever a ceiling curve caps it lower
+			if trace.load[sample] < trace.g_limit - 0.02: continue
 			graph.add_marker(Vector2(log_times[sample], trace.load[sample]), "Reaches the limit", "%.2f kPa: %.2f s" % [conditions[index].x / 1000.0, times[sample]], color)
 			break
 	

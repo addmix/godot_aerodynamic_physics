@@ -38,59 +38,49 @@ func _process(delta: float) -> void:
 [sub_resource type="Resource" id="Resource_rrmb4"]
 script = ExtResource("3_qedox")
 p = 0.001
-i = 0.0
 d = 0.01
 
 [sub_resource type="Resource" id="Resource_eo8u4"]
 script = ExtResource("3_qedox")
-p = 1.0
+i = 0.05
 d = 0.1
 
 [sub_resource type="Resource" id="Resource_rv6uo"]
 script = ExtResource("3_qedox")
 p = 3.0
-i = 0.0
-d = 0.0
 
 [sub_resource type="Resource" id="Resource_xyrqe"]
 script = ExtResource("3_qedox")
 p = 0.02
-i = 0.0
-d = 0.0
 
 [sub_resource type="Resource" id="Resource_kw2nn"]
 script = ExtResource("3_qedox")
-p = 1.0
-i = 0.0
-d = 0.0
+
+[sub_resource type="Curve" id="Curve_b1qmm"]
+_limits = [0.0, 7.777777777777778, 86.42074204358978, 227.0934637161815]
+_data = [Vector2(86.42074204358978, 1.013735728682334), 0.0, 0.023460472676131744, 0, 0, Vector2(227.0934637161815, 7), 0.06164862594855228, 0.0, 0, 0]
+point_count = 2
 
 [sub_resource type="Resource" id="Resource_0euej"]
 script = ExtResource("3_qedox")
 p = 10.0
-i = 0.0
-d = 0.0
 
 [sub_resource type="Resource" id="Resource_nb4wf"]
 script = ExtResource("3_qedox")
 p = 10.0
-i = 0.0
-d = 0.0
 
 [sub_resource type="Resource" id="Resource_b1qmm"]
 script = ExtResource("3_qedox")
-p = 3.5
-i = 3.5
-d = 0.03
-clamp_integral = true
+p = 3.0
+i = 20.0
+d = 0.1
 min_integral = -0.1
 max_integral = 0.1
 metadata/_custom_type_script = "uid://b4xqlunpiyivk"
 
 [sub_resource type="Resource" id="Resource_rj6ac"]
 script = ExtResource("3_qedox")
-p = 1.0
 i = 0.1
-d = 0.0
 clamp_integral = true
 min_integral = -0.1
 max_integral = 0.1
@@ -100,23 +90,22 @@ metadata/_custom_type_script = "uid://b4xqlunpiyivk"
 script = ExtResource("3_qedox")
 p = 0.0
 i = 0.4
-d = 0.0
 
 [sub_resource type="Resource" id="Resource_y8hps"]
 script = ExtResource("3_qedox")
 p = 10.0
-i = 0.0
-d = 0.0
 metadata/_custom_type_script = "uid://b4xqlunpiyivk"
 
 [sub_resource type="Resource" id="Resource_tfg1l"]
 script = ExtResource("4_6jy66")
 max_angular_rates = Vector3(2, 1, 3)
-feed_forward = Vector3(0.8, 1.5, 1.5)
+feed_forward = Vector3(0.7, 1.5, 1.5)
 pitch_assist_pid = SubResource("Resource_b1qmm")
 yaw_assist_pid = SubResource("Resource_y8hps")
 roll_assist_pid = SubResource("Resource_rj6ac")
 g_limit = 6.5
+g_limit_curve = SubResource("Curve_b1qmm")
+load_feedback = 0.25
 aoa_limit_start = 15.0
 bank_angle_pid = SubResource("Resource_eo8u4")
 heading_pid = SubResource("Resource_0euej")
@@ -470,7 +459,7 @@ mass = 27500.0
 physics_material_override = SubResource("PhysicsMaterial_3wjhu")
 center_of_mass = Vector3(0, -0.14000000000000057, 2.3000000000000007)
 can_sleep = false
-linear_velocity = Vector3(0, 0, -250)
+linear_velocity = Vector3(0, 0, -220)
 
 [node name="Fueslage" parent="." index="1" unique_id=606266740]
 script = SubResource("GDScript_yuw0c")

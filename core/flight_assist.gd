@@ -15,6 +15,8 @@ var altitude : float = 0.0
 var linear_velocity : Vector3 = Vector3.ZERO
 var local_angular_velocity : Vector3 = Vector3.ZERO
 var global_transform : Transform3D = Transform3D()
+##The load the airframe is carrying, in g, along its own up. Written by the control component each step.
+var felt_load : float = 1.0
 
 var control_input := Vector3.ZERO
 var control_command := Vector3.ZERO
@@ -80,10 +82,21 @@ var angular_rate_error := Vector3.ZERO
 	set(value):
 		g_limit = value
 		emit_changed()
+@export var g_limit_curve : Curve:
+	set(value):
+		watch_resource(g_limit_curve, value)
+		g_limit_curve = value
+		emit_changed()
 ##Maximum allowable negative G-force.
 @export var negative_g_limit : float = 3.0:
 	set(value):
 		negative_g_limit = value
+		emit_changed()
+##How hard the load the airframe carries corrects the rate the limiter asks for: above 0 it asks for a faster turn while the load
+##is short of the stick's share of the ceiling and a slower one while it is past it. At 0 the limiter trusts the ceiling alone.
+@export_range(0.0, 2.0, 0.05) var load_feedback : float = 0.0:
+	set(value):
+		load_feedback = value
 		emit_changed()
 @export_subgroup("AOA Limiter")
 ##If enabled, the flight assist resource will attempt to prevent angle of attack from exceeding this limit.
@@ -315,6 +328,11 @@ func target_direction(delta : float) -> void:
 	
 	#var normal_acceleration = local_acceleration_vector.z
 
+func g_limit_at(speed : float) -> float:
+	if g_limit_curve == null or g_limit_curve.point_count == 0 or speed <= 0.0:
+		return g_limit
+	return minf(g_limit, g_limit_curve.sample(speed))
+
 #this should be standardized.
 func flight_assist(delta : float) -> void:
 	#prevent crashing the aero_PID when airspeed is 0
@@ -331,22 +349,26 @@ func flight_assist(delta : float) -> void:
 
 	var angular_rates := max_angular_rates
 	
-	if enable_g_limiter:
-		#g limit
-		var g_limited_angular_rate := max_angular_rates.x
-		if !is_zero_approx(air_speed):
-			var gravity_direction := Vector3(0, -1, 0)
-			var zero_effort_g_force : float = global_transform.basis.y.dot(gravity_direction)
-
-			g_limited_angular_rate = (g_limit + zero_effort_g_force) * 9.81 / air_speed
-			#for negative g limit
-			if control_input.x <= 0.0:
-				g_limited_angular_rate = (negative_g_limit - zero_effort_g_force) * 9.81 / air_speed
+	#the pitch demand is a load, not a share of a rate: neutral asks for level flight and the stick moves away from it in either
+	#direction, so letting go of a pull asks the airframe to hold a g rather than to stop turning
+	var pitch_rate : float = angular_rates.x * control_input.x
+	
+	if enable_g_limiter and !is_zero_approx(air_speed):
+		var limit := g_limit_at(air_speed)
+		var gravity_direction := Vector3(0, -1, 0)
+		var zero_effort_g_force : float = global_transform.basis.y.dot(gravity_direction)
 		
-		angular_rates.x = min(angular_rates.x, g_limited_angular_rate)
+		var load_per_control_unit : float = limit - 1.0 if control_input.x >= 0.0 else negative_g_limit + 1.0
+		var requested_load : float = 1.0 + control_input.x * load_per_control_unit
+		#only under the request: a term that pulls down as well leaves the airframe under the load it was asked to keep, which at low
+		#speed is a pushover into negative g
+		var load_error : float = maxf(0.0, requested_load - felt_load)
+		var commanded_load : float = requested_load + load_feedback * load_error
+		
+		pitch_rate = clampf((commanded_load + zero_effort_g_force) * 9.81 / air_speed, -angular_rates.x, angular_rates.x)
 	#g limit
 	
-	angular_rate_error = angular_rates * control_input - local_angular_velocity
+	angular_rate_error = Vector3(pitch_rate, angular_rates.y * control_input.y, angular_rates.z * control_input.z) - local_angular_velocity
 	
 	#this is added to update/apply input changes from previous steps, such as target_direction
 	#without this line, controls can break when flight assist axes are disabled.

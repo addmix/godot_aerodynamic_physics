@@ -117,7 +117,7 @@ static func axis_pid(assist : FlightAssist, index : int) -> aero_PID:
 #is held at its trim attitude for that speed, and the rotation a step would take is turned into the airflow instead, so the wings
 #meet the air at the angle they would have while the g limiter sees one attitude. the inertia comes in with the call, because
 #asking the body for it off the main thread waits on the physics server for about a second a call
-static func fly(body : AeroBody3D, component : AeroControlComponent, axis : String, seconds : float, speed : float, altitude : float, inertia : Vector3, pitch : float = 0.0) -> Trace:
+static func simulate_step_response(body : AeroBody3D, component : AeroControlComponent, axis : String, seconds : float, speed : float, altitude : float, inertia : Vector3, pitch : float = 0.0, release : float = -1.0) -> Trace:
 	#the axes are named in lower case on every aircraft, while a menu is free to capitalize what it shows
 	axis = axis.to_lower()
 	
@@ -142,7 +142,7 @@ static func fly(body : AeroBody3D, component : AeroControlComponent, axis : Stri
 	trace.seconds = seconds
 	trace.speed = speed
 	trace.altitude = altitude
-	trace.g_limit = component.flight_assist.g_limit
+	trace.g_limit = component.flight_assist.g_limit_at(speed)
 	
 	#only the step drives the aircraft: a held key must not join in, and an axis whose actions are not in the project would report
 	#a missing action every step
@@ -153,10 +153,18 @@ static func fly(body : AeroBody3D, component : AeroControlComponent, axis : Stri
 	var index := axis_index(axis)
 	var pid := axis_pid(assist, index)
 	
-	#one evaluation at the condition says what the air is before the first control tick reads it
+	#one evaluation at the condition says what the air is before the first control tick reads it, and leaves the body the transform
+	#and the load that tick reads
 	body.calculate_forces_manual(transform, velocity, Vector3.ZERO, altitude)
 	
 	for step : int in steps:
+		#a run that lets go part way through holds the step until the given moment and then releases it, which is how what the
+		#airframe does when the stick comes back is measured
+		if release >= 0.0:
+			var held : float = 1.0 if step * delta < release else 0.0
+			for config : AeroControlConfigAxis in component.control_config.axis_configs:
+				config.input = held if config.axis_name == axis else 0.0
+		
 		#the component's own tick: the axes smooth their inputs, then the assist asks for the surfaces
 		component.control_config.update(delta)
 		component.update_flight_assist(delta)

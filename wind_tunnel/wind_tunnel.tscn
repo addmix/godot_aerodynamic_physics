@@ -480,6 +480,12 @@ layout_mode = 2
 tooltip_text = "Measures the airframe's answer to its controls, then flies the step at the chosen speed and once at each pressure across the aircraft's flight regime."
 text = "Run the tests"
 
+[node name="ResponseCurve" type="Button" parent="Panel/Tabs/Control Response/Content/Conditions"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Writes the ceiling these tests measure into the aircraft's flight assist as its limit curve, a tenth under the wing's own line, so the assist never chases a pull the airframe cannot hold."
+text = "Write limit curve"
+
 [node name="ResponseResult" type="Label" parent="Panel/Tabs/Control Response/Content" unique_id=1168729219]
 unique_name_in_owner = true
 layout_mode = 2
@@ -1160,6 +1166,7 @@ frames = Array[Texture2D]([SubResource("DPITexture_1ggli"), SubResource("DPIText
 [connection signal="value_changed" from="Panel/Tabs/Static Analysis/ScrollContent/Conditions/PointsField/SweepDatapoints" to="." method="_on_sweep_datapoints_value_changed"]
 [connection signal="pressed" from="Panel/Tabs/Static Analysis/ScrollContent/Conditions/Recalculate" to="." method="_on_recalculate_button_pressed"]
 [connection signal="pressed" from="Panel/Tabs/Control Response/Content/Conditions/ResponseRun" to="." method="_on_response_run_pressed"]
+[connection signal="pressed" from="Panel/Tabs/Control Response/Content/Conditions/ResponseCurve" to="." method="_on_response_curve_pressed"]
 [connection signal="value_changed" from="Panel/Tabs/Performance/Content/Conditions/AltitudeField/TurnAltitude" to="." method="_on_altitude_value_changed"]
 [connection signal="value_changed" from="Panel/Tabs/Performance/Content/Conditions/LoadLimitField/LoadLimit" to="." method="_on_load_limit_value_changed"]
 [connection signal="value_changed" from="Panel/Tabs/Performance/Content/Conditions/TurnPointsField/TurnPoints" to="." method="_on_turn_datapoints_value_changed"]

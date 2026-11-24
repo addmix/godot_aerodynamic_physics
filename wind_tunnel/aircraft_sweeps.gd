@@ -1663,6 +1663,7 @@ func control_response() -> Dictionary:
 		"deflections": [],
 		"regime": Vector2(NAN, NAN),
 		"load_ceiling": PackedVector2Array(),
+		"load_fit": {},
 		"corner_index": 0,
 		"conditions": PackedVector2Array(),
 		"chosen": null,
@@ -1705,6 +1706,8 @@ func control_response() -> Dictionary:
 	#put back first, because a step leaves the surfaces deflected and the sweep would read the wing with them still down
 	reset_response()
 	result.load_ceiling = load_ceiling_curve(top_speed, limit, density, pressure)
+	#what a limit curve is written from: the one coefficient of that line and the range it was measured over
+	result.load_fit = load_fit(result.load_ceiling, top_speed)
 	return result
 
 #where the corner sits in the row: the condition flown exactly at it, or the side of the row it falls outside of, since the colors
@@ -1831,6 +1834,22 @@ func load_ceiling_curve(fastest : float, limit : float, density : float, pressur
 	
 	return curve
 
+#the wing's own load line is a parabola through the origin, n = k V^2, one lift coefficient on one wing at every speed. what a
+#limit curve needs from it is that coefficient and the range it was measured over, not every sample of it, so a whole line comes
+#down to two points with that slope as their tangent
+func load_fit(ceiling : PackedVector2Array, fastest : float) -> Dictionary:
+	if ceiling.size() < 2 or is_nan(fastest) or fastest <= 0.0: return {}
+	
+	#least squares through the origin, so one sample reading a little high or low does not move the whole line
+	var top := 0.0
+	var bottom := 0.0
+	for point : Vector2 in ceiling:
+		top += point.y * point.x * point.x
+		bottom += point.x * point.x * point.x * point.x
+	if bottom <= 0.0: return {}
+	
+	return {"k": top / bottom, "slowest": ceiling[0].x, "fastest": fastest}
+
 #the angle of attack that carries the aircraft at this speed, in degrees: the attitude a pull starts from, since a real one
 #begins trimmed rather than at a level attitude with no angle at all
 func trim_angle(speed : float) -> float:
@@ -1865,4 +1884,4 @@ func trim_angle(speed : float) -> float:
 #one step of the chosen axis, flown from the state the edit left behind, starting at the trim attitude for its speed
 func response_step(speed : float) -> ControlResponse.Trace:
 	reset_response()
-	return ControlResponse.fly(body, control, response_axis, response_seconds, speed, altitude, inertia, trim_angle(speed))
+	return ControlResponse.simulate_step_response(body, control, response_axis, response_seconds, speed, altitude, inertia, trim_angle(speed))

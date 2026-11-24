@@ -74,13 +74,17 @@ func update_flight_assist(delta : float) -> void:
 	flight_assist.air_speed = aero_body.air_speed
 	flight_assist.air_density = aero_body.air_density
 	flight_assist.angle_of_attack = aero_body.angle_of_attack
+	#the transform the forces were last worked out against, which is the attitude a sweep flies even though the body it copied is
+	#still sitting where the scene left it
+	flight_assist.global_transform = aero_body.get_cached_global_transform()
+	if aero_body.mass > 0.0:
+		flight_assist.felt_load = aero_body.get_current_force().dot(aero_body.get_cached_global_basis().y) / (aero_body.mass * 9.81)
 	flight_assist.altitude = aero_body.altitude
 	flight_assist.heading = aero_body.heading
 	flight_assist.bank_angle = aero_body.bank_angle
 	flight_assist.inclination = aero_body.inclination
 	flight_assist.linear_velocity = aero_body.linear_velocity
 	flight_assist.local_angular_velocity = aero_body.local_angular_velocity
-	flight_assist.global_transform = aero_body.global_transform
 	flight_assist.update(delta)
 	
 	set_control_command("pitch", flight_assist.control_command.x)
